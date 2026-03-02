@@ -31,11 +31,11 @@ export default function TutorialRunner({
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(() => {
     const w = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    return Math.min(w / PANEL_NATURAL_WIDTH, 1);
+    return Math.min(w / PANEL_NATURAL_WIDTH, 1) * 0.99;
   });
 
   const updateScale = useCallback((width: number) => {
-    if (width > 0) setScale(Math.min(width / PANEL_NATURAL_WIDTH, 1));
+    if (width > 0) setScale(Math.min(width / PANEL_NATURAL_WIDTH, 1) * 0.99);
   }, []);
 
   useEffect(() => {
