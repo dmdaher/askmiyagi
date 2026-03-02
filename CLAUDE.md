@@ -12,7 +12,7 @@ Always check, validate, and confirm before acting. Measure twice, cut once.
 4. **Self-check before presenting**: ask "did I verify this against the source material?" If not, go back and verify.
 5. **Highlighted controls must match the real workflow context** — which controls are active depends on which screen/mode the user is in. Verify per the manual.
 
-> **Given manuals for a new instrument?** Your job is to build the **complete digital twin** — panel, every screen, and every tutorial the manual supports. Stop and read `docs/new-instrument-playbook.md` first. It's a 7-phase process (gather materials → full manual read → screen catalog → panel design → core implementation → screens → tutorials → validation). Do NOT start coding without completing Phase 0 (gather materials) and Phase 1 (full manual read). See also `docs/quality-gates.md` for the evidence standard at each phase. The Fantom 08 produced 57 tutorials across 9 categories from its manuals — aim for equivalent exhaustive coverage.
+> **Given manuals for a new instrument?** Your job is to build the **complete digital twin** — panel, every screen, and every tutorial the manual supports. Stop and read `docs/new-instrument-playbook.md` first. It's a 7-phase process (gather materials → full manual read → screen catalog → panel design → core implementation → screens → tutorials → validation). Do NOT start coding without completing Phase 0 (gather materials) and Phase 1 (full manual read). See also `docs/quality-gates.md` for the evidence standard at each phase. The Fantom 08 produced 59 tutorials across 10 categories from its manuals — aim for equivalent exhaustive coverage.
 
 ---
 
@@ -51,7 +51,7 @@ Follow this sequence IN ORDER. Do not skip steps. Do not start coding until Step
 
 ## Project Overview
 
-This is an **Interactive Music Studio** — a browser-based educational platform that builds **complete digital twins** of real hardware instruments. Given a product's manuals and photos, the goal is to create: (1) an interactive panel that visually replicates the real hardware, (2) every display screen documented in the manual, and (3) every tutorial the manual supports — achieving exhaustive coverage of the instrument's capabilities. The Fantom 08 is the reference implementation: 185-page manual → 298 screen catalog entries → 11 screen types → 57 tutorials across 9 categories.
+This is an **Interactive Music Studio** — a browser-based educational platform that builds **complete digital twins** of real hardware instruments. Given a product's manuals and photos, the goal is to create: (1) an interactive panel that visually replicates the real hardware, (2) every display screen documented in the manual, and (3) every tutorial the manual supports — achieving exhaustive coverage of the instrument's capabilities. The Fantom 08 is the reference implementation: 185-page manual → 298 screen catalog entries → 11 screen types → 59 tutorials across 10 categories.
 
 ### Devices
 - **Roland Fantom 08** — Fully built interactive panel with 88-key keyboard, LCD display, zone controls, knobs, sliders, pads, transport controls
@@ -92,7 +92,7 @@ askmiyagi/src/
 │   ├── ui/           # Shared: DeviceCard, TutorialCard, CategoryFilter, BrandingHeader
 │   ├── controls/     # Reusable hardware controls: Knob, Slider, PadButton, PanelButton, etc.
 │   ├── devices/      # Device-specific panels (fantom-08/, rc505-mk2/)
-│   └── tutorial/     # TutorialRunner, TutorialOverlay, ProgressBar, NavigationControls
+│   └── tutorial/     # TutorialRunner, StepContent, ProgressBar, NavigationControls, KeyboardZoneOverlay
 ├── data/
 │   ├── devices.ts           # Device registry
 │   ├── panelLayouts/        # Physical control layout definitions
@@ -116,7 +116,7 @@ askmiyagi/src/
 4. Arrow keys or buttons navigate steps; panel state accumulates progressively
 
 ### Panel Design
-- Fantom 08 panel is 2600x580px, organized into sections: Zone, Common, Controller, Synth Mode, Pads
+- Fantom 08 panel is 2700x580px (`PANEL_NATURAL_WIDTH` x `PANEL_NATURAL_HEIGHT` in constants), organized into sections: Zone, Common, Controller, Synth Mode, Pads
 - LCD display has multiple screen types: home, zone-view, key-range, menu, write, tone-select
 - Controls use 3D effects (radial gradients, box shadows) to look like real hardware
 - The panel was iteratively refined to match the real Fantom 08 hardware layout

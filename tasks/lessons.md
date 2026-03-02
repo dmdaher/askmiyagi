@@ -91,3 +91,57 @@
 - **Root cause**: Shortened the ID for convenience without checking the convention.
 - **Prevention rule**: Tutorial `id` must exactly match the filename (minus `.ts` extension). `file-management-deep-dive.ts` → `id: 'file-management-deep-dive'`.
 - **Automated check**: Tutorial test — validates ID matches expected key in `expectedStepCounts`.
+
+---
+
+## Pattern: CSS Transform Doesn't Change Layout Size
+
+- **Mistake**: Applied `overflow-hidden` to a container expecting the CSS `transform: scale(0.7)` on the inner panel would make it physically smaller. The panel was clipped instead of fitting.
+- **Root cause**: `transform: scale()` only changes *visual* rendering — the element still occupies its original layout size (2700px). The DOM doesn't know about the visual scaling.
+- **Prevention rule**: When scaling with CSS transform, always use an explicit visual-size wrapper (`width: naturalWidth * scale, height: naturalHeight * scale, overflow: hidden`) to contain the layout footprint. The transform goes on an inner div; the wrapper defines the space it occupies.
+- **Automated check**: Manual — verify the 3-layer nesting pattern: outer container → visual-size wrapper → scaled inner div.
+
+---
+
+## Pattern: Nested Scroll Containers Cause Confusion
+
+- **Mistake**: Debugged panel overflow in `TutorialRunner.tsx` for multiple iterations without realizing `FantomPanel.tsx` has its OWN `overflow-x-auto` wrapper with a 2700px `minWidth` child. Two scroll containers = unpredictable behavior.
+- **Root cause**: Only inspected the immediate parent component, not the full DOM hierarchy down to the rendered panel.
+- **Prevention rule**: When debugging overflow or scroll issues, trace the FULL component tree from the scrolling element down to the content. Search for ALL `overflow` properties in the chain. Use `grep 'overflow' <file>` on every component in the render path.
+- **Automated check**: Manual — when touching scroll/overflow, grep the full component chain.
+
+---
+
+## Pattern: overflow-hidden Clips, Doesn't Fix
+
+- **Mistake**: Changed `overflow-x-auto` to `overflow-hidden` thinking it would "fix" panel overflow. Instead, it clipped the right side of the panel — pad buttons were invisible with no way to scroll to them.
+- **Root cause**: Treated `overflow-hidden` as a sizing solution when it's a visibility property. If content genuinely overflows, hidden just makes the overflow invisible.
+- **Prevention rule**: `overflow-hidden` is for cosmetic clipping (hiding animation artifacts, rounding edges). If content overflows because it's too wide, you must either shrink the content or expand the container. Never use `overflow-hidden` to "fix" a layout that doesn't fit.
+- **Automated check**: Manual — when changing overflow, ask: "does the content actually fit, or am I just hiding the problem?"
+
+---
+
+## Pattern: Localhost vs Production Layout Differences
+
+- **Mistake**: Panel fit perfectly on localhost but overflowed on Vercel production. Assumed pixel-perfect layout would transfer between environments.
+- **Root cause**: Production differences eat viewport width — vertical scrollbar (~17px), Vercel analytics widgets, different font rendering, browser chrome variations. `window.innerWidth` includes scrollbar width but the actual content area is smaller.
+- **Prevention rule**: Never assume localhost layout = production layout. For scaling calculations, budget a small margin (e.g., `* 0.99`) to absorb environment differences. The ResizeObserver measures the actual container width correctly, but the initial render uses `window.innerWidth` which can be misleading.
+- **Automated check**: Manual — test on production after any layout/scaling changes. Don't trust localhost alone.
+
+---
+
+## Pattern: Scale Adjustment vs Overflow Property Wrestling
+
+- **Mistake**: Spent multiple iterations changing overflow properties (auto → hidden → auto → hidden on FantomPanel too) trying to fix panel overflow. The simplest fix was adjusting the scale factor by 1%.
+- **Root cause**: Focused on the symptom (overflow) instead of the simplest lever (scale). The panel has a clean scaling system — adjusting scale is a 1-line change that definitively solves the problem.
+- **Prevention rule**: When a component has a scaling/sizing system, adjust the scale first before fighting with CSS overflow. Scale changes are predictable and easy to reason about. Overflow property changes cascade unpredictably through nested containers.
+- **Automated check**: Manual — ask "is there a scale/size parameter I can adjust?" before touching overflow.
+
+---
+
+## Pattern: Overlapping Zone Labels in KeyboardZoneOverlay
+
+- **Mistake**: `KeyboardZoneOverlay` renders zone bars with absolute positioning inside a shared container. When two zones have the same note range (layering — both A0-C8), their labels overlap and become unreadable.
+- **Root cause**: The component was designed for split zones (non-overlapping ranges) and never tested with layered zones (identical ranges).
+- **Prevention rule**: Any component that positions items by range/value must handle the overlap case. For zone overlays, stack overlapping zones vertically instead of overlapping them. Always test with layering tutorials, not just split tutorials.
+- **Automated check**: Manual — visually verify `layering-zones` and `four-zone-setup` tutorials after any KeyboardZoneOverlay changes. **Status: OPEN BUG — not yet fixed.**
