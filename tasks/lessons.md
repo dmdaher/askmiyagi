@@ -145,3 +145,12 @@
 - **Root cause**: The component was designed for split zones (non-overlapping ranges) and never tested with layered zones (identical ranges).
 - **Prevention rule**: Any component that positions items by range/value must handle the overlap case. For zone overlays, stack overlapping zones vertically instead of overlapping them. Always test with layering tutorials, not just split tutorials.
 - **Automated check**: Manual — visually verify `layering-zones` and `four-zone-setup` tutorials after any KeyboardZoneOverlay changes. **Status: OPEN BUG — not yet fixed.**
+
+---
+
+## Pattern: Guessed Hardware Interaction Instead of Verifying Manual
+
+- **Mistake**: Wrote the transpose-octave tutorial steps 5-7 describing a "Value dial" interaction to change transpose value. The actual Fantom 08 procedure is: hold [TRANSPOSE] + press Octave [UP/DOWN] (manual p.38). Also wrote that the transpose button lights up — it has no LED.
+- **Root cause**: Assumed transpose works like most other synths (menu + dial). Did not read manual page 38 before writing. The early batches (A/B) had weaker manual-verification enforcement than later batches.
+- **Prevention rule**: EVERY button interaction in a tutorial must be verified against the specific manual page. "How does button X work?" is never safe to answer from general synth knowledge. Also verify whether a button has an LED before writing `active: true` in panelStateChanges or mentioning "button lights up" in text.
+- **Automated check**: Manual — PRE-BUILD gate question 8 ("Did YOU personally read the manual pages?"). Consider adding a post-batch validation step: test each tutorial on real hardware if available.
