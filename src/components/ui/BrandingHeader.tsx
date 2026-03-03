@@ -31,9 +31,9 @@ export default function BrandingHeader() {
           </div>
           <h1 className="text-xl font-bold">
             <span className="bg-gradient-to-r from-[#00aaff] via-[#00ccff] to-[#0088dd] bg-clip-text text-transparent">
-              Interactive
+              Ask
             </span>{' '}
-            <span className="text-gray-100">Music Studio</span>
+            <span className="text-gray-100">Miyagi</span>
           </h1>
         </Link>
         <nav className="flex items-center gap-4">

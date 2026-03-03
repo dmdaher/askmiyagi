@@ -219,13 +219,26 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-[var(--card-border)] bg-[var(--card-bg)]/50">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-          <p className="text-xs text-gray-500">
-            Interactive Music Studio &mdash; Learn your gear, one step at a time.
-          </p>
-          <p className="text-xs text-gray-600">
-            Not affiliated with Roland or Boss.
-          </p>
+        <div className="mx-auto max-w-7xl px-6 py-6">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-500">
+              Ask Miyagi &mdash; Learn your gear, one step at a time.
+            </p>
+            <p className="text-xs text-gray-600">
+              Not affiliated with Roland or Boss.
+            </p>
+          </div>
+          <div className="mt-3 flex items-center gap-4">
+            <a href="/legal/disclaimer" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+              Disclaimer
+            </a>
+            <a href="/legal/terms" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+              Terms of Service
+            </a>
+            <a href="/legal/privacy" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+              Privacy Policy
+            </a>
+          </div>
         </div>
       </footer>
     </div>
