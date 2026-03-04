@@ -141,7 +141,7 @@ export const sceneLevelEditing: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             keyRangeLow: 'A0',
             keyRangeHigh: 'C8',
             volume: 80,
@@ -181,7 +181,7 @@ export const sceneLevelEditing: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             keyRangeLow: 'A0',
             keyRangeHigh: 'C8',
             volume: 80,
@@ -219,7 +219,7 @@ export const sceneLevelEditing: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             keyRangeLow: 'A0',
             keyRangeHigh: 'C8',
             volume: 80,
@@ -259,7 +259,7 @@ export const sceneLevelEditing: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             keyRangeLow: 'A0',
             keyRangeHigh: 'C8',
             volume: 70,

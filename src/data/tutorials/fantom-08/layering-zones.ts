@@ -212,7 +212,7 @@ export const layeringZones: Tutorial = {
       id: 'step-6',
       title: 'Choose a Strings Tone',
       instruction:
-        "Press the Strings category button and select 'Full Strings' to layer with the piano.",
+        "Press the Strings category button and select 'Strings Sect 1' to layer with the piano.",
       highlightControls: ['tone-cat-7'],
       panelStateChanges: {
         'tone-cat-7': { active: true },
@@ -223,7 +223,7 @@ export const layeringZones: Tutorial = {
         tempo: 120,
         beatSignature: '4/4',
         menuItems: [
-          { label: 'Full Strings', selected: true },
+          { label: 'Strings Sect 1', selected: true },
           { label: 'Chamber Strings' },
           { label: 'Violin Solo' },
           { label: 'Cello Ensemble' },
@@ -285,7 +285,7 @@ export const layeringZones: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -392,7 +392,7 @@ export const layeringZones: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -419,7 +419,7 @@ export const layeringZones: Tutorial = {
           color: '#EF4444',
           lowNote: 21,
           highNote: 108,
-          label: 'Zone 2 (Full Strings)',
+          label: 'Zone 2 (Strings Sect 1)',
         },
       ],
       tipText:

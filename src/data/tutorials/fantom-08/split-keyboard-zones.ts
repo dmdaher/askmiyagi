@@ -298,7 +298,7 @@ export const splitKeyboardZones: Tutorial = {
         tempo: 120,
         beatSignature: '4/4',
         menuItems: [
-          { label: 'AC.BASS', selected: true },
+          { label: 'Acoustic Bass', selected: true },
           { label: 'Finger Bass' },
           { label: 'Pick Bass' },
           { label: 'Fretless Bass' },
@@ -322,7 +322,7 @@ export const splitKeyboardZones: Tutorial = {
         },
       ],
       tipText:
-        'AC.BASS is the first tone in the Bass category — a great acoustic upright bass sound.',
+        'Acoustic Bass is the first tone in the Bass category — a great acoustic upright bass sound.',
     },
     {
       id: 'step-7',
@@ -364,7 +364,7 @@ export const splitKeyboardZones: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'AC.BASS',
+            toneName: 'Acoustic Bass',
             toneType: 'SN-AP',
             toneBank: 'EXSN03',
             toneCategory: 'Ac.Bass',
@@ -384,7 +384,7 @@ export const splitKeyboardZones: Tutorial = {
           color: '#F59E0B',
           lowNote: 21,
           highNote: 59,
-          label: 'Zone 4 (AC.BASS)',
+          label: 'Zone 4 (Acoustic Bass)',
         },
         {
           zoneNumber: 1,
@@ -426,7 +426,7 @@ export const splitKeyboardZones: Tutorial = {
           color: '#F59E0B',
           lowNote: 21,
           highNote: 59,
-          label: 'Zone 4 (AC.BASS)',
+          label: 'Zone 4 (Acoustic Bass)',
         },
         {
           zoneNumber: 1,
@@ -466,7 +466,7 @@ export const splitKeyboardZones: Tutorial = {
           color: '#F59E0B',
           lowNote: 21,
           highNote: 59,
-          label: 'Zone 4 (AC.BASS)',
+          label: 'Zone 4 (Acoustic Bass)',
         },
         {
           zoneNumber: 1,
@@ -515,7 +515,7 @@ export const splitKeyboardZones: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'AC.BASS',
+            toneName: 'Acoustic Bass',
             toneType: 'SN-AP',
             toneBank: 'EXSN03',
             toneCategory: 'Ac.Bass',
@@ -535,7 +535,7 @@ export const splitKeyboardZones: Tutorial = {
           color: '#F59E0B',
           lowNote: 21,
           highNote: 59,
-          label: 'Zone 4 (AC.BASS)',
+          label: 'Zone 4 (Acoustic Bass)',
         },
         {
           zoneNumber: 1,

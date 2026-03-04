@@ -49,7 +49,7 @@ export const velocityLayersZones: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Mellow Piano',
+            toneName: 'Mellow Concert',
             toneType: 'SN-AP',
             toneBank: 'PR-A',
             toneCategory: 'Ac.Piano',
@@ -79,7 +79,7 @@ export const velocityLayersZones: Tutorial = {
           {
             zoneNumber: 3,
             zoneName: 'Zone 3',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -154,9 +154,9 @@ export const velocityLayersZones: Tutorial = {
         title: 'ZONE EDIT',
         activeTab: 'TONE',
         menuItems: [
-          { label: 'Zone 1: Mellow Piano', selected: true },
+          { label: 'Zone 1: Mellow Concert', selected: true },
           { label: 'Zone 2: Bright Concert' },
-          { label: 'Zone 3: Full Strings' },
+          { label: 'Zone 3: Strings Sect 1' },
           { label: 'Zone 4: Finger Bass' },
         ],
         selectedIndex: 0,
@@ -295,7 +295,7 @@ export const velocityLayersZones: Tutorial = {
           color: '#3B82F6',
           lowNote: 48,
           highNote: 108,
-          label: 'Zone 1 (Mellow Piano)',
+          label: 'Zone 1 (Mellow Concert)',
         },
         {
           zoneNumber: 2,
@@ -309,7 +309,7 @@ export const velocityLayersZones: Tutorial = {
           color: '#10B981',
           lowNote: 48,
           highNote: 108,
-          label: 'Zone 3 (Full Strings)',
+          label: 'Zone 3 (Strings Sect 1)',
         },
         {
           zoneNumber: 4,

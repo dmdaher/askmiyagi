@@ -222,7 +222,7 @@ export const fourZoneSetup: Tutorial = {
         tempo: 118,
         beatSignature: '4/4',
         menuItems: [
-          { label: 'Full Strings', selected: true },
+          { label: 'Strings Sect 1', selected: true },
           { label: 'Chamber Strings' },
           { label: 'Cello Ensemble' },
         ],
@@ -305,7 +305,7 @@ export const fourZoneSetup: Tutorial = {
           {
             zoneNumber: 3,
             zoneName: 'Zone 3',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -360,9 +360,9 @@ export const fourZoneSetup: Tutorial = {
         tempo: 118,
         beatSignature: '4/4',
         menuItems: [
-          { label: 'Saw Lead', selected: true },
+          { label: 'Saw Lead 1', selected: true },
           { label: 'Square Lead' },
-          { label: 'Trance Lead' },
+          { label: 'Trance Key 1' },
         ],
         selectedIndex: 0,
       },
@@ -551,7 +551,7 @@ export const fourZoneSetup: Tutorial = {
           {
             zoneNumber: 3,
             zoneName: 'Zone 3',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -566,7 +566,7 @@ export const fourZoneSetup: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -600,14 +600,14 @@ export const fourZoneSetup: Tutorial = {
           color: '#10B981',
           lowNote: 48,
           highNote: 88,
-          label: 'Zone 3 (Full Strings)',
+          label: 'Zone 3 (Strings Sect 1)',
         },
         {
           zoneNumber: 4,
           color: '#F59E0B',
           lowNote: 89,
           highNote: 108,
-          label: 'Zone 4 (Saw Lead)',
+          label: 'Zone 4 (Saw Lead 1)',
         },
       ],
       tipText:

@@ -126,7 +126,7 @@ export const selectingScenes: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Clav Wah',
+            toneName: 'Clav 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Keys',
@@ -161,7 +161,7 @@ export const selectingScenes: Tutorial = {
           color: '#3B82F6',
           lowNote: 21,
           highNote: 59,
-          label: 'Zone 1 (Clav Wah)',
+          label: 'Zone 1 (Clav 1)',
         },
         {
           zoneNumber: 2,

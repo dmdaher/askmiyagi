@@ -66,7 +66,7 @@ export const usingSlidersKnobs: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -137,7 +137,7 @@ export const usingSlidersKnobs: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -204,7 +204,7 @@ export const usingSlidersKnobs: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -272,7 +272,7 @@ export const usingSlidersKnobs: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -345,7 +345,7 @@ export const usingSlidersKnobs: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',

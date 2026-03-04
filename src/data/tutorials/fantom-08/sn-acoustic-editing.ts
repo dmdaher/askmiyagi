@@ -32,7 +32,7 @@ export const snAcousticEditing: Tutorial = {
       id: 'step-2',
       title: 'Select an SN-A Zone',
       instruction:
-        'Press Zone 1 to select the zone containing our Nylon Guitar SN-A tone. The zone view confirms the tone type as SN-A.',
+        'Press Zone 1 to select the zone containing our Nylon Gtr SN-A tone. The zone view confirms the tone type as SN-A.',
       highlightControls: ['zone-1'],
       panelStateChanges: {
         'zone-1': { active: true, ledOn: true, ledColor: '#3B82F6' },
@@ -49,7 +49,7 @@ export const snAcousticEditing: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Nylon Guitar',
+            toneName: 'Nylon Gtr',
             toneType: 'SN-A',
             toneBank: 'PR-A',
             toneCategory: 'Guitar',
@@ -69,7 +69,7 @@ export const snAcousticEditing: Tutorial = {
           color: '#3B82F6',
           lowNote: 21,
           highNote: 108,
-          label: 'Zone 1 (Nylon Guitar)',
+          label: 'Zone 1 (Nylon Gtr)',
         },
       ],
     },

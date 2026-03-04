@@ -47,7 +47,7 @@ export const troubleshootingGuide: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Grand Piano',
+            toneName: 'Concert Grand',
             keyRangeLow: 'A0',
             keyRangeHigh: 'C8',
             volume: 100,

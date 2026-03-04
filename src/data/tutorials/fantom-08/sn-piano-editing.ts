@@ -49,7 +49,7 @@ export const snPianoEditing: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: '#Concert Grand',
+            toneName: 'Concert Grand',
             toneType: 'SN-AP',
             toneBank: 'PR-A',
             toneCategory: 'Ac.Piano',
@@ -69,7 +69,7 @@ export const snPianoEditing: Tutorial = {
           color: '#3B82F6',
           lowNote: 21,
           highNote: 108,
-          label: 'Zone 1 (#Concert Grand)',
+          label: 'Zone 1 (Concert Grand)',
         },
       ],
     },

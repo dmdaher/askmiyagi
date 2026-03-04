@@ -132,7 +132,7 @@ export const selectingTones: Tutorial = {
         tempo: 120,
         beatSignature: '4/4',
         menuItems: [
-          { label: 'Full Strings', selected: true },
+          { label: 'Strings Sect 1', selected: true },
           { label: 'Chamber Strings' },
           { label: 'Violin Solo' },
           { label: 'Cello Ensemble' },
@@ -156,10 +156,10 @@ export const selectingTones: Tutorial = {
         tempo: 120,
         beatSignature: '4/4',
         menuItems: [
-          { label: 'Saw Lead', selected: true },
+          { label: 'Saw Lead 1', selected: true },
           { label: 'Square Lead' },
           { label: 'Analog Pad' },
-          { label: 'Trance Lead' },
+          { label: 'Trance Key 1' },
         ],
         selectedIndex: 0,
       },
@@ -187,7 +187,7 @@ export const selectingTones: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',

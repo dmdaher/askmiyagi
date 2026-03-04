@@ -32,7 +32,7 @@ export const effectsRouting: Tutorial = {
       id: 'step-2',
       title: 'Select Zone 1',
       instruction:
-        'Press Zone 1 to select it. Zone 1 has a Trance Lead tone that we will route through multiple effects.',
+        'Press Zone 1 to select it. Zone 1 has a Trance Key 1 tone that we will route through multiple effects.',
       highlightControls: ['zone-1'],
       panelStateChanges: {
         'zone-1': { active: true, ledOn: true, ledColor: '#3B82F6' },
@@ -49,7 +49,7 @@ export const effectsRouting: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Trance Lead',
+            toneName: 'Trance Key 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -84,7 +84,7 @@ export const effectsRouting: Tutorial = {
           color: '#3B82F6',
           lowNote: 60,
           highNote: 108,
-          label: 'Zone 1 (Trance Lead)',
+          label: 'Zone 1 (Trance Key 1)',
         },
         {
           zoneNumber: 2,
@@ -114,7 +114,7 @@ export const effectsRouting: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Trance Lead',
+            toneName: 'Trance Key 1',
             keyRangeLow: 'C4',
             keyRangeHigh: 'C8',
             volume: 100,
@@ -142,7 +142,7 @@ export const effectsRouting: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Trance Lead',
+            toneName: 'Trance Key 1',
             keyRangeLow: 'C4',
             keyRangeHigh: 'C8',
             volume: 100,
@@ -177,7 +177,7 @@ export const effectsRouting: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Trance Lead',
+            toneName: 'Trance Key 1',
             keyRangeLow: 'C4',
             keyRangeHigh: 'C8',
             volume: 100,
@@ -213,7 +213,7 @@ export const effectsRouting: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Trance Lead',
+            toneName: 'Trance Key 1',
             keyRangeLow: 'C4',
             keyRangeHigh: 'C8',
             volume: 100,
@@ -263,7 +263,7 @@ export const effectsRouting: Tutorial = {
           color: '#3B82F6',
           lowNote: 60,
           highNote: 108,
-          label: 'Zone 1 (Trance Lead)',
+          label: 'Zone 1 (Trance Key 1)',
         },
         {
           zoneNumber: 2,

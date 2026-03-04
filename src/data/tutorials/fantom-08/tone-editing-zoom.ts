@@ -32,7 +32,7 @@ export const toneEditingZoom: Tutorial = {
       id: 'step-2',
       title: 'Select Zone 1',
       instruction:
-        'Press the Zone 1 button to select the zone containing our Saw Lead tone. This ensures any edits we make apply to Zone 1.',
+        'Press the Zone 1 button to select the zone containing our Saw Lead 1 tone. This ensures any edits we make apply to Zone 1.',
       highlightControls: ['zone-1'],
       panelStateChanges: {
         'zone-1': { active: true, ledOn: true, ledColor: '#3B82F6' },
@@ -49,7 +49,7 @@ export const toneEditingZoom: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -69,7 +69,7 @@ export const toneEditingZoom: Tutorial = {
           color: '#3B82F6',
           lowNote: 21,
           highNote: 108,
-          label: 'Zone 1 (Saw Lead)',
+          label: 'Zone 1 (Saw Lead 1)',
         },
       ],
     },

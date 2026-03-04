@@ -136,7 +136,7 @@ export const arpeggioSetup: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'JP Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -176,7 +176,7 @@ export const arpeggioSetup: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'JP Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',

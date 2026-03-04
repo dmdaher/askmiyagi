@@ -73,7 +73,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -111,7 +111,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -204,7 +204,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -242,7 +242,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -335,7 +335,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -373,7 +373,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -466,7 +466,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -504,7 +504,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -597,7 +597,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -635,7 +635,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -727,7 +727,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -765,7 +765,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',
@@ -855,7 +855,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 2,
             zoneName: 'Zone 2',
-            toneName: 'Full Strings',
+            toneName: 'Strings Sect 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Strings',
@@ -893,7 +893,7 @@ export const understandingTheMixer: Tutorial = {
           {
             zoneNumber: 4,
             zoneName: 'Zone 4',
-            toneName: 'Saw Lead',
+            toneName: 'Saw Lead 1',
             toneType: 'Z-Core',
             toneBank: 'PR-A',
             toneCategory: 'Synth',

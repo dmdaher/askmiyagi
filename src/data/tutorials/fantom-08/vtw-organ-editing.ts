@@ -3,7 +3,7 @@ import { Tutorial } from '@/types/tutorial';
 export const vtwOrganEditing: Tutorial = {
   id: 'vtw-organ-editing',
   deviceId: 'fantom-08',
-  title: 'VTW Organ Tone Editing',
+  title: 'VTone Wheel Organ Tone Editing',
   description:
     'Explore the Virtual Tone Wheel (VTW) organ engine — a dedicated drawbar-based organ editor with harmonic bars, percussion, overdrive, and rotary speaker simulation. Shape classic organ sounds using the unique VTW interface.',
   category: 'sound-design',
@@ -13,7 +13,7 @@ export const vtwOrganEditing: Tutorial = {
   steps: [
     {
       id: 'step-1',
-      title: 'Introduction to VTW Organ',
+      title: 'Introduction to VTone Wheel Organ',
       instruction:
         'The VTW (Virtual Tone Wheel) engine models classic tone-wheel organs with a unique drawbar interface. Unlike other tone types, VTW uses harmonic bars instead of oscillators to shape the sound.',
       details:
@@ -49,7 +49,7 @@ export const vtwOrganEditing: Tutorial = {
           {
             zoneNumber: 1,
             zoneName: 'Zone 1',
-            toneName: 'TW Organ',
+            toneName: 'Tone Wheel Organ',
             toneType: 'VTW',
             toneBank: 'PR-A',
             toneCategory: 'Organ',
@@ -69,7 +69,7 @@ export const vtwOrganEditing: Tutorial = {
           color: '#3B82F6',
           lowNote: 21,
           highNote: 108,
-          label: 'Zone 1 (TW Organ)',
+          label: 'Zone 1 (Tone Wheel Organ)',
         },
       ],
     },
@@ -263,7 +263,7 @@ export const vtwOrganEditing: Tutorial = {
     },
     {
       id: 'step-10',
-      title: 'VTW Organ Editing Complete!',
+      title: 'VTone Wheel Organ Editing Complete!',
       instruction:
         'Press Exit to return to the home screen. You\'ve explored the VTW organ engine — drawbars for harmonic shaping, percussion for attack character, overdrive for grit, and rotary for that classic spinning speaker sound.',
       details:
