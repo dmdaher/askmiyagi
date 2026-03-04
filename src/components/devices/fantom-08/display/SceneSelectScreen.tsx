@@ -9,7 +9,7 @@ interface SceneSelectScreenProps {
 }
 
 const SCENE_PRESETS = [
-  { id: 'A001', name: 'Homecomng', level: 90 },
+  { id: 'A001', name: 'Homecoming', level: 90 },
   { id: 'A002', name: 'MKii Tres', level: 80 },
   { id: 'A003', name: 'Ult.Str', level: 75 },
   { id: 'A004', name: 'Piano', level: 85 },
