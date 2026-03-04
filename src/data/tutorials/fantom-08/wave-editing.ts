@@ -39,7 +39,7 @@ export const waveEditing: Tutorial = {
         'The SAMPLE PAD screen is accessed by holding [SHIFT] and pressing [SAMPLING]. This is different from just pressing [SAMPLING], which opens the Sampling Menu for new recordings. The Sample Pad screen displays all 16 pads and their assigned samples.',
       highlightControls: ['shift', 'sampling'],
       panelStateChanges: {
-        sampling: { active: true, ledOn: true },
+        sampling: { active: true },
       },
       displayState: {
         screenType: 'sample-pad',
@@ -238,7 +238,7 @@ export const waveEditing: Tutorial = {
       panelStateChanges: {
         play: { active: false, ledOn: false },
         'pad-1': { active: false, ledOn: false },
-        sampling: { active: false, ledOn: false },
+        sampling: { active: false },
         exit: { active: true },
       },
       displayState: {

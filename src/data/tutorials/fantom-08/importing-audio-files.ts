@@ -37,7 +37,7 @@ export const importingAudioFiles: Tutorial = {
         'The Sampling Menu is divided into two sections: the top three entries are for recording (To Pad, To Keyboard, To Storage) and the bottom three are for importing existing files (To Pad, To Keyboard, To Multisample).',
       highlightControls: ['sampling'],
       panelStateChanges: {
-        sampling: { active: true, ledOn: true },
+        sampling: { active: true },
       },
       displayState: {
         screenType: 'menu',
@@ -219,7 +219,7 @@ export const importingAudioFiles: Tutorial = {
         "You've learned three import workflows: Import To Keyboard for single-file tones, Import To Multisample for multi-file instruments with auto-mapping, and Import Sample Data for .svz packs. All imported content is accessible from the tone selection screens.",
       highlightControls: ['exit'],
       panelStateChanges: {
-        sampling: { active: false, ledOn: false },
+        sampling: { active: false },
         menu: { active: false },
         exit: { active: true },
       },

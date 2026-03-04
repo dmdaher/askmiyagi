@@ -35,7 +35,7 @@ export const advancedPadModes: Tutorial = {
         'Press the PAD MODE button to open the pad mode selection screen. A 4x3 grid of available modes appears — each position maps to a physical pad number.',
       highlightControls: ['pad-mode'],
       panelStateChanges: {
-        'pad-mode': { active: true, ledOn: true },
+        'pad-mode': { active: true },
       },
       displayState: {
         screenType: 'pad-mode',
@@ -67,7 +67,7 @@ export const advancedPadModes: Tutorial = {
         'Press pad [2] to activate Note Pad mode. Each pad plays a tone like a keyboard key — you can see per-pad assignments showing zone, note number, and velocity.',
       highlightControls: ['pad-2'],
       panelStateChanges: {
-        'pad-mode': { active: false, ledOn: false },
+        'pad-mode': { active: false },
       },
       displayState: {
         screenType: 'menu',

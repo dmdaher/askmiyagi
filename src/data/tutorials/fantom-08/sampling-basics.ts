@@ -37,7 +37,7 @@ export const samplingBasics: Tutorial = {
         'The Sampling button opens the Sampling Menu with three destinations: To Pad (record to a pad), To Keyboard (record to the keyboard), and To Storage (record directly to USB). Touch "To Pad" to enter the Sampling Standby screen, which shows input parameters, a time counter, and a level meter.',
       highlightControls: ['sampling'],
       panelStateChanges: {
-        sampling: { active: true, ledOn: true },
+        sampling: { active: true },
       },
       displayState: {
         screenType: 'sampling',
@@ -184,7 +184,7 @@ export const samplingBasics: Tutorial = {
       highlightControls: ['pad-1'],
       panelStateChanges: {
         stop: { active: false },
-        sampling: { active: false, ledOn: false },
+        sampling: { active: false },
         'pad-1': { active: true, ledOn: true, ledColor: '#00ff44' },
       },
       displayState: {

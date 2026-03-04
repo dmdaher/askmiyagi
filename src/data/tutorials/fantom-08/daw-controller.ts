@@ -116,10 +116,10 @@ export const dawController: Tutorial = {
       instruction:
         'Press Exit to leave the System Settings, then press the DAW CTRL button on the panel. This activates DAW Control mode, which changes the behavior of certain panel controls to send DAW commands instead of normal MIDI.',
       details:
-        'The DAW CTRL button is located in the main panel section. When active, its LED lights up. In DAW Control mode, the transport buttons (Play, Stop, Rec) and other controls send DAW-specific commands over USB. The keyboard still plays notes normally.',
+        'The DAW CTRL button is located in the main panel section. In DAW Control mode, the transport buttons (Play, Stop, Rec) and other controls send DAW-specific commands over USB. The keyboard still plays notes normally.',
       highlightControls: ['daw-ctrl'],
       panelStateChanges: {
-        'daw-ctrl': { active: true, ledOn: true },
+        'daw-ctrl': { active: true },
       },
       displayState: {
         screenType: 'home',
@@ -130,7 +130,7 @@ export const dawController: Tutorial = {
         statusText: 'DAW CTRL active',
       },
       tipText:
-        'The DAW CTRL LED stays lit while DAW Control mode is active.',
+        'The display shows DAW CTRL mode status. Press the button again to exit DAW Control mode.',
     },
     {
       id: 'step-6',
@@ -141,7 +141,7 @@ export const dawController: Tutorial = {
         'The Pad Mode screen displays the available modes: Sample Pad, Note Pad, Partial Sw/Sel, DAW Control, Zone Mute, Zone Solo, Kbd Sw Group, Rhythm Pattern, Pattern, Variation Play, Group Play, and System. Press the corresponding pad number to select a mode.',
       highlightControls: ['pad-mode'],
       panelStateChanges: {
-        'pad-mode': { active: true, ledOn: true },
+        'pad-mode': { active: true },
       },
       displayState: {
         screenType: 'pad-mode',
@@ -222,7 +222,7 @@ export const dawController: Tutorial = {
       highlightControls: ['menu'],
       panelStateChanges: {
         menu: { active: true },
-        'pad-mode': { active: false, ledOn: false },
+        'pad-mode': { active: false },
       },
       displayState: {
         screenType: 'system-settings',
@@ -252,7 +252,7 @@ export const dawController: Tutorial = {
       highlightControls: ['pad-mode'],
       panelStateChanges: {
         menu: { active: false },
-        'pad-mode': { active: true, ledOn: true },
+        'pad-mode': { active: true },
       },
       displayState: {
         screenType: 'pad-mode',
@@ -280,8 +280,8 @@ export const dawController: Tutorial = {
         'Summary: (1) USB Driver = VENDOR for full MIDI + audio over USB, (2) USB Audio Input/Output = ON for bidirectional audio, (3) DAW CTRL button activates DAW control mode, (4) Pad Mode = DAW Control for Logic/MainStage commands, (5) Local Switch = OFF to prevent double notes during recording. Save your System settings with Write to keep these changes.',
       highlightControls: ['exit'],
       panelStateChanges: {
-        'daw-ctrl': { active: false, ledOn: false },
-        'pad-mode': { active: false, ledOn: false },
+        'daw-ctrl': { active: false },
+        'pad-mode': { active: false },
       },
       displayState: {
         screenType: 'home',

@@ -80,7 +80,7 @@ export const midiBasics: Tutorial = {
       highlightControls: ['zone-select', 'zone-2'],
       panelStateChanges: {
         'zone-view': { active: false },
-        'zone-select': { active: true, ledOn: true },
+        'zone-select': { active: true },
         'zone-1': { active: true, ledOn: true, ledColor: '#EF4444' },
         'zone-2': { active: true, ledOn: true, ledColor: '#EF4444' },
       },
@@ -138,7 +138,7 @@ export const midiBasics: Tutorial = {
         'LED colors: Red = INT (internal sounds), Green = EXT (external MIDI), Yellow = BOTH (advanced mode only), Orange = MUTE. When a zone is EXT, the Fantom 08 produces no sound for that zone — all notes go out the MIDI port.',
       highlightControls: ['shift', 'zone-2'],
       panelStateChanges: {
-        'zone-select': { active: false, ledOn: false },
+        'zone-select': { active: false },
         shift: { active: true },
         'zone-2': { active: true, ledOn: true, ledColor: '#22C55E' },
       },

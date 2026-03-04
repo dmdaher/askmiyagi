@@ -196,7 +196,7 @@ export const midiConcepts: Tutorial = {
       id: 'step-6',
       title: 'Controller Modes — PAN/LEVEL, CTRL, ASSIGN',
       instruction:
-        'The sliders and knobs have three modes that change what MIDI data they send. Press PAN/LEVEL, CTRL, or ASSIGN to switch modes. The active mode button lights up.',
+        'The sliders and knobs have three modes that change what MIDI data they send. Press PAN/LEVEL, CTRL, or ASSIGN to switch modes. PAN/LEVEL and CTRL have LEDs that light up when active.',
       details:
         'PAN/LEVEL mode: sliders control zone volume (CC7), knobs control pan (CC10). CTRL mode: sliders and knobs send fixed CC numbers for common parameters like filter cutoff and resonance. ASSIGN mode: you choose which CC each slider and knob sends — full customization.',
       highlightControls: ['pan-level', 'ctrl', 'assign'],
@@ -224,7 +224,7 @@ export const midiConcepts: Tutorial = {
       highlightControls: ['daw-ctrl', 'pad-mode'],
       panelStateChanges: {
         'pan-level': { active: false },
-        'daw-ctrl': { active: true, ledOn: true, ledColor: '#22C55E' },
+        'daw-ctrl': { active: true },
       },
       displayState: {
         screenType: 'home',
@@ -246,7 +246,7 @@ export const midiConcepts: Tutorial = {
         'Next steps: try the "Connecting External MIDI Gear" tutorial to set up EXT zones, or "CC Mapping with Knobs & Sliders" to customize what your sliders and knobs send. MIDI is the foundation of everything — once you understand it, connecting gear and automating your DAW becomes second nature.',
       highlightControls: [],
       panelStateChanges: {
-        'daw-ctrl': { active: false, ledOn: false },
+        'daw-ctrl': { active: false },
       },
       displayState: {
         screenType: 'home',

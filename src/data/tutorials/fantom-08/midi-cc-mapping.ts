@@ -84,7 +84,7 @@ export const midiCcMapping: Tutorial = {
       highlightControls: ['assign'],
       panelStateChanges: {
         ctrl: { active: false, ledOn: false },
-        assign: { active: true, ledOn: true },
+        assign: { active: true },
       },
       displayState: {
         screenType: 'home',
@@ -189,7 +189,7 @@ export const midiCcMapping: Tutorial = {
       highlightControls: ['pan-level', 'assign'],
       panelStateChanges: {
         'pan-level': { active: true },
-        assign: { active: true, ledOn: true },
+        assign: { active: true },
       },
       displayState: {
         screenType: 'home',
@@ -212,7 +212,7 @@ export const midiCcMapping: Tutorial = {
       highlightControls: ['slider-1', 'ctrl-knob-1'],
       panelStateChanges: {
         'pan-level': { active: false },
-        assign: { active: true, ledOn: true },
+        assign: { active: true },
         'slider-1': { active: true, value: 80 },
         'ctrl-knob-1': { active: true, value: 64 },
       },
@@ -236,7 +236,7 @@ export const midiCcMapping: Tutorial = {
         'Key takeaways: PAN/LEVEL maps knobs to pan (CC10) and sliders to volume (CC7) per zone. CTRL activates the Synth Cutoff and Resonance knobs. ASSIGN1 stores custom mappings per scene, ASSIGN2 stores them system-wide. Use SHIFT + ASSIGN to open the assignment editor. Next, try the "DAW Controller Setup" tutorial to learn how to control your DAW directly from the Fantom 08.',
       highlightControls: [],
       panelStateChanges: {
-        assign: { active: false, ledOn: false },
+        assign: { active: false },
         'slider-1': { active: false, value: 0 },
         'ctrl-knob-1': { active: false, value: 0 },
       },

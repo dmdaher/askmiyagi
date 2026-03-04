@@ -38,7 +38,7 @@ export const padSamplerDeepDive: Tutorial = {
       highlightControls: ['shift', 'sampling'],
       panelStateChanges: {
         shift: { active: true },
-        sampling: { active: true, ledOn: true },
+        sampling: { active: true },
       },
       displayState: {
         screenType: 'menu',
@@ -63,7 +63,7 @@ export const padSamplerDeepDive: Tutorial = {
       highlightControls: ['bank'],
       panelStateChanges: {
         shift: { active: false },
-        bank: { active: true, ledOn: true },
+        bank: { active: true },
       },
       displayState: {
         screenType: 'menu',
@@ -87,8 +87,8 @@ export const padSamplerDeepDive: Tutorial = {
         'Move removes the sample from the source pad and places it at the destination. Copy duplicates it so both pads have the same sample. This is useful for rearranging your pad layout or duplicating a sample across banks for quick access.',
       highlightControls: ['clip-board'],
       panelStateChanges: {
-        bank: { active: false, ledOn: false },
-        'clip-board': { active: true, ledOn: true },
+        bank: { active: false },
+        'clip-board': { active: true },
       },
       displayState: {
         screenType: 'menu',
@@ -112,8 +112,8 @@ export const padSamplerDeepDive: Tutorial = {
         'Sampling Mode controls the audio source: KBD+INPUT captures keyboard audio plus external input together, KBD captures only the internal sound engine, INPUT captures only external audio. Auto Trigger starts recording automatically when the input level exceeds a threshold.',
       highlightControls: ['sampling'],
       panelStateChanges: {
-        'clip-board': { active: false, ledOn: false },
-        sampling: { active: true, ledOn: true },
+        'clip-board': { active: false },
+        sampling: { active: true },
       },
       displayState: {
         screenType: 'menu',
@@ -223,7 +223,7 @@ export const padSamplerDeepDive: Tutorial = {
         'HOLD only works with GATE=ON pads. It latches the pad so you can free your hands while the sample plays. This is great for backing loops during a live performance. Press HOLD 4 times quickly to release all held samples at once.',
       highlightControls: ['hold', 'pad-1'],
       panelStateChanges: {
-        hold: { active: true, ledOn: true },
+        hold: { active: true },
         'pad-1': { active: true, ledOn: true, ledColor: '#00ff44' },
       },
       displayState: {
@@ -248,7 +248,7 @@ export const padSamplerDeepDive: Tutorial = {
         'RENAME lets you give meaningful names to samples. TRUNCATE permanently removes audio before start point and after end point, freeing memory. EXPORT WAV saves individual pad samples as WAV files to USB for backup or use in a DAW. EXPORT ALL WAV exports every pad sample at once.',
       highlightControls: ['display'],
       panelStateChanges: {
-        hold: { active: false, ledOn: false },
+        hold: { active: false },
         'pad-1': { active: false, ledOn: false },
       },
       displayState: {
@@ -275,7 +275,7 @@ export const padSamplerDeepDive: Tutorial = {
         "You've mastered the full pad sampler workflow: SAMPLE PAD overview, bank switching, move/copy, sampling modes, file import, Quick Edit toggles, Wave Edit trimming, HOLD for live performance, and Sample Utility for management and export.",
       highlightControls: ['exit'],
       panelStateChanges: {
-        sampling: { active: false, ledOn: false },
+        sampling: { active: false },
         exit: { active: true },
       },
       displayState: {

@@ -37,7 +37,7 @@ export const advancedKeyboardSampling: Tutorial = {
         'The Sampling Menu is the gateway to all sampling workflows. From here you can sample to pad, keyboard, or storage, and import audio files to pad, keyboard, or multisample. The E-knobs provide quick access to sample management screens.',
       highlightControls: ['sampling'],
       panelStateChanges: {
-        sampling: { active: true, ledOn: true },
+        sampling: { active: true },
       },
       displayState: {
         screenType: 'menu',
@@ -260,7 +260,7 @@ export const advancedKeyboardSampling: Tutorial = {
         "You've learned to sample to keyboard for pitched playback, sample to storage for WAV file capture, manage your KBD sample library with parameters and utilities, and process samples with Truncate, Normalize, and Emphasis.",
       highlightControls: ['exit'],
       panelStateChanges: {
-        sampling: { active: false, ledOn: false },
+        sampling: { active: false },
         exit: { active: true },
       },
       displayState: {
