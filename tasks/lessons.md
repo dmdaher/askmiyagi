@@ -154,3 +154,21 @@
 - **Root cause**: Assumed transpose works like most other synths (menu + dial). Did not read manual page 38 before writing. The early batches (A/B) had weaker manual-verification enforcement than later batches.
 - **Prevention rule**: EVERY button interaction in a tutorial must be verified against the specific manual page. "How does button X work?" is never safe to answer from general synth knowledge. Also verify whether a button has an LED before writing `active: true` in panelStateChanges or mentioning "button lights up" in text.
 - **Automated check**: Manual — PRE-BUILD gate question 8 ("Did YOU personally read the manual pages?"). Consider adding a post-batch validation step: test each tutorial on real hardware if available.
+
+---
+
+## Pattern: False LED Claims on Non-LED Buttons
+
+- **Mistake**: Used `ledOn: true` / `ledOn: false` in `panelStateChanges` for buttons that have no physical LED, and wrote text claims like "the LED lights up" for non-LED buttons. Found 34 instances across 10 tutorial files during the Phase 7 global audit.
+- **Root cause**: Assumed all panel buttons have LEDs. The early/mid batches lacked a centralized LED reference. Only 5 button groups have LEDs per `panelLayouts/fantom-08.ts`: zone-1..8, pan-level/ctrl/split/chord-memory/arpeggio, write, play/stop/rec, and pad-1..16. All other buttons (sampling, daw-ctrl, pad-mode, assign, bank, clip-board, hold, zone-select, scene-chain, motional-pad, etc.) have NO LED.
+- **Prevention rule**: Before writing `ledOn` in panelStateChanges or mentioning "LED", "lights up", or "stays lit" in text, check `src/data/panelLayouts/fantom-08.ts` for `hasLed: true` on that button. Use `active: true` (visual highlight only) for non-LED buttons.
+- **Automated check**: Phase 7 global LED audit grep: `grep 'ledOn: true' tutorials/` → verify every match against the LED reference table. Consider adding a test that validates `ledOn` is only used on buttons with `hasLed: true` in the panel layout.
+
+---
+
+## Pattern: Fabricated System Parameter Lists
+
+- **Mistake**: Wrote `system-and-file-management.ts` step 3 listing 17 System tab names that were completely fabricated (CONTROL, USB/BLUETOOTH, DISPLAY, METRONOME, ASSIGN1, ASSIGN2, TONE EDIT, BANK). The actual manual (p.164) lists: GENERAL, KEYBOARD, PEDAL, WHEEL 1/2, S1/S2, SLIDER, KNOB, USB, MIDI, SOUND, SYNC/TEMPO, SEQUENCER, CLICK, NOTE PAD, CONTROL, LICENSE, INFO.
+- **Root cause**: Written from general synth knowledge without verifying the exact tab structure against the manual. The tab count (17) was correct but the names were wrong.
+- **Prevention rule**: System-level parameter lists, menu structures, and tab names must be copied verbatim from the manual. Never invent or guess menu item names, even if you know the count. A correct count with wrong names is worse than no list at all.
+- **Automated check**: Manual — PRE-BUILD gate question 5 ("Are parameter names verified against the Parameter Guide?").
