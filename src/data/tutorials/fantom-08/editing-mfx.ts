@@ -79,7 +79,7 @@ export const editingMfx: Tutorial = {
       instruction:
         'Press the FX button in the Synth Control section to jump directly to the MFX editor for the selected zone.',
       details:
-        'You can also access MFX through Menu → Zone Edit → MFX, but the FX button is the fastest shortcut.',
+        'You can also access MFX through Menu → TONE EDIT → MFX tab, but the FX button is the fastest shortcut.',
       highlightControls: ['synth-mode-fx'],
       panelStateChanges: {
         'synth-mode-fx': { active: true },

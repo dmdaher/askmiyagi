@@ -690,7 +690,7 @@ export const understandingTheMixer: Tutorial = {
       id: 'step-7',
       title: 'Switching to 16-Zone View',
       instruction:
-        'Press the E1 knob (PAGE) to switch to 16-Zone View. This compact view shows all 16 zone slots side by side — useful when you have many zones and need an overview.',
+        'Turn the E1 knob (PAGE) to switch to 16-Zone View. This compact view shows all 16 zone slots side by side — useful when you have many zones and need an overview.',
       details:
         'The 16-zone view shows the same parameters (Solo, Mute, Chorus, Reverb, Pan, Level, MFX) but in a narrower format. Zone EQ curves are not visible in this view — only in the 8-zone view.',
       highlightControls: [],

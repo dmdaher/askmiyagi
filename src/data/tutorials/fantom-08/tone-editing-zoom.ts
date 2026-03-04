@@ -79,7 +79,7 @@ export const toneEditingZoom: Tutorial = {
       instruction:
         'Press the OSC button in the Synth Control section to jump directly into the Tone Edit ZOOM screen on the OSC tab.',
       details:
-        'The Synth Control buttons (OSC, FILTER TYPE, AMP, FX, LFO) are shortcuts that open Tone Edit ZOOM directly on the corresponding tab. You can also access Tone Edit via Menu > Tone Edit.',
+        'The Synth Control buttons (OSC, FILTER TYPE, PARAM, AMP, FX, LFO) are shortcuts that open Tone Edit ZOOM directly on the corresponding tab. You can also access Tone Edit via Menu > Tone Edit.',
       highlightControls: ['synth-mode-osc'],
       panelStateChanges: {
         'synth-mode-osc': { active: true },
@@ -134,9 +134,9 @@ export const toneEditingZoom: Tutorial = {
       id: 'step-5',
       title: 'Select a Parameter',
       instruction:
-        'Use the Cursor Down button or E2 knob to move the selection to the "Cutoff" parameter.',
+        'Use the Cursor Down button to move the selection to the "Cutoff" parameter.',
       details:
-        'E2 scrolls the cursor up/down to select a parameter. You can also use the cursor buttons for the same purpose.',
+        'Use the Cursor Up/Down buttons to select a parameter within the current tab. In ZOOM view, E2-E6 directly edit the visible parameters rather than navigating.',
       highlightControls: ['cursor-down'],
       panelStateChanges: {},
       displayState: {
@@ -250,7 +250,7 @@ export const toneEditingZoom: Tutorial = {
       id: 'step-10',
       title: 'Enter SYNTH CTRL Mode',
       instruction:
-        'Press Exit to leave the ZOOM editor and return to the home screen. Now try the SYNTH CTRL section — press the CUTOFF knob to directly control the filter cutoff in real time while playing.',
+        'Press Exit to leave the ZOOM editor and return to the home screen. Now try the SYNTH CTRL section — turn the CUTOFF knob to directly control the filter cutoff in real time while playing.',
       details:
         'The SYNTH CTRL section (FILTER section on the panel) provides hands-on real-time control. The [CUTOFF] knob adjusts the filter cutoff frequency, and the [RESONANCE] knob adjusts resonance. These affect the tone of the current zone as you play.',
       highlightControls: ['synth-cutoff', 'synth-resonance'],

@@ -86,7 +86,7 @@ export const toneEditingPro: Tutorial = {
       },
       displayState: {
         screenType: 'tone-edit-zoom',
-        activeTab: 'COMMON',
+        activeTab: 'FILTER',
         selectedIndex: 0,
         toneEditData: {
           toneType: 'Z-CORE',
@@ -94,14 +94,14 @@ export const toneEditingPro: Tutorial = {
           selectedPartial: 0,
         },
         menuItems: [
-          { label: 'Tone Level: 100', selected: true },
-          { label: 'Tone Pan: 0' },
-          { label: 'Coarse Tune: 0' },
-          { label: 'Fine Tune: 0' },
+          { label: 'Filter Type: LPF', selected: true },
+          { label: 'Cutoff: 80' },
+          { label: 'Resonance: 30' },
+          { label: 'Key Follow: +100' },
         ],
       },
       tipText:
-        'The ZOOM screen opens on whichever tab matches the button you pressed.',
+        'The ZOOM screen opens on whichever tab matches the button you pressed — PARAM opens the FILTER tab.',
     },
     {
       id: 'step-4',

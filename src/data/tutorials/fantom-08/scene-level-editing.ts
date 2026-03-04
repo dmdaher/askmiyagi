@@ -41,12 +41,12 @@ export const sceneLevelEditing: Tutorial = {
         screenType: 'menu',
         title: 'MENU',
         menuItems: [
-          { label: 'SCENE EDIT' },
-          { label: 'ZONE EDIT', selected: true },
           { label: 'TONE EDIT' },
-          { label: 'EFFECTS' },
+          { label: 'EFFECTS EDIT' },
+          { label: 'ZONE EDIT' },
+          { label: 'SCENE EDIT', selected: true },
         ],
-        selectedIndex: 1,
+        selectedIndex: 3,
       },
     },
     {
@@ -55,8 +55,8 @@ export const sceneLevelEditing: Tutorial = {
       instruction:
         'Select SCENE EDIT from the menu. The Scene Edit screen appears with tabs for different parameter categories.',
       details:
-        'Scene Edit tabs: GENERAL (level, tempo), CONTROL (tone control MIDI messages), PEDAL, KNOB, SLIDER, S1/S2, WHEEL1/2, and VOCODER. E1 scrolls tabs, E2 selects parameters, E6 edits values.',
-      highlightControls: ['cursor-up', 'enter'],
+        'Scene Edit tabs: GENERAL (level, tempo), CONTROL (tone control MIDI messages), PEDAL, KNOB, SLIDER, S1/S2, WHEEL1/2, VOCODER, and SONG. E1 scrolls tabs, E2 selects parameters, E6 edits values.',
+      highlightControls: ['cursor-down', 'enter'],
       panelStateChanges: {},
       displayState: {
         screenType: 'scene-edit',
