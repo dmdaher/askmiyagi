@@ -35,7 +35,7 @@ export const sceneSearchNavigation: Tutorial = {
         'Press SCENE SELECT to open the scene selection grid. You can see scenes A001 through A016 displayed as tiles with their names.',
       highlightControls: ['scene-select'],
       panelStateChanges: {
-        'scene-select': { active: true, ledOn: true },
+        'scene-select': { active: true },
       },
       displayState: {
         screenType: 'home',
@@ -133,7 +133,7 @@ export const sceneSearchNavigation: Tutorial = {
         'In any TONE LIST screen, touch the search symbol. A keyboard appears — type your search text and press E6 OK. Only tones from the selected category matching your text are shown.',
       highlightControls: ['function-e6'],
       panelStateChanges: {
-        'scene-select': { active: false, ledOn: false },
+        'scene-select': { active: false },
         'function-e3': { active: false },
         'function-e5': { active: false },
       },
@@ -182,7 +182,7 @@ export const sceneSearchNavigation: Tutorial = {
       highlightControls: ['single-tone'],
       panelStateChanges: {
         'function-e4': { active: false },
-        'single-tone': { active: true, ledOn: true },
+        'single-tone': { active: true },
       },
       displayState: {
         screenType: 'zone-view',
@@ -221,7 +221,7 @@ export const sceneSearchNavigation: Tutorial = {
         'You now know how to quickly find any scene or tone using text search and ratings. Single Tone Play gives you a focused way to audition sounds. These tools save significant time when building new scenes.',
       highlightControls: [],
       panelStateChanges: {
-        'single-tone': { active: false, ledOn: false },
+        'single-tone': { active: false },
       },
       displayState: {
         screenType: 'home',

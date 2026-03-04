@@ -72,10 +72,10 @@ export const selectingScenes: Tutorial = {
       id: 'step-4',
       title: 'Switch Scene Banks',
       instruction:
-        'Use the Cursor Left and Right buttons to jump between scene banks (A through H). Each bank holds a different set of scenes.',
+        'Touch the bank indicator on screen (A, B, C, etc.) or use the Inc/Dec buttons to move between scene banks (A through H). Each bank holds a different set of scenes.',
       details:
-        'Bank A typically contains factory presets. Banks further along may contain user presets or expansion sounds.',
-      highlightControls: ['cursor-left', 'cursor-right'],
+        'Bank A typically contains factory presets. Banks further along may contain user presets or expansion sounds. The touchscreen grid makes it easy to jump between banks.',
+      highlightControls: ['inc', 'dec'],
       panelStateChanges: {},
       displayState: {
         screenType: 'home',

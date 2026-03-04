@@ -37,7 +37,7 @@ export const quickEditFunctionKnobs: Tutorial = {
         'When PAN/LEVEL is lit, knob 1 controls Zone 1 pan, knob 2 controls Zone 2 pan, and so on. Similarly, slider 1 controls Zone 1 volume, slider 2 controls Zone 2 volume. The knob/slider numbers correspond to the zone numbers.',
       highlightControls: ['pan-level'],
       panelStateChanges: {
-        'pan-level': { active: true, ledOn: true },
+        'pan-level': { active: true, ledOn: true, ledColor: '#00ff44' },
       },
       displayState: {
         screenType: 'popup',
@@ -76,7 +76,7 @@ export const quickEditFunctionKnobs: Tutorial = {
       highlightControls: ['assign'],
       panelStateChanges: {
         'pan-level': { active: false, ledOn: false },
-        'assign': { active: true, ledOn: true },
+        assign: { active: true },
       },
       displayState: {
         screenType: 'home',
@@ -93,10 +93,10 @@ export const quickEditFunctionKnobs: Tutorial = {
       instruction:
         'Press the OSC button in the Synth Control section. This opens the Tone Edit ZOOM screen directly on the OSC tab, letting you edit oscillator parameters in real time.',
       details:
-        'The Synth Control buttons (OSC, FILTER TYPE, AMP, FX, LFO) are shortcuts that jump directly to the corresponding Tone Edit ZOOM tab. Unlike PAN/LEVEL and ASSIGN, these edits apply only to the tone of the current zone.',
+        'The Synth Control buttons (OSC, FILTER TYPE, PARAM, AMP, FX, LFO) are shortcuts that jump directly to the corresponding Tone Edit ZOOM tab. Unlike PAN/LEVEL and ASSIGN, these edits apply only to the tone of the current zone.',
       highlightControls: ['synth-mode-osc'],
       panelStateChanges: {
-        'assign': { active: false, ledOn: false },
+        assign: { active: false },
         'synth-mode-osc': { active: true },
       },
       displayState: {
