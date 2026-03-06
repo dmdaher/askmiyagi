@@ -60,6 +60,15 @@ function HomePageContent() {
   const tutorialSectionRef = useRef<HTMLDivElement>(null);
   const hasAnimatedTutorials = useRef(false);
 
+  // Scroll to tutorial list when arriving with ?device param
+  useEffect(() => {
+    if (searchParams.get('device') && selectedDevice) {
+      setTimeout(() => {
+        tutorialSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const tutorials = useMemo(() => {
     if (!selectedDevice) return [];
     return allTutorials[selectedDevice.id] ?? [];
