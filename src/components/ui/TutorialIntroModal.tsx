@@ -46,7 +46,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Step Navigation',
-    description: 'Use the Previous and Next buttons to move through the tutorial at your own pace.',
+    description: 'Use the Previous and Next buttons or the left/right arrow keys on your keyboard to move through steps.',
   },
 ];
 

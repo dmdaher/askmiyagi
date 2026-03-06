@@ -7,7 +7,6 @@ import BrandingHeader from '@/components/ui/BrandingHeader';
 import DeviceCard from '@/components/ui/DeviceCard';
 import TutorialCard from '@/components/ui/TutorialCard';
 import CategoryFilter from '@/components/ui/CategoryFilter';
-import TutorialIntroModal from '@/components/ui/TutorialIntroModal';
 import { getAvailableDevices } from '@/data/devices';
 import { fantom08Tutorials } from '@/data/tutorials/fantom-08';
 import { rc505mk2Tutorials } from '@/data/tutorials/rc505-mk2';
@@ -44,7 +43,6 @@ export default function HomePage() {
   const router = useRouter();
   const [selectedDevice, setSelectedDevice] = useState<DeviceInfo | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [previewTutorial, setPreviewTutorial] = useState<Tutorial | null>(null);
   const tutorialSectionRef = useRef<HTMLDivElement>(null);
   const hasAnimatedTutorials = useRef(false);
 
@@ -92,13 +90,7 @@ export default function HomePage() {
   }
 
   function handleTutorialSelect(tutorial: Tutorial) {
-    setPreviewTutorial(tutorial);
-  }
-
-  function handleStartTutorial() {
-    if (previewTutorial) {
-      router.push(`/tutorial/${previewTutorial.deviceId}/${previewTutorial.id}`);
-    }
+    router.push(`/tutorial/${tutorial.deviceId}/${tutorial.id}`);
   }
 
   return (
@@ -224,12 +216,6 @@ export default function HomePage() {
           )}
         </AnimatePresence>
       </main>
-
-      <TutorialIntroModal
-        tutorial={previewTutorial}
-        onStart={handleStartTutorial}
-        onClose={() => setPreviewTutorial(null)}
-      />
 
       {/* Footer */}
       <footer className="border-t border-[var(--card-border)] bg-[var(--card-bg)]/50">

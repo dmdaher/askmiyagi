@@ -50,10 +50,10 @@ function MockDevicePanel() {
 describe('TutorialRunner', () => {
   it('renders header with tutorial title/category/difficulty', () => {
     render(<TutorialRunner tutorial={testTutorial} DevicePanel={MockDevicePanel} />);
-    expect(screen.getByText('Test Tutorial Title')).toBeInTheDocument();
-    // Category + difficulty in subtitle
-    expect(screen.getByText(/basics/)).toBeInTheDocument();
-    expect(screen.getByText(/beginner/)).toBeInTheDocument();
+    expect(screen.getAllByText('Test Tutorial Title').length).toBeGreaterThanOrEqual(1);
+    // Category + difficulty in subtitle (also appears in intro modal)
+    expect(screen.getAllByText(/basics/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/beginner/).length).toBeGreaterThanOrEqual(1);
   });
 
   it('device panel rendered', () => {

@@ -10,6 +10,7 @@ import NavigationControls from './NavigationControls';
 import ProgressBar from './ProgressBar';
 import KeyboardZoneOverlay from './KeyboardZoneOverlay';
 import ReportModal from './ReportModal';
+import TutorialIntroModal from '@/components/ui/TutorialIntroModal';
 
 interface TutorialRunnerProps {
   tutorial: Tutorial;
@@ -30,6 +31,7 @@ export default function TutorialRunner({
   const store = useTutorialEngine(tutorial);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showIntro, setShowIntro] = useState(true);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [scale, setScale] = useState(() => {
     const w = typeof window !== 'undefined' ? window.innerWidth : 1200;
@@ -185,8 +187,8 @@ export default function TutorialRunner({
             transition={{ duration: 0.2, ease: 'easeInOut' }}
             className="overflow-hidden flex-shrink-0"
           >
-            <div className="px-4 py-2 flex items-center gap-2 border-b border-white/10 bg-[#0f0f1a]/40">
-              <span className="text-[10px] text-white/30">Speed</span>
+            <div className="px-4 py-2 flex items-center justify-center gap-2 border-b border-white/10 bg-[#0f0f1a]/40">
+              <span className="text-xs text-white/50 font-medium">Speed</span>
               <div className="flex items-center gap-1">
                 {SPEED_OPTIONS.map((option) => (
                   <button
@@ -213,6 +215,13 @@ export default function TutorialRunner({
       <div className="flex-1 overflow-y-auto">
         <StepContent step={step} />
       </div>
+
+      {/* Intro modal */}
+      <TutorialIntroModal
+        tutorial={showIntro ? tutorial : null}
+        onStart={() => setShowIntro(false)}
+        onClose={() => setShowIntro(false)}
+      />
 
       {/* Report modal */}
       <ReportModal
