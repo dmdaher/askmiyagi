@@ -42,7 +42,7 @@ export default function StepContent({ step }: StepContentProps) {
             <button
               type="button"
               onClick={() => setShowDetails(!showDetails)}
-              className="flex items-center gap-1.5 text-base text-white/45 hover:text-white/70 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-base text-white/75 hover:text-white transition-colors cursor-pointer"
             >
               <motion.svg
                 width="12"
@@ -67,7 +67,7 @@ export default function StepContent({ step }: StepContentProps) {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.25, ease: 'easeInOut' }}
-                  className="text-base text-white/50 leading-relaxed mt-2 overflow-hidden"
+                  className="text-base text-white/75 leading-relaxed mt-2 overflow-hidden"
                 >
                   {step.details}
                 </motion.p>

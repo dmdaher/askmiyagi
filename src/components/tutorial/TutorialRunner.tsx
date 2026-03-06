@@ -152,34 +152,26 @@ export default function TutorialRunner({
       </div>
 
       {/* Controls bar */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-y border-white/10 bg-[#0f0f1a]/60">
-        <NavigationControls
-          onPrev={store.prevStep}
-          onNext={store.nextStep}
-          isPrevDisabled={isFirst}
-          isNextDisabled={isLast}
-          autoplay={store.autoplay}
-          onToggleAutoplay={store.toggleAutoplay}
+      <div className="flex-shrink-0 flex flex-col gap-2 px-4 py-3 border-y border-white/10 bg-[#0f0f1a]/60">
+        <ProgressBar
+          progress={progress}
+          steps={totalSteps}
+          currentStep={store.currentStepIndex}
         />
-
-        <div className="flex-1 mx-4">
-          <ProgressBar
-            progress={progress}
-            steps={totalSteps}
-            currentStep={store.currentStepIndex}
+        <div className="flex justify-center">
+          <NavigationControls
+            onPrev={store.prevStep}
+            onNext={store.nextStep}
+            isPrevDisabled={isFirst}
+            isNextDisabled={isLast}
+            autoplay={store.autoplay}
+            onToggleAutoplay={store.toggleAutoplay}
           />
-        </div>
-
-        {/* Keyboard shortcut hints */}
-        <div className="flex items-center gap-1.5 text-white/25 text-[10px]">
-          <kbd className="px-1.5 py-0.5 rounded border border-white/15 bg-white/5 font-mono">&larr;</kbd>
-          <kbd className="px-1.5 py-0.5 rounded border border-white/15 bg-white/5 font-mono">&rarr;</kbd>
-          <kbd className="px-1.5 py-0.5 rounded border border-white/15 bg-white/5 font-mono text-[9px]">Space</kbd>
         </div>
       </div>
 
       {/* Panel hint (first step only) */}
-      <div className="text-center text-xs text-[#66ccff] font-medium py-2" style={{ background: 'rgba(0, 170, 255, 0.08)' }}>
+      <div className="text-center text-sm text-[#66ccff] font-medium py-2" style={{ background: 'rgba(0, 170, 255, 0.08)' }}>
         ↑ Your instrument updates in real time — watch the highlighted controls above as you navigate
       </div>
 

@@ -80,6 +80,14 @@ This is an **Interactive Music Studio** — a browser-based educational platform
 - `npm run test` — run tests (vitest)
 - `npm run test:watch` — watch mode
 
+### Deployment (Vercel)
+- **Hosted on Vercel** — connected to `dmdaher/askmiyagi` GitHub repo
+- **Production deploy**: pushing to `main` auto-deploys to the main domain
+- **Preview deploys**: pushing to any non-main branch auto-creates a preview URL (`askmiyagi-<hash>.vercel.app`)
+- `vercel` — manually deploy a preview from local working copy (no push needed)
+- `vercel --prod` — manually deploy to production
+- `vercel dev` — run local dev server through Vercel's environment
+
 ---
 
 ## Architecture & Key Patterns

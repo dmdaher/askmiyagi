@@ -56,8 +56,8 @@ export default function NavigationControls({
           type="button"
           onClick={onToggleAutoplay}
           className={[
-            'flex items-center justify-center w-9 h-9 rounded-lg',
-            'border transition-colors duration-150 cursor-pointer',
+            'flex items-center gap-1.5 px-3 py-2 rounded-lg',
+            'border transition-colors duration-150 cursor-pointer text-sm font-medium',
             autoplay
               ? 'border-[#00aaff]/40 bg-[#00aaff]/20 text-[#00ccff]'
               : 'border-white/20 text-white/60 hover:bg-white/10 hover:border-white/30',
@@ -77,6 +77,7 @@ export default function NavigationControls({
               <path d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z" />
             </svg>
           )}
+          <span>Autoplay</span>
         </motion.button>
       )}
 
