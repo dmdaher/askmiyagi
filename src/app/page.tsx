@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, useRef, useMemo, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import BrandingHeader from '@/components/ui/BrandingHeader';
 import DeviceCard from '@/components/ui/DeviceCard';
@@ -40,13 +40,25 @@ const itemVariants = {
 };
 
 export default function HomePage() {
+  return (
+    <Suspense>
+      <HomePageContent />
+    </Suspense>
+  );
+}
+
+function HomePageContent() {
   const router = useRouter();
-  const [selectedDevice, setSelectedDevice] = useState<DeviceInfo | null>(null);
+  const searchParams = useSearchParams();
+  const devices = getAvailableDevices();
+  const [selectedDevice, setSelectedDevice] = useState<DeviceInfo | null>(() => {
+    const deviceParam = searchParams.get('device');
+    if (deviceParam) return devices.find((d) => d.id === deviceParam && d.available) ?? null;
+    return null;
+  });
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const tutorialSectionRef = useRef<HTMLDivElement>(null);
   const hasAnimatedTutorials = useRef(false);
-
-  const devices = getAvailableDevices();
 
   const tutorials = useMemo(() => {
     if (!selectedDevice) return [];

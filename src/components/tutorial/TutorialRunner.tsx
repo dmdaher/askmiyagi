@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tutorial } from '@/types/tutorial';
 import { useTutorialEngine } from '@/hooks/useTutorialEngine';
@@ -29,6 +30,7 @@ export default function TutorialRunner({
   DevicePanel,
 }: TutorialRunnerProps) {
   const store = useTutorialEngine(tutorial);
+  const router = useRouter();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [showIntro, setShowIntro] = useState(true);
@@ -58,9 +60,7 @@ export default function TutorialRunner({
 
   const handleClose = () => {
     store.reset();
-    if (typeof window !== 'undefined') {
-      window.history.back();
-    }
+    router.push(`/?device=${tutorial.deviceId}`);
   };
 
   if (!store.isActive || !step) {
