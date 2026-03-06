@@ -4,7 +4,13 @@ import TutorialRunner from '@/components/tutorial/TutorialRunner';
 import { useTutorialStore } from '@/store/tutorialStore';
 import { Tutorial } from '@/types/tutorial';
 
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 beforeEach(() => {
+  mockPush.mockClear();
   useTutorialStore.getState().reset();
   global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
@@ -75,12 +81,10 @@ describe('TutorialRunner', () => {
     expect(maxWConstraint).toBeNull();
   });
 
-  it('close button calls reset + history.back', () => {
-    const historyBack = vi.spyOn(window.history, 'back').mockImplementation(() => {});
+  it('close button navigates to home with device param', () => {
     render(<TutorialRunner tutorial={testTutorial} DevicePanel={MockDevicePanel} />);
     fireEvent.click(screen.getByLabelText('Close tutorial'));
-    expect(historyBack).toHaveBeenCalled();
-    historyBack.mockRestore();
+    expect(mockPush).toHaveBeenCalledWith('/?device=fantom-08');
   });
 
   it('step counter shows "N / total"', () => {
