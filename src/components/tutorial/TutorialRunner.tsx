@@ -34,6 +34,7 @@ export default function TutorialRunner({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showHint, setShowHint] = useState(true);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [scale, setScale] = useState(() => {
     const w = typeof window !== 'undefined' ? window.innerWidth : 1200;
@@ -51,6 +52,10 @@ export default function TutorialRunner({
     ro.observe(el);
     return () => ro.disconnect();
   }, [updateScale]);
+
+  useEffect(() => {
+    if (store.currentStepIndex > 0) setShowHint(false);
+  }, [store.currentStepIndex]);
 
   const step = store.currentStep();
   const totalSteps = store.totalSteps();
@@ -153,8 +158,23 @@ export default function TutorialRunner({
         )}
       </div>
 
+      {/* Panel hint — shows once then fades out */}
+      <AnimatePresence>
+        {showHint && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, height: 0, paddingTop: 0, paddingBottom: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="text-center text-sm text-[#66ccff] font-medium py-2"
+            style={{ background: 'rgba(0, 170, 255, 0.08)' }}
+          >
+            ↑ Your instrument updates in real time — watch the highlighted controls above as you navigate
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Controls bar */}
-      <div className="flex-shrink-0 flex flex-col gap-2 px-4 py-3 border-y border-white/10 bg-[#0f0f1a]/60">
+      <div className="flex-shrink-0 flex flex-col gap-3 px-4 py-3 border-y border-white/10 bg-[#0f0f1a]/60">
         <ProgressBar
           progress={progress}
           steps={totalSteps}
@@ -172,11 +192,6 @@ export default function TutorialRunner({
         </div>
       </div>
 
-      {/* Panel hint (first step only) */}
-      <div className="text-center text-sm text-[#66ccff] font-medium py-2" style={{ background: 'rgba(0, 170, 255, 0.08)' }}>
-        ↑ Your instrument updates in real time — watch the highlighted controls above as you navigate
-      </div>
-
       {/* Speed controls (only when autoplay is on) */}
       <AnimatePresence>
         {store.autoplay && (
@@ -188,7 +203,6 @@ export default function TutorialRunner({
             className="overflow-hidden flex-shrink-0"
           >
             <div className="px-4 py-2 flex items-center justify-center gap-2 border-b border-white/10 bg-[#0f0f1a]/40">
-              <span className="text-xs text-white/50 font-medium">Speed</span>
               <div className="flex items-center gap-1">
                 {SPEED_OPTIONS.map((option) => (
                   <button
