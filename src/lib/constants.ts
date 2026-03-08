@@ -76,10 +76,6 @@ export const CATEGORY_LABELS: Record<string, string> = {
   performance: 'Performance',
   sequencer: 'Sequencer',
   sampling: 'Sampling',
-  looping: 'Looping',
-  'performance-pads': 'Performance Pads',
-  mixing: 'Mixing',
-  advanced: 'Advanced',
 };
 
 export const CATEGORY_PROGRESSION = [
@@ -102,7 +98,3 @@ export const DIFFICULTY_COLORS: Record<string, { dot: string }> = {
 // Panel design dimensions (px) — the "native" size of the Fantom 08 panel
 export const PANEL_NATURAL_WIDTH = 2700;
 export const PANEL_NATURAL_HEIGHT = 580;
-
-// Panel design dimensions (px) — the "native" size of the DDJ-FLX4 panel
-export const DDJ_FLX4_PANEL_WIDTH = 2400;
-export const DDJ_FLX4_PANEL_HEIGHT = 1400;

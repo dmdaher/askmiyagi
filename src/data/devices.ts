@@ -9,14 +9,6 @@ export const devices: DeviceRegistry = {
     available: true,
     categories: ['basics', 'zones-splits', 'sound-design', 'effects', 'midi', 'performance', 'sequencer'],
   },
-  'ddj-flx4': {
-    id: 'ddj-flx4',
-    name: 'Pioneer DDJ-FLX4',
-    manufacturer: 'Pioneer DJ',
-    description: '2-channel DJ controller for rekordbox and Serato DJ Lite with jog wheels, performance pads, and Beat FX.',
-    available: true,
-    categories: ['basics', 'looping', 'performance-pads', 'effects', 'mixing', 'advanced'],
-  },
   'rc505-mk2': {
     id: 'rc505-mk2',
     name: 'Boss RC-505 MK2',
