@@ -85,6 +85,7 @@ export default function TutorialPage() {
         DevicePanel={DevicePanel}
         allTutorials={allTutorials}
         deviceName={device.name}
+        deviceId={deviceId}
         glossary={glossary}
       />
     </div>

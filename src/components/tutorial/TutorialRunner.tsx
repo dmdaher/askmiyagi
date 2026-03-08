@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Tutorial } from '@/types/tutorial';
 import { GlossaryTerm } from '@/types/glossary';
 import { useTutorialEngine } from '@/hooks/useTutorialEngine';
-import { PANEL_NATURAL_WIDTH, PANEL_NATURAL_HEIGHT } from '@/lib/constants';
+import { PANEL_NATURAL_WIDTH, PANEL_NATURAL_HEIGHT, PANEL_DIMENSIONS } from '@/lib/constants';
 import StepContent from './StepContent';
 import NavigationControls from './NavigationControls';
 import ProgressBar from './ProgressBar';
@@ -21,6 +21,7 @@ interface TutorialRunnerProps {
   DevicePanel: React.ComponentType<any>;
   allTutorials?: Tutorial[];
   deviceName?: string;
+  deviceId?: string;
   glossary?: GlossaryTerm[];
 }
 
@@ -35,10 +36,16 @@ export default function TutorialRunner({
   DevicePanel,
   allTutorials,
   deviceName,
+  deviceId,
   glossary,
 }: TutorialRunnerProps) {
   const store = useTutorialEngine(tutorial);
   const router = useRouter();
+
+  // Use device-specific panel dimensions, falling back to Fantom 08 defaults
+  const dims = (deviceId ? PANEL_DIMENSIONS[deviceId] : undefined) ?? { width: PANEL_NATURAL_WIDTH, height: PANEL_NATURAL_HEIGHT };
+  const panelWidth = dims.width;
+  const panelHeight = dims.height;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -48,12 +55,12 @@ export default function TutorialRunner({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [scale, setScale] = useState(() => {
     const w = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    return Math.min(w / PANEL_NATURAL_WIDTH, 1) * 0.99;
+    return Math.min(w / panelWidth, 1) * 0.99;
   });
 
   const updateScale = useCallback((width: number) => {
-    if (width > 0) setScale(Math.min(width / PANEL_NATURAL_WIDTH, 1) * 0.99);
-  }, []);
+    if (width > 0) setScale(Math.min(width / panelWidth, 1) * 0.99);
+  }, [panelWidth]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -182,13 +189,13 @@ export default function TutorialRunner({
         <div className="flex flex-col items-center p-3 pb-0">
           <div ref={containerRef} className="w-full overflow-x-auto rounded-lg">
             <div style={{
-              width: PANEL_NATURAL_WIDTH * scale,
-              height: PANEL_NATURAL_HEIGHT * scale,
+              width: panelWidth * scale,
+              height: panelHeight * scale,
               overflow: 'hidden',
             }}>
               <div style={{
-                width: PANEL_NATURAL_WIDTH,
-                height: PANEL_NATURAL_HEIGHT,
+                width: panelWidth,
+                height: panelHeight,
                 transformOrigin: 'top left',
                 transform: `scale(${scale})`,
               }}>
