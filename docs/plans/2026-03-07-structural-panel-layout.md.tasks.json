@@ -1,0 +1,13 @@
+{
+  "planPath": "docs/plans/2026-03-07-structural-panel-layout.md",
+  "tasks": [
+    {"id": 7, "subject": "Task 1: Extend panel type system", "status": "pending"},
+    {"id": 8, "subject": "Task 2: Extract JogWheel as reusable control", "status": "pending", "blockedBy": [7]},
+    {"id": 9, "subject": "Task 3: Rewrite DataDrivenPanel with structural layout", "status": "pending", "blockedBy": [7, 8]},
+    {"id": 10, "subject": "Task 4: Rewrite CDJ-3000 layout data", "status": "pending", "blockedBy": [9]},
+    {"id": 11, "subject": "Task 5: Wire CDJ-3000 into the app", "status": "pending", "blockedBy": [10]},
+    {"id": 12, "subject": "Task 6: Visual verification and polish", "status": "pending", "blockedBy": [11]},
+    {"id": 13, "subject": "Task 7: Push and create PR", "status": "pending", "blockedBy": [12]}
+  ],
+  "lastUpdated": "2026-03-07T20:45:00Z"
+}
