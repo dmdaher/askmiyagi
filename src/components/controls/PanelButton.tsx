@@ -7,6 +7,8 @@ interface PanelButtonProps {
   label: string;
   variant?: 'standard' | 'zone' | 'scene' | 'category' | 'function' | 'menu';
   size?: 'sm' | 'md' | 'lg';
+  shape?: 'rect' | 'round';
+  roundSize?: number;
   active?: boolean;
   hasLed?: boolean;
   ledOn?: boolean;
@@ -69,6 +71,8 @@ export default function PanelButton({
   label,
   variant = 'standard',
   size = 'md',
+  shape = 'rect',
+  roundSize = 48,
   active = false,
   hasLed = false,
   ledOn = false,
@@ -79,6 +83,7 @@ export default function PanelButton({
 }: PanelButtonProps) {
   const sizeStyle = sizeClasses[size];
   const variantStyle = variantStyles[variant];
+  const isRound = shape === 'round';
 
   return (
     <div className="flex flex-col items-center gap-0.5" data-control-id={id}>
@@ -105,14 +110,16 @@ export default function PanelButton({
         type="button"
         onClick={onClick}
         className={[
-          sizeStyle.button,
-          'rounded-md border',
+          isRound ? '' : sizeStyle.button,
+          isRound ? 'rounded-full' : 'rounded-md',
+          'border',
           'cursor-pointer select-none',
           'flex items-center justify-center',
           'transition-colors duration-100',
           active ? variantStyle.active : variantStyle.base,
         ].join(' ')}
         style={{
+          ...(isRound ? { width: roundSize, height: roundSize } : {}),
           boxShadow: active
             ? 'inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)'
             : '0 3px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)',

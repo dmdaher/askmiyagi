@@ -21,16 +21,10 @@ export default function EQChannel({ channel, panelState, highlightedControls }: 
   ];
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="flex gap-0.5 h-8">
-        {[0.3, 0.5, 0.7, 0.9].map((threshold, i) => (
-          <div key={i} className="w-1 rounded-full"
-            style={{ height: '100%', background: i < 3 ? '#22c55e' : '#ef4444', opacity: 0.3 }} />
-        ))}
-      </div>
+    <div className="flex flex-col items-center gap-3">
       {knobs.map(knob => (
         <Knob key={knob.id} id={knob.id} label={knob.label}
-          value={getValue(knob.id)} highlighted={isHl(knob.id)} size="sm" />
+          value={getValue(knob.id)} highlighted={isHl(knob.id)} size="md" />
       ))}
     </div>
   );

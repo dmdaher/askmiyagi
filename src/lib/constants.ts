@@ -101,7 +101,7 @@ export const PANEL_NATURAL_HEIGHT = 580;
 
 export const PANEL_DIMENSIONS: Record<string, { width: number; height: number }> = {
   'fantom-08': { width: PANEL_NATURAL_WIDTH, height: PANEL_NATURAL_HEIGHT },
-  'ddj-flx4': { width: 2400, height: 1400 },
+  'ddj-flx4': { width: 2400, height: 1263 },
   'cdj-3000': { width: 800, height: 1100 },
 };
 

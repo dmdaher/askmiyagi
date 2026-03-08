@@ -7,11 +7,13 @@ interface SliderProps {
   label: string;
   value?: number;
   highlighted?: boolean;
+  height?: number;
+  width?: number;
+  orientation?: 'vertical' | 'horizontal';
 }
 
-const TRACK_HEIGHT = 120;
+const DEFAULT_TRACK_HEIGHT = 120;
 const THUMB_HEIGHT = 14;
-const TRAVEL = TRACK_HEIGHT - THUMB_HEIGHT;
 
 const highlightAnimation = {
   animate: {
@@ -33,10 +35,67 @@ export default function Slider({
   label,
   value = 0,
   highlighted = false,
+  height,
+  width,
+  orientation = 'vertical',
 }: SliderProps) {
+  const trackHeight = height ?? DEFAULT_TRACK_HEIGHT;
+  const trackWidth = width ?? 16;
+  const travel = trackHeight - THUMB_HEIGHT;
   const clampedValue = Math.max(0, Math.min(127, value));
-  // Map 0 (bottom) to 127 (top) -- bottom offset is max when value=0
-  const thumbOffset = TRAVEL - (clampedValue / 127) * TRAVEL;
+
+  if (orientation === 'horizontal') {
+    const hTravel = trackHeight - THUMB_HEIGHT; // reuse height as track length
+    const thumbPos = (clampedValue / 127) * hTravel;
+    return (
+      <div className="flex flex-col items-center gap-1" data-control-id={id}>
+        <motion.div
+          className="relative rounded-md"
+          style={{
+            width: trackHeight,
+            height: trackWidth,
+            background: 'linear-gradient(to right, #1a1a1a, #111111)',
+            boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05)',
+            borderTop: '1px solid #0a0a0a',
+            borderBottom: '1px solid #0a0a0a',
+          }}
+          {...(highlighted ? highlightAnimation : {})}
+        >
+          <div
+            className="absolute top-1/2 rounded-full"
+            style={{
+              height: 2, width: trackHeight - 12, left: 6, marginTop: -1,
+              background: 'linear-gradient(to right, #333, #222)',
+            }}
+          />
+          <div
+            className="absolute top-1/2 rounded-sm cursor-pointer"
+            style={{
+              height: 14, width: THUMB_HEIGHT, marginTop: -7,
+              left: thumbPos,
+              background: 'linear-gradient(to right, #888 0%, #666 30%, #555 60%, #444 100%)',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.2)',
+              borderRadius: 2,
+            }}
+          >
+            <div className="absolute inset-y-1 left-1/2 -translate-x-1/2 flex flex-row gap-[2px]">
+              <div className="w-[1px] bg-[rgba(255,255,255,0.15)]" />
+              <div className="w-[1px] bg-[rgba(0,0,0,0.3)]" />
+              <div className="w-[1px] bg-[rgba(255,255,255,0.15)]" />
+            </div>
+          </div>
+        </motion.div>
+        {label && (
+          <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider text-center leading-tight">
+            {label}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  // Vertical (default)
+  const thumbOffset = travel - (clampedValue / 127) * travel;
 
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
@@ -44,8 +103,8 @@ export default function Slider({
       <motion.div
         className="relative rounded-md"
         style={{
-          width: 16,
-          height: TRACK_HEIGHT,
+          width: trackWidth,
+          height: trackHeight,
           background: 'linear-gradient(to bottom, #1a1a1a, #111111)',
           boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05)',
           borderLeft: '1px solid #0a0a0a',
@@ -58,7 +117,7 @@ export default function Slider({
           className="absolute left-1/2 rounded-full"
           style={{
             width: 2,
-            height: TRACK_HEIGHT - 12,
+            height: trackHeight - 12,
             top: 6,
             marginLeft: -1,
             background: 'linear-gradient(to bottom, #333, #222)',
@@ -74,7 +133,7 @@ export default function Slider({
               width: 6,
               height: 1,
               right: -2,
-              top: 6 + (TRACK_HEIGHT - 12) * (1 - pct),
+              top: 6 + (trackHeight - 12) * (1 - pct),
               backgroundColor: '#444',
             }}
           />
@@ -106,9 +165,11 @@ export default function Slider({
       </motion.div>
 
       {/* Label */}
-      <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider text-center leading-tight">
-        {label}
-      </span>
+      {label && (
+        <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider text-center leading-tight">
+          {label}
+        </span>
+      )}
     </div>
   );
 }

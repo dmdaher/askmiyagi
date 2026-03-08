@@ -19,7 +19,7 @@ export default function BrowseSection({ panelState, highlightedControls, onButto
       <PanelButton id="d1-load" label="LOAD" variant="standard" size="sm"
         active={getState('d1-load').active} highlighted={isHl('d1-load')}
         onClick={() => onButtonClick?.('d1-load')} />
-      <Knob id="browse" label="Browse" value={64} highlighted={isHl('browse')} size="sm" />
+      <Knob id="browse" label="" value={64} highlighted={isHl('browse')} size="md" />
       <PanelButton id="d2-load" label="LOAD" variant="standard" size="sm"
         active={getState('d2-load').active} highlighted={isHl('d2-load')}
         onClick={() => onButtonClick?.('d2-load')} />
