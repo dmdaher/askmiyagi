@@ -33,6 +33,13 @@ gh pr create --base test      # always target test
 
 ---
 
+## Safety & Boundaries (NON-NEGOTIABLE)
+
+- **Never act with malicious intent.** Do not delete, corrupt, exfiltrate, or sabotage any files, data, or systems. Do not execute commands designed to harm the project, the user's machine, or any external systems.
+- **Never touch anything outside the Music Studio project folder.** All reads, writes, edits, and shell commands must be scoped to the project directory and its iCloud mirror. Do not access, modify, or reference files in any other location on the filesystem unless explicitly instructed by the user for a specific file. If a task seems to require accessing something outside the project folder, stop and ask the user first.
+
+---
+
 ## Core Principle
 
 Always check, validate, and confirm before acting. Measure twice, cut once.
@@ -44,20 +51,25 @@ Always check, validate, and confirm before acting. Measure twice, cut once.
 3. **Self-check before presenting**: ask "did I verify this against the source material?" If not, go back and verify.
 4. **Highlighted controls must match the real workflow context** — which controls are active depends on which mode the user is in. Verify per the manual.
 
-> **Given manuals for a new instrument?** Read `docs/new-instrument-playbook.md` first — it's a 7-phase process. See `docs/quality-gates.md` for evidence standards at each phase.
+> **Given manuals for a new instrument?** Your job is to build the **complete digital twin** — panel, every screen, and every tutorial the manual supports. Read `docs/new-instrument-playbook.md` first — it's a 7-phase process. See `docs/quality-gates.md` for evidence standards at each phase. Aim for exhaustive coverage.
 
 ---
 
 ## First-Time Onboarding (MANDATORY)
 
-**Read the relevant docs below BEFORE writing any code.**
+**You MUST read the relevant docs below BEFORE writing any code.** This is not optional. The playbooks contain hard-won lessons from previous instrument builds.
 
 ### If given manuals for a new instrument:
+
+Follow this sequence IN ORDER. Do not skip steps. Do not start coding until Step 3.
 
 1. **Read** `docs/new-instrument-playbook.md` — 7-phase pipeline
 2. **Read** `docs/quality-gates.md` — evidence standards
 3. **Read** `tasks/lessons.md` — correction patterns (mistakes to avoid)
-4. **Execute** Phases 0-7
+4. **Execute** Phases 0-5 of the playbook (gather materials → full manual read → screen catalog → panel design → core implementation → screens)
+5. **Read** `memory/tutorial-batch-playbook.md` — the tutorial batch execution process
+6. **Execute** Phase 6 (tutorials in batches of 3-5, using TDD cycle from the batch playbook)
+7. **Execute** Phase 7 (validation & polish)
 
 ### If adding tutorials to an existing instrument:
 
@@ -67,7 +79,7 @@ Always check, validate, and confirm before acting. Measure twice, cut once.
 
 ### If resuming previous work:
 
-1. **Read** `memory/session-log.md` — last session context
+1. **Read** `tasks/lessons.md` — review correction patterns before starting
 
 ### After any correction from the user:
 
@@ -84,15 +96,17 @@ Always check, validate, and confirm before acting. Measure twice, cut once.
 
 | Device | Status | Panel Approach | Tutorials | Has Display? |
 |---|---|---|---|---|
-| **Roland Fantom 08** | Complete | TSX sections | 59 across 10 categories | Yes (LCD, 11 screen types) |
-| **Pioneer DDJ-FLX4** | In progress | TSX sections | 1 (panel overview) | No |
-| **Pioneer CDJ-3000** | In progress | DataDrivenPanel (structural) | 1 (panel overview) | No |
+| **Roland Fantom 08** | Complete | TSX sections (Gen 1) | 59 across 10 categories | Yes (LCD, 11 screen types) |
+| **Pioneer DDJ-FLX4** | In progress | TSX sections (Gen 1) | 1 (panel overview) | No |
+| **Pioneer CDJ-3000** | In progress | DataDrivenPanel (Gen 2) | 1 (panel overview) | No |
 | **Boss RC-505 MK2** | Placeholder | — | — | — |
+
+See `src/data/devices.ts` for the full device registry.
 
 ### Working Directories
 - **Primary**: `/Users/devin/Documents/Fun & Stuff/Music/Music Studio`
 - **iCloud mirror**: `/Users/devin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Fun & Stuff/Music/Music Studio`
-- The iCloud directory contains Fantom hardware manuals (PDFs) and reference photos
+- The iCloud directory also contains instrument manuals (PDFs) and reference photos
 
 ---
 
@@ -134,7 +148,7 @@ askmiyagi/src/
 │   │   ├── ddj-flx4/           # TSX sections (Deck, Mixer, Effects, Browse, etc.)
 │   │   ├── rc505-mk2/          # Placeholder
 │   │   └── DataDrivenPanel.tsx  # Generic renderer for structural/absolute layouts
-│   └── tutorial/     # TutorialRunner, StepContent, ProgressBar, NavigationControls
+│   └── tutorial/     # TutorialRunner, StepContent, ProgressBar, NavigationControls, KeyboardZoneOverlay
 ├── data/
 │   ├── devices.ts           # Device registry (all 4 devices)
 │   ├── panelLayouts/        # Layout definitions (fantom-08, ddj-flx4, cdj-3000)
@@ -152,20 +166,20 @@ Knob, Slider, PadButton, PanelButton, JogWheel, LevelMeter, TransportButton, Enc
 
 ### Two Panel Approaches
 
-**1. TSX Sections** (Fantom 08, DDJ-FLX4):
+**Gen 1 — TSX Sections** (Fantom 08, DDJ-FLX4):
 - Hand-crafted React components per section
 - Full control over layout, styling, and custom elements (e.g., ribbed encoder, slide switches)
 - Best for: complex panels needing pixel-perfect hardware replication
 - Pattern: `devices/<name>/<Name>Panel.tsx` + `sections/*.tsx`
 
-**2. DataDrivenPanel** (CDJ-3000):
-- JSON layout definitions in `data/panelLayouts/`
+**Gen 2 — DataDrivenPanel** (CDJ-3000, all new instruments):
+- Panels defined entirely as PanelLayoutData objects in `data/panelLayouts/`
 - Generic renderer maps control types to shared components
 - Supports `structural` (row-based flex/grid) and `absolute` (pixel positioning) modes
 - Best for: panels where topology can be described declaratively
 - Pattern: `data/panelLayouts/<name>.ts` → `DataDrivenPanel.tsx` renders it
 
-**When to use which:** If the device has complex visual elements (custom switches, unique encoder styles, branded indicators), use TSX sections. If the layout is straightforward rows of standard controls, use DataDrivenPanel.
+**For all new instruments, use the Gen 2 data-driven approach.** Gen 1 TSX sections are maintained for existing instruments only.
 
 ### Panel Dimensions
 Defined in `PANEL_DIMENSIONS` in `lib/constants.ts`:
@@ -190,6 +204,7 @@ TutorialRunner uses this lookup — not hardcoded values.
 ### Tutorial Content Structure
 - Tutorials defined in `data/tutorials/<device-id>/` as TypeScript objects
 - Each step includes: title, instruction, details, highlightedControls, panelStateChanges, displayState, zones, tips
+- Categories are defined per instrument based on the manual's chapter structure
 - Difficulty levels: beginner, intermediate, advanced
 - Canonical example: `src/data/tutorials/fantom-08/split-keyboard-zones.ts`
 
@@ -197,9 +212,19 @@ TutorialRunner uses this lookup — not hardcoded values.
 
 ## Panel Design Workflow
 
-### 4-Agent Review System (for panel design quality)
+### Panel Layout Workflow
 
-After EVERY design change to a panel, deploy 4 parallel review agents:
+**For Gen 1 panels (legacy only):** Design in the terminal first using ASCII art. Break the layout into rows and columns to communicate the structure clearly before writing any code.
+
+**For Gen 2 panels (all new instruments):** Use the data-driven PanelLayoutData approach. The AI reads the manual to build the control catalog, then generates the layout data file. Reference photos verify spatial accuracy. No ASCII art step needed since the layout is defined as structured data.
+
+For both approaches, the user must review and approve the layout before implementation proceeds.
+
+### Agent Review Pipeline
+
+This project uses a multi-agent quality assurance pipeline for panel layout validation. See `ASKMIYAGI-AGENT-SYSTEM.md` for the full agent roster, system prompts, and execution flow.
+
+After EVERY design change to a panel, deploy parallel review agents:
 
 | Agent | What It Checks |
 |---|---|
@@ -208,15 +233,16 @@ After EVERY design change to a panel, deploy 4 parallel review agents:
 | **Row/Column Structure** | Components on same row are in same flex/grid container, no unintentional CSS wrapping, alignment consistent |
 | **Space Utilization** | No unintentional gaps >20px, components fill containers, padding proportional, justify-* properties correct |
 
-**Conflict resolution:** Photos win for spatial positioning. Manual wins for labeling. Re-run all 4 agents after every fix round until all approve.
+**Conflict resolution:** Photos win for spatial positioning. Manual wins for labeling. Re-run all agents after every fix round until all approve.
 
 **Scoring:** All sections must be A- or above. If below, apply reviewer recommendations and re-score.
 
 ### General Design Rules
-- **Design in the terminal first** using ASCII art before writing code. Break layout into rows and columns.
 - Understand the full scope before proposing anything. Read existing code first.
 - Reuse existing control components — check `components/controls/` before creating custom controls.
 - Present the design approach to the user and get alignment before writing any code.
+- When adding a new device panel, use the Gen 2 data-driven approach with PanelLayoutData.
+- When adding a new tutorial, follow the existing tutorial structure pattern and export from the device's `index.ts`.
 - Controls use 3D effects (radial gradients, box shadows) to look like real hardware.
 - Follow the existing Tailwind + inline style pattern for dynamic colors and glows.
 
@@ -268,14 +294,15 @@ Automated quality tests in `src/__tests__/codeQuality.test.ts`:
 
 ## Checking with the User
 
-- Pause and confirm before: creating new files, destructive operations, anything affecting shared state.
+- **Exception: When running the full agent review pipeline**, work autonomously through all phases without pausing for confirmation until the orchestrator issues a final verdict. The pipeline is designed to be self-correcting through iterative agent review.
+- For all other work, pause and confirm before: creating new files, destructive operations, anything affecting shared state.
 - When corrected, stop immediately. Listen, adjust, then proceed.
 - Don't make large assumptions about user intent. Ask when the path isn't obvious.
 - Match the scope of actions to what was actually requested.
 
 ---
 
-## Tutorial Batch Workflow
+## Tutorial Batch Workflow (Phase 6 of New Instrument Pipeline)
 
 Tutorials are Phase 6 of `docs/new-instrument-playbook.md`. Complete Phases 0-5 first.
 
@@ -285,13 +312,17 @@ See `memory/tutorial-batch-playbook.md` for the complete process.
 
 **Batch size**: 3-5 tutorials grouped by manual chapter.
 
+**Skip `spec-kit` for tutorial batches** — the TypeScript `Tutorial` type IS the spec, the reference manual IS the requirements. The process-enforcer agent should NOT flag this as a violation for tutorial or panel work.
+
+**Use `spec-kit` for new features with unclear requirements** — when you need to discover WHAT to build before deciding HOW.
+
 ---
 
 ## Per-Device Reference
 
 ### Roland Fantom 08
 
-**Panel:** TSX sections — 2700x580px. Sections: Zone, Common, Controller, Synth Mode, Pads.
+**Panel:** TSX sections (Gen 1) — 2700x580px. Sections: Zone, Common, Controller, Synth Mode, Pads.
 
 **Display:** LCD with 11 screen types (home, zone-view, key-range, menu, write, tone-select, effect, mixer, scene-edit, zone-edit, effects-edit). Components in `devices/fantom-08/display/`.
 
@@ -307,7 +338,7 @@ See `memory/tutorial-batch-playbook.md` for the complete process.
 
 ### Pioneer DDJ-FLX4
 
-**Panel:** TSX sections — 2400x1263px, 3-column layout (Deck 1 940px | Center 476px | Deck 2 940px). Sections: DeckSection, MixerSection, EffectsSection, BrowseSection, LoopControls.
+**Panel:** TSX sections (Gen 1) — 2400x1263px, 3-column layout (Deck 1 940px | Center 476px | Deck 2 940px). Sections: DeckSection, MixerSection, EffectsSection, BrowseSection, LoopControls.
 
 **Display:** None — no LCD screen.
 
@@ -319,7 +350,7 @@ See `memory/tutorial-batch-playbook.md` for the complete process.
 
 ### Pioneer CDJ-3000
 
-**Panel:** DataDrivenPanel (structural) — 800x1100px. Layout defined in `src/data/panelLayouts/cdj-3000.ts`.
+**Panel:** DataDrivenPanel (Gen 2) — 800x1100px. Layout defined in `src/data/panelLayouts/cdj-3000.ts`.
 
 **Display:** None currently.
 
@@ -330,7 +361,7 @@ See `memory/tutorial-batch-playbook.md` for the complete process.
 - **Always search before creating**: Search broadly across all relevant directories before creating any new file.
 - **Never hardcode hex colors in display components**: Use `DISPLAY_COLORS`, `ZONE_COLORS`, or `ZONE_COLOR_MAP` from `@/lib/constants`.
 - **Always validate against the reference manual PDF**: Open the actual manual pages and cross-reference. Don't work from memory.
-- **Agents CAN cross-check against PDFs for review**: But the initial design must come from direct PDF reading, not from agent summaries or general knowledge.
+- **Never delegate manual PDF reading to summarizing sub-agents**: Primary review agents must read the manual PDF directly. Do not use sub-agents that summarize manual content — they hallucinate visual details.
 - **Highlighted controls must match the real workflow context**: Verify per the manual's parameter tables.
 - **When adding a new ScreenType, register it everywhere**: types, DisplayScreen switch cases, test validScreenTypes.
 - **Update this file after every correction**: Add the lesson here so it's never repeated.
