@@ -7,11 +7,10 @@ interface SliderProps {
   label: string;
   value?: number;
   highlighted?: boolean;
+  trackHeight?: number;
+  trackWidth?: number;
+  thumbHeight?: number;
 }
-
-const TRACK_HEIGHT = 120;
-const THUMB_HEIGHT = 14;
-const TRAVEL = TRACK_HEIGHT - THUMB_HEIGHT;
 
 const highlightAnimation = {
   animate: {
@@ -33,10 +32,14 @@ export default function Slider({
   label,
   value = 0,
   highlighted = false,
+  trackHeight = 120,
+  trackWidth = 16,
+  thumbHeight = 14,
 }: SliderProps) {
+  const travel = trackHeight - thumbHeight;
   const clampedValue = Math.max(0, Math.min(127, value));
   // Map 0 (bottom) to 127 (top) -- bottom offset is max when value=0
-  const thumbOffset = TRAVEL - (clampedValue / 127) * TRAVEL;
+  const thumbOffset = travel - (clampedValue / 127) * travel;
 
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
@@ -44,8 +47,8 @@ export default function Slider({
       <motion.div
         className="relative rounded-md"
         style={{
-          width: 16,
-          height: TRACK_HEIGHT,
+          width: trackWidth,
+          height: trackHeight,
           background: 'linear-gradient(to bottom, #1a1a1a, #111111)',
           boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05)',
           borderLeft: '1px solid #0a0a0a',
@@ -58,7 +61,7 @@ export default function Slider({
           className="absolute left-1/2 rounded-full"
           style={{
             width: 2,
-            height: TRACK_HEIGHT - 12,
+            height: trackHeight - 12,
             top: 6,
             marginLeft: -1,
             background: 'linear-gradient(to bottom, #333, #222)',
@@ -74,7 +77,7 @@ export default function Slider({
               width: 6,
               height: 1,
               right: -2,
-              top: 6 + (TRACK_HEIGHT - 12) * (1 - pct),
+              top: 6 + (trackHeight - 12) * (1 - pct),
               backgroundColor: '#444',
             }}
           />
@@ -85,7 +88,7 @@ export default function Slider({
           className="absolute left-1/2 rounded-sm cursor-pointer"
           style={{
             width: 14,
-            height: THUMB_HEIGHT,
+            height: thumbHeight,
             marginLeft: -7,
             top: thumbOffset,
             background: 'linear-gradient(to bottom, #888 0%, #666 30%, #555 60%, #444 100%)',

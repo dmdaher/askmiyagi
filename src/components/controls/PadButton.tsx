@@ -9,6 +9,8 @@ interface PadButtonProps {
   color?: string;
   highlighted?: boolean;
   onClick?: () => void;
+  width?: number;
+  height?: number;
 }
 
 const highlightAnimation = {
@@ -33,14 +35,18 @@ export default function PadButton({
   color = '#4488ff',
   highlighted = false,
   onClick,
+  width = 64,
+  height = 64,
 }: PadButtonProps) {
   return (
       <motion.button
         type="button"
         data-control-id={id}
         onClick={onClick}
-        className="w-16 h-16 rounded-lg cursor-pointer select-none relative"
+        className="rounded-lg cursor-pointer select-none relative"
         style={{
+          width,
+          height,
           background: active
             ? `linear-gradient(145deg, ${color} 0%, ${color}cc 60%, ${color}99 100%)`
             : 'linear-gradient(145deg, #3a3a3a 0%, #2a2a2a 50%, #222 100%)',
