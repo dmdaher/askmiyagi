@@ -7,12 +7,10 @@ interface WheelProps {
   label: string;
   value?: number;
   highlighted?: boolean;
+  width?: number;
+  height?: number;
+  thumbHeight?: number;
 }
-
-const WHEEL_HEIGHT = 80;
-const WHEEL_WIDTH = 20;
-const THUMB_HEIGHT = 14;
-const TRAVEL = WHEEL_HEIGHT - THUMB_HEIGHT;
 
 const highlightAnimation = {
   animate: {
@@ -34,10 +32,15 @@ export default function Wheel({
   label,
   value = 64,
   highlighted = false,
+  width: WHEEL_WIDTH = 20,
+  height: WHEEL_HEIGHT = 80,
+  thumbHeight: THUMB_HEIGHT = 14,
 }: WheelProps) {
+  const TRAVEL = WHEEL_HEIGHT - THUMB_HEIGHT;
   const clampedValue = Math.max(0, Math.min(127, value));
   // Map 0 (bottom) to 127 (top)
   const thumbOffset = TRAVEL - (clampedValue / 127) * TRAVEL;
+  const gripLineCount = Math.max(4, Math.round((WHEEL_HEIGHT - 20) / 5));
 
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
@@ -66,8 +69,8 @@ export default function Wheel({
         />
 
         {/* Grip texture lines */}
-        {Array.from({ length: 12 }, (_, i) => {
-          const y = 10 + ((WHEEL_HEIGHT - 20) / 11) * i;
+        {Array.from({ length: gripLineCount }, (_, i) => {
+          const y = 10 + ((WHEEL_HEIGHT - 20) / (gripLineCount - 1)) * i;
           return (
             <div
               key={i}

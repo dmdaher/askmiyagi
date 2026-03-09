@@ -1,4 +1,4 @@
-import { MIDI_NOTE_NAMES, FANTOM_LOWEST_NOTE, FANTOM_HIGHEST_NOTE } from './constants';
+import { MIDI_NOTE_NAMES } from './constants';
 import { NoteInfo } from '@/types/keyboard';
 
 export function midiNoteToName(note: number): string {
@@ -22,9 +22,9 @@ export function isBlackKey(note: number): boolean {
   return [1, 3, 6, 8, 10].includes(n);
 }
 
-export function generateKeyboardNotes(): NoteInfo[] {
+export function generateKeyboardNotes(lowestNote = 21, highestNote = 108): NoteInfo[] {
   const notes: NoteInfo[] = [];
-  for (let midi = FANTOM_LOWEST_NOTE; midi <= FANTOM_HIGHEST_NOTE; midi++) {
+  for (let midi = lowestNote; midi <= highestNote; midi++) {
     notes.push({
       midiNote: midi,
       name: MIDI_NOTE_NAMES[midi % 12],
