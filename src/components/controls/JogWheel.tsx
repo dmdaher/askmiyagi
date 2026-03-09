@@ -77,7 +77,7 @@ export default function JogWheel({ id, highlighted = false, size = 240, onButton
       >
         {Array.from({ length: dotCount }, (_, i) => {
           const angle = (i / dotCount) * 360;
-          const radius = outerSize * 0.42;
+          const radius = outerSize * 0.46;
           const x = outerSize / 2 + radius * Math.cos((angle * Math.PI) / 180) - 3;
           const y = outerSize / 2 + radius * Math.sin((angle * Math.PI) / 180) - 3;
           return (

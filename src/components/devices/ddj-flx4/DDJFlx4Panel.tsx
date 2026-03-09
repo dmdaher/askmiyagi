@@ -1,6 +1,7 @@
 'use client';
 
 import { PanelState } from '@/types/panel';
+import Slider from '@/components/controls/Slider';
 import DeckSection from './sections/DeckSection';
 import BrowseSection from './sections/BrowseSection';
 import MixerSection from './sections/MixerSection';
@@ -31,7 +32,7 @@ export default function DDJFlx4Panel({ panelState, highlightedControls, onButton
             highlightedControls={highlightedControls} onButtonClick={onButtonClick} />
         </div>
 
-        {/* Column 2: Center (Browse + Mixer + Effects) */}
+        {/* Column 2: Center (Browse + Mixer + Effects + Crossfader) */}
         <div className="flex flex-col gap-1.5" style={{ width: 476 }}>
           <BrowseSection panelState={panelState}
             highlightedControls={highlightedControls} onButtonClick={onButtonClick} />
@@ -44,6 +45,13 @@ export default function DDJFlx4Panel({ panelState, highlightedControls, onButton
               <EffectsSection panelState={panelState}
                 highlightedControls={highlightedControls} onButtonClick={onButtonClick} />
             </div>
+          </div>
+          {/* Crossfader — spans full center column width */}
+          <div className="flex justify-center px-2">
+            <Slider id="crossfader" label=""
+              value={panelState['crossfader']?.value ?? 64}
+              highlighted={highlightedControls.includes('crossfader')}
+              orientation="horizontal" height={300} width={20} />
           </div>
         </div>
 
