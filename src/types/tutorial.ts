@@ -2,15 +2,7 @@ import { PanelState } from './panel';
 import { DisplayState } from './display';
 import { ZoneConfig } from './keyboard';
 
-export type TutorialCategory =
-  | 'basics'
-  | 'zones-splits'
-  | 'sound-design'
-  | 'effects'
-  | 'midi'
-  | 'performance'
-  | 'sequencer'
-  | 'sampling';
+export type TutorialCategory = string;
 
 export interface TutorialStep {
   id: string;

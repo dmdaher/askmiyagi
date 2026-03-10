@@ -1,5 +1,11 @@
 export const MIDI_NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'] as const;
 
+// Device panel dimensions — single source of truth for all devices
+export const PANEL_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  'fantom-08': { width: 2700, height: 580 },
+  // New devices add their entry here
+};
+
 // Re-export Fantom-08 specific constants for backwards compatibility
 export {
   FANTOM_KEY_COUNT,
@@ -8,8 +14,6 @@ export {
   ZONE_COLORS,
   DISPLAY_COLORS,
   ZONE_COLOR_MAP,
-  PANEL_NATURAL_WIDTH,
-  PANEL_NATURAL_HEIGHT,
 } from './devices/fantom-08-constants';
 
 export const PANEL_COLORS = {
@@ -41,6 +45,9 @@ export const TUTORIAL_CATEGORIES: { id: string; label: string; icon: string }[] 
   { id: 'performance-pads', label: 'Performance Pads', icon: '🥁' },
   { id: 'looping', label: 'Looping', icon: '🔁' },
   { id: 'advanced', label: 'Advanced', icon: '⚡' },
+  { id: 'synthesis', label: 'Synthesis', icon: '🔊' },
+  { id: 'modulation', label: 'Modulation', icon: '〰️' },
+  { id: 'presets', label: 'Presets', icon: '💾' },
 ];
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -56,6 +63,9 @@ export const CATEGORY_LABELS: Record<string, string> = {
   'performance-pads': 'Performance Pads',
   looping: 'Looping',
   advanced: 'Advanced',
+  synthesis: 'Synthesis',
+  modulation: 'Modulation',
+  presets: 'Presets',
 };
 
 export const CATEGORY_PROGRESSION = [
@@ -71,6 +81,9 @@ export const CATEGORY_PROGRESSION = [
   'performance-pads',
   'looping',
   'advanced',
+  'synthesis',
+  'modulation',
+  'presets',
 ] as const;
 
 export const DIFFICULTY_COLORS: Record<string, { dot: string }> = {
