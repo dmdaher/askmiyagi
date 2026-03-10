@@ -3,25 +3,28 @@
 import { motion } from 'framer-motion';
 import { ZoneConfig } from '@/types/keyboard';
 import { midiNoteToName } from '@/lib/noteHelpers';
-import { FANTOM_LOWEST_NOTE, FANTOM_HIGHEST_NOTE } from '@/lib/constants';
 
 interface KeyboardZoneOverlayProps {
   zones: ZoneConfig[];
+  lowestNote?: number;
+  highestNote?: number;
 }
 
 export default function KeyboardZoneOverlay({
   zones,
+  lowestNote = 21,
+  highestNote = 108,
 }: KeyboardZoneOverlayProps) {
   if (!zones.length) return null;
 
-  const totalKeys = FANTOM_HIGHEST_NOTE - FANTOM_LOWEST_NOTE + 1;
+  const totalKeys = highestNote - lowestNote + 1;
 
   return (
     <div className="w-full px-4 py-2">
       <div className="flex flex-col gap-1">
         {zones.map((zone, index) => {
-          const startOffset = zone.lowNote - FANTOM_LOWEST_NOTE;
-          const endOffset = zone.highNote - FANTOM_LOWEST_NOTE;
+          const startOffset = zone.lowNote - lowestNote;
+          const endOffset = zone.highNote - lowestNote;
           const leftPercent = (startOffset / totalKeys) * 100;
           const widthPercent = ((endOffset - startOffset + 1) / totalKeys) * 100;
 

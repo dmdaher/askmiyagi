@@ -1,44 +1,20 @@
 export const MIDI_NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'] as const;
 
-export const FANTOM_KEY_COUNT = 88;
-export const FANTOM_LOWEST_NOTE = 21; // A0
-export const FANTOM_HIGHEST_NOTE = 108; // C8
-
-export const ZONE_COLORS = {
-  zone1: '#3B82F6', // blue
-  zone2: '#EF4444', // red
-  zone3: '#10B981', // green
-  zone4: '#F59E0B', // amber
-  zone5: '#8B5CF6', // purple
-  zone6: '#EC4899', // pink
-  zone7: '#06B6D4', // cyan
-  zone8: '#F97316', // orange
-} as const;
-
-export const DISPLAY_COLORS = {
-  background: '#1a1a2e',
-  text: '#e0e0e0',
-  highlight: '#00ff88',
-  warning: '#ffaa00',
-  active: '#00aaff',
-  zoneActive: '#00ff88',
-  zoneMuted: '#666666',
-  mute: '#ff4444',
-  header: '#4488cc',
-  border: '#333355',
-  backgroundDark: '#111122',
-} as const;
-
-export const ZONE_COLOR_MAP: Record<number, string> = {
-  1: ZONE_COLORS.zone1,
-  2: ZONE_COLORS.zone2,
-  3: ZONE_COLORS.zone3,
-  4: ZONE_COLORS.zone4,
-  5: ZONE_COLORS.zone5,
-  6: ZONE_COLORS.zone6,
-  7: ZONE_COLORS.zone7,
-  8: ZONE_COLORS.zone8,
+// Device panel dimensions — single source of truth for all devices
+export const PANEL_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  'fantom-08': { width: 2700, height: 580 },
+  // New devices add their entry here
 };
+
+// Re-export Fantom-08 specific constants for backwards compatibility
+export {
+  FANTOM_KEY_COUNT,
+  FANTOM_LOWEST_NOTE,
+  FANTOM_HIGHEST_NOTE,
+  ZONE_COLORS,
+  DISPLAY_COLORS,
+  ZONE_COLOR_MAP,
+} from './devices/fantom-08-constants';
 
 export const PANEL_COLORS = {
   background: '#1a1a1a',
@@ -65,6 +41,13 @@ export const TUTORIAL_CATEGORIES: { id: string; label: string; icon: string }[] 
   { id: 'performance', label: 'Performance', icon: '🎤' },
   { id: 'sequencer', label: 'Sequencer', icon: '🎵' },
   { id: 'sampling', label: 'Sampling', icon: '🎙️' },
+  { id: 'mixing', label: 'Mixing', icon: '🎚️' },
+  { id: 'performance-pads', label: 'Performance Pads', icon: '🥁' },
+  { id: 'looping', label: 'Looping', icon: '🔁' },
+  { id: 'advanced', label: 'Advanced', icon: '⚡' },
+  { id: 'synthesis', label: 'Synthesis', icon: '🔊' },
+  { id: 'modulation', label: 'Modulation', icon: '〰️' },
+  { id: 'presets', label: 'Presets', icon: '💾' },
 ];
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -76,6 +59,13 @@ export const CATEGORY_LABELS: Record<string, string> = {
   performance: 'Performance',
   sequencer: 'Sequencer',
   sampling: 'Sampling',
+  mixing: 'Mixing',
+  'performance-pads': 'Performance Pads',
+  looping: 'Looping',
+  advanced: 'Advanced',
+  synthesis: 'Synthesis',
+  modulation: 'Modulation',
+  presets: 'Presets',
 };
 
 export const CATEGORY_PROGRESSION = [
@@ -87,6 +77,13 @@ export const CATEGORY_PROGRESSION = [
   'sequencer',
   'sampling',
   'midi',
+  'mixing',
+  'performance-pads',
+  'looping',
+  'advanced',
+  'synthesis',
+  'modulation',
+  'presets',
 ] as const;
 
 export const DIFFICULTY_COLORS: Record<string, { dot: string }> = {
@@ -95,6 +92,3 @@ export const DIFFICULTY_COLORS: Record<string, { dot: string }> = {
   advanced: { dot: '#EF4444' },
 };
 
-// Panel design dimensions (px) — the "native" size of the Fantom 08 panel
-export const PANEL_NATURAL_WIDTH = 2700;
-export const PANEL_NATURAL_HEIGHT = 580;

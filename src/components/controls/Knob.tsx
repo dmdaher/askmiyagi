@@ -8,6 +8,9 @@ interface KnobProps {
   value?: number;
   highlighted?: boolean;
   size?: 'sm' | 'md';
+  outerSize?: number;
+  innerSize?: number;
+  indicatorSize?: number;
 }
 
 const sizeConfig = {
@@ -36,11 +39,16 @@ export default function Knob({
   value = 0,
   highlighted = false,
   size = 'md',
+  outerSize,
+  innerSize,
+  indicatorSize,
 }: KnobProps) {
   const clampedValue = Math.max(0, Math.min(127, value));
   // Map 0-127 to -135deg to +135deg
   const rotation = -135 + (clampedValue / 127) * 270;
-  const cfg = sizeConfig[size];
+  const cfg = outerSize !== undefined
+    ? { outer: outerSize, inner: innerSize ?? outerSize * 0.76, indicator: indicatorSize ?? outerSize * 0.32, label: 'text-[9px]' }
+    : sizeConfig[size];
 
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>

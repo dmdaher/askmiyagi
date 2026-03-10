@@ -16,7 +16,7 @@ import PadSection from './sections/PadSection';
 import PanelButton from '@/components/controls/PanelButton';
 import Knob from '@/components/controls/Knob';
 import Keyboard from './Keyboard';
-import { PANEL_NATURAL_WIDTH, PANEL_NATURAL_HEIGHT } from '@/lib/constants';
+import { PANEL_NATURAL_WIDTH, PANEL_NATURAL_HEIGHT } from '@/lib/devices/fantom-08-constants';
 
 interface FantomPanelProps {
   panelState: PanelState;
