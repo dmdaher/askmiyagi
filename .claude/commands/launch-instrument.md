@@ -52,9 +52,15 @@ It is imperative you load the dev server to visually compare to the image using 
 skills. Do not allow a failed dev server to stop you — rerun it and recheck until you
 are 99% sure everything is flawless.
 
-Use Playwright MCP to open the browser and see your work. Check and validate again and
-again until perfection. Use the Claude browser to cross-check, and Playwright via CLI
-as a fallback if one of those fails.
+Use both Playwright tools available to you:
+- Playwright MCP (live browser tool calls) — use this to navigate to the panel page,
+  take screenshots in real-time, click every control, and compare against the manual
+  images. This is your primary visual validation loop: screenshot → compare → fix → repeat.
+- playwright-skill (lackeyjb) — use this to write persistent Playwright test scripts
+  that verify every interactive control works correctly and can be re-run on each build.
+
+Use the Claude browser as an additional cross-check. If any tool fails, fall back to
+the others — do not stop validation because one tool is unavailable.
 
 Before asking me to review:
 - npm run test must pass
