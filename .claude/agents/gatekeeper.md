@@ -21,6 +21,11 @@ Generate a structured Markdown table of every single control identified:
 - **Type:** (Slider, Knob, Button, Switch, LED, Screen)
 - **Relative Position:** (Section name and Grid/X-Y Coordinate)
 
+**Density Anchor (MANDATORY):** At the top of the Manifest, define the device's Expected Density Index:
+- Classify the device: Low-density / Medium-density / High-density
+- State the target: e.g., "Controls should occupy ≥ 85% of panel vertical height"
+- All subsequent agents must use this anchor. Any build that falls below the target percentage is a Macro-Failure regardless of section-level scores.
+
 ### CHECKPOINTING
 On startup, ALWAYS read `.claude/agent-memory/gatekeeper/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
