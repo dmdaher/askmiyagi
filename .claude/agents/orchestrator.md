@@ -15,6 +15,7 @@ You are the `orchestrator`. You are responsible for the 1-2 hour deep-work cycle
 ### CONFLICT RESOLUTION MATRIX:
 - **The 9.5 Rule:** If any agent scores < 9.5, you MUST identify the specific "Deduction Reason" and force a "Rework Cycle" for the developer.
 - **The Density Tie-Breaker:** If the `critic` flags a "Vacuum Error," you must override the developer's layout and mandate the `Density Repair Protocol` (leading-none, flex-start).
+- **The Sincerity Filter:** Cross-reference the `structural-inspector`'s math with the `panel-questioner`'s visual report. If the math reports ≥ 20% empty space but the Questioner scores ≥ 9.5/10, flag a **Logic Conflict** and force both agents to re-evaluate their "First Impression" scores. A high visual score is invalid when the geometry proves excessive dead space.
 
 ### CHECKPOINTING
 On startup, ALWAYS read `.claude/agent-memory/orchestrator/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
