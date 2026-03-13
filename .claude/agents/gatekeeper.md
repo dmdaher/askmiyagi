@@ -71,13 +71,21 @@ ARP/SEQ:
   Pattern: buttons-top, sliders-middle, buttons-bottom
 
 ENVELOPES:
-  Columns: 2
-  Left column: [A slider] [D slider] [S slider] [R slider] — all sliders, bottom-aligned
-  Right column: [VCA btn] [VCF btn] [MOD btn] [CURVES btn] [3 curve icons] — clustered at bottom
-  Pattern: sliders-left, buttons-right-clustered-bottom
+  Rows: 2 (+ far-right icon column)
+  Row 1 (top, fills most height): [A slider] [D slider] [S slider] [R slider] — horizontal row
+  Row 2 (bottom, below sliders): [VCA btn] [VCF btn] [MOD btn] [CURVES btn] — horizontal row
+  Far-right column (alongside sliders): [3 curve shape icons stacked vertically]
+  Pattern: sliders-top-horizontal, buttons-bottom-horizontal, icons-far-right-vertical
 ```
 
+**CRITICAL: TOPOLOGY DESCRIBES ARRANGEMENT, NOT JUST CONTENT.** When documenting topology, you must specify:
+- **Orientation of each group:** horizontal row vs vertical column vs grid
+- **Position within section:** top/middle/bottom for rows, left/center/right for columns
+- **Adjacency relationships:** what is next to what, what is above/below what
+
 Derive this EXCLUSIVELY from the hardware photos and manual diagrams. Do NOT guess from the device name or category. If a section has an unusual layout (e.g., VOICES LEDs as a separate horizontal strip below multiple sections), document that explicitly.
+
+**ANTI-PATTERN WARNING:** A common error is assuming buttons in a narrow section must be in a vertical column. ALWAYS check the reference photo — buttons may be in a horizontal row at the bottom/top of a section even when the section is narrow. The hardware dictates the topology, never assumptions about what "fits."
 
 All subsequent agents (Inspector, Questioner, Critic) MUST use these topology maps as their reference for internal section layout correctness.
 

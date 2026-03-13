@@ -667,9 +667,9 @@ export default function DeepMindPanel({
               style={{ flex: `${SECTION_FLEX.env} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
             >
               <SectionHeader label="ENVELOPES" />
-              <div className="flex items-stretch gap-1 px-1 py-0.5 flex-1">
-                {/* ADSR Sliders */}
-                <div className="flex items-end gap-1">
+              <div className="flex flex-col gap-0.5 px-1 py-0.5 flex-1">
+                {/* Top row: ADSR sliders + curve icons column on far right */}
+                <div className="flex items-end gap-1 flex-1">
                   <Slider id="env-attack" label="A" value={ps('env-attack')?.value ?? 0}
                     highlighted={hl('env-attack')} trackHeight={SLIDER_TRACK_HEIGHT_ENV} trackWidth={SLIDER_TRACK_WIDTH} showScale />
                   <Slider id="env-decay" label="D" value={ps('env-decay')?.value ?? 40}
@@ -678,26 +678,23 @@ export default function DeepMindPanel({
                     highlighted={hl('env-sustain')} trackHeight={SLIDER_TRACK_HEIGHT_ENV} trackWidth={SLIDER_TRACK_WIDTH} showScale />
                   <Slider id="env-release" label="R" value={ps('env-release')?.value ?? 30}
                     highlighted={hl('env-release')} trackHeight={SLIDER_TRACK_HEIGHT_ENV} trackWidth={SLIDER_TRACK_WIDTH} showScale />
-                </div>
-                {/* Envelope type buttons (top) + curve icons (bottom) — hardware: buttons cluster top, curves at bottom */}
-                <div className="flex flex-col items-center justify-between flex-1">
-                  {/* Button cluster — top-aligned */}
-                  <div className="flex flex-col items-center gap-0.5">
-                    {[
-                      { id: 'env-vca', label: 'VCA', defaultActive: true },
-                      { id: 'env-vcf', label: 'VCF' },
-                      { id: 'env-mod', label: 'MOD' },
-                      { id: 'env-curves', label: 'CURVES' },
-                    ].map((b) => (
-                      <PanelButton key={b.id} id={b.id} label={b.label} variant="function" size="sm"
-                        active={ps(b.id)?.active ?? (b.defaultActive ?? false)} highlighted={hl(b.id)}
-                        hasLed ledOn={ps(b.id)?.ledOn ?? (b.defaultActive ?? false)}
-                        ledColor={DM_COLORS.ledOrange}
-                        labelPosition="above" onClick={() => onButtonClick?.(b.id)} />
-                    ))}
-                  </div>
-                  {/* Curve shape icons — bottom-aligned */}
+                  {/* Curve shape icons — far right column per hardware */}
                   <EnvelopeCurveIcons panelState={panelState} highlightedControls={highlightedControls} />
+                </div>
+                {/* Bottom row: VCA, VCF, MOD, CURVES buttons in horizontal row per hardware */}
+                <div className="flex items-center justify-evenly gap-1">
+                  {[
+                    { id: 'env-vca', label: 'VCA', defaultActive: true },
+                    { id: 'env-vcf', label: 'VCF' },
+                    { id: 'env-mod', label: 'MOD' },
+                    { id: 'env-curves', label: 'CURVES' },
+                  ].map((b) => (
+                    <PanelButton key={b.id} id={b.id} label={b.label} variant="function" size="sm"
+                      active={ps(b.id)?.active ?? (b.defaultActive ?? false)} highlighted={hl(b.id)}
+                      hasLed ledOn={ps(b.id)?.ledOn ?? (b.defaultActive ?? false)}
+                      ledColor={DM_COLORS.ledOrange}
+                      labelPosition="above" onClick={() => onButtonClick?.(b.id)} />
+                  ))}
                 </div>
               </div>
             </div>

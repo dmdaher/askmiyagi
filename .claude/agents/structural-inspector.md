@@ -21,7 +21,26 @@ You must measure the RENDERED layout, not guess from code. Use Playwright to get
 6. **If you need a screenshot for visual reference**, do NOT use `page.screenshot()` or the Playwright MCP `browser_run_code` tool — both hang on font-wait timeouts. Instead, combine your measurements into a single **standalone Node.js script run via the Bash tool** that launches Playwright, navigates, runs `page.evaluate()` for measurements, then captures via CDP. See the Panel Questioner's SOUL for the CDP script template.
 7. If Playwright fails after 3 retries, fall back to calculating from the JSX/CSS source code — but flag this as "ESTIMATED FROM CODE (not rendered)" in your report
 
-### HORIZONTAL DISTRIBUTION AUDIT (MANDATORY — DO THIS FIRST):
+### STRUCTURAL LAYOUT VERIFICATION (MANDATORY — DO THIS FIRST, BEFORE ALL OTHER AUDITS):
+**Structure before spacing. Always.** A section with perfect spacing but wrong layout topology (e.g., buttons in a vertical column when hardware shows a horizontal row) is a fundamental failure. No amount of spacing optimization fixes a structural error.
+
+1. **Read the Gatekeeper's Section Topology Maps** from `.claude/agent-memory/gatekeeper/checkpoint.md`.
+2. **For each section, verify ORIENTATION first:**
+   - If the Gatekeeper says "horizontal row" — verify the rendered elements are laid out horizontally (their Y-coordinates are similar, X-coordinates differ)
+   - If the Gatekeeper says "vertical column" — verify elements are laid out vertically (X-coordinates are similar, Y-coordinates differ)
+   - **Orientation Mismatch** (e.g., horizontal row rendered as vertical column) is a **(-3.0) Structural Layout Error** — the most severe topology failure
+3. **For each section, verify POSITION within section:**
+   - If the Gatekeeper says "bottom" — verify the group's Y-coordinates are in the lower portion of the section
+   - If the Gatekeeper says "top" — verify the group is at the top
+   - Position errors are **(-2.0) Structural Position Error**
+4. **Only after ALL sections pass structural verification** should you proceed to spacing/distribution audits below.
+5. **If any section fails structural verification**, report it immediately as a blocking finding. Do NOT continue to spacing audits for that section — the spacing measurements are meaningless on a structurally incorrect layout.
+
+Scoring:
+- **(-3.0) Structural Layout Error:** Wrong orientation (horizontal vs vertical) — per group
+- **(-2.0) Structural Position Error:** Correct orientation but wrong position (top vs bottom, left vs right) — per group
+
+### HORIZONTAL DISTRIBUTION AUDIT (MANDATORY — AFTER STRUCTURAL VERIFICATION):
 Most layout failures are horizontal. Always complete this audit before vertical checks.
 
 1. **The Delta Audit:** Using the measured X-coordinates, compute the gap between each adjacent section pair (Section B.x - Section A.right).
@@ -189,14 +208,18 @@ After completing each major step, write your progress to `.claude/agent-memory/s
 
 ### CRITICAL QUALITY GATE: 9.5/10 REQUIREMENT
 Deductions (minimum score: 0.0):
+**STRUCTURAL (highest priority — check FIRST):**
+- (-3.0) Structural Layout Error (wrong orientation: horizontal rendered as vertical or vice versa — per group)
+- (-3.0) Positional Failure (element in wrong section — per element)
+- (-2.0) Structural Position Error (correct orientation but wrong position: top vs bottom, left vs right — per group)
+- (-2.0) Topology Mismatch (wrong row/column count or controls in wrong rows)
+- (-2.0) Cross-Section Placement Error (cross-section element incorrectly scoped or positioned)
+**SPACING (check only AFTER structural passes):**
 - (-2.0) Horizontal Vacuum Error (max_gap > 2× average_gap)
 - (-2.0) Distribution Architecture Failure (flex-shrink-0 with no flex-grow on all sections)
 - (-1.0) Fill Ratio below Gatekeeper's horizontal density target
 - (-1.0) Aspect Ratio Distortion: Section is "stretched" vertically compared to hardware
 - (-1.0) Any component overlap or "collision"
-- (-3.0) Positional Failure (element in wrong section — per element, most severe)
-- (-2.0) Topology Mismatch (wrong row/column count or controls in wrong rows)
-- (-2.0) Cross-Section Placement Error (cross-section element incorrectly scoped or positioned)
 - (-1.0) Vertical Span Error (full-height section does not extend alongside keyboard)
 - (-1.0) Clustering Mismatch (buttons distributed when should be clustered, or vice versa)
 - (-1.0) Scale Mismatch (element at wrong visual scale relative to hardware prominence)
