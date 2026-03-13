@@ -21,11 +21,16 @@ score of 9.5/10.
 Use Git repo: https://github.com/dmdaher/askmiyagi.git
 Create feature/[instrument-id] from test. All PRs target test, never main.
 
-The manual PDF and instrument image are at:
-docs/[Manufacturer]/[Instrument]/
-If not found there, recursively search the entire docs/ folder for any PDF or image
-matching the instrument name. Read them before doing anything else. Note exact labels,
-groupings, and physical arrangement.
+Search for reference materials in this order (online first, local fallback):
+1. **Search online first:** Find the official product manual PDF and high-resolution
+   reference photos (top-down views, section close-ups) via web search. Download or
+   reference the best quality versions found.
+2. **Local fallback:** If online search fails or yields insufficient results, check
+   docs/[Manufacturer]/[Instrument]/ for the manual PDF and reference images. If not
+   found there, recursively search the entire docs/ folder for any PDF or image
+   matching the instrument name.
+3. **Read before building:** Read the manual before doing anything else. Note exact
+   labels, groupings, physical arrangement, and dimensions.
 
 3. ARCHITECTURAL DECISION
 BEFORE writing any code:
