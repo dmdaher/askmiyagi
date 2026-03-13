@@ -24,20 +24,43 @@ You must measure the RENDERED layout, not guess from code. Use Playwright to get
 ### STRUCTURAL LAYOUT VERIFICATION (MANDATORY — DO THIS FIRST, BEFORE ALL OTHER AUDITS):
 **Structure before spacing. Always.** A section with perfect spacing but wrong layout topology (e.g., buttons in a vertical column when hardware shows a horizontal row) is a fundamental failure. No amount of spacing optimization fixes a structural error.
 
-1. **Read the Gatekeeper's Section Topology Maps** from `.claude/agent-memory/gatekeeper/checkpoint.md`.
-2. **For each section, verify ORIENTATION first:**
-   - If the Gatekeeper says "horizontal row" — verify the rendered elements are laid out horizontally (their Y-coordinates are similar, X-coordinates differ)
-   - If the Gatekeeper says "vertical column" — verify elements are laid out vertically (X-coordinates are similar, Y-coordinates differ)
-   - **Orientation Mismatch** (e.g., horizontal row rendered as vertical column) is a **(-3.0) Structural Layout Error** — the most severe topology failure
-3. **For each section, verify POSITION within section:**
+1. **Read the Gatekeeper's Section Topology Maps** (including Grid Notation and DOM assertions) from `.claude/agent-memory/gatekeeper/checkpoint.md`.
+2. **DOM Sibling & Ancestor Audit (MANDATORY per section):** This is not a visual check — it is a DOM structure check. For each section, run `page.evaluate()` to verify:
+   - **Sibling verification:** If the Gatekeeper's DOM assertion says "VCA-button MUST be a sibling of VCF-button in the same flex-row container," query both elements and verify `elementA.parentElement === elementB.parentElement`. If they are NOT siblings, this is an automatic **(-3.0) Topological Mismatch**.
+   - **Flex-direction verification:** For each container that holds a group of controls, read `getComputedStyle(container).flexDirection`. If the Gatekeeper says "orientation: HORIZONTAL" but the computed flex-direction is `column`, this is an automatic **(-3.0) Structural Layout Error**.
+   - **Parent structure verification:** Verify the nesting matches the Gatekeeper's CSS expectation (e.g., "outer flex-col, each row is flex-row"). Walk up the DOM from each control to its section container and verify the flex-direction at each level.
+   ```javascript
+   // Example: DOM Sibling & Flex Audit — run inside page.evaluate()
+   function auditSectionTopology(sectionId, groups) {
+     const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+     const results = [];
+     for (const group of groups) {
+       const elements = group.ids.map(id => document.querySelector(`[data-control-id="${id}"]`));
+       // Check siblings share a parent
+       const parents = elements.map(el => el?.closest('[class*="flex"]'));
+       const sameParent = parents.every(p => p === parents[0]);
+       // Check flex-direction of parent
+       const flexDir = parents[0] ? getComputedStyle(parents[0]).flexDirection : 'unknown';
+       const orientationMatch = group.expectedOrientation === 'HORIZONTAL' ? flexDir === 'row' : flexDir === 'column';
+       results.push({ group: group.name, sameParent, flexDir, orientationMatch });
+     }
+     return results;
+   }
+   ```
+3. **Coordinate-based orientation verification:** As a cross-check, verify rendered coordinates:
+   - If the Gatekeeper says "orientation: HORIZONTAL" — verify the rendered elements have similar Y-coordinates and differing X-coordinates
+   - If "orientation: VERTICAL" — verify similar X-coordinates and differing Y-coordinates
+   - **Orientation Mismatch** (e.g., horizontal row rendered as vertical column) is a **(-3.0) Structural Layout Error**
+4. **Position within section verification:**
    - If the Gatekeeper says "bottom" — verify the group's Y-coordinates are in the lower portion of the section
    - If the Gatekeeper says "top" — verify the group is at the top
    - Position errors are **(-2.0) Structural Position Error**
-4. **Only after ALL sections pass structural verification** should you proceed to spacing/distribution audits below.
-5. **If any section fails structural verification**, report it immediately as a blocking finding. Do NOT continue to spacing audits for that section — the spacing measurements are meaningless on a structurally incorrect layout.
+5. **Only after ALL sections pass structural verification** should you proceed to spacing/distribution audits below.
+6. **If any section fails structural verification**, report it immediately as a blocking finding. Do NOT continue to spacing audits for that section — the spacing measurements are meaningless on a structurally incorrect layout.
 
 Scoring:
-- **(-3.0) Structural Layout Error:** Wrong orientation (horizontal vs vertical) — per group
+- **(-3.0) Topological Mismatch:** DOM sibling/parent structure violates Gatekeeper's DOM assertion — per group
+- **(-3.0) Structural Layout Error:** Wrong orientation (flex-direction doesn't match, or coordinates show vertical when should be horizontal) — per group
 - **(-2.0) Structural Position Error:** Correct orientation but wrong position (top vs bottom, left vs right) — per group
 
 ### HORIZONTAL DISTRIBUTION AUDIT (MANDATORY — AFTER STRUCTURAL VERIFICATION):

@@ -61,27 +61,34 @@ For each section, specify:
 - **Clustering:** Are buttons clustered together at the top/bottom/side, or distributed evenly across the section height?
 - **Vertical span:** Does the section occupy only the control surface row, or does it extend full-height alongside the keyboard? Many instruments have a left-side performance section (pitch/mod wheels, joystick, ribbon controller) that spans the full panel height — sitting next to the keyboard, not above it. Document this explicitly as `Span: full-height (alongside keyboard)` vs `Span: control-surface-only`.
 
-Example format:
-```
-ARP/SEQ:
-  Rows: 3
-  Row 1 (top): [CHORD btn] [POLY CHORD btn]
-  Row 2 (middle): [RATE slider] [GATE TIME slider]
-  Row 3 (bottom): [ON/OFF btn] [TAP/HOLD btn] [EDIT btn]
-  Pattern: buttons-top, sliders-middle, buttons-bottom
+**FORMAT: Topological Grid Notation (MANDATORY)**
 
-ENVELOPES:
-  Rows: 2 (+ far-right icon column)
-  Row 1 (top, fills most height): [A slider] [D slider] [S slider] [R slider] — horizontal row
-  Row 2 (bottom, below sliders): [VCA btn] [VCF btn] [MOD btn] [CURVES btn] — horizontal row
-  Far-right column (alongside sliders): [3 curve shape icons stacked vertically]
-  Pattern: sliders-top-horizontal, buttons-bottom-horizontal, icons-far-right-vertical
+Each section MUST be defined as a formal grid with explicit row/column assignments and orientation constraints. This is not prose — it is a machine-verifiable specification that downstream agents use to audit the DOM.
+
+```
+ARP/SEQ — Grid: 3×2
+  Row 1 (top):    [CHORD btn] [POLY CHORD btn]           — orientation: HORIZONTAL
+  Row 2 (middle): [RATE slider] [GATE TIME slider]       — orientation: HORIZONTAL
+  Row 3 (bottom): [ON/OFF btn] [TAP/HOLD btn] [EDIT btn] — orientation: HORIZONTAL
+  CSS expectation: outer flex-col, each row is flex-row
+
+ENVELOPES — Grid: 2×5 (+ far-right icon column)
+  Row 1 (top, fills most height): [A slider] [D slider] [S slider] [R slider] + [3 curve icons col] — orientation: HORIZONTAL (sliders side-by-side)
+  Row 2 (bottom, below sliders):  [VCA btn] [VCF btn] [MOD btn] [CURVES btn] — orientation: HORIZONTAL
+  Far-right column (alongside Row 1): [exp icon] [lin icon] [rev icon] — orientation: VERTICAL
+  CSS expectation: outer flex-col, Row 1 is flex-row (sliders + icons), Row 2 is flex-row (buttons)
+  DOM assertion: VCA-button MUST be a sibling of VCF-button in the same flex-row container
 ```
 
 **CRITICAL: TOPOLOGY DESCRIBES ARRANGEMENT, NOT JUST CONTENT.** When documenting topology, you must specify:
-- **Orientation of each group:** horizontal row vs vertical column vs grid
+- **Grid dimensions:** Rows × Columns (e.g., "3×2 grid")
+- **Orientation per row/column:** HORIZONTAL or VERTICAL — this is the single most important field
+- **CSS expectation:** What flex/grid structure the DOM should use (e.g., "outer flex-col, each row is flex-row")
+- **DOM assertions:** Explicit sibling/parent relationships that downstream agents MUST verify (e.g., "VCA-button MUST be a sibling of VCF-button in the same flex-row container")
 - **Position within section:** top/middle/bottom for rows, left/center/right for columns
 - **Adjacency relationships:** what is next to what, what is above/below what
+
+**If any downstream agent finds the DOM structure violates a DOM assertion, the section is an automatic 0/10 regardless of visual appearance.**
 
 Derive this EXCLUSIVELY from the hardware photos and manual diagrams. Do NOT guess from the device name or category. If a section has an unusual layout (e.g., VOICES LEDs as a separate horizontal strip below multiple sections), document that explicitly.
 

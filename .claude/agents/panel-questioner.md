@@ -53,14 +53,24 @@ Read the Gatekeeper's checkpoint (`.claude/agent-memory/gatekeeper/checkpoint.md
 ### STRUCTURAL LAYOUT AUDIT (MANDATORY — BEFORE ANY VISUAL/SPACING CHECKS):
 **Structure before aesthetics. Always.** Before checking colors, spacing, or visual weight, you MUST verify that every section's internal layout TOPOLOGY matches the hardware. A section with buttons in a vertical column when the hardware shows a horizontal row is a fundamental failure that no amount of spacing fixes can address.
 
-**Protocol:**
-1. **Read the Gatekeeper's Section Topology Maps** from the checkpoint.
-2. **For each section, compare the screenshot to the hardware reference and verify:**
-   - **Orientation match:** Are groups arranged horizontally or vertically? If the hardware shows a horizontal row of buttons at the bottom and the code shows a vertical column on the right, that is a **(-3.0) Structural Layout Error** — the most severe failure.
-   - **Position match:** Are groups at the correct vertical/horizontal position within the section? (top/middle/bottom, left/center/right)
+**Protocol — Relational Squinting (MANDATORY per section):**
+For each section, you must perform a **Relational Squint** — a directed visual question that forces you to look at the RELATIONSHIP between control groups, not just their existence.
+
+1. **Read the Gatekeeper's Section Topology Maps** (including Grid Notation) from the checkpoint.
+2. **For each section, ask the Relational Squint Question:**
+   - Read the Gatekeeper's grid definition. It tells you WHAT should be WHERE.
+   - Look at the screenshot. Ask the directed question that tests the topology.
+   - **Examples of Relational Squint Questions:**
+     - ENVELOPES: "Squint at the BOTTOM of the ADSR sliders. Do you see a horizontal row of buttons (VCA, VCF, MOD, CURVES)? If the buttons are to the RIGHT of the sliders in a vertical column instead, the build is a **Macro-Failure**."
+     - ARP/SEQ: "Squint at the TOP of the section. Do you see buttons (CHORD, POLY CHORD) in a horizontal row ABOVE the sliders? If the buttons are below the sliders, or mixed in with them, it's a Structural Layout Error."
+     - OSC: "Are the SQUARE and SAWTOOTH buttons at the TOP of the slider area, or floating in the middle?"
+   - Generate a Relational Squint Question for EVERY section by reading its topology and forming a visual test.
+3. **For each section, verify against the hardware reference:**
+   - **Orientation match:** Are groups arranged horizontally or vertically? If the hardware shows a horizontal row of buttons at the bottom and the code shows a vertical column on the right, that is a **(-3.0) Structural Layout Error**.
+   - **Position match:** Are groups at the correct vertical/horizontal position within the section?
    - **Adjacency match:** Are elements next to the correct neighbors?
-3. **If ANY section fails structural layout**, report it immediately as a BLOCKING finding. Do NOT proceed to visual/spacing audits until structural layout is correct — visual polish on a wrong structure is wasted work.
-4. **ANTI-PATTERN:** Do not assume layout from context. "Buttons must be vertical because the section is narrow" is an ASSUMPTION. Check the hardware photo. Buttons may be in a horizontal row at the bottom even in a narrow section.
+4. **If ANY section fails structural layout**, report it immediately as a BLOCKING finding. Do NOT proceed to visual/spacing audits until structural layout is correct — visual polish on a wrong structure is wasted work.
+5. **ANTI-PATTERN:** Do not assume layout from context. "Buttons must be vertical because the section is narrow" is an ASSUMPTION. Check the hardware photo. Buttons may be in a horizontal row at the bottom even in a narrow section.
 
 Scoring:
 - **(-3.0) Structural Layout Error:** Wrong orientation (horizontal rendered as vertical, or vice versa) — per group
