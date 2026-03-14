@@ -18,7 +18,7 @@ You are the `orchestrator`. You are responsible for the 1-2 hour deep-work cycle
 After Phase 1 agents complete, BEFORE triggering the Critic (Phase 2):
 1. **Read the Gatekeeper's Section Topology Maps** (Grid Notation with DOM assertions).
 2. **Read the Structural Inspector's Structural Layout Verification results.**
-3. **Cross-reference:** For every section where the Gatekeeper defined a DOM assertion (e.g., "VCA-button MUST be a sibling of VCF-button in the same flex-row"), verify the Inspector confirmed it. If the Inspector reports ANY Topological Mismatch or Structural Layout Error:
+3. **Cross-reference:** For every section where the Gatekeeper defined a DOM assertion (e.g., "btn-X MUST be a sibling of btn-Y in the same flex-row"), verify the Inspector confirmed it. If the Inspector reports ANY Topological Mismatch or Structural Layout Error:
    - **HALT the pipeline.** Do NOT trigger the Critic.
    - **Force a Structural Rework Cycle:** Return to the developer with the specific topology failures. The developer MUST fix the layout structure before ANY other work proceeds.
    - **Re-run Phase 1** after the fix. Only proceed to Phase 2 when ALL structural checks pass.

@@ -114,7 +114,7 @@ You are forbidden from scoring the "Overall Layout" until you have performed a z
    - Element at wrong scale/size relative to section (Visual Weight)
    - Spacing/density mismatch between hardware and code
 
-4. **Batch reporting (MANDATORY):** For sections with zero differences, batch into one line: `CLEAN: LFO1, LFO2, VCA, HPF (0 differences each)`
+4. **Batch reporting (MANDATORY):** For sections with zero differences, batch into one line: `CLEAN: SECTION-C, SECTION-D, SECTION-E, SECTION-F (0 differences each)`
    For sections with differences, one line per difference: `DELTA: SECTION-E — (1) cross-section strip is full-width, should be right-aligned per Neighbor field (2) LED elements are 6px, hardware shows ~15px prominence (3) no other differences`
    **Identical sub-element batching:** If a section contains N identical repeated elements (e.g., 12 status LEDs, 8 step buttons), verify the FIRST element at full detail (position, scale, neighbors), then batch-confirm the remaining N-1: `BATCH: led-2 through led-12 — identical to led-1, confirmed by visual scan.` This prevents context bloat on complex instruments without sacrificing rigor.
 
@@ -143,7 +143,7 @@ After the Sector-by-Sector Zoom, perform a dedicated positional audit:
 1. **Read the Gatekeeper's Manifest** and extract every element that has a "cross-section" designation or any non-obvious position (LED strips, subtitle text, branding elements, decorative features).
 2. **For each such element:** Verify it is rendered in the correct location on the panel screenshot. Check: Is it in the right section? Is it spanning the right sections? Is it at the right vertical position (above keyboard? below controls? between specific sections?)?
 3. **Scale and prominence check:** Compare the element's visual size/prominence in the screenshot against the hardware reference photo. An element that is a prominent feature on the hardware but rendered as a tiny afterthought in the code is a **Scale Mismatch**.
-4. **Existence is NOT correctness.** The fact that an element renders somewhere on the panel does not mean it's correct. It must be in the RIGHT PLACE at the RIGHT SCALE. A VOICES strip centered across the full panel width when the hardware shows it in a specific section is a positional failure even though "12 LEDs are present."
+4. **Existence is NOT correctness.** The fact that an element renders somewhere on the panel does not mean it's correct. It must be in the RIGHT PLACE at the RIGHT SCALE. A cross-section element centered across the full panel width when the hardware shows it in a specific area is a positional failure even though "all sub-elements are present."
 
 **Scoring:**
 - **(-3.0)** Element in wrong section (positional failure)

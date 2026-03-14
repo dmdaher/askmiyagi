@@ -90,7 +90,7 @@ SECTION-B — Grid: 2×5 (+ far-right icon column)
 
 **If any downstream agent finds the DOM structure violates a DOM assertion, the section is an automatic 0/10 regardless of visual appearance.**
 
-Derive this EXCLUSIVELY from the hardware photos and manual diagrams. Do NOT guess from the device name or category. If a section has an unusual layout (e.g., VOICES LEDs as a separate horizontal strip below multiple sections), document that explicitly.
+Derive this EXCLUSIVELY from the hardware photos and manual diagrams. Do NOT guess from the device name or category. If a section has an unusual layout (e.g., an LED strip or status bar spanning multiple sections as a separate horizontal element), document that explicitly.
 
 **ANTI-PATTERN WARNING:** A common error is assuming buttons in a narrow section must be in a vertical column. ALWAYS check the reference photo — buttons may be in a horizontal row at the bottom/top of a section even when the section is narrow. The hardware dictates the topology, never assumptions about what "fits."
 
@@ -100,8 +100,8 @@ All subsequent agents (Inspector, Questioner, Critic) MUST use these topology ma
 Some components have distinctive proportions that are critical to visual accuracy — particularly displays, screens, and any non-standard-sized controls. For each such component, record its **aspect ratio** as observed on the hardware.
 
 Derive proportions from the **Physical Specifications** section of the manual FIRST (mm dimensions are authoritative). Manual diagrams are illustrative, not dimensionally accurate — use them only as a fallback when specs don't cover a component. Measure from the hardware photos or manual diagrams:
-- **Displays/Screens:** Width-to-height ratio (e.g., "LCD Display: ~1.3:1 landscape, roughly 40% of PROGRAMMER section height")
-- **Oversized controls:** Any knob, slider, or wheel that is visually larger or differently proportioned than the standard controls (e.g., "Data Entry knob: ~1.5x diameter of standard knobs")
+- **Displays/Screens:** Width-to-height ratio (e.g., "Display: ~1.3:1 landscape, roughly 40% of its section height")
+- **Oversized controls:** Any knob, slider, or wheel that is visually larger or differently proportioned than the standard controls (e.g., "Large knob: ~1.5x diameter of standard knobs")
 - **Non-rectangular elements:** Wheels, curved panels, grouped LED arrays — note their approximate proportions relative to their containing section
 
 Example format:

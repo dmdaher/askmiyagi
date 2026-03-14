@@ -182,7 +182,7 @@ Read the Gatekeeper's Key Component Proportions from `.claude/agent-memory/gatek
 
 1. **Display/Screen Aspect Ratio:** Measure the rendered width and height of any display component. Calculate `width / height`. Compare to the Gatekeeper's target ratio. If off by more than **10%**, flag as **Component Proportion Error**.
 2. **Relative Size Check:** For components with relative size targets (e.g., "display occupies ~40% of section height"), measure the component height vs its parent section height. If off by more than **10 percentage points**, flag.
-3. **Report format:** `LCD Display: rendered 260x270 (0.96:1), target ~1.3:1 — FAIL (too tall)` or `Data Entry Knob: 46px, standard 34px (1.35x) — PASS (target 1.5x, within tolerance)`
+3. **Report format:** `Display: rendered 260x270 (0.96:1), target ~1.3:1 — FAIL (too tall)` or `Large Knob: 46px, standard 34px (1.35x) — PASS (target 1.5x, within tolerance)`
 
 Scoring:
 - **(-1.0) Component Proportion Error** per key component with aspect ratio off by > 10%
