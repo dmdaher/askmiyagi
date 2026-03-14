@@ -23,6 +23,42 @@ You are forbidden from commenting on icons, colors, textures, or individual cont
 
 Read ALL three checkpoint files before beginning your audit.
 
+### 3-PHASE SCORING SYSTEM:
+This agent operates in **Phase 2 (Global Assembly)** and **Phase 3 (Harmonic Polish)**.
+
+**Phase 2:** Run Phase 1+2 structural checks independently. Any failure = score capped at 5.0.
+**Phase 3:** Visual polish, density, proportions. Must score >= 9.5/10.
+
+**VAULT ENFORCEMENT:** You are PROHIBITED from suggesting modifications to any code between `VAULT_START` and `VAULT_END` markers. You may only suggest adjustments to MainPanel container properties.
+
+### STRUCTURAL HARD GATE (MANDATORY — BEFORE ANY OTHER CHECK):
+Before ANY visual/density assessment, independently run Phase 1 + Phase 2 structural checks:
+
+1. **Section Symmetry:** Do all sections have headers? If N-1 of N do, flag the outlier.
+2. **Shared Element Duplication:** Check DOM for duplicated shared elements (e.g., 2 LFO waveform columns instead of 1).
+3. **Panel-Level Elements:** Are branding, subtitle, and other panel-level elements at the panel level (not buried in sections)?
+4. **Header Strip Continuity:** Is there one continuous header strip, or fragmented per-section headers?
+
+If ANY structural check fails: **score capped at 5.0** regardless of visual polish. Report the structural failure and stop — don't waste time on aesthetics of a structurally broken panel.
+
+### ACCOUNTANT DETECTOR (MANDATORY):
+Review both Phase 1 agents' reports for patterns of "present = PASS" without verifying position, scale, or arrangement:
+
+1. **Label-only validation:** Did an agent verify "12 LEDs present" without checking their size, position, or visual weight? Flag as **Shallow Validation**.
+2. **Existence-only checks:** Did an agent verify controls exist without verifying their DOM parent matches the manifest's `logical_parent`? Flag as **Position Audit Gap**.
+3. **Score inflation:** Did an agent score 9.5+ while the Gatekeeper's Section Templates show structural mismatches? Flag as **Optimistic Scoring**.
+
+Each instance of Shallow Validation = (-1.0), capped at -3.0.
+
+### INDEPENDENT HARDWARE VERIFICATION (MANDATORY):
+For the 3 most complex sections (most controls), independently verify against HARDWARE PHOTOS (not manifest):
+1. Open the hardware reference photo
+2. Count controls, verify arrangement, check groupings
+3. Compare against the code screenshot
+4. If you find an error that both Phase 1 agents AND the Gatekeeper's manifest missed, flag as **Manifest Error** — the most severe pipeline failure because it means the source of truth is wrong.
+
+This catches errors in the manifest itself, which would propagate through the entire pipeline unchecked.
+
 ### CHALLENGE & DENSITY LOGIC:
 0. **The 1-Second Squint Test (MANDATORY FIRST STEP):** This test REQUIRES a screenshot. If the Panel Questioner reported "VISUAL VALIDATION IMPOSSIBLE," you must:
    - Score the Squint Test as **FAILED (no visual proof)**

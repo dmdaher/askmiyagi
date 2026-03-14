@@ -96,6 +96,93 @@ Derive this EXCLUSIVELY from the hardware photos and manual diagrams. Do NOT gue
 
 All subsequent agents (Inspector, Questioner, Critic) MUST use these topology maps as their reference for internal section layout correctness.
 
+### SECTION TEMPLATES (MANDATORY — HARDWARE-DERIVED):
+For each section identified in the manifest, generate a **Section Template** that describes the hardware's ground truth. Templates describe the HARDWARE. If the code contradicts the template, the CODE is wrong.
+
+Each Section Template MUST include:
+- **Header:** Y/N + exact label text (e.g., "Y — VCF")
+- **Layout archetype:** The section's grid notation (from Section Topology Map)
+- **Children order:** Ordered list of all controls, top-to-bottom, left-to-right
+- **`logical_parent`:** For every control, the section ID it belongs to (e.g., `vcf-freq → vcf`)
+- **`spatial_neighbors`:** For every control, what is directly adjacent on the hardware:
+  - Format: `{ above: "control-id", below: "control-id", left: "control-id", right: "control-id" }`
+  - Use `null` for panel edges or section boundaries
+- **Shared elements:** Any element shared with another section (with expected instance count = 1)
+- **Panel-level elements:** Any element that belongs at the panel level, NOT inside this section
+
+Example:
+```
+SECTION TEMPLATE: VCF
+  Header: Y — "VCF"
+  Layout: 2-row (sliders top, buttons bottom)
+  Children: [vcf-freq, vcf-res, vcf-env, vcf-lfo, vcf-kybd, vcf-2pole, vcf-invert, vcf-edit]
+  logical_parent: all → "vcf"
+  spatial_neighbors:
+    vcf-freq: { above: null, below: vcf-2pole, left: null, right: vcf-res }
+    vcf-res: { above: null, below: vcf-invert, left: vcf-freq, right: vcf-env }
+    ...
+  Shared elements: none
+  Panel-level elements: none
+```
+
+### SHARED ELEMENT REGISTRY (MANDATORY):
+Maintain a registry of all cross-section elements with their expected DOM instance count. Examples:
+- LFO waveform indicators: shared between LFO 1 and LFO 2 → expected instance count = **1** (not 2)
+- Header strip: spans all sections → expected instance count = **1**
+- VOICES LED strip: spans POLY through ENVELOPES → expected instance count = **1**
+
+For each shared element, document:
+- **ID:** Unique identifier
+- **Spans:** Which sections it bridges
+- **Expected instance count:** How many DOM nodes should exist (duplication = structural failure)
+- **Position:** Where on the hardware (between sections, above, below, etc.)
+
+CRITICAL: "If a shared element is duplicated in the code (one copy per section instead of one shared instance), the SHARED ELEMENT REGISTRY makes this a zero-tolerance failure."
+
+### NEGATIVE SPACE AUDIT (MANDATORY):
+Identify the top 3 largest text/branding elements on the hardware:
+1. For each, document: exact text, font size relative to panel, position on hardware
+2. For each, state where it should be in the code (panel-level? inside a section? between sections?)
+3. Flag if any of these elements are currently misplaced in the code (inside a section when they should be panel-level, or vice versa)
+
+This audit catches the "branding buried inside a section" and "subtitle in wrong location" failures.
+
+### NEIGHBOR PROTOCOL (MANDATORY):
+Every manifest entry MUST have:
+- **`logical_parent`:** The section container this control belongs to in the DOM
+- **`spatial_neighbors`:** What is directly adjacent on the hardware (above/below/left/right)
+
+These fields are used by downstream agents for:
+1. **Positional verification:** Is the control rendered inside the correct section container?
+2. **Adjacency verification:** Are the control's actual DOM neighbors the same as its hardware neighbors?
+3. **Gap measurement:** Is the gap between adjacent controls within tolerance (≤20px)?
+
+### ALIGNMENT ANCHORS (MANDATORY for primary controls):
+For controls that must align across sections (e.g., slider tops should be at the same Y-coordinate), add `alignment_anchor` entries:
+- Format: `[Self.ID].align_y: [Other_Section.Control_ID]` (vertical alignment) or `align_x` (horizontal)
+- Example: `vcf-freq.align_y: env-attack` — slider tops must match within 2px
+- Example: `osc-pwm.align_y: lfo1-rate` — slider tops must align
+
+Phase 1 cannot catch these (sections built in isolation), so Phase 2 verifies via `getBoundingClientRect()`.
+**Tolerance:** Y-coordinates differing by > 2px = Global Alignment Failure.
+
+### VAULT PROTOCOL:
+When a section passes Phase 1 at 10/10, it is **vaulted**:
+- Internal layout (grid, component positions, sizes, padding) = **LOCKED**
+- Section outer margin/padding = adjustable by Phase 2
+- Panel flex-gap, section flex ratios = adjustable by Phase 2/3
+
+Code markers for vaulted sections:
+```tsx
+{/* VAULT_START: section-id */}
+<div data-section-id="section-id" ...>
+  ...section internals...
+</div>
+{/* VAULT_END: section-id */}
+```
+
+All agent SOULs state: "You may adjust MainPanel container properties. You are PROHIBITED from modifying any code between VAULT_START and VAULT_END markers."
+
 ### KEY COMPONENT PROPORTIONS (MANDATORY):
 Some components have distinctive proportions that are critical to visual accuracy — particularly displays, screens, and any non-standard-sized controls. For each such component, record its **aspect ratio** as observed on the hardware.
 
@@ -142,6 +229,11 @@ Start at 10.0. Deductions (minimum score: 0.0):
 - (-0.5) Manifest missing any control found in the documentation
 - (-1.0) Manifest entries missing precise hardware position (Section + Row/Column + Neighbors) — "Positional Truth" violation
 - (-1.0) Cross-section or non-standard elements not documented with exact spanning range and physical location
+- (-1.0) Missing Section Templates (hardware-derived per-section ground truth)
+- (-1.0) Missing Shared Element Registry
+- (-0.5) Missing Negative Space Audit
+- (-0.5) Missing Neighbor Protocol (logical_parent + spatial_neighbors for every control)
+- (-0.5) Missing Alignment Anchors for primary controls
 
 **PASS/FAIL:** Score < 9.5 triggers REJECTED status.
 
@@ -154,5 +246,9 @@ Start at 10.0. Deductions (minimum score: 0.0):
 - **Section Width Ratios:** [Per-section target percentages]
 - **Section Topology Maps:** [Per-section internal layout pattern — rows, columns, grouping, clustering]
 - **Key Component Proportions:** [Aspect ratios and relative sizes for displays, oversized controls, wheels, etc.]
+- **Section Templates:** [Per-section hardware-derived ground truth with header, layout, children order, logical_parent, spatial_neighbors]
+- **Shared Element Registry:** [Cross-section elements with expected instance counts]
+- **Negative Space Audit:** [Top 3 largest text/branding elements — where on hardware vs where in code]
+- **Alignment Anchors:** [Cross-section alignment pairs with tolerance]
 - **Ready State:** [READY / CONTEXT FAILURE]
 - **Quality Gate Score:** [X.X/10] + Justification

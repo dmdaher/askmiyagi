@@ -21,6 +21,49 @@ You must measure the RENDERED layout, not guess from code. Use Playwright to get
 6. **If you need a screenshot for visual reference**, do NOT use `page.screenshot()` or the Playwright MCP `browser_run_code` tool — both hang on font-wait timeouts. Instead, combine your measurements into a single **standalone Node.js script run via the Bash tool** that launches Playwright, navigates, runs `page.evaluate()` for measurements, then captures via CDP. See the Panel Questioner's SOUL for the CDP script template.
 7. If Playwright fails after 3 retries, fall back to calculating from the JSX/CSS source code — but flag this as "ESTIMATED FROM CODE (not rendered)" in your report
 
+### 3-PHASE SCORING SYSTEM:
+This agent operates in **Phase 1 (Atomic Topology)** and **Phase 2 (Global Assembly)**.
+
+**Phase 1** runs during build, one section at a time (isolated via `?section=X`). Validates:
+- Zero-tolerance: missing header, control in wrong section, shared element duplicated, panel-level element inside section → automatic 0.0
+- Mathematical: neighbor distance, orientation, sub-group integrity, control count
+
+**Phase 2** runs after ALL sections are vaulted. Validates:
+- Cross-section alignment anchors (getBoundingClientRect on alignment pairs)
+- Header strip continuity, spanning elements, section symmetry
+- Must score 10.0/10 (zero-tolerance + math)
+
+**VAULT ENFORCEMENT:** You are PROHIBITED from modifying any code between `VAULT_START` and `VAULT_END` markers. You may only adjust MainPanel container properties (flex-gap, margins, outer padding).
+
+### SECTION SYMMETRY AUDIT (MANDATORY — FIRST CHECK):
+Before any other audit, query all sections for common properties:
+1. Count sections with headers. If N-1 of N sections have a `SectionHeader`, flag the outlier as **Missing Header = automatic 0.0**.
+2. Count sections with `data-section-id`. Any section container missing this attribute = **Unidentifiable Section**.
+3. Count sections with EDIT buttons. If a pattern exists (most sections have EDIT), flag outliers.
+4. Check for common structural patterns (flex-col outer, flex-row inner rows). Flag deviations.
+
+This catches the "PROGRAMMER has no header" class of errors that individual section checks miss.
+
+### HARDWARE-FIRST TOPOLOGY VERIFICATION:
+**Anti-pattern:** "code is internally consistent = PASS." This is WRONG.
+**Correct pattern:** "code matches Gatekeeper's hardware-derived Section Template."
+
+For every section, the reference is the Gatekeeper's Section Template (derived from hardware), NOT the code's internal consistency. If the code consistently implements the wrong layout, it is still wrong.
+
+### SHARED ELEMENT CHECK (MANDATORY):
+Read the Gatekeeper's Shared Element Registry. For each shared element:
+1. Count DOM instances via `document.querySelectorAll('[data-control-id*="element-prefix"]').length`
+2. Compare to expected instance count from Registry
+3. **Duplication = zero-tolerance failure.** If LFO waveform icons should be 1 shared column but code has 2 copies (one per LFO), this is structural failure regardless of visual appearance.
+
+### NEIGHBOR DISTANCE VERIFICATION (MANDATORY):
+For each control with `spatial_neighbors` in the Gatekeeper's manifest:
+1. Get `getBoundingClientRect()` for the control and each neighbor
+2. Verify the neighbor is in the correct direction (above/below/left/right)
+3. Measure gap between bounding boxes
+4. **Wrong direction = adjacency failure (-2.0)**
+5. **Gap > 20px = adjacency warning (-1.0)**
+
 ### STRUCTURAL LAYOUT VERIFICATION (MANDATORY — DO THIS FIRST, BEFORE ALL OTHER AUDITS):
 **Structure before spacing. Always.** A section with perfect spacing but wrong layout topology (e.g., buttons in a vertical column when hardware shows a horizontal row) is a fundamental failure. No amount of spacing optimization fixes a structural error.
 
@@ -208,6 +251,21 @@ You are not an accountant checking "does element X exist." You are an industrial
 
 This audit catches the "it exists but it's tiny/huge" failure that pure existence checks miss.
 
+### PHASE 2: GLOBAL ALIGNMENT AUDIT (runs only after all sections vaulted):
+This audit runs ONLY in Phase 2 (Global Assembly), after all sections have passed Phase 1 individually.
+
+1. **Anchor Check:** Read the Gatekeeper's Alignment Anchors. For each `align_y` pair:
+   - Get `getBoundingClientRect()` on both controls
+   - Compare Y-coordinates (top values for sliders)
+   - **Tolerance:** Y-coordinates differing by > 2px = **Global Alignment Failure (-2.0)**
+2. **Span Verification:** For elements like VOICES strip and header bar:
+   - Measure rendered X-coordinates (left, right)
+   - Verify they match the sections they should border
+   - VOICES should span from POLY section left edge to ENVELOPES section right edge
+   - Header strip should span all main-area sections
+3. **Header Continuity Check:** Verify the header strip is ONE continuous DOM element, not N separate elements. If separate headers exist per-section, this is acceptable only if they form a visually continuous strip (gap < 1px between adjacent headers).
+4. **Section Gap Uniformity:** Measure gaps between all adjacent section pairs. For Uniform Row layouts, gap variance must be within 20%.
+
 ### PROPORTIONAL DENSITY AUDIT:
 1. **Aspect Ratio Lock:** Calculate the [Width:Height] ratio of each hardware section from the manual/photos. The Digital Twin section MUST match this ratio within a 3% tolerance.
 2. **Vertical Gap Ratio:** The vertical gap between a label and its component must be relative to the component's size.
@@ -231,12 +289,21 @@ After completing each major step, write your progress to `.claude/agent-memory/s
 
 ### CRITICAL QUALITY GATE: 9.5/10 REQUIREMENT
 Deductions (minimum score: 0.0):
+**ZERO-TOLERANCE (any = automatic 0.0 for the section):**
+- Section header missing when N-1 of N sections have one (Section Symmetry failure)
+- Control rendered in wrong section container (DOM parent mismatch)
+- Shared element duplicated instead of shared (instance count > expected)
+- Panel-level element buried inside a section container
+
 **STRUCTURAL (highest priority — check FIRST):**
 - (-3.0) Structural Layout Error (wrong orientation: horizontal rendered as vertical or vice versa — per group)
 - (-3.0) Positional Failure (element in wrong section — per element)
 - (-2.0) Structural Position Error (correct orientation but wrong position: top vs bottom, left vs right — per group)
 - (-2.0) Topology Mismatch (wrong row/column count or controls in wrong rows)
 - (-2.0) Cross-Section Placement Error (cross-section element incorrectly scoped or positioned)
+- (-2.0) Global Alignment Failure (Phase 2: alignment anchor pair Y-coordinates differ by > 2px)
+- (-2.0) Neighbor adjacency failure (wrong direction)
+- (-1.0) Neighbor gap > 20px
 **SPACING (check only AFTER structural passes):**
 - (-2.0) Horizontal Vacuum Error (max_gap > 2× average_gap)
 - (-2.0) Distribution Architecture Failure (flex-shrink-0 with no flex-grow on all sections)

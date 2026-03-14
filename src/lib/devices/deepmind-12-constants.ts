@@ -34,14 +34,17 @@ export const DM_COLORS = {
   voicesLabelText: '#666666',
   wheelBg: '#1a1a1a',
   wheelThumb: '#444444',
+  headerStripBg: '#3a1010', // continuous dark red/maroon strip
+  headerStripText: '#e8c8c8', // light text on dark red
 } as const;
 
 // Section flex ratios — derived from hardware front panel proportions
 // These are relative values used with flex-grow
 export const SECTION_FLEX = {
   arp: 8,
-  lfo1: 6.5,
-  lfo2: 6.5,
+  lfo1: 5.5,
+  lfoWave: 2, // shared waveform column between LFO 1 and LFO 2
+  lfo2: 5.5,
   osc: 14,
   prog: 22,
   poly: 4,
@@ -50,6 +53,15 @@ export const SECTION_FLEX = {
   hpf: 3.5,
   env: 12,
 } as const;
+
+// Header strip — continuous dark red/maroon strip across all sections (matches hardware)
+export const DM_HEADER_STRIP_HEIGHT = 18;
+export const DM_HEADER_STRIP_BG = '#3a1010'; // dark red/maroon matching hardware
+
+// Knob sizes — PERF section has larger knobs than standard
+export const DM_PERF_KNOB_SIZE = 56;
+// Programmer rotary encoder — larger than standard knobs
+export const DM_PROG_ROTARY_SIZE = 44;
 
 // Slider dimensions
 export const SLIDER_TRACK_HEIGHT = 260;

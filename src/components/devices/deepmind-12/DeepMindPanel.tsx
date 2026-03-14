@@ -14,6 +14,9 @@ import {
   DM_PERF_WIDTH,
   DM_VOICES_HEIGHT,
   DM_COLORS,
+  DM_HEADER_STRIP_HEIGHT,
+  DM_PERF_KNOB_SIZE,
+  DM_PROG_ROTARY_SIZE,
   SECTION_FLEX,
   SLIDER_TRACK_HEIGHT,
   SLIDER_TRACK_HEIGHT_ENV,
@@ -27,34 +30,69 @@ interface DeepMindPanelProps {
   displayState: DisplayState;
   highlightedControls: string[];
   onButtonClick?: (id: string) => void;
+  /** Render only this section in isolation (for Phase 1 validation) */
+  isolateSection?: string;
 }
 
 /* ─── Helpers ─── */
-function SectionHeader({ label, variant }: { label: string; variant?: 'default' | 'blue' }) {
-  const isBlue = variant === 'blue';
+
+/** Continuous header strip — one dark red bar with all section names */
+function ContinuousHeaderStrip() {
+  const sections = [
+    { id: 'arp', label: 'ARP / SEQ', flex: SECTION_FLEX.arp },
+    { id: 'lfo1', label: 'LFO 1', flex: SECTION_FLEX.lfo1 },
+    { id: 'lfoWave', label: '', flex: SECTION_FLEX.lfoWave },
+    { id: 'lfo2', label: 'LFO 2', flex: SECTION_FLEX.lfo2 },
+    { id: 'osc', label: 'OSC 1 & 2', flex: SECTION_FLEX.osc },
+    { id: 'prog', label: 'PROGRAMMER', flex: SECTION_FLEX.prog },
+    { id: 'poly', label: 'POLY', flex: SECTION_FLEX.poly },
+    { id: 'vcf', label: 'VCF', flex: SECTION_FLEX.vcf },
+    { id: 'vca', label: 'VCA', flex: SECTION_FLEX.vca },
+    { id: 'hpf', label: 'HPF', flex: SECTION_FLEX.hpf },
+    { id: 'env', label: 'ENVELOPES', flex: SECTION_FLEX.env },
+  ];
+
   return (
     <div
-      className="text-center py-0.5 px-1 tracking-widest uppercase font-bold select-none"
+      className="flex items-center select-none shrink-0"
+      data-element-id="header-strip"
       style={{
-        fontSize: 9,
-        color: isBlue ? '#b0d0ff' : DM_COLORS.headerText,
-        background: isBlue
-          ? 'linear-gradient(to bottom, #1a2a4a, #111111)'
-          : `linear-gradient(to bottom, ${DM_COLORS.headerBg}, ${DM_COLORS.sectionBg})`,
-        borderBottom: `1px solid ${isBlue ? '#2a3a5a' : DM_COLORS.sectionBorder}`,
-        lineHeight: 1.0,
+        height: DM_HEADER_STRIP_HEIGHT,
+        background: DM_COLORS.headerStripBg,
+        borderBottom: `1px solid ${DM_COLORS.sectionBorder}`,
       }}
     >
-      {label}
+      {sections.map((s) => (
+        <div
+          key={s.id}
+          className="text-center tracking-widest uppercase font-bold"
+          style={{
+            flex: `${s.flex} 1 0%`,
+            fontSize: 8,
+            color: s.id === 'hpf' ? '#b0d0ff' : DM_COLORS.headerStripText,
+            lineHeight: 1.0,
+          }}
+        >
+          {s.label}
+        </div>
+      ))}
     </div>
   );
 }
 
-function LfoWaveformIcons({ sectionId, panelState, highlightedControls }: { sectionId: string; panelState: PanelState; highlightedControls: string[] }) {
+/** Shared LFO waveform column — ONE instance between LFO 1 and LFO 2 */
+function SharedLfoWaveformColumn({ panelState, highlightedControls }: { panelState: PanelState; highlightedControls: string[] }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 py-1">
+    <div
+      className="flex flex-col items-center justify-center gap-0.5 py-1 shrink-0"
+      data-element-id="lfo-waveforms-shared"
+      style={{
+        flex: `${SECTION_FLEX.lfoWave} 1 0%`,
+        background: DM_COLORS.sectionBg,
+      }}
+    >
       {LFO_WAVEFORMS.map((w) => {
-        const id = `${sectionId}-wave-${w.id}`;
+        const id = `lfo-wave-${w.id}`;
         const isActive = panelState[id]?.ledOn;
         return (
           <div key={id} data-control-id={id} className="flex items-center justify-center" style={{ width: 16, height: 12 }}>
@@ -114,7 +152,6 @@ function WheelControl({ id, label, highlighted }: { id: string; label: string; h
             : 'inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05)',
         }}
       >
-        {/* Wheel center indicator */}
         <div
           className="absolute left-1/2 -translate-x-1/2 rounded-full"
           style={{
@@ -126,7 +163,6 @@ function WheelControl({ id, label, highlighted }: { id: string; label: string; h
             boxShadow: '0 1px 2px rgba(0,0,0,0.5)',
           }}
         />
-        {/* Grip lines */}
         {[25, 40, 60, 75].map((pct) => (
           <div
             key={pct}
@@ -142,15 +178,110 @@ function WheelControl({ id, label, highlighted }: { id: string; label: string; h
   );
 }
 
+/* ─── Section Builders ─── */
+
+function PerfSection({ ps, hl, onButtonClick }: {
+  ps: (id: string) => PanelState[string];
+  hl: (id: string) => boolean;
+  onButtonClick?: (id: string) => void;
+}) {
+  return (
+    <div
+      className="flex flex-col items-center shrink-0"
+      data-section-id="perf"
+      style={{
+        width: DM_PERF_WIDTH,
+        background: DM_COLORS.sectionBg,
+        borderRight: `1px solid ${DM_COLORS.sectionBorder}`,
+        padding: '4px 4px 8px',
+      }}
+    >
+      {/* Brand */}
+      <div className="text-center py-1 mb-1" style={{ fontSize: 7, color: DM_COLORS.brandText, letterSpacing: '0.15em' }}>
+        behringer
+      </div>
+
+      {/* Octave LEDs */}
+      <div className="flex gap-1 mb-2" data-control-id="octave-leds">
+        {[-2, -1, 0, 1, 2].map((oct) => (
+          <div
+            key={oct}
+            className="rounded-full"
+            style={{
+              width: 5,
+              height: 5,
+              background: oct === 0 ? DM_COLORS.ledGreen : DM_COLORS.ledOff,
+              boxShadow: oct === 0 ? `0 0 4px ${DM_COLORS.ledGreen}` : 'none',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* VOLUME knob — ABOVE portamento per hardware (Error #6 fix) */}
+      <Knob
+        id="perf-volume"
+        label="VOLUME"
+        value={ps('perf-volume')?.value ?? 100}
+        highlighted={hl('perf-volume')}
+        outerSize={DM_PERF_KNOB_SIZE}
+      />
+
+      {/* PORTAMENTO knob — BELOW volume per hardware (Error #6, #7, #8 fix) */}
+      <div className="my-1">
+        <Knob
+          id="perf-portamento"
+          label="PORTAMENTO"
+          value={ps('perf-portamento')?.value ?? 0}
+          highlighted={hl('perf-portamento')}
+          outerSize={DM_PERF_KNOB_SIZE}
+        />
+      </div>
+
+      {/* Octave buttons */}
+      <div className="flex gap-1 mb-1">
+        <PanelButton id="perf-oct-down" label="OCT -" variant="function" size="sm"
+          highlighted={hl('perf-oct-down')} onClick={() => onButtonClick?.('perf-oct-down')} />
+        <PanelButton id="perf-oct-up" label="OCT +" variant="function" size="sm"
+          highlighted={hl('perf-oct-up')} onClick={() => onButtonClick?.('perf-oct-up')} />
+      </div>
+
+      {/* Spacer to push wheels down */}
+      <div className="flex-1" />
+
+      {/* Pitch & Mod wheels */}
+      <div className="flex gap-2 mt-1">
+        <WheelControl id="perf-pitch" label="PITCH" highlighted={hl('perf-pitch')} />
+        <WheelControl id="perf-mod" label="MOD" highlighted={hl('perf-mod')} />
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Panel ─── */
 export default function DeepMindPanel({
   panelState,
   displayState,
   highlightedControls,
   onButtonClick,
+  isolateSection,
 }: DeepMindPanelProps) {
   const ps = (id: string) => panelState[id];
   const hl = (id: string) => highlightedControls.includes(id);
+
+  // ── Section isolation: only render the target section for Phase 1 validation ──
+  if (isolateSection) {
+    return (
+      <div style={{ background: DM_COLORS.panelBg, padding: 20 }}>
+        {isolateSection === 'perf' && (
+          <PerfSection ps={ps} hl={hl} onButtonClick={onButtonClick} />
+        )}
+        {isolateSection === 'arp' && (
+          <SectionArp ps={ps} hl={hl} onButtonClick={onButtonClick} />
+        )}
+        {/* Additional sections can be added here as they are built */}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -168,90 +299,45 @@ export default function DeepMindPanel({
       {/* ══════════════════════════════════════════════════
           PERF SECTION — full height, left side
           ══════════════════════════════════════════════════ */}
-      <div
-        className="flex flex-col items-center shrink-0"
-        data-section-id="perf"
-        style={{
-          width: DM_PERF_WIDTH,
-          background: DM_COLORS.sectionBg,
-          borderRight: `1px solid ${DM_COLORS.sectionBorder}`,
-          padding: '4px 4px 8px',
-        }}
-      >
-        {/* Brand */}
-        <div className="text-center py-1 mb-1" style={{ fontSize: 7, color: DM_COLORS.brandText, letterSpacing: '0.15em' }}>
-          behringer
-        </div>
-
-        {/* Octave LEDs */}
-        <div className="flex gap-1 mb-2" data-control-id="octave-leds">
-          {[-2, -1, 0, 1, 2].map((oct) => (
-            <div
-              key={oct}
-              className="rounded-full"
-              style={{
-                width: 5,
-                height: 5,
-                background: oct === 0 ? DM_COLORS.ledGreen : DM_COLORS.ledOff,
-                boxShadow: oct === 0 ? `0 0 4px ${DM_COLORS.ledGreen}` : 'none',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Portamento knob */}
-        <Knob
-          id="perf-portamento"
-          label="PORT"
-          value={ps('perf-portamento')?.value ?? 0}
-          highlighted={hl('perf-portamento')}
-          outerSize={34}
-        />
-
-        {/* Volume knob */}
-        <div className="my-1">
-          <Knob
-            id="perf-volume"
-            label="VOLUME"
-            value={ps('perf-volume')?.value ?? 100}
-            highlighted={hl('perf-volume')}
-            outerSize={38}
-          />
-        </div>
-
-        {/* Octave buttons */}
-        <div className="flex gap-1 mb-1">
-          <PanelButton id="perf-oct-down" label="OCT -" variant="function" size="sm"
-            highlighted={hl('perf-oct-down')} onClick={() => onButtonClick?.('perf-oct-down')} />
-          <PanelButton id="perf-oct-up" label="OCT +" variant="function" size="sm"
-            highlighted={hl('perf-oct-up')} onClick={() => onButtonClick?.('perf-oct-up')} />
-        </div>
-
-        {/* Spacer to push wheels down */}
-        <div className="flex-1" />
-
-        {/* Pitch & Mod wheels */}
-        <div className="flex gap-2 mt-1">
-          <WheelControl id="perf-pitch" label="PITCH" highlighted={hl('perf-pitch')} />
-          <WheelControl id="perf-mod" label="MOD" highlighted={hl('perf-mod')} />
-        </div>
-      </div>
+      {/* VAULT_START: perf */}
+      <PerfSection ps={ps} hl={hl} onButtonClick={onButtonClick} />
+      {/* VAULT_END: perf */}
 
       {/* ══════════════════════════════════════════════════
-          MAIN AREA — control surface + voices + keyboard
+          MAIN AREA — header strip + control surface + voices + keyboard
           ══════════════════════════════════════════════════ */}
       <div className="flex flex-col flex-1 min-w-0">
+
+        {/* ── PANEL-LEVEL: "DeepMind 12" branding — top-right (Error #3 fix) ── */}
+        <div
+          className="flex items-center justify-end px-4 shrink-0"
+          data-element-id="branding"
+          style={{ height: 24, background: DM_COLORS.panelBg }}
+        >
+          <span style={{
+            fontSize: 16,
+            fontWeight: 700,
+            color: DM_COLORS.brandText,
+            letterSpacing: '0.25em',
+            textTransform: 'uppercase',
+          }}>
+            DeepMind 12
+          </span>
+        </div>
+
+        {/* ── CONTINUOUS HEADER STRIP (Error #1, #2 fix) ── */}
+        <ContinuousHeaderStrip />
 
         {/* ── CONTROL SURFACE ROW ── */}
         <div className="flex min-w-0" style={{ height: DM_CONTROL_SURFACE_HEIGHT }}>
 
           {/* ── SECTION: ARP/SEQ ── */}
+          {/* VAULT_START: arp */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="arp"
             style={{ flex: `${SECTION_FLEX.arp} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="ARP / SEQ" />
             <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
               {/* Top row: CHORD, POLY CHORD buttons — HORIZONTAL */}
               <div className="flex items-center gap-1">
@@ -286,17 +372,16 @@ export default function DeepMindPanel({
               </div>
             </div>
           </div>
+          {/* VAULT_END: arp */}
 
-          {/* ── SECTION: LFO 1 ── */}
+          {/* ── SECTION: LFO 1 ── (Error #9 fix: waveforms moved to shared column) */}
+          {/* VAULT_START: lfo1 */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="lfo1"
             style={{ flex: `${SECTION_FLEX.lfo1} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="LFO 1" />
             <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
-              {/* Waveform LEDs */}
-              <LfoWaveformIcons sectionId="lfo1" panelState={panelState} highlightedControls={highlightedControls} />
               {/* Sliders: RATE, DELAY — HORIZONTAL */}
               <div className="flex items-end gap-1 flex-1">
                 <Slider id="lfo1-rate" label="RATE" value={ps('lfo1-rate')?.value ?? 40}
@@ -311,16 +396,21 @@ export default function DeepMindPanel({
                 labelPosition="above" onClick={() => onButtonClick?.('lfo1-edit')} />
             </div>
           </div>
+          {/* VAULT_END: lfo1 */}
+
+          {/* ── SHARED: LFO Waveform Column (Error #9 fix) ── */}
+          {/* VAULT_START: lfo-waveforms */}
+          <SharedLfoWaveformColumn panelState={panelState} highlightedControls={highlightedControls} />
+          {/* VAULT_END: lfo-waveforms */}
 
           {/* ── SECTION: LFO 2 ── */}
+          {/* VAULT_START: lfo2 */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="lfo2"
             style={{ flex: `${SECTION_FLEX.lfo2} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="LFO 2" />
             <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
-              <LfoWaveformIcons sectionId="lfo2" panelState={panelState} highlightedControls={highlightedControls} />
               <div className="flex items-end gap-1 flex-1">
                 <Slider id="lfo2-rate" label="RATE" value={ps('lfo2-rate')?.value ?? 40}
                   highlighted={hl('lfo2-rate')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
@@ -333,14 +423,15 @@ export default function DeepMindPanel({
                 labelPosition="above" onClick={() => onButtonClick?.('lfo2-edit')} />
             </div>
           </div>
+          {/* VAULT_END: lfo2 */}
 
-          {/* ── SECTION: OSC 1 & 2 ── */}
+          {/* ── SECTION: OSC 1 & 2 ── (Error #10, #11 fix: sub-group labels + separation) */}
+          {/* VAULT_START: osc */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="osc"
             style={{ flex: `${SECTION_FLEX.osc} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="OSC 1 & 2" />
             <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
               {/* Top: waveform select buttons — HORIZONTAL */}
               <div className="flex items-center gap-1">
@@ -353,20 +444,37 @@ export default function DeepMindPanel({
                   hasLed ledOn={ps('osc-sawtooth')?.ledOn ?? true} ledColor={DM_COLORS.ledOrange}
                   labelPosition="above" onClick={() => onButtonClick?.('osc-sawtooth')} />
               </div>
-              {/* Sliders row: PWM, PITCH MOD, TONE MOD, PITCH, LEVEL, NOISE — HORIZONTAL */}
+              {/* Sliders with sub-group labels — HORIZONTAL */}
               <div className="flex items-end gap-0.5 flex-1">
-                <Slider id="osc-pwm" label="PWM" value={ps('osc-pwm')?.value ?? 64}
-                  highlighted={hl('osc-pwm')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+                {/* OSC 1 sub-group: SQUARE, SAW, PWM */}
+                <div className="flex flex-col items-center">
+                  <span style={{ fontSize: 7, color: DM_COLORS.labelText, letterSpacing: '0.05em', marginBottom: 2 }}>OSC 1</span>
+                  <div className="flex items-end gap-0.5">
+                    <Slider id="osc-pwm" label="PWM" value={ps('osc-pwm')?.value ?? 64}
+                      highlighted={hl('osc-pwm')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+                  </div>
+                </div>
+                {/* PITCH MOD — between groups */}
                 <Slider id="osc-pitch-mod" label="PITCH MOD" value={ps('osc-pitch-mod')?.value ?? 0}
                   highlighted={hl('osc-pitch-mod')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
-                <Slider id="osc-tone-mod" label="TONE MOD" value={ps('osc-tone-mod')?.value ?? 0}
-                  highlighted={hl('osc-tone-mod')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
-                <Slider id="osc-pitch" label="PITCH" value={ps('osc-pitch')?.value ?? 64}
-                  highlighted={hl('osc-pitch')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
-                <Slider id="osc-level" label="LEVEL" value={ps('osc-level')?.value ?? 100}
-                  highlighted={hl('osc-level')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
-                <Slider id="osc-noise" label="NOISE LEVEL" value={ps('osc-noise')?.value ?? 0}
-                  highlighted={hl('osc-noise')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+                {/* OSC 2 sub-group: TONE MOD, PITCH, LEVEL */}
+                <div className="flex flex-col items-center">
+                  <span style={{ fontSize: 7, color: DM_COLORS.labelText, letterSpacing: '0.05em', marginBottom: 2 }}>OSC 2</span>
+                  <div className="flex items-end gap-0.5">
+                    <Slider id="osc-tone-mod" label="TONE MOD" value={ps('osc-tone-mod')?.value ?? 0}
+                      highlighted={hl('osc-tone-mod')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+                    <Slider id="osc-pitch" label="PITCH" value={ps('osc-pitch')?.value ?? 64}
+                      highlighted={hl('osc-pitch')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+                    <Slider id="osc-level" label="LEVEL" value={ps('osc-level')?.value ?? 100}
+                      highlighted={hl('osc-level')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+                  </div>
+                </div>
+                {/* NOISE — separate */}
+                <div className="flex flex-col items-center">
+                  <span style={{ fontSize: 7, color: DM_COLORS.labelText, letterSpacing: '0.05em', marginBottom: 2 }}>&nbsp;</span>
+                  <Slider id="osc-noise" label="NOISE LEVEL" value={ps('osc-noise')?.value ?? 0}
+                    highlighted={hl('osc-noise')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+                </div>
               </div>
               {/* Bottom row: SYNC + EDIT buttons — HORIZONTAL */}
               <div className="flex items-center gap-0.5">
@@ -381,31 +489,40 @@ export default function DeepMindPanel({
               </div>
             </div>
           </div>
+          {/* VAULT_END: osc */}
 
-          {/* ── SECTION: PROGRAMMER ── */}
+          {/* ── SECTION: PROGRAMMER ── (Error #2, #3, #4, #12, #13, #14 fix) */}
+          {/* VAULT_START: prog */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="prog"
             style={{ flex: `${SECTION_FLEX.prog} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
             <div className="flex flex-col items-center gap-0.5 px-2 py-1 flex-1 w-full">
               {/* Top area: display + data entry + bank buttons */}
               <div className="flex gap-2 w-full flex-1">
-                {/* Left: Display + nav cluster with rotary */}
+                {/* Left: Display + nav cluster */}
                 <div className="flex-1 flex flex-col items-center">
                   <DeepMindDisplay displayState={displayState} highlighted={hl('display')} />
-                  {/* Navigation: ▲ ▼ -/NO [rotary] +/YES — matches hardware layout */}
-                  <div className="flex items-center gap-0.5 mt-1">
-                    <PanelButton id="prog-nav-up" label="▲" variant="function" size="sm"
-                      highlighted={hl('prog-nav-up')} onClick={() => onButtonClick?.('prog-nav-up')} />
-                    <PanelButton id="prog-nav-down" label="▼" variant="function" size="sm"
-                      highlighted={hl('prog-nav-down')} onClick={() => onButtonClick?.('prog-nav-down')} />
-                    <PanelButton id="prog-nav-no" label="-/NO" variant="function" size="sm"
-                      highlighted={hl('prog-nav-no')} onClick={() => onButtonClick?.('prog-nav-no')} />
-                    <Knob id="prog-rotary" label="" value={ps('prog-rotary')?.value ?? 64}
-                      highlighted={hl('prog-rotary')} outerSize={28} />
-                    <PanelButton id="prog-nav-yes" label="+/YES" variant="function" size="sm"
-                      highlighted={hl('prog-nav-yes')} onClick={() => onButtonClick?.('prog-nav-yes')} />
+                  {/* Navigation: UP/DOWN small above, then [-/NO] [LARGE rotary] [+/YES]
+                      (Error #12 fix: restructured layout) */}
+                  <div className="flex flex-col items-center gap-0.5 mt-1">
+                    {/* UP/DOWN row above rotary */}
+                    <div className="flex items-center gap-1">
+                      <PanelButton id="prog-nav-up" label="▲" variant="function" size="sm"
+                        highlighted={hl('prog-nav-up')} onClick={() => onButtonClick?.('prog-nav-up')} />
+                      <PanelButton id="prog-nav-down" label="▼" variant="function" size="sm"
+                        highlighted={hl('prog-nav-down')} onClick={() => onButtonClick?.('prog-nav-down')} />
+                    </div>
+                    {/* -/NO [LARGE rotary] +/YES row (Error #13 fix: larger rotary) */}
+                    <div className="flex items-center gap-1">
+                      <PanelButton id="prog-nav-no" label="-/NO" variant="function" size="sm"
+                        highlighted={hl('prog-nav-no')} onClick={() => onButtonClick?.('prog-nav-no')} />
+                      <Knob id="prog-rotary" label="" value={ps('prog-rotary')?.value ?? 64}
+                        highlighted={hl('prog-rotary')} outerSize={DM_PROG_ROTARY_SIZE} />
+                      <PanelButton id="prog-nav-yes" label="+/YES" variant="function" size="sm"
+                        highlighted={hl('prog-nav-yes')} onClick={() => onButtonClick?.('prog-nav-yes')} />
+                    </div>
                   </div>
                 </div>
 
@@ -424,42 +541,42 @@ export default function DeepMindPanel({
                 </div>
               </div>
 
-              {/* Branding text */}
-              <div className="text-center my-0.5" style={{ fontSize: 11, color: DM_COLORS.brandText, letterSpacing: '0.2em', fontWeight: 700 }}>
-                DeepMind 12
-              </div>
-              <div className="text-center" style={{ fontSize: 6, color: DM_COLORS.subtitleText, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-                Analog 12-Voice Polyphonic Synthesizer
-              </div>
-
-              {/* Menu buttons row: PROG, FX, GLOBAL, COMPARE, WRITE, MOD — HORIZONTAL */}
-              <div className="flex items-center gap-0.5 mt-0.5">
-                {[
-                  { id: 'prog-menu-prog', label: 'PROG' },
-                  { id: 'prog-menu-fx', label: 'FX' },
-                  { id: 'prog-menu-global', label: 'GLOBAL' },
-                  { id: 'prog-menu-compare', label: 'COMPARE' },
-                  { id: 'prog-menu-write', label: 'WRITE' },
-                  { id: 'prog-menu-mod', label: 'MOD' },
-                ].map((b) => (
-                  <PanelButton key={b.id} id={b.id} label={b.label} variant="function" size="sm"
-                    active={ps(b.id)?.active ?? (b.id === 'prog-menu-prog')}
-                    highlighted={hl(b.id)}
-                    hasLed ledOn={ps(b.id)?.ledOn ?? (b.id === 'prog-menu-prog')}
-                    ledColor={DM_COLORS.ledOrange}
-                    labelPosition="above" onClick={() => onButtonClick?.(b.id)} />
-                ))}
+              {/* Menu buttons row: PROG, FX, GLOBAL, COMPARE, WRITE — HORIZONTAL
+                  (Error #14 fix: MOD separated to far bottom-right) */}
+              <div className="flex items-center justify-between w-full mt-0.5">
+                <div className="flex items-center gap-0.5">
+                  {[
+                    { id: 'prog-menu-prog', label: 'PROG' },
+                    { id: 'prog-menu-fx', label: 'FX' },
+                    { id: 'prog-menu-global', label: 'GLOBAL' },
+                    { id: 'prog-menu-compare', label: 'COMPARE' },
+                    { id: 'prog-menu-write', label: 'WRITE' },
+                  ].map((b) => (
+                    <PanelButton key={b.id} id={b.id} label={b.label} variant="function" size="sm"
+                      active={ps(b.id)?.active ?? (b.id === 'prog-menu-prog')}
+                      highlighted={hl(b.id)}
+                      hasLed ledOn={ps(b.id)?.ledOn ?? (b.id === 'prog-menu-prog')}
+                      ledColor={DM_COLORS.ledOrange}
+                      labelPosition="above" onClick={() => onButtonClick?.(b.id)} />
+                  ))}
+                </div>
+                {/* MOD button — separated at far bottom-right (Error #14 fix) */}
+                <PanelButton id="prog-menu-mod" label="MOD" variant="function" size="sm"
+                  active={ps('prog-menu-mod')?.active} highlighted={hl('prog-menu-mod')}
+                  hasLed ledOn={ps('prog-menu-mod')?.ledOn} ledColor={DM_COLORS.ledOrange}
+                  labelPosition="above" onClick={() => onButtonClick?.('prog-menu-mod')} />
               </div>
             </div>
           </div>
+          {/* VAULT_END: prog */}
 
           {/* ── SECTION: POLY ── */}
+          {/* VAULT_START: poly */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="poly"
             style={{ flex: `${SECTION_FLEX.poly} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="POLY" />
             <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
               <div className="flex items-end flex-1">
                 <Slider id="poly-unison" label="UNISON DETUNE" value={ps('poly-unison')?.value ?? 0}
@@ -471,14 +588,15 @@ export default function DeepMindPanel({
                 labelPosition="above" onClick={() => onButtonClick?.('poly-edit')} />
             </div>
           </div>
+          {/* VAULT_END: poly */}
 
           {/* ── SECTION: VCF ── */}
+          {/* VAULT_START: vcf */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="vcf"
             style={{ flex: `${SECTION_FLEX.vcf} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="VCF" />
             <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
               {/* Sliders: FREQ, RES, ENV, LFO, KYBD — HORIZONTAL */}
               <div className="flex items-end gap-0.5 flex-1">
@@ -510,14 +628,15 @@ export default function DeepMindPanel({
               </div>
             </div>
           </div>
+          {/* VAULT_END: vcf */}
 
           {/* ── SECTION: VCA ── */}
+          {/* VAULT_START: vca */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="vca"
             style={{ flex: `${SECTION_FLEX.vca} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="VCA" />
             <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
               <div className="flex items-end flex-1">
                 <Slider id="vca-level" label="LEVEL" value={ps('vca-level')?.value ?? 100}
@@ -529,14 +648,15 @@ export default function DeepMindPanel({
                 labelPosition="above" onClick={() => onButtonClick?.('vca-edit')} />
             </div>
           </div>
+          {/* VAULT_END: vca */}
 
           {/* ── SECTION: HPF ── */}
+          {/* VAULT_START: hpf */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="hpf"
             style={{ flex: `${SECTION_FLEX.hpf} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="HPF" variant="blue" />
             <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
               <div className="flex items-end flex-1">
                 <Slider id="hpf-freq" label="FREQ" value={ps('hpf-freq')?.value ?? 0}
@@ -548,20 +668,15 @@ export default function DeepMindPanel({
                 labelPosition="above" onClick={() => onButtonClick?.('hpf-boost')} />
             </div>
           </div>
+          {/* VAULT_END: hpf */}
 
-          {/* ── SECTION: ENVELOPES ──
-              CRITICAL TOPOLOGY:
-              - Top row: 4 ADSR sliders + curve icons column (far right) — HORIZONTAL
-              - Bottom row: VCA, VCF, MOD, CURVES buttons — HORIZONTAL
-              Structure: outer flex-col, top row is flex-row, bottom row is flex-row
-              DOM assertion: env-vca MUST be sibling of env-vcf in same flex-row container
-          */}
+          {/* ── SECTION: ENVELOPES ── */}
+          {/* VAULT_START: env */}
           <div
-            className="flex flex-col items-center rounded-lg min-w-0"
+            className="flex flex-col items-center min-w-0"
             data-section-id="env"
             style={{ flex: `${SECTION_FLEX.env} 1 0%`, background: DM_COLORS.sectionBg, boxShadow: `inset 0 1px 3px ${DM_COLORS.sectionShadow}` }}
           >
-            <SectionHeader label="ENVELOPES" />
             <div className="flex flex-col gap-0.5 px-1 py-0.5 flex-1">
               {/* Top row: ADSR sliders + curve icons column on far right — HORIZONTAL */}
               <div className="flex items-end gap-1 flex-1">
@@ -573,10 +688,9 @@ export default function DeepMindPanel({
                   highlighted={hl('env-sustain')} trackHeight={SLIDER_TRACK_HEIGHT_ENV} trackWidth={SLIDER_TRACK_WIDTH} />
                 <Slider id="env-release" label="R" value={ps('env-release')?.value ?? 30}
                   highlighted={hl('env-release')} trackHeight={SLIDER_TRACK_HEIGHT_ENV} trackWidth={SLIDER_TRACK_WIDTH} />
-                {/* Curve shape icons — far right column per hardware */}
                 <EnvelopeCurveIcons panelState={panelState} highlightedControls={highlightedControls} />
               </div>
-              {/* Bottom row: VCA, VCF, MOD, CURVES buttons in HORIZONTAL row per hardware */}
+              {/* Bottom row: VCA, VCF, MOD, CURVES buttons in HORIZONTAL row */}
               <div className="flex items-center justify-start gap-1">
                 {[
                   { id: 'env-vca', label: 'VCA', defaultActive: true },
@@ -593,46 +707,78 @@ export default function DeepMindPanel({
               </div>
             </div>
           </div>
+          {/* VAULT_END: env */}
 
         </div>{/* end control surface row */}
 
-        {/* ── VOICES LED STRIP ── */}
+        {/* ── PANEL-LEVEL: Subtitle strip between controls and keyboard (Error #4 fix) ── */}
         <div
-          className="flex items-center justify-center gap-1 px-2"
-          data-section-id="voices"
+          className="flex items-center justify-center shrink-0"
+          data-element-id="subtitle"
+          style={{
+            height: 14,
+            background: DM_COLORS.panelBg,
+          }}
+        >
+          <span style={{
+            fontSize: 7,
+            color: DM_COLORS.subtitleText,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+          }}>
+            Analog 12-Voice Polyphonic Synthesizer
+          </span>
+        </div>
+
+        {/* ── VOICES LED STRIP (Error #5 fix: restricted width to POLY→ENVELOPES span) ── */}
+        <div
+          className="flex items-center shrink-0"
           style={{
             height: DM_VOICES_HEIGHT,
             background: DM_COLORS.panelBg,
           }}
         >
-          <span style={{ fontSize: 7, color: DM_COLORS.voicesLabelText, letterSpacing: '0.1em', marginRight: 4 }}>
-            VOICES
-          </span>
-          {Array.from({ length: 12 }, (_, i) => {
-            const id = `voice-led-${i + 1}`;
-            const isOn = ps(id)?.ledOn;
-            const isHighlighted = hl(id);
-            return (
-              <div key={id} className="flex flex-col items-center" data-control-id={id}>
-                <div
-                  className="rounded-full"
-                  style={{
-                    width: 6,
-                    height: 6,
-                    background: isOn ? DM_COLORS.ledGreen : DM_COLORS.ledOff,
-                    boxShadow: isOn && isHighlighted
-                      ? `0 0 4px ${DM_COLORS.ledGreen}, 0 0 8px 3px rgba(0,170,255,0.5)`
-                      : isOn
-                      ? `0 0 4px ${DM_COLORS.ledGreen}`
-                      : isHighlighted
-                      ? '0 0 8px 3px rgba(0,170,255,0.5)'
-                      : 'none',
-                  }}
-                />
-                <span style={{ fontSize: 5, color: DM_COLORS.voicesLabelText }}>{i + 1}</span>
-              </div>
-            );
-          })}
+          {/* Left spacer: spans ARP through PROG width */}
+          <div style={{
+            flex: `${SECTION_FLEX.arp + SECTION_FLEX.lfo1 + SECTION_FLEX.lfoWave + SECTION_FLEX.lfo2 + SECTION_FLEX.osc + SECTION_FLEX.prog} 1 0%`,
+          }} />
+          {/* VOICES strip: spans POLY through ENVELOPES */}
+          <div
+            className="flex items-center justify-center gap-1"
+            data-section-id="voices"
+            style={{
+              flex: `${SECTION_FLEX.poly + SECTION_FLEX.vcf + SECTION_FLEX.vca + SECTION_FLEX.hpf + SECTION_FLEX.env} 1 0%`,
+            }}
+          >
+            <span style={{ fontSize: 7, color: DM_COLORS.voicesLabelText, letterSpacing: '0.1em', marginRight: 4 }}>
+              VOICES
+            </span>
+            {Array.from({ length: 12 }, (_, i) => {
+              const id = `voice-led-${i + 1}`;
+              const isOn = ps(id)?.ledOn;
+              const isHighlighted = hl(id);
+              return (
+                <div key={id} className="flex flex-col items-center" data-control-id={id}>
+                  <div
+                    className="rounded-full"
+                    style={{
+                      width: 6,
+                      height: 6,
+                      background: isOn ? DM_COLORS.ledGreen : DM_COLORS.ledOff,
+                      boxShadow: isOn && isHighlighted
+                        ? `0 0 4px ${DM_COLORS.ledGreen}, 0 0 8px 3px rgba(0,170,255,0.5)`
+                        : isOn
+                        ? `0 0 4px ${DM_COLORS.ledGreen}`
+                        : isHighlighted
+                        ? '0 0 8px 3px rgba(0,170,255,0.5)'
+                        : 'none',
+                    }}
+                  />
+                  <span style={{ fontSize: 5, color: DM_COLORS.voicesLabelText }}>{i + 1}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* ── KEYBOARD ── */}
@@ -641,6 +787,53 @@ export default function DeepMindPanel({
         </div>
 
       </div>{/* end main area */}
+    </div>
+  );
+}
+
+/* ─── Isolated Section Components (for ?section= isolation) ─── */
+
+function SectionArp({ ps, hl, onButtonClick }: {
+  ps: (id: string) => PanelState[string];
+  hl: (id: string) => boolean;
+  onButtonClick?: (id: string) => void;
+}) {
+  return (
+    <div
+      className="flex flex-col items-center"
+      data-section-id="arp"
+      style={{ width: 200, background: DM_COLORS.sectionBg }}
+    >
+      <div className="flex flex-col items-center gap-0.5 px-1 py-0.5 flex-1">
+        <div className="flex items-center gap-1">
+          <PanelButton id="arp-chord" label="CHORD" variant="function" size="sm"
+            active={ps('arp-chord')?.active} highlighted={hl('arp-chord')}
+            hasLed ledOn={ps('arp-chord')?.ledOn} ledColor={DM_COLORS.ledOrange}
+            labelPosition="above" onClick={() => onButtonClick?.('arp-chord')} />
+          <PanelButton id="arp-poly-chord" label="POLY CHORD" variant="function" size="sm"
+            active={ps('arp-poly-chord')?.active} highlighted={hl('arp-poly-chord')}
+            hasLed ledOn={ps('arp-poly-chord')?.ledOn} ledColor={DM_COLORS.ledOrange}
+            labelPosition="above" onClick={() => onButtonClick?.('arp-poly-chord')} />
+        </div>
+        <div className="flex items-end gap-1 flex-1">
+          <Slider id="arp-rate" label="RATE" value={ps('arp-rate')?.value ?? 64}
+            highlighted={hl('arp-rate')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+          <Slider id="arp-gate-time" label="GATE TIME" value={ps('arp-gate-time')?.value ?? 80}
+            highlighted={hl('arp-gate-time')} trackHeight={SLIDER_TRACK_HEIGHT} trackWidth={SLIDER_TRACK_WIDTH} />
+        </div>
+        <div className="flex items-center gap-0.5">
+          {[
+            { id: 'arp-on-off', label: 'ON/OFF' },
+            { id: 'arp-tap-hold', label: 'TAP/HOLD' },
+            { id: 'arp-edit', label: 'EDIT' },
+          ].map((b) => (
+            <PanelButton key={b.id} id={b.id} label={b.label} variant="function" size="sm"
+              active={ps(b.id)?.active} highlighted={hl(b.id)}
+              hasLed ledOn={ps(b.id)?.ledOn} ledColor={DM_COLORS.ledOrange}
+              labelPosition="above" onClick={() => onButtonClick?.(b.id)} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
