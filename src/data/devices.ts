@@ -17,6 +17,14 @@ export const devices: DeviceRegistry = {
     available: false,
     categories: ['basics', 'effects', 'performance', 'midi'],
   },
+  'deepmind-12': {
+    id: 'deepmind-12',
+    name: 'Behringer DeepMind 12',
+    manufacturer: 'Behringer',
+    description: '12-voice analog polyphonic synthesizer with dual oscillators, VCF, three envelopes, two LFOs, built-in effects, and 49-key keyboard.',
+    available: true,
+    categories: ['basics', 'synthesis', 'modulation', 'effects', 'presets'],
+  },
 };
 
 export function getDevice(deviceId: string): DeviceInfo | undefined {

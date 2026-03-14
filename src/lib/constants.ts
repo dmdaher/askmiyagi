@@ -3,7 +3,7 @@ export const MIDI_NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#',
 // Device panel dimensions — single source of truth for all devices
 export const PANEL_DIMENSIONS: Record<string, { width: number; height: number }> = {
   'fantom-08': { width: 2700, height: 580 },
-  // New devices add their entry here
+  'deepmind-12': { width: 2200, height: 580 },
 };
 
 // Re-export Fantom-08 specific constants for backwards compatibility
