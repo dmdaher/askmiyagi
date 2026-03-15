@@ -137,14 +137,13 @@ function EnvelopeCurveIcons({ panelState, highlightedControls }: { panelState: P
   );
 }
 
-function WheelControl({ id, label, highlighted, height = 80 }: { id: string; label: string; highlighted: boolean; height?: number }) {
+function WheelControl({ id, label, highlighted }: { id: string; label: string; highlighted: boolean }) {
   return (
-    <div className="flex flex-col items-center gap-0.5" data-control-id={id}>
+    <div className="flex flex-col items-center gap-0.5 flex-1" data-control-id={id}>
       <div
-        className="relative rounded-md cursor-pointer"
+        className="relative rounded-md cursor-pointer flex-1"
         style={{
           width: 30,
-          height,
           background: `linear-gradient(to right, #1a1a1a, #222, #1a1a1a)`,
           border: '1px solid #333',
           boxShadow: highlighted
@@ -252,8 +251,8 @@ function PerfSection({ ps, hl, onButtonClick }: {
 
       {/* Pitch & Mod wheels — fill remaining column height per hardware */}
       <div className="flex gap-2 mt-2 flex-1 items-stretch">
-        <WheelControl id="perf-pitch" label="PITCH" highlighted={hl('perf-pitch')} height={200} />
-        <WheelControl id="perf-mod" label="MOD" highlighted={hl('perf-mod')} height={200} />
+        <WheelControl id="perf-pitch" label="PITCH" highlighted={hl('perf-pitch')} />
+        <WheelControl id="perf-mod" label="MOD" highlighted={hl('perf-mod')} />
       </div>
     </div>
   );
@@ -348,8 +347,11 @@ function SectionOscContent({ ps, hl, onButtonClick }: SectionProps) {
       {/* Row 1: Sliders with sub-group labels */}
       <div className="flex items-end gap-0.5 flex-1">
         {/* PITCH MOD — shared by both OSCs, leftmost per manual [7] listing order */}
-        <Slider id="osc-pitch-mod" label="PITCH MOD" value={ps('osc-pitch-mod')?.value ?? 0}
-          highlighted={hl('osc-pitch-mod')} trackHeight={220} trackWidth={SLIDER_TRACK_WIDTH} />
+        <div className="flex flex-col items-center">
+          <span style={{ fontSize: 7, color: DM_COLORS.labelText, letterSpacing: '0.05em', marginBottom: 2 }}>OSC 1 &amp; 2</span>
+          <Slider id="osc-pitch-mod" label="PITCH MOD" value={ps('osc-pitch-mod')?.value ?? 0}
+            highlighted={hl('osc-pitch-mod')} trackHeight={220} trackWidth={SLIDER_TRACK_WIDTH} />
+        </div>
         {/* OSC 1 group: PWM slider */}
         <div className="flex flex-col items-center">
           <span style={{ fontSize: 7, color: DM_COLORS.labelText, letterSpacing: '0.05em', marginBottom: 2 }}>OSC 1</span>
