@@ -401,7 +401,7 @@ function SectionProgContent({ ps, hl, onButtonClick, displayState }: ProgSection
   return (
     <div className="flex flex-col px-1.5 flex-1 w-full h-full justify-start">
       {/* Main area: 3 columns — LCD [1] | Nav[2]+Rotary[4] | Fader[4] */}
-      <div className="flex gap-1.5 w-full shrink-0">
+      <div className="flex gap-1.5 w-full flex-1 min-h-0">
         {/* LEFT COLUMN: LCD Display [1] — fills available width, landscape aspect ratio */}
         <div className="flex-1 flex items-start pt-0.5">
           <DeepMindDisplay displayState={displayState} highlighted={hl('display')} />
@@ -430,12 +430,12 @@ function SectionProgContent({ ps, hl, onButtonClick, displayState }: ProgSection
         {/* RIGHT COLUMN: DATA ENTRY fader [4] — standalone */}
         <div className="shrink-0 flex flex-col items-center justify-center">
           <Slider id="prog-data-entry" label="DATA ENTRY" value={ps('prog-data-entry')?.value ?? 64}
-            highlighted={hl('prog-data-entry')} trackHeight={198} trackWidth={SLIDER_TRACK_WIDTH}
+            highlighted={hl('prog-data-entry')} trackHeight={270} trackWidth={SLIDER_TRACK_WIDTH}
             labelPosition="above" />
         </div>
       </div>
       {/* Menu row [3]: PROG/FX/GLOBAL/COMPARE/WRITE left, MOD far right */}
-      <div className="flex items-center justify-between w-full shrink-0 mt-auto">
+      <div className="flex items-center justify-between w-full shrink-0">
         <div className="flex items-center gap-0.5">
           {[
             { id: 'prog-menu-prog', label: 'PROG' },
