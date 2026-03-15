@@ -204,7 +204,6 @@ function HomePageContent() {
                   device={device}
                   tutorialCount={(allTutorials[device.id] ?? []).length}
                   onClick={() => handleDeviceSelect(device)}
-                  onViewInstrument={() => router.push(`/instrument/${device.id}`)}
                 />
               </motion.div>
             ))}

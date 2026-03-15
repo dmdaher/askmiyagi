@@ -7,7 +7,6 @@ interface DeviceCardProps {
   device: DeviceInfo;
   tutorialCount: number;
   onClick?: () => void;
-  onViewInstrument?: () => void;
 }
 
 const DEVICE_ACCENT_COLORS: Record<string, { primary: string; glow: string }> = {
@@ -19,7 +18,7 @@ function getAccentColor(manufacturer: string) {
   return DEVICE_ACCENT_COLORS[manufacturer] ?? { primary: '#00aaff', glow: 'rgba(0, 170, 255, 0.3)' };
 }
 
-export default function DeviceCard({ device, tutorialCount, onClick, onViewInstrument }: DeviceCardProps) {
+export default function DeviceCard({ device, tutorialCount, onClick }: DeviceCardProps) {
   const accent = getAccentColor(device.manufacturer);
   const isAvailable = device.available;
 
@@ -92,23 +91,9 @@ export default function DeviceCard({ device, tutorialCount, onClick, onViewInstr
             </span>
           )}
 
-          {isAvailable && onViewInstrument && (
-            <span
-              role="link"
-              tabIndex={0}
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewInstrument();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.stopPropagation();
-                  onViewInstrument();
-                }
-              }}
-              className="text-xs text-gray-500 transition-colors hover:text-[var(--accent)] cursor-pointer"
-            >
-              View Panel
+          {isAvailable && (
+            <span className="text-xs text-gray-500 transition-colors group-hover:text-gray-300">
+              Click to browse
             </span>
           )}
         </div>

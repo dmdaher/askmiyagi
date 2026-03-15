@@ -651,7 +651,7 @@ export default function DeepMindPanel({
         height: DM_PANEL_HEIGHT,
         background: DM_COLORS.panelBg,
         fontFamily: 'system-ui, -apple-system, sans-serif',
-        overflow: 'visible',
+        overflow: 'hidden',
         borderRadius: 6,
         border: `1px solid #222`,
       }}
