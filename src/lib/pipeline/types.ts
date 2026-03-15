@@ -85,6 +85,7 @@ export interface PipelineState {
   totalTokens: { input: number; output: number };
   budgetCapUsd: number;
   runnerPid: number | null;
+  worktreePath: string | null;
 
   lastCheckpoint: {
     phase: PipelinePhase;

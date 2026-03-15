@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 import {
   PipelineState,
   PipelinePhase,
@@ -73,6 +74,7 @@ export function createInitialState(opts: {
     totalTokens: { input: 0, output: 0 },
     budgetCapUsd: opts.budgetCapUsd,
     runnerPid: null,
+    worktreePath: null,
     lastCheckpoint: {
       phase: 'pending',
       subStep: 'init',
@@ -250,5 +252,50 @@ export function ensurePipelineDir(deviceId: string): void {
   const dir = path.join(PIPELINE_DIR, deviceId);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
+// --- Git Worktree Management ---
+
+const WORKTREE_DIR = '.worktrees';
+
+/**
+ * Create an isolated git worktree for a pipeline run.
+ * The worktree gets its own copy of the repo on the device's feature branch,
+ * so the runner and its Claude CLI invocations don't touch the main working directory.
+ */
+export function createWorktree(deviceId: string, branch: string): string {
+  const worktreePath = path.resolve(WORKTREE_DIR, deviceId);
+
+  // Clean up stale worktree if it exists
+  try {
+    execSync(`git worktree remove --force "${worktreePath}" 2>/dev/null`, { stdio: 'pipe' });
+  } catch {
+    // Worktree didn't exist — fine
+  }
+
+  // Create the branch from test if it doesn't exist
+  try {
+    execSync(`git branch "${branch}" test 2>/dev/null`, { stdio: 'pipe' });
+  } catch {
+    // Branch already exists — fine
+  }
+
+  // Create the worktree
+  fs.mkdirSync(WORKTREE_DIR, { recursive: true });
+  execSync(`git worktree add "${worktreePath}" "${branch}"`, { stdio: 'pipe' });
+
+  return worktreePath;
+}
+
+/**
+ * Remove a worktree after pipeline completes or is cancelled.
+ */
+export function removeWorktree(deviceId: string): void {
+  const worktreePath = path.resolve(WORKTREE_DIR, deviceId);
+  try {
+    execSync(`git worktree remove --force "${worktreePath}"`, { stdio: 'pipe' });
+  } catch {
+    // Already removed or never created
   }
 }

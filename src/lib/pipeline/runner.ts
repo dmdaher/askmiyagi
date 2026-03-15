@@ -18,6 +18,7 @@ export function invokeAgent(opts: {
   deviceId: string;
   phase: PipelinePhase;
   agent: string;
+  cwd?: string;
   sectionId?: string;
   batchId?: string;
   model?: string;
@@ -49,11 +50,12 @@ export function invokeAgent(opts: {
     appendLog(opts.deviceId, {
       level: 'info',
       agent: opts.agent,
-      message: `Starting ${opts.agent} invocation`,
+      message: `Starting ${opts.agent} invocation${opts.cwd ? ` (cwd: ${opts.cwd})` : ''}`,
     });
 
     const proc = spawn('claude', args, {
       stdio: ['pipe', 'pipe', 'pipe'],
+      cwd: opts.cwd,
       env: { ...process.env },
     });
 
@@ -132,11 +134,12 @@ export async function checkDevServer(): Promise<boolean> {
 /**
  * Start the dev server and wait for it to be ready.
  */
-export function startDevServer(): Promise<boolean> {
+export function startDevServer(cwd?: string): Promise<boolean> {
   return new Promise((resolve) => {
     const proc = spawn('npm', ['run', 'dev'], {
       detached: true,
       stdio: 'ignore',
+      cwd,
     });
     proc.unref();
 

@@ -20,6 +20,8 @@ import {
   advancePhase,
   createEscalation,
   appendLog,
+  createWorktree,
+  removeWorktree,
 } from '../src/lib/pipeline/state-machine';
 import {
   invokeAgent,
@@ -41,6 +43,9 @@ if (!deviceId) {
   process.exit(1);
 }
 
+/** Resolved worktree path — all agent invocations run here */
+let worktreeCwd: string;
+
 async function run() {
   let state = readState(deviceId);
   if (!state) {
@@ -50,11 +55,36 @@ async function run() {
 
   state.status = 'running';
   state.runnerPid = process.pid;
+
+  // Set up worktree if not already created
+  if (!state.worktreePath || !fs.existsSync(state.worktreePath)) {
+    appendLog(deviceId, {
+      level: 'info',
+      message: `Creating git worktree for isolated execution...`,
+    });
+    try {
+      const wtPath = createWorktree(deviceId, state.branch);
+      state.worktreePath = wtPath;
+      appendLog(deviceId, {
+        level: 'info',
+        message: `Worktree created at ${wtPath}`,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      appendLog(deviceId, { level: 'error', message: `Failed to create worktree: ${message}` });
+      state.status = 'failed';
+      state.currentPhase = 'failed';
+      writeState(deviceId, state);
+      return;
+    }
+  }
+
+  worktreeCwd = state.worktreePath!;
   writeState(deviceId, state);
 
   appendLog(deviceId, {
     level: 'info',
-    message: `Pipeline runner started (PID: ${process.pid}) from phase: ${state.currentPhase}`,
+    message: `Pipeline runner started (PID: ${process.pid}) in worktree: ${worktreeCwd}, phase: ${state.currentPhase}`,
   });
 
   try {
@@ -122,6 +152,18 @@ async function run() {
   }
 
   state.runnerPid = null;
+
+  // Clean up worktree on completion or failure (but not on pause — we resume later)
+  if (state.status === 'completed' || state.status === 'failed') {
+    appendLog(deviceId, { level: 'info', message: 'Cleaning up worktree...' });
+    try {
+      removeWorktree(deviceId);
+      state.worktreePath = null;
+    } catch {
+      appendLog(deviceId, { level: 'warn', message: 'Failed to remove worktree — manual cleanup may be needed' });
+    }
+  }
+
   writeState(deviceId, state);
 
   appendLog(deviceId, {
@@ -148,17 +190,17 @@ async function doPhase0(state: PipelineState) {
   const serverUp = await checkDevServer();
   if (!serverUp) {
     appendLog(deviceId, { level: 'info', message: 'Dev server not running, starting...' });
-    const started = await startDevServer();
+    const started = await startDevServer(worktreeCwd);
     if (!started) {
       createEscalation(state, 'agent-failure', 'Could not start dev server. Please start it manually with `npm run dev`.');
       return;
     }
   }
 
-  try {
-    execSync(`git checkout -b ${state.branch} test 2>/dev/null || git checkout ${state.branch}`, { stdio: 'pipe' });
-  } catch {
-    appendLog(deviceId, { level: 'warn', message: `Branch ${state.branch} may already exist, continuing...` });
+  // Install deps in worktree if needed
+  if (!fs.existsSync(path.join(worktreeCwd, 'node_modules'))) {
+    appendLog(deviceId, { level: 'info', message: 'Installing dependencies in worktree...' });
+    execSync('npm install', { cwd: worktreeCwd, stdio: 'pipe' });
   }
 
   const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
@@ -182,6 +224,7 @@ Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML
   const result = await invokeAgent({
     prompt,
     deviceId,
+    cwd: worktreeCwd,
     phase: 'phase-0-gatekeeper',
     agent: 'gatekeeper',
     model: 'claude-opus-4-6',
@@ -224,7 +267,7 @@ async function doPhase1(state: PipelineState) {
       appendLog(deviceId, { level: 'info', agent: 'structural-inspector', message: `SI: section ${section.id} (attempt ${section.attempts})` });
       const siResult = await invokeAgent({
         prompt: `Audit section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Read your checkpoint and the Gatekeeper's manifest first.`,
-        deviceId, phase: 'phase-1-section-loop', agent: 'structural-inspector', sectionId: section.id,
+        deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'structural-inspector', sectionId: section.id,
       });
       if (siResult.costEntry) { accumulateCost(state, siResult.costEntry); recordCostEntry(deviceId, siResult.costEntry); }
       section.siScore = readAgentCheckpoint('structural-inspector').score;
@@ -233,7 +276,7 @@ async function doPhase1(state: PipelineState) {
       appendLog(deviceId, { level: 'info', agent: 'panel-questioner', message: `PQ: section ${section.id} (attempt ${section.attempts})` });
       const pqResult = await invokeAgent({
         prompt: `Audit section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Compare the rendered panel against the reference photo.`,
-        deviceId, phase: 'phase-1-section-loop', agent: 'panel-questioner', sectionId: section.id,
+        deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'panel-questioner', sectionId: section.id,
       });
       if (pqResult.costEntry) { accumulateCost(state, pqResult.costEntry); recordCostEntry(deviceId, pqResult.costEntry); }
       section.pqScore = readAgentCheckpoint('panel-questioner').score;
@@ -242,7 +285,7 @@ async function doPhase1(state: PipelineState) {
       appendLog(deviceId, { level: 'info', agent: 'critic', message: `Critic: section ${section.id} (attempt ${section.attempts})` });
       const criticResult = await invokeAgent({
         prompt: `Final audit of section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Review SI and PQ findings, then render your verdict.`,
-        deviceId, phase: 'phase-1-section-loop', agent: 'critic', sectionId: section.id,
+        deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'critic', sectionId: section.id,
       });
       if (criticResult.costEntry) { accumulateCost(state, criticResult.costEntry); recordCostEntry(deviceId, criticResult.costEntry); }
       section.criticScore = readAgentCheckpoint('critic').score;
@@ -280,7 +323,7 @@ async function doPhase2(state: PipelineState) {
 
     const result = await invokeAgent({
       prompt: `Perform global assembly audit of the ${state.deviceName} digital twin. Device ID: ${deviceId}. All sections are vaulted. Check overall layout, cross-section alignment, and global consistency.`,
-      deviceId, phase: 'phase-2-global-assembly', agent: 'structural-inspector',
+      deviceId, cwd: worktreeCwd, phase: 'phase-2-global-assembly', agent: 'structural-inspector',
     });
     if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
 
@@ -303,7 +346,7 @@ async function doPhase3(state: PipelineState) {
 
   const result = await invokeAgent({
     prompt: `Perform final harmonic polish of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Apply any final visual refinements.`,
-    deviceId, phase: 'phase-3-harmonic-polish', agent: 'critic',
+    deviceId, cwd: worktreeCwd, phase: 'phase-3-harmonic-polish', agent: 'critic',
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
 
@@ -324,7 +367,7 @@ async function doPanelPR(state: PipelineState) {
   try {
     const prOutput = execSync(
       `gh pr create --base test --title "feat: ${state.deviceName} digital twin panel" --body "Automated panel build for ${state.deviceName} by Miyagi Pipeline"`,
-      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }
+      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd }
     );
     const prUrl = prOutput.trim();
     appendLog(deviceId, { level: 'info', message: `Panel PR created: ${prUrl}` });
@@ -343,7 +386,7 @@ async function doPhase4Extract(state: PipelineState) {
 
   const result = await invokeAgent({
     prompt: `Extract tutorial curriculum from the ${state.deviceName} manuals at: ${state.manualPaths.join(', ')}. Device ID: ${deviceId}. Use chapter-by-chapter extraction.`,
-    deviceId, phase: 'phase-4-extraction', agent: 'manual-extractor', model: 'claude-opus-4-6',
+    deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor', model: 'claude-opus-4-6',
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
 
@@ -364,7 +407,7 @@ async function doPhase4Audit(state: PipelineState) {
 
   const result = await invokeAgent({
     prompt: `Audit tutorial coverage for ${state.deviceName}. Device ID: ${deviceId}. Verify the extraction covers all manual chapters. Produce a batch plan.`,
-    deviceId, phase: 'phase-4-audit', agent: 'coverage-auditor',
+    deviceId, cwd: worktreeCwd, phase: 'phase-4-audit', agent: 'coverage-auditor',
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
 
@@ -396,7 +439,7 @@ async function doPhase5(state: PipelineState) {
     appendLog(deviceId, { level: 'info', agent: 'tutorial-builder', message: `Building batch ${batch.batchId}: ${batch.tutorials.join(', ')}` });
     const buildResult = await invokeAgent({
       prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${batch.tutorials.join(', ')}`,
-      deviceId, phase: 'phase-5-tutorial-build', agent: 'tutorial-builder', batchId: batch.batchId,
+      deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-builder', batchId: batch.batchId,
     });
     if (buildResult.costEntry) { accumulateCost(state, buildResult.costEntry); recordCostEntry(deviceId, buildResult.costEntry); }
     batch.builderScore = readAgentCheckpoint('tutorial-builder').score;
@@ -408,7 +451,7 @@ async function doPhase5(state: PipelineState) {
     appendLog(deviceId, { level: 'info', agent: 'tutorial-reviewer', message: `Reviewing batch ${batch.batchId}` });
     const reviewResult = await invokeAgent({
       prompt: `Review tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Verify accuracy against the manual.`,
-      deviceId, phase: 'phase-5-tutorial-build', agent: 'tutorial-reviewer', batchId: batch.batchId,
+      deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-reviewer', batchId: batch.batchId,
     });
     if (reviewResult.costEntry) { accumulateCost(state, reviewResult.costEntry); recordCostEntry(deviceId, reviewResult.costEntry); }
     batch.reviewerVerdict = readAgentCheckpoint('tutorial-reviewer').verdict;
@@ -436,7 +479,7 @@ async function doTutorialPR(state: PipelineState) {
   try {
     const prOutput = execSync(
       `gh pr create --base test --title "feat: ${state.deviceName} tutorials" --body "Automated tutorial build for ${state.deviceName} by Miyagi Pipeline"`,
-      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }
+      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd }
     );
     const prUrl = prOutput.trim();
     appendLog(deviceId, { level: 'info', message: `Tutorial PR created: ${prUrl}` });
@@ -452,7 +495,7 @@ async function doTutorialPR(state: PipelineState) {
 
 function readAgentCheckpoint(agent: string) {
   try {
-    const checkpointPath = path.join('.claude', 'agent-memory', agent, 'checkpoint.md');
+    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', agent, 'checkpoint.md');
     const content = fs.readFileSync(checkpointPath, 'utf-8');
     return parseCheckpoint(content);
   } catch {
@@ -462,7 +505,7 @@ function readAgentCheckpoint(agent: string) {
 
 function parseSectionsFromGatekeeper(): SectionStatus[] {
   try {
-    const checkpointPath = path.join('.claude', 'agent-memory', 'gatekeeper', 'checkpoint.md');
+    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'gatekeeper', 'checkpoint.md');
     const content = fs.readFileSync(checkpointPath, 'utf-8');
     const sections: SectionStatus[] = [];
     const lines = content.split('\n');
@@ -492,7 +535,7 @@ function parseSectionsFromGatekeeper(): SectionStatus[] {
 
 function parseBatchesFromAuditor() {
   try {
-    const checkpointPath = path.join('.claude', 'agent-memory', 'coverage-auditor', 'checkpoint.md');
+    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'coverage-auditor', 'checkpoint.md');
     const content = fs.readFileSync(checkpointPath, 'utf-8');
     const batches: { batchId: string; tutorials: string[] }[] = [];
     const batchPattern = /batch[- ]?(\w+).*?:\s*(.+)/gi;
