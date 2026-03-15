@@ -290,7 +290,7 @@ function SectionArpContent({ ps, hl, onButtonClick }: SectionProps) {
           highlighted={hl('arp-gate-time')} trackHeight={230} trackWidth={SLIDER_TRACK_WIDTH} />
       </div>
       {/* Row 2: All buttons — ON/OFF, TAP/HOLD, CHORD, POLY CHORD, EDIT */}
-      <div className="flex items-center gap-0.5 flex-wrap justify-center">
+      <div className="flex items-center gap-0 flex-nowrap justify-center">
         {[
           { id: 'arp-on-off', label: 'ON/OFF' },
           { id: 'arp-tap-hold', label: 'TAP/HOLD' },
@@ -435,7 +435,7 @@ function SectionProgContent({ ps, hl, onButtonClick, displayState }: ProgSection
         </div>
       </div>
       {/* Menu row [3]: PROG/FX/GLOBAL/COMPARE/WRITE left, MOD far right */}
-      <div className="flex items-center justify-between w-full shrink-0">
+      <div className="flex items-center justify-between w-full shrink-0 mt-auto">
         <div className="flex items-center gap-0.5">
           {[
             { id: 'prog-menu-prog', label: 'PROG' },
