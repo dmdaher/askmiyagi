@@ -18,10 +18,11 @@ Phase 1: ITERATIVE SECTION LOOP
     1. Developer builds section
     2. Render in isolation (?section=X)
     3. Structural Inspector: Atomic Topology check (section only)
-    4. Panel Questioner: Crop-to-crop comparison (section only)
-    5. If 10/10 → VAULT (mark STRICT_READ_ONLY)
-    6. If <10 → fix and re-validate (still isolated)
-    7. Next section only after current is vaulted
+    4. Panel Questioner: Crop-to-crop comparison with Zone Placement (section only)
+    5. Critic: Adversarial per-section challenge (independent hardware verification)
+    6. ALL THREE must score 10/10 → VAULT (mark STRICT_READ_ONLY)
+    7. If ANY agent <10 → fix and re-validate (still isolated)
+    8. Next section only after current is vaulted by all three agents
 
 Phase 2: GLOBAL ASSEMBLY
   All sections vaulted → full panel render
@@ -45,6 +46,18 @@ Phase 3: HARMONIC POLISH
 | **Phase 3** | Harmonic Polish | Full panel | Proportions, spacing, sizing, colors, dead space, fill ratios, density | Must be >= 9.5/10 |
 
 **Each phase gates the next.** Phase 2 doesn't start until every section is vaulted. Phase 3 doesn't start until Phase 2 = 10.0.
+
+### TOPOLOGY PRE-FLIGHT (MANDATORY — BEFORE ANY CODE IS WRITTEN):
+For COMPLEXITY: HIGH sections, the Orchestrator must verify the Gatekeeper's blueprint before any build starts. This is a mechanical check — no photo interpretation needed.
+
+**Protocol:**
+1. Read the Gatekeeper's **Cardinal Neighbor Table** for hero elements (from the blueprint).
+2. Read the PQ's **Clockface/Zone Position Map** (derived independently from the hardware photo).
+3. **Compare East/West neighbors mechanically.** If the Gatekeeper says `LCD.East = gap` but the PQ says "Rotary is at 3 o'clock of LCD" (meaning LCD.East = Rotary), the blueprint is **REJECTED**.
+4. On rejection: issue `RE_DERIVE_FORCE` to the Gatekeeper with the specific mismatch: "PQ shows [Rotary] EAST of [LCD]. Your blueprint shows [gap] EAST. Fix the horizontal relationship."
+5. **Max 3 retries.** If the Gatekeeper cannot produce a blueprint that matches PQ's independent reading after 3 attempts, escalate to user: "TOPOLOGY DEADLOCK."
+
+**Why this works:** The Orchestrator doesn't read the photo — it just compares two independent outputs. The Gatekeeper and PQ both read the photo separately. If they agree on East/West neighbors, the topology is likely correct. If they disagree, one of them is wrong, and the photo gets re-read.
 
 ### VAULT ENFORCEMENT (MANDATORY):
 The orchestrator tracks which sections are vaulted. Enforcement is two-pronged:
@@ -76,10 +89,12 @@ If Phase 2 reveals that a vaulted section's internal scale is fundamentally wron
 
 1. Only the **Orchestrator** can authorize an UNLOCK
 2. Triggered by a Phase 2 Inspector or Critic failure that cannot be resolved via container-level adjustments
-3. The developer removes `VAULT_START/END` markers for the affected section
-4. The section must re-pass Phase 1 in full isolation before being re-vaulted
-5. This is a **logged, audited event** — the orchestrator records why the unlock was needed
-6. **>2 unlocks = suspect Gatekeeper templates** — the source of truth may be wrong
+3. **GATEKEEPER_RE_DERIVE (MANDATORY):** Before any rebuild begins, the Gatekeeper MUST re-derive its ASCII Blueprint + Section Template for the unlocked section from the hardware photos. This is non-negotiable — rebuilding against a stale template is rebuilding against a potentially hallucinated layout. The re-derive must produce a fresh ASCII map, fresh coarse grid positions, and fresh JSON template. The old template is discarded entirely.
+4. The developer removes `VAULT_START/END` markers for the affected section
+5. The developer rebuilds the section using the FRESH Gatekeeper template (not the old one)
+6. The section must re-pass Phase 1 in full isolation (SI + PQ + Critic — all three) before being re-vaulted
+7. This is a **logged, audited event** — the orchestrator records why the unlock was needed and what changed in the re-derived template vs the original
+8. **>2 unlocks = suspect Gatekeeper templates** — the source of truth may be systematically wrong
 
 ### MEMORY COMPACTION (MANDATORY):
 After a section is vaulted, instruct: "Clear build logs for Section [ID]."
@@ -102,6 +117,35 @@ After Phase 1 agents complete, BEFORE triggering Phase 2:
    - **Force a Structural Rework Cycle:** Return to the developer with the specific topology failures. The developer MUST fix the layout structure before ANY other work proceeds.
    - **Re-run Phase 1** after the fix. Only proceed to Phase 2 when ALL structural checks pass.
 4. **If the Inspector did NOT perform the DOM Sibling & Ancestor Audit**, flag as **Incomplete Structural Audit** and force re-run.
+
+### CROSS-MODALITY CONSISTENCY CHECK (MANDATORY — BEFORE PROCEEDING BETWEEN PHASES):
+The pipeline uses three independent spatial representations that must agree. If they contradict each other, the pipeline HALTS — contradictions indicate a spatial reasoning error somewhere in the chain.
+
+**The three representations:**
+1. **Gatekeeper's ASCII map + coarse grid** (2D visual + mathematical positions)
+2. **Panel Questioner's clockface prose** (independent photo-derived relational descriptions)
+3. **Structural Inspector's DOM measurements** (rendered pixel positions)
+
+**Consistency check protocol (for COMPLEXITY: HIGH sections):**
+
+1. **ASCII ↔ Clockface:** For each hero element, verify the Gatekeeper's coarse grid position is directionally consistent with the PQ's clockface description:
+   - If Gatekeeper says `Rotary: [3,2]` and `LCD: [1,2]` (rotary in column 3, LCD in column 1 → rotary is to the RIGHT)
+   - PQ must say "Rotary is at 3 o'clock from LCD" (to the right)
+   - If PQ says "6 o'clock" (below) → **HALT: SPATIAL CONTRADICTION**
+
+2. **Clockface ↔ DOM:** For each hero element, verify the PQ's clockface description matches the SI's measured DOM positions:
+   - If PQ says "Rotary is at 3 o'clock from LCD" (to the right)
+   - SI must measure `rotary.left > lcd.right` (rotary starts after LCD ends horizontally)
+   - If SI measures `rotary.top > lcd.bottom` (rotary below LCD) → **HALT: CODE CONTRADICTS HARDWARE**
+
+3. **ASCII ↔ DOM:** For each hero element, verify the Gatekeeper's coarse grid is consistent with the SI's DOM positions:
+   - If Gatekeeper says `Rotary: [3,2]` (column 3) and `LCD: [1,2]` (column 1)
+   - SI must measure `rotary.centerX > lcd.centerX`
+   - If not → **HALT: CODE CONTRADICTS TEMPLATE**
+
+**On HALT:** Report the specific contradiction with all three representations side by side. Do NOT proceed to the next phase. The Gatekeeper template must be regenerated (with the ASCII Blueprint protocol) and the section must be re-built and re-audited.
+
+**Why three checks:** Any two of the three could agree while being wrong (e.g., Gatekeeper and code both wrong but consistent). The third representation breaks the echo chamber. The PQ's clockface prose is the most independent (derived from photo before reading template), making it the strongest signal.
 
 ### CONFLICT RESOLUTION MATRIX:
 - **The 9.5 Rule:** If any agent scores < 9.5, you MUST identify the specific "Deduction Reason" and force a "Rework Cycle" for the developer.
