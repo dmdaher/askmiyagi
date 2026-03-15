@@ -555,7 +555,7 @@ function SectionEnvContent({ ps, hl, onButtonClick, panelState, highlightedContr
           highlighted={hl('env-release')} trackHeight={SLIDER_TRACK_HEIGHT_ENV} trackWidth={SLIDER_TRACK_WIDTH} />
         <EnvelopeCurveIcons panelState={panelState} highlightedControls={highlightedControls} />
       </div>
-      <div className="flex items-center justify-between w-full gap-0.5">
+      <div className="flex items-center justify-center w-full gap-0.5">
         {[
           { id: 'env-vca', label: 'VCA', defaultActive: true },
           { id: 'env-vcf', label: 'VCF' },

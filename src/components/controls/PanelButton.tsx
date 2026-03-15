@@ -84,7 +84,7 @@ export default function PanelButton({
     <div className="flex flex-col items-center" data-control-id={id}>
       {/* Label above button (panel-printed text) — rendered before LED per hardware layout */}
       {labelPosition === 'above' && (
-        <span className={`${sizeStyle.text} font-bold text-neutral-300 leading-tight text-center tracking-wide uppercase`}>
+        <span className={`${sizeStyle.text} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}>
           {label}
         </span>
       )}
@@ -130,7 +130,7 @@ export default function PanelButton({
 
       {/* Label below button (panel-printed text) */}
       {labelPosition === 'below' && (
-        <span className={`${sizeStyle.text} font-bold text-neutral-300 leading-tight text-center tracking-wide uppercase`}>
+        <span className={`${sizeStyle.text} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}>
           {label}
         </span>
       )}
