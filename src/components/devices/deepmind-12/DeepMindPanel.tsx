@@ -243,18 +243,15 @@ function PerfSection({ ps, hl, onButtonClick }: {
       </div>
 
       {/* Octave buttons */}
-      <div className="flex gap-1 mb-1">
+      <div className="flex gap-1">
         <PanelButton id="perf-oct-down" label="OCT -" variant="function" size="sm"
           highlighted={hl('perf-oct-down')} onClick={() => onButtonClick?.('perf-oct-down')} />
         <PanelButton id="perf-oct-up" label="OCT +" variant="function" size="sm"
           highlighted={hl('perf-oct-up')} onClick={() => onButtonClick?.('perf-oct-up')} />
       </div>
 
-      {/* Spacer to push wheels down */}
-      <div className="flex-1" />
-
-      {/* Pitch & Mod wheels */}
-      <div className="flex gap-2 mt-1">
+      {/* Pitch & Mod wheels — adjacent below OCT buttons, no large gap */}
+      <div className="flex gap-2 mt-2">
         <WheelControl id="perf-pitch" label="PITCH" highlighted={hl('perf-pitch')} />
         <WheelControl id="perf-mod" label="MOD" highlighted={hl('perf-mod')} />
       </div>
@@ -285,30 +282,20 @@ type EnvSectionProps = SectionProps & {
 function SectionArpContent({ ps, hl, onButtonClick }: SectionProps) {
   return (
     <div className="flex flex-col items-center gap-0 px-1 py-0 flex-1">
-      <div className="grid grid-cols-2 gap-1 w-full">
-        <div className="flex justify-center">
-          <PanelButton id="arp-chord" label="CHORD" variant="function" size="sm"
-            active={ps('arp-chord')?.active} highlighted={hl('arp-chord')}
-            hasLed ledOn={ps('arp-chord')?.ledOn} ledColor={DM_COLORS.ledOrange}
-            labelPosition="above" onClick={() => onButtonClick?.('arp-chord')} />
-        </div>
-        <div className="flex justify-center">
-          <PanelButton id="arp-poly-chord" label="POLY CHORD" variant="function" size="sm"
-            active={ps('arp-poly-chord')?.active} highlighted={hl('arp-poly-chord')}
-            hasLed ledOn={ps('arp-poly-chord')?.ledOn} ledColor={DM_COLORS.ledOrange}
-            labelPosition="above" onClick={() => onButtonClick?.('arp-poly-chord')} />
-        </div>
-      </div>
+      {/* Row 1: Sliders (RATE, GATE TIME) */}
       <div className="flex items-end gap-1 flex-1">
         <Slider id="arp-rate" label="RATE" value={ps('arp-rate')?.value ?? 64}
           highlighted={hl('arp-rate')} trackHeight={230} trackWidth={SLIDER_TRACK_WIDTH} />
         <Slider id="arp-gate-time" label="GATE TIME" value={ps('arp-gate-time')?.value ?? 80}
           highlighted={hl('arp-gate-time')} trackHeight={230} trackWidth={SLIDER_TRACK_WIDTH} />
       </div>
-      <div className="flex items-center gap-0.5">
+      {/* Row 2: All buttons — ON/OFF, TAP/HOLD, CHORD, POLY CHORD, EDIT */}
+      <div className="flex items-center gap-0.5 flex-wrap justify-center">
         {[
           { id: 'arp-on-off', label: 'ON/OFF' },
           { id: 'arp-tap-hold', label: 'TAP/HOLD' },
+          { id: 'arp-chord', label: 'CHORD' },
+          { id: 'arp-poly-chord', label: 'POLY CHORD' },
           { id: 'arp-edit', label: 'EDIT' },
         ].map((b) => (
           <PanelButton key={b.id} id={b.id} label={b.label} variant="function" size="sm"
@@ -358,21 +345,12 @@ function SectionLfo2Content({ ps, hl, onButtonClick }: SectionProps) {
 function SectionOscContent({ ps, hl, onButtonClick }: SectionProps) {
   return (
     <div className="flex flex-col items-center gap-0 px-1 py-0 flex-1">
-      <div className="flex items-center gap-1 self-start ml-2">
-        <PanelButton id="osc-square" label="□" variant="function" size="sm"
-          active={ps('osc-square')?.active} highlighted={hl('osc-square')}
-          hasLed ledOn={ps('osc-square')?.ledOn ?? true} ledColor={DM_COLORS.ledOrange}
-          labelPosition="above" onClick={() => onButtonClick?.('osc-square')} />
-        <PanelButton id="osc-sawtooth" label="⊿" variant="function" size="sm"
-          active={ps('osc-sawtooth')?.active} highlighted={hl('osc-sawtooth')}
-          hasLed ledOn={ps('osc-sawtooth')?.ledOn ?? true} ledColor={DM_COLORS.ledOrange}
-          labelPosition="above" onClick={() => onButtonClick?.('osc-sawtooth')} />
-      </div>
+      {/* Row 1: Sliders with sub-group labels */}
       <div className="flex items-end gap-0.5 flex-1">
         {/* PITCH MOD — shared by both OSCs, leftmost per manual [7] listing order */}
         <Slider id="osc-pitch-mod" label="PITCH MOD" value={ps('osc-pitch-mod')?.value ?? 0}
           highlighted={hl('osc-pitch-mod')} trackHeight={220} trackWidth={SLIDER_TRACK_WIDTH} />
-        {/* OSC 1 group: PWM slider (SQUARE/SAW switches are above) */}
+        {/* OSC 1 group: PWM slider */}
         <div className="flex flex-col items-center">
           <span style={{ fontSize: 7, color: DM_COLORS.labelText, letterSpacing: '0.05em', marginBottom: 2 }}>OSC 1</span>
           <div className="flex items-end gap-0.5">
@@ -396,11 +374,20 @@ function SectionOscContent({ ps, hl, onButtonClick }: SectionProps) {
         <Slider id="osc-noise" label="NOISE LEVEL" value={ps('osc-noise')?.value ?? 0}
           highlighted={hl('osc-noise')} trackHeight={220} trackWidth={SLIDER_TRACK_WIDTH} />
       </div>
+      {/* Row 2: All buttons — SYNC, SQUAREWAVE, SAWTOOTH, EDIT (per manual hardware layout) */}
       <div className="flex items-center gap-0.5">
         <PanelButton id="osc-sync" label="SYNC" variant="function" size="sm"
           active={ps('osc-sync')?.active} highlighted={hl('osc-sync')}
           hasLed ledOn={ps('osc-sync')?.ledOn} ledColor={DM_COLORS.ledRed}
           labelPosition="above" onClick={() => onButtonClick?.('osc-sync')} />
+        <PanelButton id="osc-square" label="SQUAREWAVE" variant="function" size="sm"
+          active={ps('osc-square')?.active} highlighted={hl('osc-square')}
+          hasLed ledOn={ps('osc-square')?.ledOn ?? true} ledColor={DM_COLORS.ledOrange}
+          labelPosition="above" onClick={() => onButtonClick?.('osc-square')} />
+        <PanelButton id="osc-sawtooth" label="SAWTOOTH" variant="function" size="sm"
+          active={ps('osc-sawtooth')?.active} highlighted={hl('osc-sawtooth')}
+          hasLed ledOn={ps('osc-sawtooth')?.ledOn ?? true} ledColor={DM_COLORS.ledOrange}
+          labelPosition="above" onClick={() => onButtonClick?.('osc-sawtooth')} />
         <PanelButton id="osc-edit" label="EDIT" variant="function" size="sm"
           active={ps('osc-edit')?.active} highlighted={hl('osc-edit')}
           hasLed ledOn={ps('osc-edit')?.ledOn} ledColor={DM_COLORS.ledOrange}
@@ -412,9 +399,9 @@ function SectionOscContent({ ps, hl, onButtonClick }: SectionProps) {
 
 function SectionProgContent({ ps, hl, onButtonClick, displayState }: ProgSectionProps) {
   return (
-    <div className="flex flex-col px-1.5 flex-1 w-full h-full">
+    <div className="flex flex-col px-1.5 flex-1 w-full h-full justify-start">
       {/* Main area: 3 columns — LCD [1] | Nav[2]+Rotary[4] | Fader[4] */}
-      <div className="flex gap-1.5 w-full flex-1 min-h-0">
+      <div className="flex gap-1.5 w-full shrink-0">
         {/* LEFT COLUMN: LCD Display [1] — fills available width, landscape aspect ratio */}
         <div className="flex-1 flex items-start pt-0.5">
           <DeepMindDisplay displayState={displayState} highlighted={hl('display')} />
@@ -509,14 +496,14 @@ function SectionVcfContent({ ps, hl, onButtonClick }: SectionProps) {
           active={ps('vcf-2pole')?.active} highlighted={hl('vcf-2pole')}
           hasLed ledOn={ps('vcf-2pole')?.ledOn} ledColor={DM_COLORS.ledOrange}
           labelPosition="above" onClick={() => onButtonClick?.('vcf-2pole')} />
-        <PanelButton id="vcf-invert" label="INVERT" variant="function" size="sm"
-          active={ps('vcf-invert')?.active} highlighted={hl('vcf-invert')}
-          hasLed ledOn={ps('vcf-invert')?.ledOn} ledColor={DM_COLORS.ledOrange}
-          labelPosition="above" onClick={() => onButtonClick?.('vcf-invert')} />
         <PanelButton id="vcf-edit" label="EDIT" variant="function" size="sm"
           active={ps('vcf-edit')?.active} highlighted={hl('vcf-edit')}
           hasLed ledOn={ps('vcf-edit')?.ledOn} ledColor={DM_COLORS.ledOrange}
           labelPosition="above" onClick={() => onButtonClick?.('vcf-edit')} />
+        <PanelButton id="vcf-invert" label="INVERT" variant="function" size="sm"
+          active={ps('vcf-invert')?.active} highlighted={hl('vcf-invert')}
+          hasLed ledOn={ps('vcf-invert')?.ledOn} ledColor={DM_COLORS.ledOrange}
+          labelPosition="above" onClick={() => onButtonClick?.('vcf-invert')} />
       </div>
     </div>
   );
