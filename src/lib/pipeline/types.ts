@@ -67,7 +67,7 @@ export interface PipelineState {
   deviceId: string;
   deviceName: string;
   manufacturer: string;
-  manualPath: string;
+  manualPaths: string[];
   currentPhase: PipelinePhase;
   status: RunStatus;
   branch: string;

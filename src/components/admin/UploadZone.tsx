@@ -8,7 +8,7 @@ interface UploadZoneProps {
 }
 
 export default function UploadZone({ onCreated }: UploadZoneProps) {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [deviceName, setDeviceName] = useState('');
   const [manufacturer, setManufacturer] = useState('');
   const [budgetCapUsd, setBudgetCapUsd] = useState(50);
@@ -17,24 +17,34 @@ export default function UploadZone({ onCreated }: UploadZoneProps) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const addFiles = useCallback((newFiles: FileList | File[]) => {
+    const pdfs = Array.from(newFiles).filter((f) => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+    if (pdfs.length === 0) {
+      setError('Please select PDF files');
+      return;
+    }
+    setFiles((prev) => {
+      const existing = new Set(prev.map((f) => f.name));
+      const unique = pdfs.filter((f) => !existing.has(f.name));
+      return [...prev, ...unique];
+    });
+    setError(null);
+  }, []);
+
+  const removeFile = (name: string) => {
+    setFiles((prev) => prev.filter((f) => f.name !== name));
+  };
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    const dropped = e.dataTransfer.files[0];
-    if (dropped?.type === 'application/pdf') {
-      setFile(dropped);
-      setError(null);
-    } else {
-      setError('Please drop a PDF file');
-    }
-  }, []);
+    addFiles(e.dataTransfer.files);
+  }, [addFiles]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) {
-      setFile(selected);
-      setError(null);
-    }
+    if (e.target.files) addFiles(e.target.files);
+    // Reset so the same files can be re-selected
+    e.target.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +62,9 @@ export default function UploadZone({ onCreated }: UploadZoneProps) {
       formData.append('deviceName', deviceName);
       formData.append('manufacturer', manufacturer);
       formData.append('budgetCapUsd', String(budgetCapUsd));
-      if (file) formData.append('manual', file);
+      for (const file of files) {
+        formData.append('manuals', file);
+      }
 
       const res = await fetch('/api/pipeline', { method: 'POST', body: formData });
       const data = await res.json();
@@ -88,10 +100,10 @@ export default function UploadZone({ onCreated }: UploadZoneProps) {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`flex h-28 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
+          className={`flex min-h-[7rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-4 transition-colors ${
             isDragging
               ? 'border-[var(--accent)] bg-[var(--accent)]/5'
-              : file
+              : files.length > 0
                 ? 'border-green-500/40 bg-green-500/5'
                 : 'border-[var(--card-border)] hover:border-gray-500'
           }`}
@@ -100,12 +112,37 @@ export default function UploadZone({ onCreated }: UploadZoneProps) {
             ref={fileInputRef}
             type="file"
             accept=".pdf"
+            multiple
             onChange={handleFileChange}
             className="hidden"
           />
-          <span className="text-sm text-gray-400">
-            {file ? file.name : 'Drop manual PDF here or click to browse'}
-          </span>
+          {files.length === 0 ? (
+            <span className="text-sm text-gray-400">
+              Drop manual PDFs here or click to browse
+            </span>
+          ) : (
+            <div className="flex w-full flex-col gap-1.5">
+              {files.map((f) => (
+                <div
+                  key={f.name}
+                  className="flex items-center justify-between rounded-lg bg-[var(--surface)] px-3 py-1.5"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="truncate text-xs text-gray-300">{f.name}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); removeFile(f.name); }}
+                    className="ml-2 text-xs text-gray-500 transition-colors hover:text-red-400"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+              <span className="mt-1 text-center text-xs text-gray-500">
+                Click to add more
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Form fields */}

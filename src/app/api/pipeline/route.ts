@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     const deviceName = formData.get('deviceName') as string;
     const manufacturer = formData.get('manufacturer') as string;
     const budgetCapUsd = Number(formData.get('budgetCapUsd') ?? 50);
-    const manualFile = formData.get('manual') as File | null;
+    const manualFiles = formData.getAll('manuals') as File[];
 
     if (!deviceName || !manufacturer) {
       return NextResponse.json({ error: 'deviceName and manufacturer are required' }, { status: 400 });
@@ -51,20 +51,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Pipeline already exists for device: ${deviceId}` }, { status: 409 });
     }
 
-    let manualPath = '';
-    if (manualFile) {
+    const manualPaths: string[] = [];
+    if (manualFiles.length > 0) {
       const deviceDir = `docs/${manufacturer}/${deviceId}`;
       fs.mkdirSync(deviceDir, { recursive: true });
-      manualPath = `${deviceDir}/${manualFile.name}`;
-      const buffer = Buffer.from(await manualFile.arrayBuffer());
-      fs.writeFileSync(manualPath, buffer);
+      for (const file of manualFiles) {
+        if (!file.name) continue;
+        const filePath = `${deviceDir}/${file.name}`;
+        const buffer = Buffer.from(await file.arrayBuffer());
+        fs.writeFileSync(filePath, buffer);
+        manualPaths.push(filePath);
+      }
     }
 
     ensurePipelineDir(deviceId);
-    const state = createInitialState({ deviceId, deviceName, manufacturer, manualPath, budgetCapUsd });
+    const state = createInitialState({ deviceId, deviceName, manufacturer, manualPaths, budgetCapUsd });
     writeState(deviceId, state);
 
-    return NextResponse.json({ deviceId, status: 'pending', manualPath: manualPath || null });
+    return NextResponse.json({ deviceId, status: 'pending', manualPaths });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 500 });

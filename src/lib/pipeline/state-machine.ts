@@ -50,7 +50,7 @@ export function createInitialState(opts: {
   deviceId: string;
   deviceName: string;
   manufacturer: string;
-  manualPath: string;
+  manualPaths: string[];
   budgetCapUsd: number;
 }): PipelineState {
   const now = new Date().toISOString();
@@ -58,7 +58,7 @@ export function createInitialState(opts: {
     deviceId: opts.deviceId,
     deviceName: opts.deviceName,
     manufacturer: opts.manufacturer,
-    manualPath: opts.manualPath,
+    manualPaths: opts.manualPaths,
     currentPhase: 'pending',
     status: 'paused',
     branch: `feature/${opts.deviceId}`,
@@ -153,7 +153,7 @@ export function getNextPhase(
 }
 
 export function advancePhase(state: PipelineState): void {
-  const hasManual = !!state.manualPath && fs.existsSync(state.manualPath);
+  const hasManual = state.manualPaths.length > 0 && state.manualPaths.some((p) => fs.existsSync(p));
   const next = getNextPhase(state.currentPhase, hasManual);
 
   if (next === 'completed') {

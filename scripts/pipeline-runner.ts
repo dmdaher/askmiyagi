@@ -161,13 +161,15 @@ async function doPhase0(state: PipelineState) {
     appendLog(deviceId, { level: 'warn', message: `Branch ${state.branch} may already exist, continuing...` });
   }
 
+  const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
   const prompt = `You are the Gatekeeper agent. Initialize the digital twin build for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
-- Manual: ${state.manualPath}
+- Manuals:
+${manualList}
 
-Read the manual PDF at "${state.manualPath}" and produce:
+Read all manual PDFs and produce:
 1. The Master Manifest of all hardware controls
 2. Density Anchors
 3. Layout Architecture classification
@@ -340,7 +342,7 @@ async function doPhase4Extract(state: PipelineState) {
   if (!checkBudget(state)) return;
 
   const result = await invokeAgent({
-    prompt: `Extract tutorial curriculum from the ${state.deviceName} manual at "${state.manualPath}". Device ID: ${deviceId}. Use chapter-by-chapter extraction.`,
+    prompt: `Extract tutorial curriculum from the ${state.deviceName} manuals at: ${state.manualPaths.join(', ')}. Device ID: ${deviceId}. Use chapter-by-chapter extraction.`,
     deviceId, phase: 'phase-4-extraction', agent: 'manual-extractor', model: 'claude-opus-4-6',
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
