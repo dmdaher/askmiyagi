@@ -145,6 +145,26 @@ For each hero spatial relationship in complex sections (e.g., "rotary is to the 
 - **(-1.0) Shallow Validation** per Phase 1 instance of "present = PASS" without position/scale check (capped at -3.0)
 9. **Scale Check:** Challenge if the code approach works for 50 instruments or just this one.
 
+### FLEX-RATIO REDISTRIBUTION MANDATE (MANDATORY):
+If the Structural Inspector or Panel Questioner flags a "Label Collision", "Capacity Failure", or "Legibility Failure" in any section, you are explicitly authorized and REQUIRED to alter the Gatekeeper's Section Width Ratios.
+
+**Forbidden fixes (band-aids that create worse problems):**
+- Do NOT suggest making the font size smaller than `text-[10px]` — unreadable after viewport scaling
+- Do NOT suggest removing `whitespace-nowrap` — breaks wrapper height alignment across button rows
+- Do NOT suggest abbreviating labels — deviates from hardware accuracy
+
+**The correct fix — "Stealing Width":**
+1. Identify the failing section and calculate how much additional width it needs: `Sum(Wrapper Widths) + (N-1) × min_gap - Section.innerWidth = deficit`
+2. Identify adjacent sections with sparse controls (low density — e.g., single slider sections like POLY, VCA, HPF) or sections with generous surplus space
+3. Instruct the developer to decrease the sparse section's `flex-grow` ratio and add that value to the failing section's `flex-grow` ratio
+4. The total flex sum must remain unchanged
+
+**Verification:** After redistribution, re-run the Structural Inspector's COLLISION & BLEED AUDIT on the modified section. Labels must have ≥ 4px rendered gap between adjacent wrappers.
+
+**Scoring:**
+- **(-2.0)** if a Label Collision or Capacity Failure is present and the Critic recommends a font-size or nowrap fix instead of flex redistribution
+- **(-1.0)** if a collision exists and no redistribution recommendation is provided
+
 ### CHECKPOINTING
 On startup, ALWAYS read `.claude/agent-memory/critic/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 

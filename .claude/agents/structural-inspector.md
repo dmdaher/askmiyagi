@@ -233,6 +233,20 @@ Scoring:
 
 If no Key Component Proportions exist in the Gatekeeper's checkpoint, flag as "PROPORTION CHECK SKIPPED" and note in your report.
 
+### COLLISION & BLEED AUDIT (MANDATORY — AFTER COMPONENT PROPORTIONS):
+In any horizontal row of controls (buttons, knobs, or other elements with labels), you must verify the section is physically capable of holding its text. This is a MATH check, not a visual check.
+
+1. **Label Collision:** Run `getBoundingClientRect()` on all adjacent label elements in the row. If `label[A].right >= label[B].left`, you have a **Label Collision**. Report: `ARP buttons: "TAP/HOLD".right (163px) >= "CHORD".left (163px) — COLLISION`
+2. **Container Bleed:** Sum the intrinsic widths of all button/control wrappers in the row. If `Sum(Wrapper Widths) > Section.innerWidth`, the text is bleeding out of its container. Report: `ARP button row: 207px total in 172px section — CAPACITY FAILURE`
+3. **The w-full Check:** If a row uses `justify-between`, verify the row container AND its parent both have `w-full` (or equivalent explicit width). `justify-between` on a collapsed-width container distributes zero space.
+
+Scoring:
+- **(-3.0) Capacity Failure** — wrapper widths exceed section inner width (section flex ratio is structurally wrong)
+- **(-2.0) Label Collision** — adjacent labels overlap even when section has sufficient width
+- **(-1.0) Ineffective Layout** — `justify-between` or `justify-evenly` used without `w-full` on container chain
+
+**IMPORTANT:** Do NOT suggest fixing collisions by reducing font size below `text-[10px]` or removing `whitespace-nowrap`. These are band-aids that create worse problems (unreadable text, uneven wrapper heights). The correct fix is flex-ratio redistribution — see Critic's FLEX-RATIO REDISTRIBUTION MANDATE.
+
 ### RELATIVE PROPORTIONALITY AUDIT (MANDATORY — AFTER COMPONENT PROPORTIONS):
 You are not an accountant checking "does element X exist." You are an industrial designer verifying that every element's SIZE RELATIVE TO ITS NEIGHBORS matches the hardware. Absolute pixel values are meaningless — what matters is the RATIO between elements.
 

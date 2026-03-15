@@ -221,6 +221,18 @@ You are forbidden from scoring the "Overall Layout" until you have performed a z
 
 **HARD CONTEXT RULE:** The entire Sector-by-Sector Zoom output must fit in 20 lines or fewer. Binary answers for the four checks, one-line overlay result, one-line failure descriptions. This is non-negotiable; exceeding this budget risks context window exhaustion before you reach your scoring step.
 
+### SILKSCREEN LEGIBILITY CHECK (MANDATORY — AFTER SECTOR ZOOM):
+Look specifically at horizontal rows of buttons or controls with above/below labels (like ARP, OSC, or menu rows in any instrument).
+
+1. **Label Overlap:** Do the labels above the buttons run into each other? If adjacent label text visually merges or overlaps, this is a **Legibility Failure**.
+2. **Section Bleed:** Does the text visually bleed outside the boundary of the section's background? If labels extend past the section edge, the section is too narrow for its content.
+3. **Post-Scale Check:** Verify legibility at the RENDERED scale (after viewport scaling), not just at DOM scale. Labels that barely fit at full panel width may become unreadable at 0.7x scale.
+
+If YES to any of the above, report: `"Labels overlap in [SECTION]. The section is too narrow for its text."` This is a structural math failure, not a polish issue.
+
+Scoring:
+- **(-2.0) Legibility Failure** per section where labels overlap or bleed outside section bounds
+
 ### POSITIONAL CROSS-CHECK (MANDATORY — AFTER SECTOR ZOOM):
 After the Sector-by-Sector Zoom, perform a dedicated positional audit:
 1. **Read the Gatekeeper's Manifest** and extract every element that has a "cross-section" designation or any non-obvious position (LED strips, subtitle text, branding elements, decorative features).
