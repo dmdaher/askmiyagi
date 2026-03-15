@@ -10,6 +10,7 @@ import CategoryFilter from '@/components/ui/CategoryFilter';
 import { getAvailableDevices } from '@/data/devices';
 import { fantom08Tutorials } from '@/data/tutorials/fantom-08';
 import { rc505mk2Tutorials } from '@/data/tutorials/rc505-mk2';
+import { deepmind12Tutorials } from '@/data/tutorials/deepmind-12';
 import { TUTORIAL_CATEGORIES } from '@/lib/constants';
 import { searchTutorials } from '@/lib/assistant/search';
 import { buildResponse } from '@/lib/assistant/responseBuilder';
@@ -21,6 +22,7 @@ import { SearchResult } from '@/types/assistant';
 const allTutorials: Record<string, Tutorial[]> = {
   'fantom-08': fantom08Tutorials,
   'rc505-mk2': rc505mk2Tutorials,
+  'deepmind-12': deepmind12Tutorials,
 };
 
 const containerVariants = {
@@ -202,6 +204,7 @@ function HomePageContent() {
                   device={device}
                   tutorialCount={(allTutorials[device.id] ?? []).length}
                   onClick={() => handleDeviceSelect(device)}
+                  onViewInstrument={() => router.push(`/instrument/${device.id}`)}
                 />
               </motion.div>
             ))}
