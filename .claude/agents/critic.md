@@ -166,6 +166,24 @@ If the Structural Inspector or Panel Questioner flags a "Label Collision", "Capa
 - **(-1.0)** if a collision exists and no redistribution recommendation is provided
 
 ### CHECKPOINTING
+
+When writing your checkpoint, include YAML frontmatter at the very top of the checkpoint file:
+
+```yaml
+---
+agent: critic
+deviceId: <device-id>
+phase: <phase-number>
+status: <PASS | FAIL | READY | IN_PROGRESS | BLOCKED>
+score: <X.X>
+verdict: <APPROVED | REJECTED | READY>
+timestamp: <ISO-8601>
+sectionId: <section-id>    # Phase 1 only
+---
+```
+
+The prose checkpoint follows below the frontmatter as usual.
+
 On startup, ALWAYS read `.claude/agent-memory/critic/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
 After completing each major step, write your progress to `.claude/agent-memory/critic/checkpoint.md`:

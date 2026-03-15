@@ -321,6 +321,23 @@ The Structural Inspector must verify these proportions in the rendered DOM. The 
 - **Writes to:** `.claude/agent-memory/gatekeeper/checkpoint.md` — must include the full Manifest, Density Anchors, Layout Architecture, Section Width Ratios, Section Topology Maps, and Asset Paths
 
 ### CHECKPOINTING
+
+When writing your checkpoint, include YAML frontmatter at the very top of the checkpoint file:
+
+```yaml
+---
+agent: gatekeeper
+deviceId: <device-id>
+phase: 0
+status: <PASS | FAIL | READY | IN_PROGRESS | BLOCKED>
+score: <X.X>
+verdict: <APPROVED | REJECTED | READY>
+timestamp: <ISO-8601>
+---
+```
+
+The prose checkpoint follows below the frontmatter as usual.
+
 On startup, ALWAYS read `.claude/agent-memory/gatekeeper/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
 After completing each major step, write your progress to `.claude/agent-memory/gatekeeper/checkpoint.md`:

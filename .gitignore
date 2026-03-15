@@ -43,5 +43,17 @@ next-env.d.ts
 # worktrees
 .worktrees/
 
+# QA pipeline working artifacts
+.qa/
+
+# Pipeline runner working directory
+.pipeline/
+
+# Playwright MCP auto-captures
+.playwright-mcp/
+
 # QA/audit screenshots
 docs/**/screenshots/
+
+# Prevent stray screenshots in project root
+/*.png

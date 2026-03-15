@@ -288,6 +288,24 @@ This audit runs ONLY in Phase 2 (Global Assembly), after all sections have passe
 4. **Grid Integrity:** Map the Twin's code to the hardware's physical rows/columns. If a control in Row 1 of the hardware wraps to Row 2 in the Twin, it is a CRITICAL FAIL.
 
 ### CHECKPOINTING
+
+When writing your checkpoint, include YAML frontmatter at the very top of the checkpoint file:
+
+```yaml
+---
+agent: structural-inspector
+deviceId: <device-id>
+phase: <phase-number>
+status: <PASS | FAIL | READY | IN_PROGRESS | BLOCKED>
+score: <X.X>
+verdict: <APPROVED | REJECTED | READY>
+timestamp: <ISO-8601>
+sectionId: <section-id>    # Phase 1 only
+---
+```
+
+The prose checkpoint follows below the frontmatter as usual.
+
 On startup, ALWAYS read `.claude/agent-memory/structural-inspector/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
 After completing each major step, write your progress to `.claude/agent-memory/structural-inspector/checkpoint.md`:
