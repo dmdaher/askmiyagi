@@ -137,6 +137,17 @@ export function startPhase(state: PipelineState, phase: PipelinePhase): void {
   state.currentPhase = phase;
   state.lastCheckpoint = { phase, subStep: 'start' };
 
+  // Clear active escalation when entering a new phase — stale escalations
+  // from previous phases shouldn't block the UI
+  if (state.activeEscalation) {
+    const esc = state.escalations.find((e) => e.id === state.activeEscalation);
+    if (esc && esc.phase !== phase) {
+      esc.resolvedAt = esc.resolvedAt ?? new Date().toISOString();
+      esc.resolution = esc.resolution ?? 'auto-resolved: pipeline advanced to next phase';
+      state.activeEscalation = null;
+    }
+  }
+
   const existing = state.phases.find((p) => p.phase === phase);
   if (!existing) {
     state.phases.push({
