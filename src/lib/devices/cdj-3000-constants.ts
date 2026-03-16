@@ -153,6 +153,6 @@ export const CDJ_CONTROL_IDS = {
 // RIGHT-TEMPO section layout dimensions
 // Tempo slider: tall vertical fader, ~60% of section height (~744px)
 // Per gatekeeper: 5:1 height-to-width ratio → 600px height / 24px width
-export const TEMPO_SLIDER_HEIGHT = 600;
+export const TEMPO_SLIDER_HEIGHT = 744;
 export const TEMPO_SLIDER_WIDTH = 24;
 export const TEMPO_SLIDER_THUMB_HEIGHT = 20;

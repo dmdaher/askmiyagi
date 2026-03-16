@@ -94,7 +94,7 @@ function RightTempoSection({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'stretch',
-        padding: '8px 4px',
+        padding: '8px 2px',
         gap: 6,
         boxSizing: 'border-box',
       }}
@@ -250,7 +250,7 @@ function RightTempoSection({
           {/* Item 44 — TEMPO ±6/±10/±16/WIDE button */}
           <PanelButton
             id={ids.tempoRangeBtn}
-            label="±6/±10/±16/WIDE"
+            label="TEMPO ±6/±10/±16/WIDE"
             size="sm"
             variant="function"
             active={getButtonState(panelState, ids.tempoRangeBtn).active}
@@ -407,7 +407,7 @@ export default function CDJPanel({
       <div
         style={{
           display: 'flex',
-          width: Math.round((SECTION_WIDTH_PCT.rightTempo / 100) * CDJ_PANEL_WIDTH),
+          width: CDJ_PANEL_WIDTH,
           backgroundColor: CDJ_COLORS.panelBg,
           borderRadius: 4,
           overflow: 'hidden',
