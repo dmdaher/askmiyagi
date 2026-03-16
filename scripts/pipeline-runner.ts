@@ -34,6 +34,8 @@ import {
   accumulateCost,
   recordCostEntry,
   checkBudget,
+  updateBurnRate,
+  updateSubscription,
 } from '../src/lib/pipeline/cost-tracker';
 import { PipelineState, SectionStatus } from '../src/lib/pipeline/types';
 
@@ -45,6 +47,14 @@ if (!deviceId) {
 
 /** Resolved worktree path — all agent invocations run here */
 let worktreeCwd: string;
+
+function getRemainingBudget(state: PipelineState): number {
+  return state.budgetCapUsd - (state.totalActualCostUsd || state.totalCostUsd);
+}
+
+function isBudgetOk(state: PipelineState): boolean {
+  return checkBudget(state).allowed;
+}
 
 async function run() {
   let state = readState(deviceId);
@@ -102,12 +112,16 @@ async function run() {
 
   try {
     while (state.status === 'running') {
-      if (!checkBudget(state)) {
+      const budgetCheck = checkBudget(state);
+      if (!budgetCheck.allowed) {
         createEscalation(state, 'budget-exceeded',
-          `Budget cap of $${state.budgetCapUsd} exceeded. Total cost: $${state.totalCostUsd.toFixed(2)}`);
+          `Budget cap of $${state.budgetCapUsd} exceeded. Total cost: $${(state.totalActualCostUsd || state.totalCostUsd).toFixed(2)}`);
         writeState(deviceId, state);
         sendNotification('Miyagi Pipeline', `Budget exceeded for ${state.deviceName}`);
         break;
+      }
+      if (budgetCheck.warning) {
+        appendLog(deviceId, { level: 'warn', message: budgetCheck.warning });
       }
 
       writeState(deviceId, state);
@@ -202,7 +216,7 @@ async function doPending(state: PipelineState) {
 async function doPreflight(state: PipelineState) {
   startPhase(state, 'phase-preflight');
   appendLog(deviceId, { level: 'info', message: 'Starting Phase Preflight: Auto-download manual' });
-  if (!checkBudget(state)) return;
+  if (!isBudgetOk(state)) return;
 
   const outputDir = path.join(worktreeCwd, 'docs', state.manufacturer, deviceId);
 
@@ -284,12 +298,15 @@ If you cannot find or download the manual after trying all approaches, state cle
       'Write',
       'Read',
     ],
+    remainingBudgetUsd: getRemainingBudget(state),
   });
 
   if (result.costEntry) {
     accumulateCost(state, result.costEntry);
     recordCostEntry(deviceId, result.costEntry);
   }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, result.rateLimitEvents);
 
   // Check if any PDFs were downloaded
   const downloadedPdfs = findPdfsInDir(outputDir);
@@ -353,12 +370,15 @@ Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML
     phase: 'phase-0-gatekeeper',
     agent: 'gatekeeper',
     model: 'claude-opus-4-6',
+    remainingBudgetUsd: getRemainingBudget(state),
   });
 
   if (result.costEntry) {
     accumulateCost(state, result.costEntry);
     recordCostEntry(deviceId, result.costEntry);
   }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, result.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('gatekeeper');
   if (checkpoint.score !== null && checkpoint.score >= 9.5) {
@@ -386,15 +406,18 @@ async function doPhase1(state: PipelineState) {
       state.lastCheckpoint = { phase: 'phase-1-section-loop', subStep: `section-${section.id}-attempt-${section.attempts}` };
       writeState(deviceId, state);
 
-      if (!checkBudget(state)) return;
+      if (!isBudgetOk(state)) return;
 
       // SI
       appendLog(deviceId, { level: 'info', agent: 'structural-inspector', message: `SI: section ${section.id} (attempt ${section.attempts})` });
       const siResult = await invokeAgent({
         prompt: `Audit section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Read your checkpoint and the Gatekeeper's manifest first.`,
         deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'structural-inspector', sectionId: section.id,
+        remainingBudgetUsd: getRemainingBudget(state),
       });
       if (siResult.costEntry) { accumulateCost(state, siResult.costEntry); recordCostEntry(deviceId, siResult.costEntry); }
+      updateBurnRate(state, deviceId);
+      updateSubscription(state, siResult.rateLimitEvents);
       section.siScore = readAgentCheckpoint('structural-inspector').score;
 
       // PQ
@@ -402,8 +425,11 @@ async function doPhase1(state: PipelineState) {
       const pqResult = await invokeAgent({
         prompt: `Audit section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Compare the rendered panel against the reference photo.`,
         deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'panel-questioner', sectionId: section.id,
+        remainingBudgetUsd: getRemainingBudget(state),
       });
       if (pqResult.costEntry) { accumulateCost(state, pqResult.costEntry); recordCostEntry(deviceId, pqResult.costEntry); }
+      updateBurnRate(state, deviceId);
+      updateSubscription(state, pqResult.rateLimitEvents);
       section.pqScore = readAgentCheckpoint('panel-questioner').score;
 
       // Critic
@@ -411,8 +437,11 @@ async function doPhase1(state: PipelineState) {
       const criticResult = await invokeAgent({
         prompt: `Final audit of section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Review SI and PQ findings, then render your verdict.`,
         deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'critic', sectionId: section.id,
+        remainingBudgetUsd: getRemainingBudget(state),
       });
       if (criticResult.costEntry) { accumulateCost(state, criticResult.costEntry); recordCostEntry(deviceId, criticResult.costEntry); }
+      updateBurnRate(state, deviceId);
+      updateSubscription(state, criticResult.rateLimitEvents);
       section.criticScore = readAgentCheckpoint('critic').score;
 
       if (section.siScore === 10 && section.pqScore === 10 && section.criticScore === 10) {
@@ -444,13 +473,16 @@ async function doPhase2(state: PipelineState) {
     attempts++;
     state.lastCheckpoint = { phase: 'phase-2-global-assembly', subStep: `attempt-${attempts}` };
     writeState(deviceId, state);
-    if (!checkBudget(state)) return;
+    if (!isBudgetOk(state)) return;
 
     const result = await invokeAgent({
       prompt: `Perform global assembly audit of the ${state.deviceName} digital twin. Device ID: ${deviceId}. All sections are vaulted. Check overall layout, cross-section alignment, and global consistency.`,
       deviceId, cwd: worktreeCwd, phase: 'phase-2-global-assembly', agent: 'structural-inspector',
+      remainingBudgetUsd: getRemainingBudget(state),
     });
     if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, result.rateLimitEvents);
 
     const checkpoint = readAgentCheckpoint('structural-inspector');
     if (checkpoint.score !== null && checkpoint.score >= 10) {
@@ -467,13 +499,16 @@ async function doPhase2(state: PipelineState) {
 async function doPhase3(state: PipelineState) {
   startPhase(state, 'phase-3-harmonic-polish');
   appendLog(deviceId, { level: 'info', message: 'Starting Phase 3: Harmonic Polish' });
-  if (!checkBudget(state)) return;
+  if (!isBudgetOk(state)) return;
 
   const result = await invokeAgent({
     prompt: `Perform final harmonic polish of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Apply any final visual refinements.`,
     deviceId, cwd: worktreeCwd, phase: 'phase-3-harmonic-polish', agent: 'critic',
+    remainingBudgetUsd: getRemainingBudget(state),
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, result.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('critic');
   if (checkpoint.score !== null && checkpoint.score >= 9.5) {
@@ -507,13 +542,16 @@ async function doPanelPR(state: PipelineState) {
 async function doPhase4Extract(state: PipelineState) {
   startPhase(state, 'phase-4-extraction');
   appendLog(deviceId, { level: 'info', message: 'Starting Phase 4: Manual Extraction' });
-  if (!checkBudget(state)) return;
+  if (!isBudgetOk(state)) return;
 
   const result = await invokeAgent({
     prompt: `Extract tutorial curriculum from the ${state.deviceName} manuals at: ${state.manualPaths.join(', ')}. Device ID: ${deviceId}. Use chapter-by-chapter extraction.`,
     deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor', model: 'claude-opus-4-6',
+    remainingBudgetUsd: getRemainingBudget(state),
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, result.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('manual-extractor');
   if (checkpoint.score !== null && checkpoint.score >= 9.0) {
@@ -528,13 +566,16 @@ async function doPhase4Extract(state: PipelineState) {
 async function doPhase4Audit(state: PipelineState) {
   startPhase(state, 'phase-4-audit');
   appendLog(deviceId, { level: 'info', message: 'Starting Phase 4: Coverage Audit' });
-  if (!checkBudget(state)) return;
+  if (!isBudgetOk(state)) return;
 
   const result = await invokeAgent({
     prompt: `Audit tutorial coverage for ${state.deviceName}. Device ID: ${deviceId}. Verify the extraction covers all manual chapters. Produce a batch plan.`,
     deviceId, cwd: worktreeCwd, phase: 'phase-4-audit', agent: 'coverage-auditor',
+    remainingBudgetUsd: getRemainingBudget(state),
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, result.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('coverage-auditor');
   if (checkpoint.verdict === 'APPROVED') {
@@ -559,14 +600,17 @@ async function doPhase5(state: PipelineState) {
     batch.status = 'building';
     state.lastCheckpoint = { phase: 'phase-5-tutorial-build', subStep: `batch-${batch.batchId}-building` };
     writeState(deviceId, state);
-    if (!checkBudget(state)) return;
+    if (!isBudgetOk(state)) return;
 
     appendLog(deviceId, { level: 'info', agent: 'tutorial-builder', message: `Building batch ${batch.batchId}: ${batch.tutorials.join(', ')}` });
     const buildResult = await invokeAgent({
       prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${batch.tutorials.join(', ')}`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-builder', batchId: batch.batchId,
+      remainingBudgetUsd: getRemainingBudget(state),
     });
     if (buildResult.costEntry) { accumulateCost(state, buildResult.costEntry); recordCostEntry(deviceId, buildResult.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, buildResult.rateLimitEvents);
     batch.builderScore = readAgentCheckpoint('tutorial-builder').score;
 
     batch.status = 'reviewing';
@@ -577,8 +621,11 @@ async function doPhase5(state: PipelineState) {
     const reviewResult = await invokeAgent({
       prompt: `Review tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Verify accuracy against the manual.`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-reviewer', batchId: batch.batchId,
+      remainingBudgetUsd: getRemainingBudget(state),
     });
     if (reviewResult.costEntry) { accumulateCost(state, reviewResult.costEntry); recordCostEntry(deviceId, reviewResult.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, reviewResult.rateLimitEvents);
     batch.reviewerVerdict = readAgentCheckpoint('tutorial-reviewer').verdict;
 
     if (batch.reviewerVerdict === 'APPROVED') {
@@ -646,7 +693,7 @@ function parseSectionsFromGatekeeper(): SectionStatus[] {
         if (cells.length > 0 && cells[0] && !cells[0].includes('Section') && !cells[0].includes('ID')) {
           const id = cells[0].toLowerCase().replace(/\s+/g, '-');
           if (!sections.find((s) => s.id === id)) {
-            sections.push({ id, siScore: null, pqScore: null, criticScore: null, vaulted: false, attempts: 0, costUsd: 0, tokens: { input: 0, output: 0 } });
+            sections.push({ id, siScore: null, pqScore: null, criticScore: null, vaulted: false, attempts: 0, costUsd: 0, tokens: { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 } });
           }
         }
       }

@@ -15,6 +15,37 @@ export type PipelinePhase =
 
 export type RunStatus = 'running' | 'paused' | 'completed' | 'failed';
 
+export interface TokenUsage {
+  input: number;
+  output: number;
+  cacheCreation: number;
+  cacheRead: number;
+}
+
+export interface RateLimitInfo {
+  status: 'allowed' | 'rejected';
+  resetsAt: number;
+  rateLimitType: string;
+  overageStatus: string;
+  isUsingOverage: boolean;
+  capturedAt: string;
+}
+
+export interface SubscriptionUsage {
+  windowResetsAt: number;
+  isUsingOverage: boolean;
+  overageStatus: string;
+  rateLimitEvents: RateLimitInfo[];
+  lastUpdated: string;
+}
+
+export interface BurnRate {
+  costPerMinute: number;
+  costPerAgent: number;
+  projectedBudgetExhaustedAt: string | null;
+  dataPoints: { timestamp: string; cumulativeCost: number }[];
+}
+
 export interface SectionStatus {
   id: string;
   siScore: number | null;
@@ -23,7 +54,7 @@ export interface SectionStatus {
   vaulted: boolean;
   attempts: number;
   costUsd: number;
-  tokens: { input: number; output: number };
+  tokens: TokenUsage;
 }
 
 export interface TutorialBatchStatus {
@@ -41,7 +72,7 @@ export interface PhaseResult {
   score: number | null;
   status: 'running' | 'passed' | 'failed' | 'skipped';
   costUsd: number;
-  tokens: { input: number; output: number };
+  tokens: TokenUsage;
 }
 
 export type EscalationType =
@@ -82,8 +113,11 @@ export interface PipelineState {
   activeEscalation: string | null;
 
   totalCostUsd: number;
-  totalTokens: { input: number; output: number };
+  totalActualCostUsd: number;
+  totalTokens: TokenUsage;
   budgetCapUsd: number;
+  subscription: SubscriptionUsage | null;
+  burnRate: BurnRate | null;
   runnerPid: number | null;
   worktreePath: string | null;
 
@@ -112,7 +146,10 @@ export interface CostEntry {
   batchId?: string;
   inputTokens: number;
   outputTokens: number;
+  cacheCreationTokens: number;
+  cacheReadTokens: number;
   costUsd: number;
+  actualCostUsd: number | null;
   model: string;
   timestamp: string;
 }
@@ -131,6 +168,10 @@ export interface PipelineRunSummary {
   currentPhase: PipelinePhase;
   status: RunStatus;
   totalCostUsd: number;
+  totalActualCostUsd: number;
+  budgetCapUsd: number;
+  subscriptionResetsAt: number | null;
+  isUsingOverage: boolean;
   createdAt: string;
   updatedAt: string;
   activeEscalation: string | null;

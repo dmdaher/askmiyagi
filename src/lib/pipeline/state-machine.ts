@@ -21,11 +21,40 @@ export function getLogPath(deviceId: string): string {
   return path.join(PIPELINE_DIR, deviceId, 'runner.log');
 }
 
+/**
+ * Migrate a PipelineState read from disk, filling in defaults for fields
+ * added after the initial schema. This lets old state.json files load
+ * without errors.
+ */
+export function migrateState(state: PipelineState): PipelineState {
+  // Top-level fields
+  if (state.totalActualCostUsd === undefined) state.totalActualCostUsd = 0;
+  if (state.subscription === undefined) state.subscription = null;
+  if (state.burnRate === undefined) state.burnRate = null;
+
+  // TokenUsage migration: add cacheCreation/cacheRead if missing
+  const migrateTokens = (t: { input: number; output: number; cacheCreation?: number; cacheRead?: number }) => {
+    if (t.cacheCreation === undefined) t.cacheCreation = 0;
+    if (t.cacheRead === undefined) t.cacheRead = 0;
+  };
+
+  if (state.totalTokens) migrateTokens(state.totalTokens);
+  for (const phase of state.phases) {
+    if (phase.tokens) migrateTokens(phase.tokens);
+  }
+  for (const section of state.sections) {
+    if (section.tokens) migrateTokens(section.tokens);
+  }
+
+  return state;
+}
+
 export function readState(deviceId: string): PipelineState | null {
   const statePath = getStatePath(deviceId);
   try {
     const raw = fs.readFileSync(statePath, 'utf-8');
-    return JSON.parse(raw) as PipelineState;
+    const state = JSON.parse(raw) as PipelineState;
+    return migrateState(state);
   } catch {
     return null;
   }
@@ -71,8 +100,11 @@ export function createInitialState(opts: {
     escalations: [],
     activeEscalation: null,
     totalCostUsd: 0,
-    totalTokens: { input: 0, output: 0 },
+    totalActualCostUsd: 0,
+    totalTokens: { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 },
     budgetCapUsd: opts.budgetCapUsd,
+    subscription: null,
+    burnRate: null,
     runnerPid: null,
     worktreePath: null,
     lastCheckpoint: {
@@ -112,7 +144,7 @@ export function startPhase(state: PipelineState, phase: PipelinePhase): void {
       score: null,
       status: 'running',
       costUsd: 0,
-      tokens: { input: 0, output: 0 },
+      tokens: { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 },
     });
   } else {
     existing.status = 'running';

@@ -129,6 +129,10 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
       <CostBreakdown
         phases={pipeline.phases}
         sections={isPhase1 || pipeline.sections.length > 0 ? pipeline.sections : undefined}
+        totalActualCostUsd={pipeline.totalActualCostUsd}
+        budgetCapUsd={pipeline.budgetCapUsd}
+        subscription={pipeline.subscription}
+        burnRate={pipeline.burnRate}
       />
     </div>
   );

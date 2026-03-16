@@ -1,12 +1,13 @@
 import { spawn } from 'child_process';
 import { appendLog } from './state-machine';
 import { parseStreamJsonCost } from './cost-tracker';
-import { CostEntry, PipelinePhase } from './types';
+import { CostEntry, PipelinePhase, RateLimitInfo } from './types';
 
 export interface InvokeResult {
   exitCode: number;
   output: string;
   costEntry: CostEntry | null;
+  rateLimitEvents: RateLimitInfo[];
 }
 
 /**
@@ -24,6 +25,7 @@ export function invokeAgent(opts: {
   model?: string;
   allowedTools?: string[];
   maxTurns?: number;
+  remainingBudgetUsd?: number;
 }): Promise<InvokeResult> {
   return new Promise((resolve) => {
     const args = [
@@ -43,6 +45,12 @@ export function invokeAgent(opts: {
 
     if (opts.maxTurns) {
       args.push('--max-turns', String(opts.maxTurns));
+    }
+
+    if (opts.remainingBudgetUsd !== undefined && opts.remainingBudgetUsd > 0) {
+      const perInvocationCap = 20;
+      const budget = Math.min(opts.remainingBudgetUsd, perInvocationCap);
+      args.push('--max-budget-usd', budget.toFixed(2));
     }
 
     const outputLines: string[] = [];
@@ -82,7 +90,7 @@ export function invokeAgent(opts: {
     proc.on('close', (code) => {
       const exitCode = code ?? 1;
       const model = opts.model ?? 'claude-sonnet-4-6';
-      const costEntry = parseStreamJsonCost(
+      const parsed = parseStreamJsonCost(
         outputLines,
         model,
         opts.phase,
@@ -94,13 +102,14 @@ export function invokeAgent(opts: {
       appendLog(opts.deviceId, {
         level: 'info',
         agent: opts.agent,
-        message: `${opts.agent} exited with code ${exitCode}${costEntry ? ` ($${costEntry.costUsd.toFixed(4)})` : ''}`,
+        message: `${opts.agent} exited with code ${exitCode}${parsed.costEntry ? ` ($${parsed.costEntry.costUsd.toFixed(4)}${parsed.costEntry.actualCostUsd !== null ? ` actual: $${parsed.costEntry.actualCostUsd.toFixed(4)}` : ''})` : ''}`,
       });
 
       resolve({
         exitCode,
         output: outputLines.join('\n'),
-        costEntry,
+        costEntry: parsed.costEntry,
+        rateLimitEvents: parsed.rateLimitEvents,
       });
     });
 
@@ -114,6 +123,7 @@ export function invokeAgent(opts: {
         exitCode: 1,
         output: '',
         costEntry: null,
+        rateLimitEvents: [],
       });
     });
   });

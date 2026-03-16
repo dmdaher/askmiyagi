@@ -184,9 +184,30 @@ function PipelineCard({
         {/* Footer: cost + time + escalation */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-gray-300">
-              ${run.totalCostUsd.toFixed(2)}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-300">
+                ${(run.totalActualCostUsd || run.totalCostUsd).toFixed(2)}
+              </span>
+              {run.budgetCapUsd > 0 && (
+                <>
+                  <span className="text-xs text-gray-500">/ ${run.budgetCapUsd.toFixed(2)}</span>
+                  <div className="w-12 h-1.5 rounded-full overflow-hidden bg-gray-700/50">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${Math.min(((run.totalActualCostUsd || run.totalCostUsd) / run.budgetCapUsd) * 100, 100)}%`,
+                        backgroundColor:
+                          (run.totalActualCostUsd || run.totalCostUsd) / run.budgetCapUsd >= 0.85
+                            ? '#EF4444'
+                            : (run.totalActualCostUsd || run.totalCostUsd) / run.budgetCapUsd >= 0.7
+                              ? '#F59E0B'
+                              : 'var(--accent)',
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
             <span className="text-xs text-gray-600">
               {formatRelativeTime(run.updatedAt)}
             </span>
