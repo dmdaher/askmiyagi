@@ -16,6 +16,9 @@ import { polyUnison } from './poly-unison';
 import { savingPrograms } from './saving-programs';
 import { compareFaderMatch } from './compare-fader-match';
 import { programManagement } from './program-management';
+import { effectsOverview } from './effects-overview';
+import { effectsRouting } from './effects-routing';
+import { effectsDeepDive } from './effects-deep-dive';
 import { Tutorial } from '@/types/tutorial';
 
 export const deepmind12Tutorials: Tutorial[] = [
@@ -37,6 +40,9 @@ export const deepmind12Tutorials: Tutorial[] = [
   savingPrograms,
   compareFaderMatch,
   programManagement,
+  effectsOverview,
+  effectsRouting,
+  effectsDeepDive,
 ];
 
 export { panelOverview };
@@ -57,3 +63,6 @@ export { polyUnison };
 export { savingPrograms };
 export { compareFaderMatch };
 export { programManagement };
+export { effectsOverview };
+export { effectsRouting };
+export { effectsDeepDive };

@@ -135,8 +135,8 @@ const expectedStepCounts: Record<string, number> = {
 };
 
 describe('DeepMind 12 tutorial collection', () => {
-  it('has 18 tutorials', () => {
-    expect(deepmind12Tutorials).toHaveLength(18);
+  it('has 21 tutorials', () => {
+    expect(deepmind12Tutorials).toHaveLength(21);
   });
 
   it('all tutorials have unique IDs', () => {
