@@ -33,15 +33,64 @@ If any pre-condition fails, HALT with `PRE-CONDITION FAILURE` and specify what's
 
 ---
 
-## THE 4-PASS EXTRACTION PROTOCOL
+## THE SIEVE EXTRACTION PROTOCOL
+
+The extraction is split into two phases: **Sieve** (perception — what is on the page) and **Assembly** (cognition — how to teach it). This separation prevents hallucination, which almost always occurs when an agent reads and interprets simultaneously over large volumes.
+
+### PHASE A: THE SIEVE (Atomic Extraction & Verification)
+
+Before any interpretation begins, the entire manual must be ground-truthed into a verified master table. Process the manual chapter by chapter in 10-page buckets.
+
+**For each 10-page bucket:**
+
+#### Step 1 — Sieve (Raw Extraction)
+Read 10 pages. Output ONLY a raw structured table of every parameter, button, menu item, and workflow found. For each entry record:
+- **Exact string** as printed in the manual (verbatim — never paraphrase)
+- **Page number**
+- **Type:** parameter / button / menu-item / workflow-step / cross-reference / diagram
+- **Context:** which section/feature this belongs to
+
+Do NOT classify, group, or interpret. Just record what is on the page.
+
+#### Step 2 — Verify (Ground Truth Check)
+Immediately re-read those same 10 pages with a single focus: find omissions or errors in the table you just created. Check:
+- Did you miss any sidebar tips, footnotes, or warning boxes?
+- Did you miss any entries in parameter tables?
+- Are all parameter names exactly as printed (not paraphrased)?
+- Did you miss any "see also" / cross-reference callouts?
+
+Update the table with corrections.
+
+#### Step 3 — Anchor (Constants Alignment)
+Cross-reference every control/button in the verified table against `panel-constants.ts`. Flag discrepancies:
+- **PANEL-ONLY:** Control exists in constants but not mentioned on these pages (expected — it may appear in other chapters)
+- **MANUAL-ONLY:** Control mentioned in manual but has no matching constant ID (flag for investigation — may need panel update or may be display-only)
+- **NAME MISMATCH:** Manual uses a different name than the constant ID (document the mapping)
+
+#### Step 4 — Checkpoint
+Write the verified table for this bucket to the checkpoint file. Include the page range and verification status. Do NOT proceed to the next bucket until the current one is checkpointed.
+
+**CRITICAL RULES FOR THE SIEVE:**
+- **10 pages maximum per bucket.** Even if a chapter is 15 pages, split it into two buckets. Smaller windows = higher fidelity.
+- **Never skip the verify step.** The 30 seconds spent re-reading catches the #1 error source: paraphrased parameter names.
+- **Re-read the constants file before each chapter** (not each bucket — each chapter). This re-grounds you against drift.
+- **The Sieve output is append-only.** Never edit a previous bucket's table when processing a new bucket. If you discover a correction, add a `CORRECTION` entry in the current bucket referencing the original.
+
+**After all buckets are complete,** you will have a verified master table covering every page of the manual. This table is the ground truth for Phase B.
+
+---
+
+### PHASE B: THE ASSEMBLY (4-Pass Curriculum Design)
+
+Using ONLY the verified master table from Phase A (not re-reading the manual from memory), run the 4-pass extraction protocol below. Every claim, parameter name, and page reference must trace back to a specific entry in the master table.
 
 You must complete all 4 passes in order. Each pass builds on the previous. Do NOT skip passes or combine them — the separation prevents the "I'll note that later" amnesia that causes missed content.
 
 **Note:** There is no self-audit pass. The `coverage-auditor` agent handles verification independently after you complete your work. Your job is to be as thorough as possible; the auditor's job is to prove you weren't.
 
-### PASS 1: FULL INVENTORY (Page-by-Page Extraction)
+### PASS 1: FULL INVENTORY (Feature Extraction from Master Table)
 
-Read the manual cover to cover. For every chapter and section, extract:
+Using the verified master table from Phase A, group raw entries into features. For every chapter and section, extract:
 
 1. **Feature ID:** A short kebab-case identifier (e.g., `vcf-filter-modes`, `arp-gate-time`, `mod-matrix-routing`)
 2. **Feature Name:** Human-readable name as the manual describes it
@@ -247,6 +296,24 @@ Start at 10.0. Deductions:
 ---
 
 ## CHECKPOINTING
+
+When writing your checkpoint, include YAML frontmatter at the very top of the checkpoint file:
+
+\`\`\`yaml
+---
+agent: <your-agent-name>
+deviceId: <device-id>
+phase: <phase-number>
+status: <PASS | FAIL | READY | IN_PROGRESS | BLOCKED>
+score: <X.X>
+verdict: <APPROVED | REJECTED | READY>
+timestamp: <ISO-8601>
+sectionId: <section-id>    # Phase 1 only
+batchId: <batch-id>        # Phase 5 only
+---
+\`\`\`
+
+The prose checkpoint follows below the frontmatter as usual.
 
 On startup, ALWAYS read `.claude/agent-memory/manual-extractor/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
