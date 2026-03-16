@@ -119,11 +119,16 @@ const expectedStepCounts: Record<string, number> = {
   'hpf-bass-boost': 6,
   'signal-path': 7,
   'arpeggiator-basics': 8,
+  // Batch D — Modulation
+  'lfo-basics': 7,
+  'pitch-mod-wheels': 6,
+  'mod-matrix': 7,
+  'poly-unison': 7,
 };
 
 describe('DeepMind 12 tutorial collection', () => {
-  it('has 11 tutorials', () => {
-    expect(deepmind12Tutorials).toHaveLength(11);
+  it('has 15 tutorials', () => {
+    expect(deepmind12Tutorials).toHaveLength(15);
   });
 
   it('all tutorials have unique IDs', () => {

@@ -9,6 +9,10 @@ import { oscillatorMixing } from './oscillator-mixing';
 import { hpfBassBoost } from './hpf-bass-boost';
 import { signalPath } from './signal-path';
 import { arpeggiatorBasics } from './arpeggiator-basics';
+import { lfoBasics } from './lfo-basics';
+import { pitchModWheels } from './pitch-mod-wheels';
+import { modMatrix } from './mod-matrix';
+import { polyUnison } from './poly-unison';
 import { Tutorial } from '@/types/tutorial';
 
 export const deepmind12Tutorials: Tutorial[] = [
@@ -23,6 +27,10 @@ export const deepmind12Tutorials: Tutorial[] = [
   hpfBassBoost,
   signalPath,
   arpeggiatorBasics,
+  lfoBasics,
+  pitchModWheels,
+  modMatrix,
+  polyUnison,
 ];
 
 export { panelOverview };
@@ -36,3 +44,7 @@ export { oscillatorMixing };
 export { hpfBassBoost };
 export { signalPath };
 export { arpeggiatorBasics };
+export { lfoBasics };
+export { pitchModWheels };
+export { modMatrix };
+export { polyUnison };
