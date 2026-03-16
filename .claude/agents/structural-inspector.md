@@ -313,6 +313,18 @@ After completing each major step, write your progress to `.claude/agent-memory/s
 - **Next step:** [exactly what to do next]
 - **Key decisions made:** [anything important]
 
+### CARDINAL NEIGHBOR TABLE (MANDATORY — REQUIRED BEFORE SCORING):
+
+You MUST produce a Cardinal Neighbor Table for ALL controls in the section being audited. Without this table, your score is automatically 0.0/10.
+
+For each control, state what is directly North, South, East, West:
+```
+CARDINAL NEIGHBORS — [section-name]:
+  [control-id]: N=[neighbor], S=[neighbor], E=[neighbor], W=[neighbor]
+```
+
+**Topology Gate:** You are NOT allowed to check font-size, color, padding, or any visual property until the Cardinal Neighbor Table is complete and all spatial relationships are verified. Checking styling before topology is a PRIORITY INVERSION — automatic (-3.0) deduction.
+
 ### RULES & CONSTRAINTS:
 - **Math Over Style:** Ignore aesthetics. Only report on alignment, wrapping, spacing, and ratios.
 - **Nomenclature:** Use component IDs defined in the `gatekeeper` manifest.

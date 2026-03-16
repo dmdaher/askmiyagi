@@ -55,11 +55,15 @@ next-env.d.ts
 # QA/audit screenshots
 docs/**/screenshots/
 
-# Instrument manuals, hardware photos, and large binaries (kept locally/iCloud, not in repo)
+# Instrument manuals and large binaries (kept locally/iCloud, not in repo)
 docs/**/*.pdf
-docs/**/*.png
-docs/**/*.jpg
-docs/**/*.jpeg
+
+# QA screenshots (generated, not reference)
+docs/**/screenshots/*.png
+docs/**/screenshots/*.jpg
+
+# Hardware reference photos ARE committed (needed by QA agents)
+# docs/**/photos/ is NOT ignored
 
 # Prevent stray screenshots in project root
 /*.png

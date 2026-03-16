@@ -215,3 +215,15 @@ curl -X POST http://localhost:3000/api/pipeline/<device-id>/recover \
 - Dashboard: `http://localhost:3000/admin`
 - Pipeline detail: `http://localhost:3000/admin/pipeline/<device-id>`
 - Features: live log stream, phase timeline, agent scores, cost breakdown, diagnostics with auto-recovery
+
+### Pipeline Hard Rules (Quick Reference)
+
+| Rule | Why |
+|---|---|
+| **Orchestrator is the root process** | No QA agent runs without orchestrator managing phase transitions. Standalone runs are "draft only" and cannot vault. |
+| **Topology before styling** | Agents must produce Cardinal Neighbor Tables before scoring. Checking font-size/color/padding before topology = Priority Inversion = automatic score invalidation. |
+| **Adversarial blindness** | PQ generates its own position map from photos/manual BEFORE reading the gatekeeper template. Reading gatekeeper first = automatic 0.0/10. |
+| **Boundary containment** | Any label/icon that overflows its container = (-1.0). Physical hardware never has CSS overflow. |
+| **Sieve extraction** | Manual extractor reads in 10-page buckets: Sieve → Verify → Anchor → Checkpoint. Separates perception from cognition. |
+| **Scope isolation** | Curriculum agents (extractor, auditor, builder) produce no layout opinions. Panel agents (gatekeeper, SI, PQ) produce no curriculum opinions. |
+| **Two sources of truth** | Gatekeeper uses manual text. PQ uses hardware photos. When they disagree, Critic resolves. |
