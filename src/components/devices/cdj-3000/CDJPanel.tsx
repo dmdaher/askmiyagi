@@ -239,6 +239,7 @@ function RightTempoSection({
             label="BEAT SYNC/INST.DOUBLES"
             size="sm"
             variant="standard"
+            labelPosition="above"
             active={beatSync.active}
             hasLed
             ledOn={beatSync.ledOn}
@@ -253,6 +254,7 @@ function RightTempoSection({
             label="TEMPO ±6/±10/±16/WIDE"
             size="sm"
             variant="function"
+            labelPosition="above"
             active={getButtonState(panelState, ids.tempoRangeBtn).active}
             highlighted={isHighlighted(ids.tempoRangeBtn)}
             onClick={() => onControlClick?.(ids.tempoRangeBtn)}
@@ -262,6 +264,7 @@ function RightTempoSection({
           <PanelButton
             id={ids.masterTempoBtn}
             label="MASTER TEMPO"
+            labelPosition="above"
             size="sm"
             variant="standard"
             active={masterTempo.active}
@@ -435,6 +438,7 @@ function RightNavSection({
           label="TAG TRACK/REMOVE"
           size="sm"
           variant="standard"
+          labelPosition="above"
           active={getButtonState(panelState, ids.tagTrackRemoveBtn).active}
           highlighted={isHighlighted(ids.tagTrackRemoveBtn)}
           onClick={() => onControlClick?.(ids.tagTrackRemoveBtn)}
@@ -459,6 +463,7 @@ function RightNavSection({
           label="TRACK FILTER/EDIT"
           size="sm"
           variant="function"
+          labelPosition="above"
           active={getButtonState(panelState, ids.trackFilterEditBtn).active}
           highlighted={isHighlighted(ids.trackFilterEditBtn)}
           onClick={() => onControlClick?.(ids.trackFilterEditBtn)}
@@ -512,6 +517,7 @@ function RightNavSection({
           label="CUE/LOOP CALL ◄"
           size="sm"
           variant="standard"
+          labelPosition="above"
           active={getButtonState(panelState, ids.cueLoopCallBackBtn).active}
           highlighted={isHighlighted(ids.cueLoopCallBackBtn)}
           onClick={() => onControlClick?.(ids.cueLoopCallBackBtn)}
@@ -521,6 +527,7 @@ function RightNavSection({
           label="CUE/LOOP CALL ►"
           size="sm"
           variant="standard"
+          labelPosition="above"
           active={getButtonState(panelState, ids.cueLoopCallFwdBtn).active}
           highlighted={isHighlighted(ids.cueLoopCallFwdBtn)}
           onClick={() => onControlClick?.(ids.cueLoopCallFwdBtn)}
