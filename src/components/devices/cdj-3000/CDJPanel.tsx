@@ -353,6 +353,212 @@ function RightTempoSection({
   );
 }
 
+// ─── RIGHT-NAV Section ────────────────────────────────────────────────────────
+//
+// Physical order (top-to-bottom, manual items 29-37, pp.15-16):
+//   29. BACK button
+//   30. TAG TRACK/REMOVE button
+//   31. Rotary selector  (push-encoder: rotate to scroll, press to confirm)
+//   32. TRACK FILTER/EDIT button
+//   33. SHORTCUT button
+//   34. VINYL SPEED ADJ. TOUCH/BRAKE knob
+//   35. CUE/LOOP CALL ◄, ► buttons  (horizontal pair)
+//   36. DELETE button                (horizontal pair with MEMORY)
+//   37. MEMORY button
+//
+// Layout: single vertical column; item 35 is a horizontal pair; items 36-37 form
+// a horizontal pair at the bottom. The rotary selector (31) uses the Knob component.
+
+interface RightNavSectionProps {
+  panelState: PanelState;
+  highlightedControls: string[];
+  onControlClick?: (id: string) => void;
+}
+
+function RightNavSection({
+  panelState,
+  highlightedControls,
+  onControlClick,
+}: RightNavSectionProps) {
+  const ids = CDJ_CONTROL_IDS;
+  const isHighlighted = (id: string) => highlightedControls.includes(id);
+
+  return (
+    <div
+      data-section-id="right-nav"
+      style={{
+        width: `${SECTION_WIDTH_PCT.rightNav}%`,
+        minHeight: CDJ_PANEL_HEIGHT,
+        backgroundColor: CDJ_COLORS.sectionBg,
+        borderLeft: `1px solid ${CDJ_COLORS.sectionBorder}`,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        padding: '8px 4px',
+        gap: 6,
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* Section label */}
+      <div
+        style={{
+          fontSize: 8,
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          color: CDJ_COLORS.mutedText,
+          textAlign: 'center',
+          paddingBottom: 4,
+          borderBottom: `1px solid ${CDJ_COLORS.sectionBorder}`,
+        }}
+      >
+        Navigation
+      </div>
+
+      {/* Item 29 — BACK button */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <PanelButton
+          id={ids.backBtn}
+          label="BACK"
+          size="sm"
+          variant="standard"
+          active={getButtonState(panelState, ids.backBtn).active}
+          highlighted={isHighlighted(ids.backBtn)}
+          onClick={() => onControlClick?.(ids.backBtn)}
+        />
+      </div>
+
+      {/* Item 30 — TAG TRACK/REMOVE button */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <PanelButton
+          id={ids.tagTrackRemoveBtn}
+          label="TAG TRACK/REMOVE"
+          size="sm"
+          variant="standard"
+          active={getButtonState(panelState, ids.tagTrackRemoveBtn).active}
+          highlighted={isHighlighted(ids.tagTrackRemoveBtn)}
+          onClick={() => onControlClick?.(ids.tagTrackRemoveBtn)}
+        />
+      </div>
+
+      {/* Item 31 — Rotary selector (push-encoder) */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Knob
+          id={ids.rotarySelector}
+          label="Rotary selector"
+          size="md"
+          value={panelState[ids.rotarySelector]?.value ?? 64}
+          highlighted={isHighlighted(ids.rotarySelector)}
+        />
+      </div>
+
+      {/* Item 32 — TRACK FILTER/EDIT button */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <PanelButton
+          id={ids.trackFilterEditBtn}
+          label="TRACK FILTER/EDIT"
+          size="sm"
+          variant="function"
+          active={getButtonState(panelState, ids.trackFilterEditBtn).active}
+          highlighted={isHighlighted(ids.trackFilterEditBtn)}
+          onClick={() => onControlClick?.(ids.trackFilterEditBtn)}
+        />
+      </div>
+
+      {/* Item 33 — SHORTCUT button */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <PanelButton
+          id={ids.shortcutBtn}
+          label="SHORTCUT"
+          size="sm"
+          variant="standard"
+          active={getButtonState(panelState, ids.shortcutBtn).active}
+          highlighted={isHighlighted(ids.shortcutBtn)}
+          onClick={() => onControlClick?.(ids.shortcutBtn)}
+        />
+      </div>
+
+      {/* Divider before bottom zone */}
+      <div
+        style={{
+          height: 1,
+          backgroundColor: CDJ_COLORS.sectionBorder,
+          margin: '2px 0',
+        }}
+      />
+
+      {/* Item 34 — VINYL SPEED ADJ. TOUCH/BRAKE knob */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Knob
+          id={ids.vinylSpeedAdjKnob}
+          label="VINYL SPEED ADJ. TOUCH/BRAKE"
+          size="sm"
+          value={panelState[ids.vinylSpeedAdjKnob]?.value ?? 64}
+          highlighted={isHighlighted(ids.vinylSpeedAdjKnob)}
+        />
+      </div>
+
+      {/* Item 35 — CUE/LOOP CALL ◄ ► buttons (horizontal pair) */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          gap: 4,
+        }}
+      >
+        <PanelButton
+          id={ids.cueLoopCallBackBtn}
+          label="CUE/LOOP CALL ◄"
+          size="sm"
+          variant="standard"
+          active={getButtonState(panelState, ids.cueLoopCallBackBtn).active}
+          highlighted={isHighlighted(ids.cueLoopCallBackBtn)}
+          onClick={() => onControlClick?.(ids.cueLoopCallBackBtn)}
+        />
+        <PanelButton
+          id={ids.cueLoopCallFwdBtn}
+          label="CUE/LOOP CALL ►"
+          size="sm"
+          variant="standard"
+          active={getButtonState(panelState, ids.cueLoopCallFwdBtn).active}
+          highlighted={isHighlighted(ids.cueLoopCallFwdBtn)}
+          onClick={() => onControlClick?.(ids.cueLoopCallFwdBtn)}
+        />
+      </div>
+
+      {/* Items 36-37 — DELETE + MEMORY buttons (horizontal pair) */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          gap: 4,
+        }}
+      >
+        <PanelButton
+          id={ids.deleteBtn}
+          label="DELETE"
+          size="sm"
+          variant="standard"
+          active={getButtonState(panelState, ids.deleteBtn).active}
+          highlighted={isHighlighted(ids.deleteBtn)}
+          onClick={() => onControlClick?.(ids.deleteBtn)}
+        />
+        <PanelButton
+          id={ids.memoryBtn}
+          label="MEMORY"
+          size="sm"
+          variant="standard"
+          active={getButtonState(panelState, ids.memoryBtn).active}
+          highlighted={isHighlighted(ids.memoryBtn)}
+          onClick={() => onControlClick?.(ids.memoryBtn)}
+        />
+      </div>
+    </div>
+  );
+}
+
 // ─── Placeholder Sections ─────────────────────────────────────────────────────
 
 function PlaceholderSection({
@@ -402,6 +608,26 @@ export default function CDJPanel({
   isolateSection,
 }: CDJPanelProps) {
   // Isolation mode — render only the requested section
+  if (isolateSection === 'right-nav') {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          width: CDJ_PANEL_WIDTH,
+          backgroundColor: CDJ_COLORS.panelBg,
+          borderRadius: 4,
+          overflow: 'hidden',
+        }}
+      >
+        <RightNavSection
+          panelState={panelState}
+          highlightedControls={highlightedControls}
+          onControlClick={onControlClick}
+        />
+      </div>
+    );
+  }
+
   if (isolateSection === 'right-tempo') {
     return (
       <div
@@ -451,10 +677,11 @@ export default function CDJPanel({
         widthPct={SECTION_WIDTH_PCT.center}
       />
 
-      {/* RIGHT-NAV — 14% */}
-      <PlaceholderSection
-        label="Right Nav"
-        widthPct={SECTION_WIDTH_PCT.rightNav}
+      {/* RIGHT-NAV — 14% — FULLY BUILT */}
+      <RightNavSection
+        panelState={panelState}
+        highlightedControls={highlightedControls}
+        onControlClick={onControlClick}
       />
 
       {/* RIGHT-TEMPO — 13% — FULLY BUILT */}
