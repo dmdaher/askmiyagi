@@ -124,11 +124,19 @@ const expectedStepCounts: Record<string, number> = {
   'pitch-mod-wheels': 6,
   'mod-matrix': 7,
   'poly-unison': 7,
+  // Batch E — Effects
+  'effects-overview': 7,
+  'effects-routing': 7,
+  'effects-deep-dive': 7,
+  // Batch F — Presets & Program Management
+  'saving-programs': 8,
+  'compare-fader-match': 8,
+  'program-management': 8,
 };
 
 describe('DeepMind 12 tutorial collection', () => {
-  it('has 15 tutorials', () => {
-    expect(deepmind12Tutorials).toHaveLength(15);
+  it('has 18 tutorials', () => {
+    expect(deepmind12Tutorials).toHaveLength(18);
   });
 
   it('all tutorials have unique IDs', () => {

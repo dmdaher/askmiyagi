@@ -13,6 +13,9 @@ import { lfoBasics } from './lfo-basics';
 import { pitchModWheels } from './pitch-mod-wheels';
 import { modMatrix } from './mod-matrix';
 import { polyUnison } from './poly-unison';
+import { savingPrograms } from './saving-programs';
+import { compareFaderMatch } from './compare-fader-match';
+import { programManagement } from './program-management';
 import { Tutorial } from '@/types/tutorial';
 
 export const deepmind12Tutorials: Tutorial[] = [
@@ -31,6 +34,9 @@ export const deepmind12Tutorials: Tutorial[] = [
   pitchModWheels,
   modMatrix,
   polyUnison,
+  savingPrograms,
+  compareFaderMatch,
+  programManagement,
 ];
 
 export { panelOverview };
@@ -48,3 +54,6 @@ export { lfoBasics };
 export { pitchModWheels };
 export { modMatrix };
 export { polyUnison };
+export { savingPrograms };
+export { compareFaderMatch };
+export { programManagement };
