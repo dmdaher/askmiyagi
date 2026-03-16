@@ -119,6 +119,7 @@ export interface PipelineState {
   subscription: SubscriptionUsage | null;
   burnRate: BurnRate | null;
   runnerPid: number | null;
+  childPid: number | null;
   worktreePath: string | null;
 
   lastCheckpoint: {

@@ -3,11 +3,82 @@ import { appendLog } from './state-machine';
 import { parseStreamJsonCost } from './cost-tracker';
 import { CostEntry, PipelinePhase, RateLimitInfo } from './types';
 
+/**
+ * Parse a stream-json event line into a human-readable log message.
+ * Returns null for events that aren't worth showing (deltas, system noise).
+ */
+function parseStreamEvent(line: string, agent: string): string | null {
+  try {
+    const evt = JSON.parse(line);
+
+    // Assistant text content — the actual "thinking" / output
+    if (evt.type === 'assistant' && evt.message?.content) {
+      const texts: string[] = [];
+      for (const block of evt.message.content) {
+        if (block.type === 'text' && block.text) {
+          // Truncate very long text blocks for log readability
+          const text = block.text.length > 500
+            ? block.text.slice(0, 500) + '...'
+            : block.text;
+          texts.push(text);
+        }
+        if (block.type === 'tool_use') {
+          const input = block.input ? JSON.stringify(block.input).slice(0, 200) : '';
+          texts.push(`[tool] ${block.name}(${input})`);
+        }
+      }
+      return texts.length > 0 ? texts.join(' | ') : null;
+    }
+
+    // Content block with text
+    if (evt.type === 'content_block_start' && evt.content_block?.type === 'text') {
+      return null; // Wait for the full message
+    }
+
+    // Tool use events
+    if (evt.type === 'content_block_start' && evt.content_block?.type === 'tool_use') {
+      return `[tool] ${evt.content_block.name}`;
+    }
+
+    // Tool results
+    if (evt.type === 'result' && evt.subtype === 'tool_result') {
+      const content = typeof evt.content === 'string'
+        ? evt.content.slice(0, 300)
+        : JSON.stringify(evt.content ?? '').slice(0, 300);
+      return `[result] ${content}`;
+    }
+
+    // Final result with usage
+    if (evt.type === 'result' && evt.usage) {
+      const u = evt.usage;
+      const cost = evt.total_cost_usd ? `$${evt.total_cost_usd.toFixed(4)}` : '';
+      return `[done] tokens: ${u.input_tokens ?? 0}in/${u.output_tokens ?? 0}out ${cost}`;
+    }
+
+    // System init
+    if (evt.type === 'system' && evt.subtype === 'init') {
+      return `[session] ${evt.session_id ?? 'started'}`;
+    }
+
+    // Rate limit
+    if (evt.type === 'rate_limit_event') {
+      return `[rate-limit] ${evt.status} (resets: ${evt.resets_at ? new Date(evt.resets_at * 1000).toLocaleTimeString() : 'unknown'})`;
+    }
+
+    return null;
+  } catch {
+    // Not JSON — log raw non-empty lines
+    const trimmed = line.trim();
+    return trimmed.length > 0 && trimmed.length < 500 ? trimmed : null;
+  }
+}
+
 export interface InvokeResult {
   exitCode: number;
   output: string;
   costEntry: CostEntry | null;
   rateLimitEvents: RateLimitInfo[];
+  childPid: number | null;
 }
 
 /**
@@ -26,11 +97,13 @@ export function invokeAgent(opts: {
   allowedTools?: string[];
   maxTurns?: number;
   remainingBudgetUsd?: number;
+  onChildPid?: (pid: number) => void;
 }): Promise<InvokeResult> {
   return new Promise((resolve) => {
     const args = [
       '-p', opts.prompt,
       '--output-format', 'stream-json',
+      '--verbose',
     ];
 
     if (opts.model) {
@@ -62,20 +135,30 @@ export function invokeAgent(opts: {
     });
 
     const proc = spawn('claude', args, {
-      stdio: ['pipe', 'pipe', 'pipe'],
+      stdio: ['ignore', 'pipe', 'pipe'],
       cwd: opts.cwd,
       env: { ...process.env },
     });
+
+    // Report child PID immediately via callback if provided
+    if (opts.onChildPid && proc.pid) {
+      opts.onChildPid(proc.pid);
+    }
 
     proc.stdout?.on('data', (data: Buffer) => {
       const lines = data.toString().split('\n').filter(Boolean);
       for (const line of lines) {
         outputLines.push(line);
-        appendLog(opts.deviceId, {
-          level: 'agent',
-          agent: opts.agent,
-          message: line,
-        });
+
+        // Parse stream-json events into human-readable log entries
+        const readable = parseStreamEvent(line, opts.agent);
+        if (readable) {
+          appendLog(opts.deviceId, {
+            level: 'agent',
+            agent: opts.agent,
+            message: readable,
+          });
+        }
       }
     });
 
@@ -110,6 +193,7 @@ export function invokeAgent(opts: {
         output: outputLines.join('\n'),
         costEntry: parsed.costEntry,
         rateLimitEvents: parsed.rateLimitEvents,
+        childPid: proc.pid ?? null,
       });
     });
 
@@ -124,6 +208,7 @@ export function invokeAgent(opts: {
         output: '',
         costEntry: null,
         rateLimitEvents: [],
+        childPid: null,
       });
     });
   });

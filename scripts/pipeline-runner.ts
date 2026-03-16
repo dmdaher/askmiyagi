@@ -6,7 +6,7 @@
  *
  * Spawned as a detached process by the API route. Persists across server restarts.
  * Writes state to .pipeline/<device-id>/state.json (atomic writes).
- * Reads agent checkpoints from .claude/agent-memory/*/checkpoint.md.
+ * Reads agent checkpoints from .claude/agent-memory/<id>/checkpoint.md.
  */
 
 import fs from 'fs';
@@ -54,6 +54,36 @@ function getRemainingBudget(state: PipelineState): number {
 
 function isBudgetOk(state: PipelineState): boolean {
   return checkBudget(state).allowed;
+}
+
+/**
+ * Check if an agent has existing work from a previous interrupted run.
+ * Returns a resume context string to prepend to the agent prompt, or empty string.
+ */
+function getResumeContext(agent: string): string {
+  try {
+    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', agent, 'checkpoint.md');
+    if (!fs.existsSync(checkpointPath)) return '';
+
+    const content = fs.readFileSync(checkpointPath, 'utf-8');
+    if (!content.trim()) return '';
+
+    return `\n\n--- RESUME CONTEXT ---
+A previous run of this agent was interrupted. It left a checkpoint at:
+.claude/agent-memory/${agent}/checkpoint.md
+
+Read that checkpoint file FIRST. Continue from where it left off rather than starting from scratch.
+If the checkpoint indicates the work was complete, verify and finalize rather than redoing.
+--- END RESUME CONTEXT ---\n`;
+  } catch {
+    return '';
+  }
+}
+
+/** Track the active child (claude CLI) PID in state so recovery can kill it */
+function trackChildPid(state: PipelineState, pid: number | null) {
+  state.childPid = pid;
+  writeState(deviceId, state);
 }
 
 async function run() {
@@ -109,6 +139,16 @@ async function run() {
     level: 'info',
     message: `Pipeline runner started (PID: ${process.pid}) in worktree: ${worktreeCwd}, phase: ${state.currentPhase}`,
   });
+
+  // Heartbeat: update state.updatedAt every 30s so the admin UI knows we're alive
+  const heartbeatInterval = setInterval(() => {
+    try {
+      const current = readState(deviceId);
+      if (current && current.status === 'running') {
+        writeState(deviceId, current); // writeState sets updatedAt automatically
+      }
+    } catch { /* ignore heartbeat errors */ }
+  }, 30_000);
 
   try {
     while (state.status === 'running') {
@@ -170,6 +210,8 @@ async function run() {
           state.currentPhase = 'failed';
       }
 
+      // Clear child PID after each phase iteration
+      state.childPid = null;
       writeState(deviceId, state);
     }
   } catch (err) {
@@ -181,6 +223,7 @@ async function run() {
     sendNotification('Miyagi Pipeline', `Pipeline failed for ${state.deviceName}: ${message}`);
   }
 
+  clearInterval(heartbeatInterval);
   state.runnerPid = null;
 
   // Clean up worktree on completion or failure (but not on pause — we resume later)
@@ -299,6 +342,7 @@ If you cannot find or download the manual after trying all approaches, state cle
       'Read',
     ],
     remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
   });
 
   if (result.costEntry) {
@@ -346,6 +390,7 @@ async function doPhase0(state: PipelineState) {
   }
 
   const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
+  const resumeCtx = getResumeContext('gatekeeper');
   const prompt = `You are the Gatekeeper agent. Initialize the digital twin build for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
@@ -361,7 +406,7 @@ Read all manual PDFs and produce:
 5. Section Topology Maps with Grid Notation and DOM assertions
 6. Key Component Proportions
 
-Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML frontmatter.`;
+Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML frontmatter.${resumeCtx}`;
 
   const result = await invokeAgent({
     prompt,
@@ -371,6 +416,7 @@ Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML
     agent: 'gatekeeper',
     model: 'claude-opus-4-6',
     remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
   });
 
   if (result.costEntry) {
@@ -414,6 +460,7 @@ async function doPhase1(state: PipelineState) {
         prompt: `Audit section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Read your checkpoint and the Gatekeeper's manifest first.`,
         deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'structural-inspector', sectionId: section.id,
         remainingBudgetUsd: getRemainingBudget(state),
+        onChildPid: (pid) => trackChildPid(state, pid),
       });
       if (siResult.costEntry) { accumulateCost(state, siResult.costEntry); recordCostEntry(deviceId, siResult.costEntry); }
       updateBurnRate(state, deviceId);
@@ -426,6 +473,7 @@ async function doPhase1(state: PipelineState) {
         prompt: `Audit section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Compare the rendered panel against the reference photo.`,
         deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'panel-questioner', sectionId: section.id,
         remainingBudgetUsd: getRemainingBudget(state),
+        onChildPid: (pid) => trackChildPid(state, pid),
       });
       if (pqResult.costEntry) { accumulateCost(state, pqResult.costEntry); recordCostEntry(deviceId, pqResult.costEntry); }
       updateBurnRate(state, deviceId);
@@ -438,6 +486,7 @@ async function doPhase1(state: PipelineState) {
         prompt: `Final audit of section "${section.id}" of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Review SI and PQ findings, then render your verdict.`,
         deviceId, cwd: worktreeCwd, phase: 'phase-1-section-loop', agent: 'critic', sectionId: section.id,
         remainingBudgetUsd: getRemainingBudget(state),
+        onChildPid: (pid) => trackChildPid(state, pid),
       });
       if (criticResult.costEntry) { accumulateCost(state, criticResult.costEntry); recordCostEntry(deviceId, criticResult.costEntry); }
       updateBurnRate(state, deviceId);
@@ -479,6 +528,7 @@ async function doPhase2(state: PipelineState) {
       prompt: `Perform global assembly audit of the ${state.deviceName} digital twin. Device ID: ${deviceId}. All sections are vaulted. Check overall layout, cross-section alignment, and global consistency.`,
       deviceId, cwd: worktreeCwd, phase: 'phase-2-global-assembly', agent: 'structural-inspector',
       remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
     });
     if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
     updateBurnRate(state, deviceId);
@@ -505,6 +555,7 @@ async function doPhase3(state: PipelineState) {
     prompt: `Perform final harmonic polish of the ${state.deviceName} digital twin. Device ID: ${deviceId}. Apply any final visual refinements.`,
     deviceId, cwd: worktreeCwd, phase: 'phase-3-harmonic-polish', agent: 'critic',
     remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
   updateBurnRate(state, deviceId);
@@ -548,6 +599,7 @@ async function doPhase4Extract(state: PipelineState) {
     prompt: `Extract tutorial curriculum from the ${state.deviceName} manuals at: ${state.manualPaths.join(', ')}. Device ID: ${deviceId}. Use chapter-by-chapter extraction.`,
     deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor', model: 'claude-opus-4-6',
     remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
   updateBurnRate(state, deviceId);
@@ -572,6 +624,7 @@ async function doPhase4Audit(state: PipelineState) {
     prompt: `Audit tutorial coverage for ${state.deviceName}. Device ID: ${deviceId}. Verify the extraction covers all manual chapters. Produce a batch plan.`,
     deviceId, cwd: worktreeCwd, phase: 'phase-4-audit', agent: 'coverage-auditor',
     remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
   });
   if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
   updateBurnRate(state, deviceId);
@@ -607,6 +660,7 @@ async function doPhase5(state: PipelineState) {
       prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${batch.tutorials.join(', ')}`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-builder', batchId: batch.batchId,
       remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
     });
     if (buildResult.costEntry) { accumulateCost(state, buildResult.costEntry); recordCostEntry(deviceId, buildResult.costEntry); }
     updateBurnRate(state, deviceId);
@@ -622,6 +676,7 @@ async function doPhase5(state: PipelineState) {
       prompt: `Review tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Verify accuracy against the manual.`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-reviewer', batchId: batch.batchId,
       remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
     });
     if (reviewResult.costEntry) { accumulateCost(state, reviewResult.costEntry); recordCostEntry(deviceId, reviewResult.costEntry); }
     updateBurnRate(state, deviceId);

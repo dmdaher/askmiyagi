@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { LogEntry } from '@/lib/pipeline/types';
 
 const AGENT_COLORS: Record<string, string> = {
@@ -22,6 +22,33 @@ const LEVEL_COLORS: Record<string, string> = {
 };
 
 const ALL_AGENTS = ['all', ...Object.keys(AGENT_COLORS)] as const;
+
+function formatMessage(message: string): React.ReactNode {
+  // Tool calls
+  if (message.startsWith('[tool] ')) {
+    const tool = message.slice(7);
+    return <><span className="text-cyan-400 font-medium">TOOL</span> <span className="text-gray-300">{tool}</span></>;
+  }
+  // Tool results
+  if (message.startsWith('[result] ')) {
+    const result = message.slice(9);
+    return <><span className="text-gray-500 font-medium">RESULT</span> <span className="text-gray-500">{result}</span></>;
+  }
+  // Completion
+  if (message.startsWith('[done] ')) {
+    return <><span className="text-emerald-400 font-medium">DONE</span> <span className="text-gray-300">{message.slice(7)}</span></>;
+  }
+  // Session
+  if (message.startsWith('[session] ')) {
+    return <><span className="text-blue-400 font-medium">SESSION</span> <span className="text-gray-400">{message.slice(10)}</span></>;
+  }
+  // Rate limit
+  if (message.startsWith('[rate-limit] ')) {
+    return <><span className="text-yellow-400 font-medium">RATE</span> <span className="text-yellow-300">{message.slice(13)}</span></>;
+  }
+  // Regular message
+  return message;
+}
 
 function formatTime(timestamp: string): string {
   const d = new Date(timestamp);
@@ -142,8 +169,10 @@ export default function LogStream({ logs }: LogStreamProps) {
                 </span>
               )}
 
-              {/* Message */}
-              <span style={{ color: getMessageColor(entry) }}>{entry.message}</span>
+              {/* Message — with event type styling */}
+              <span style={{ color: getMessageColor(entry) }}>
+                {formatMessage(entry.message)}
+              </span>
             </div>
           ))
         )}

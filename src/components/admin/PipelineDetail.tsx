@@ -8,6 +8,7 @@ import AgentScoreCard from './AgentScoreCard';
 import SectionProgress from './SectionProgress';
 import BatchProgress from './BatchProgress';
 import CostBreakdown from './CostBreakdown';
+import DiagnosticsPanel from './DiagnosticsPanel';
 
 const AGENT_PHASE_MAP: Record<string, string> = {
   'phase-0-gatekeeper': 'gatekeeper',
@@ -113,6 +114,9 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
               ))}
             </div>
           </div>
+
+          {/* Diagnostics — always visible */}
+          <DiagnosticsPanel deviceId={pipeline.deviceId} />
 
           {/* Context panel: SectionProgress or BatchProgress */}
           {isPhase1 && pipeline.sections.length > 0 && (
