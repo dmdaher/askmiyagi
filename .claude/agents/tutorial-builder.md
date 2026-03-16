@@ -238,6 +238,7 @@ After completing each tutorial, write your progress to `.claude/agent-memory/tut
 - **Follow existing patterns.** Look at how existing tutorials for this device are structured. Match code style, naming conventions, and architectural patterns.
 - **One batch per session.** Don't try to build more than 3-5 tutorials in one context window. Quality degrades with volume.
 - **Quality gates are mandatory.** Run through `docs/quality-gates.md` Gate 1 (PRE-BUILD) before each tutorial and Gate 2 (POST-BUILD) after the batch.
+- **Agent memory isolation.** Only read checkpoints from agents in your pipeline chain (manual-extractor → coverage-auditor → you). Do NOT read panel builder, structural-inspector, or panel-questioner checkpoints. Your source of truth for control IDs is the panel constants file, not other agents' interpretations of the layout.
 
 ## OUTPUT CONTRACT:
 - **Pre-condition Check:** [PASSED / FAILED]
