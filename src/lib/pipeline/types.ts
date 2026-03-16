@@ -94,6 +94,13 @@ export interface Escalation {
   resolution: string | null;
 }
 
+export interface ExtractionProgress {
+  totalBuckets: number;
+  completedBuckets: number;
+  currentSubStep: 'sieve' | 'verify' | 'anchor' | null;
+  passesCompleted: number; // 0-4
+}
+
 export interface PipelineState {
   deviceId: string;
   deviceName: string;
@@ -121,6 +128,8 @@ export interface PipelineState {
   runnerPid: number | null;
   childPid: number | null;
   worktreePath: string | null;
+
+  extractionProgress: ExtractionProgress | null;
 
   lastCheckpoint: {
     phase: PipelinePhase;

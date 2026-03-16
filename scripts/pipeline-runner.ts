@@ -38,6 +38,7 @@ import {
   updateSubscription,
 } from '../src/lib/pipeline/cost-tracker';
 import { PipelineState, SectionStatus } from '../src/lib/pipeline/types';
+import * as validators from '../src/lib/pipeline/checkpoint-validators';
 
 const deviceId = process.argv[2];
 if (!deviceId) {
@@ -675,47 +676,580 @@ async function doPanelPR(state: PipelineState) {
   }
 }
 
+/**
+ * Get the total page count of a PDF via mdls (macOS) or pdfinfo fallback.
+ * Returns 0 if unable to determine.
+ */
+function getManualPageCount(manualPath: string): number {
+  const resolved = path.isAbsolute(manualPath) ? manualPath : path.join(worktreeCwd, manualPath);
+  try {
+    // Try mdls first (macOS native — fast, no deps)
+    const mdlsOutput = execSync(`mdls -name kMDItemNumberOfPages "${resolved}"`, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
+    const match = mdlsOutput.match(/(\d+)/);
+    if (match) return parseInt(match[1], 10);
+  } catch { /* mdls failed */ }
+
+  try {
+    // Fallback: pdfinfo (from poppler)
+    const pdfinfoOutput = execSync(`pdfinfo "${resolved}" 2>/dev/null | grep -i "^Pages:"`, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
+    const match = pdfinfoOutput.match(/(\d+)/);
+    if (match) return parseInt(match[1], 10);
+  } catch { /* pdfinfo not available */ }
+
+  // Last resort: invoke a quick agent to check
+  return 0;
+}
+
 async function doPhase4Extract(state: PipelineState) {
   startPhase(state, 'phase-4-extraction');
-  appendLog(deviceId, { level: 'info', message: 'Starting Phase 4: Manual Extraction' });
+  appendLog(deviceId, { level: 'info', message: 'Starting Phase 4: Manual Extraction (Sieve Protocol)' });
   if (!isBudgetOk(state)) return;
 
-  const result = await invokeAgent({
-    prompt: `Extract tutorial curriculum from the ${state.deviceName} manuals at: ${state.manualPaths.join(', ')}. Device ID: ${deviceId}. Use chapter-by-chapter extraction.`,
-    deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor', model: 'claude-opus-4-6',
-    allowedTools: PIPELINE_TOOLS,
-    remainingBudgetUsd: getRemainingBudget(state),
-    onChildPid: (pid) => trackChildPid(state, pid),
-  });
-  if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
-  updateBurnRate(state, deviceId);
-  updateSubscription(state, result.rateLimitEvents);
+  const sieveDir = path.join(worktreeCwd, '.claude', 'agent-memory', 'manual-extractor', 'sieve');
+  fs.mkdirSync(sieveDir, { recursive: true });
 
-  const checkpoint = readAgentCheckpoint('manual-extractor');
-  if (checkpoint.score !== null && checkpoint.score >= 9.0) {
-    completePhase(state, 'phase-4-extraction', checkpoint.score, true);
-    advancePhase(state, worktreeCwd);
-  } else {
-    completePhase(state, 'phase-4-extraction', checkpoint.score, false);
-    tryAutoRetry(state, 'agent-failure', `Manual extraction score ${checkpoint.score ?? 'unknown'} below threshold`);
+  // Step 1: Determine manual page count and bucket count
+  const primaryManual = state.manualPaths[0];
+  let totalPages = getManualPageCount(primaryManual);
+
+  if (totalPages === 0) {
+    // Ask the extractor agent to report the page count
+    appendLog(deviceId, { level: 'info', message: 'Could not determine page count via mdls/pdfinfo — using agent' });
+    const countResult = await invokeAgent({
+      prompt: `Read the PDF at "${primaryManual}" and report ONLY the total number of pages. Output a single line: TOTAL_PAGES: <number>`,
+      deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor',
+      allowedTools: ['Read', 'Bash'],
+      maxBudgetPerInvocation: 1,
+      remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
+    });
+    if (countResult.costEntry) { accumulateCost(state, countResult.costEntry); recordCostEntry(deviceId, countResult.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, countResult.rateLimitEvents);
+
+    const pageMatch = countResult.output.match(/TOTAL_PAGES:\s*(\d+)/);
+    totalPages = pageMatch ? parseInt(pageMatch[1], 10) : 200; // conservative fallback
   }
+
+  const BUCKET_SIZE = 10;
+  const totalBuckets = Math.ceil(totalPages / BUCKET_SIZE);
+  appendLog(deviceId, { level: 'info', message: `Manual: ${totalPages} pages → ${totalBuckets} buckets of ${BUCKET_SIZE} pages` });
+
+  // Initialize extraction progress
+  state.extractionProgress = {
+    totalBuckets,
+    completedBuckets: 0,
+    currentSubStep: null,
+    passesCompleted: 0,
+  };
+  writeState(deviceId, state);
+
+  // Step 2: Resume detection — find already-completed buckets
+  let startBucket = 0;
+  for (let i = 0; i < totalBuckets; i++) {
+    const anchoredPath = path.join(sieveDir, `bucket-${i}-anchored.md`);
+    if (fs.existsSync(anchoredPath)) {
+      startBucket = i + 1;
+      state.extractionProgress.completedBuckets = i + 1;
+    } else {
+      break;
+    }
+  }
+  if (startBucket > 0) {
+    appendLog(deviceId, { level: 'info', message: `Resuming from bucket ${startBucket} (${startBucket} already complete)` });
+  }
+
+  // Step 3: Sieve → Verify → Anchor loop for each bucket
+  for (let i = startBucket; i < totalBuckets; i++) {
+    const pageStart = i * BUCKET_SIZE + 1;
+    const pageEnd = Math.min((i + 1) * BUCKET_SIZE, totalPages);
+    const bucketFile = `bucket-${i}.md`;
+    const verifiedFile = `bucket-${i}-verified.md`;
+    const anchoredFile = `bucket-${i}-anchored.md`;
+
+    if (!isBudgetOk(state)) return;
+
+    // 3a. Sieve — raw extraction
+    state.extractionProgress.currentSubStep = 'sieve';
+    state.lastCheckpoint = { phase: 'phase-4-extraction', subStep: `bucket-${i}-sieve` };
+    writeState(deviceId, state);
+
+    appendLog(deviceId, { level: 'info', agent: 'manual-extractor', message: `Sieve: bucket ${i} (pages ${pageStart}-${pageEnd})` });
+    const sieveResult = await invokeAgent({
+      prompt: `SIEVE EXTRACTION — Bucket ${i} (pages ${pageStart}-${pageEnd})
+
+Read pages ${pageStart}-${pageEnd} of the manual at "${primaryManual}".
+
+Output ONLY a raw CSV/table of every parameter, button, control, menu item, and setting found on these pages.
+
+Format each row as: | Page | Control/Parameter Name (EXACT string from manual) | Type (knob/button/slider/menu/screen/parameter) | Value Range |
+
+Rules:
+- Use the EXACT names from the manual — do not paraphrase or abbreviate
+- Include EVERY item, even if it seems minor
+- Do NOT interpret, group, or categorize — just extract
+- Do NOT mention tutorials, curriculum, learning objectives, or prerequisites
+- Do NOT skip items that seem redundant
+
+Write output to: .claude/agent-memory/manual-extractor/sieve/${bucketFile}`,
+      deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor',
+      model: 'claude-opus-4-6',
+      allowedTools: PIPELINE_TOOLS,
+      maxBudgetPerInvocation: 2,
+      remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
+    });
+    if (sieveResult.costEntry) { accumulateCost(state, sieveResult.costEntry); recordCostEntry(deviceId, sieveResult.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, sieveResult.rateLimitEvents);
+
+    // Validate sieve bucket
+    const bucketPath = path.join(sieveDir, bucketFile);
+    if (fs.existsSync(bucketPath)) {
+      const bucketContent = fs.readFileSync(bucketPath, 'utf-8');
+      const validation = validators.validateSieveBucket(bucketContent, [pageStart, pageEnd]);
+      if (!validation.valid) {
+        appendLog(deviceId, { level: 'warn', message: `Bucket ${i} validation failed: ${validation.errors.join('; ')}` });
+        if (!tryAutoRetry(state, 'agent-failure', `Sieve bucket ${i} invalid: ${validation.errors.join('; ')}`)) return;
+        return; // retry will re-enter doPhase4Extract and resume from this bucket
+      }
+    } else {
+      appendLog(deviceId, { level: 'warn', message: `Bucket ${i} file not created` });
+      if (!tryAutoRetry(state, 'agent-failure', `Sieve bucket ${i} file was not created`)) return;
+      return;
+    }
+
+    if (!isBudgetOk(state)) return;
+
+    // 3b. Verify — re-read same pages, check for omissions
+    state.extractionProgress.currentSubStep = 'verify';
+    state.lastCheckpoint = { phase: 'phase-4-extraction', subStep: `bucket-${i}-verify` };
+    writeState(deviceId, state);
+
+    appendLog(deviceId, { level: 'info', agent: 'manual-extractor', message: `Verify: bucket ${i}` });
+    const verifyResult = await invokeAgent({
+      prompt: `SIEVE VERIFICATION — Bucket ${i} (pages ${pageStart}-${pageEnd})
+
+1. Read the sieve bucket at: .claude/agent-memory/manual-extractor/sieve/${bucketFile}
+2. Re-read pages ${pageStart}-${pageEnd} of "${primaryManual}"
+3. Compare: find any omissions or typos in the bucket table
+4. Write the corrected table to: .claude/agent-memory/manual-extractor/sieve/${verifiedFile}
+5. Add a "VERIFIED" header at the top, followed by a summary of corrections made (or "No corrections needed")
+
+Focus ONLY on:
+- Missing parameters/controls
+- Misspelled names (compare against manual text exactly)
+- Wrong page numbers
+- Missing value ranges`,
+      deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor',
+      model: 'claude-opus-4-6',
+      allowedTools: PIPELINE_TOOLS,
+      maxBudgetPerInvocation: 2,
+      remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
+    });
+    if (verifyResult.costEntry) { accumulateCost(state, verifyResult.costEntry); recordCostEntry(deviceId, verifyResult.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, verifyResult.rateLimitEvents);
+
+    // Validate verified file
+    const verifiedPath = path.join(sieveDir, verifiedFile);
+    if (fs.existsSync(verifiedPath)) {
+      const verifiedContent = fs.readFileSync(verifiedPath, 'utf-8');
+      const validation = validators.validateSieveVerified(verifiedContent);
+      if (!validation.valid) {
+        appendLog(deviceId, { level: 'warn', message: `Verified bucket ${i} validation failed: ${validation.errors.join('; ')}` });
+        if (!tryAutoRetry(state, 'agent-failure', `Verified bucket ${i} invalid: ${validation.errors.join('; ')}`)) return;
+        return;
+      }
+    } else {
+      appendLog(deviceId, { level: 'warn', message: `Verified bucket ${i} file not created` });
+      if (!tryAutoRetry(state, 'agent-failure', `Verified bucket ${i} file was not created`)) return;
+      return;
+    }
+
+    if (!isBudgetOk(state)) return;
+
+    // 3c. Anchor — cross-reference against panel constants
+    state.extractionProgress.currentSubStep = 'anchor';
+    state.lastCheckpoint = { phase: 'phase-4-extraction', subStep: `bucket-${i}-anchor` };
+    writeState(deviceId, state);
+
+    appendLog(deviceId, { level: 'info', agent: 'manual-extractor', message: `Anchor: bucket ${i}` });
+    const anchorResult = await invokeAgent({
+      prompt: `SIEVE ANCHORING — Bucket ${i} (pages ${pageStart}-${pageEnd})
+
+1. Read the verified extraction at: .claude/agent-memory/manual-extractor/sieve/${verifiedFile}
+2. Find and read the panel constants file for ${state.deviceName} (look for panel-constants.ts or similar in src/data/)
+3. Cross-reference every item in the verified table against the panel constants
+4. Write results to: .claude/agent-memory/manual-extractor/sieve/${anchoredFile}
+
+The output MUST have these three sections:
+## PANEL-ONLY
+Controls/parameters in the panel constants that do NOT appear in this bucket's manual pages
+(This is expected for controls documented on other pages — just list them)
+
+## MANUAL-ONLY
+Controls/parameters in this bucket that do NOT appear in the panel constants
+(These may need to be added to the panel)
+
+## NAME MISMATCH
+Controls where the manual name differs from the panel constants name
+(Format: Manual: "X" → Panel: "Y")`,
+      deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor',
+      model: 'claude-opus-4-6',
+      allowedTools: PIPELINE_TOOLS,
+      maxBudgetPerInvocation: 2,
+      remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
+    });
+    if (anchorResult.costEntry) { accumulateCost(state, anchorResult.costEntry); recordCostEntry(deviceId, anchorResult.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, anchorResult.rateLimitEvents);
+
+    // Validate anchored file
+    const anchoredPath = path.join(sieveDir, anchoredFile);
+    if (fs.existsSync(anchoredPath)) {
+      const anchoredContent = fs.readFileSync(anchoredPath, 'utf-8');
+      const validation = validators.validateSieveAnchored(anchoredContent);
+      if (!validation.valid) {
+        appendLog(deviceId, { level: 'warn', message: `Anchored bucket ${i} validation failed: ${validation.errors.join('; ')}` });
+        if (!tryAutoRetry(state, 'agent-failure', `Anchored bucket ${i} invalid: ${validation.errors.join('; ')}`)) return;
+        return;
+      }
+    } else {
+      appendLog(deviceId, { level: 'warn', message: `Anchored bucket ${i} file not created` });
+      if (!tryAutoRetry(state, 'agent-failure', `Anchored bucket ${i} file was not created`)) return;
+      return;
+    }
+
+    // Bucket complete
+    state.extractionProgress.completedBuckets = i + 1;
+    writeState(deviceId, state);
+    appendLog(deviceId, { level: 'info', message: `Bucket ${i} complete (${i + 1}/${totalBuckets})` });
+  }
+
+  state.extractionProgress.currentSubStep = null;
+
+  // Step 4: Assembly passes (curriculum design begins only after ALL buckets sieved)
+  const passConfigs = [
+    {
+      num: 1, name: 'Feature Inventory', file: 'pass-1-inventory.md',
+      validate: validators.validatePassInventory, cap: 5,
+      prompt: `PASS 1 — FEATURE INVENTORY
+
+Read ALL verified sieve buckets in .claude/agent-memory/manual-extractor/sieve/bucket-*-verified.md
+
+Produce a consolidated Feature Inventory:
+1. **Feature Inventory** — Every unique feature/workflow grouped by manual chapter, with page references
+2. **Page Coverage Map** — Which pages are covered, which have gaps
+
+Write to: .claude/agent-memory/manual-extractor/sieve/pass-1-inventory.md`,
+    },
+    {
+      num: 2, name: 'Relationships', file: 'pass-2-relationships.md',
+      validate: validators.validatePassRelationships, cap: 5,
+      prompt: `PASS 2 — RELATIONSHIPS & DEPENDENCIES
+
+Read: .claude/agent-memory/manual-extractor/sieve/pass-1-inventory.md
+
+For each feature in the inventory, determine:
+1. **Prerequisites** — What must the user know/configure before using this feature?
+2. **Dependencies** — Which other features does this one depend on?
+3. **Dependency JSON** — Output a JSON array: [{ "feature": "name", "depends_on": ["feat1", "feat2"] }]
+
+Write to: .claude/agent-memory/manual-extractor/sieve/pass-2-relationships.md`,
+    },
+    {
+      num: 3, name: 'Curriculum Design', file: 'pass-3-curriculum.md',
+      validate: validators.validatePassCurriculum, cap: 5,
+      prompt: `PASS 3 — CURRICULUM DESIGN
+
+Read:
+- .claude/agent-memory/manual-extractor/sieve/pass-1-inventory.md
+- .claude/agent-memory/manual-extractor/sieve/pass-2-relationships.md
+
+Design the tutorial curriculum:
+1. Group features into TUTORIAL blocks (3-8 related features per tutorial)
+2. Name each tutorial descriptively
+3. For each TUTORIAL, list: title, features covered, manual pages, prerequisites
+4. Build a DAG (dependency graph) showing tutorial ordering
+5. Output the DAG as both ASCII art and a JSON dependency array
+
+Write to: .claude/agent-memory/manual-extractor/sieve/pass-3-curriculum.md`,
+    },
+    {
+      num: 4, name: 'Batch Plan', file: 'pass-4-batches.md',
+      validate: validators.validatePassBatches, cap: 5,
+      prompt: `PASS 4 — BATCH PLAN
+
+Read:
+- .claude/agent-memory/manual-extractor/sieve/pass-3-curriculum.md
+
+Group tutorials into BATCH blocks for implementation:
+1. Each BATCH should contain 3-5 tutorials that can be built together
+2. Respect the dependency chain — no batch should depend on a later batch
+3. For each BATCH: list tutorials, estimated complexity, dependency chain to prior batches
+4. Define the execution order for batches
+
+Also write the final checkpoint to .claude/agent-memory/manual-extractor/checkpoint.md with YAML frontmatter:
+agent: manual-extractor, device_id: ${deviceId}, phase: 4, status: PASS, score: 10
+
+Write batch plan to: .claude/agent-memory/manual-extractor/sieve/pass-4-batches.md`,
+    },
+  ];
+
+  for (const pass of passConfigs) {
+    // Resume: skip if pass output already exists
+    const passPath = path.join(sieveDir, pass.file);
+    if (fs.existsSync(passPath)) {
+      appendLog(deviceId, { level: 'info', message: `Pass ${pass.num} (${pass.name}) already complete, skipping` });
+      state.extractionProgress.passesCompleted = pass.num;
+      continue;
+    }
+
+    if (!isBudgetOk(state)) return;
+
+    state.lastCheckpoint = { phase: 'phase-4-extraction', subStep: `pass-${pass.num}` };
+    writeState(deviceId, state);
+
+    appendLog(deviceId, { level: 'info', agent: 'manual-extractor', message: `Pass ${pass.num}: ${pass.name}` });
+    const passResult = await invokeAgent({
+      prompt: pass.prompt,
+      deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor',
+      model: 'claude-opus-4-6',
+      allowedTools: PIPELINE_TOOLS,
+      maxBudgetPerInvocation: pass.cap,
+      remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
+    });
+    if (passResult.costEntry) { accumulateCost(state, passResult.costEntry); recordCostEntry(deviceId, passResult.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, passResult.rateLimitEvents);
+
+    // Validate pass output
+    if (fs.existsSync(passPath)) {
+      const passContent = fs.readFileSync(passPath, 'utf-8');
+      const validation = pass.validate(passContent);
+      if (!validation.valid) {
+        appendLog(deviceId, { level: 'warn', message: `Pass ${pass.num} validation failed: ${validation.errors.join('; ')}` });
+        if (!tryAutoRetry(state, 'agent-failure', `Pass ${pass.num} (${pass.name}) invalid: ${validation.errors.join('; ')}`)) return;
+        return;
+      }
+    } else {
+      appendLog(deviceId, { level: 'warn', message: `Pass ${pass.num} output file not created` });
+      if (!tryAutoRetry(state, 'agent-failure', `Pass ${pass.num} (${pass.name}) output file was not created`)) return;
+      return;
+    }
+
+    state.extractionProgress.passesCompleted = pass.num;
+    writeState(deviceId, state);
+    appendLog(deviceId, { level: 'info', message: `Pass ${pass.num} (${pass.name}) complete` });
+  }
+
+  // All sieve + passes complete
+  const checkpoint = readAgentCheckpoint('manual-extractor');
+  const score = checkpoint.score ?? 10;
+  completePhase(state, 'phase-4-extraction', score, true);
+  advancePhase(state, worktreeCwd);
 }
 
 async function doPhase4Audit(state: PipelineState) {
   startPhase(state, 'phase-4-audit');
-  appendLog(deviceId, { level: 'info', message: 'Starting Phase 4: Coverage Audit' });
+  appendLog(deviceId, { level: 'info', message: 'Starting Phase 4: Coverage Audit (Independence Enforced)' });
   if (!isBudgetOk(state)) return;
 
-  const result = await invokeAgent({
-    prompt: `Audit tutorial coverage for ${state.deviceName}. Device ID: ${deviceId}. Verify the extraction covers all manual chapters. Produce a batch plan.`,
+  const extractorMemDir = path.join(worktreeCwd, '.claude', 'agent-memory', 'manual-extractor');
+  const sealedDir = path.join(worktreeCwd, '.claude', 'agent-memory', '.extractor-sealed');
+  const auditorSieveDir = path.join(worktreeCwd, '.claude', 'agent-memory', 'coverage-auditor');
+  const independentChecklistPath = path.join(auditorSieveDir, 'independent-checklist.md');
+  const comparativeAuditPath = path.join(auditorSieveDir, 'comparative-audit.md');
+
+  fs.mkdirSync(auditorSieveDir, { recursive: true });
+
+  // Phase 1: Independent reading — SEAL extractor output
+  let sealed = false;
+  try {
+    // Resume: skip Phase 1 if independent checklist already exists
+    if (fs.existsSync(independentChecklistPath)) {
+      appendLog(deviceId, { level: 'info', message: 'Independent checklist already exists, skipping Phase 1' });
+    } else {
+      // Seal extractor output so auditor can't see it
+      if (fs.existsSync(extractorMemDir)) {
+        appendLog(deviceId, { level: 'info', message: 'Sealing extractor output for auditor independence' });
+        fs.renameSync(extractorMemDir, sealedDir);
+        sealed = true;
+      }
+
+      state.lastCheckpoint = { phase: 'phase-4-audit', subStep: 'independent-read' };
+      writeState(deviceId, state);
+
+      appendLog(deviceId, { level: 'info', agent: 'coverage-auditor', message: 'Phase 1: Independent manual reading' });
+      const phase1Result = await invokeAgent({
+        prompt: `INDEPENDENT COVERAGE AUDIT — Phase 1
+
+You are the Coverage Auditor. Read the ${state.deviceName} manual at "${state.manualPaths.join(', ')}" INDEPENDENTLY.
+
+Do NOT look for or reference any extractor output. Build your OWN checklist from scratch.
+
+For each chapter/section of the manual:
+1. List every feature, workflow, and parameter you find
+2. Note the page numbers
+3. Assess complexity (simple/medium/complex)
+4. Note any dependencies between features
+
+Write your independent checklist to: .claude/agent-memory/coverage-auditor/independent-checklist.md
+
+Rules:
+- Work ONLY from the manual — do not read any files in .claude/agent-memory/manual-extractor/
+- Do not reference sieve buckets, passes, or extractor output
+- This is YOUR independent assessment`,
+        deviceId, cwd: worktreeCwd, phase: 'phase-4-audit', agent: 'coverage-auditor',
+        model: 'claude-opus-4-6',
+        allowedTools: PIPELINE_TOOLS,
+        maxBudgetPerInvocation: 5,
+        remainingBudgetUsd: getRemainingBudget(state),
+        onChildPid: (pid) => trackChildPid(state, pid),
+      });
+      if (phase1Result.costEntry) { accumulateCost(state, phase1Result.costEntry); recordCostEntry(deviceId, phase1Result.costEntry); }
+      updateBurnRate(state, deviceId);
+      updateSubscription(state, phase1Result.rateLimitEvents);
+
+      // Validate independence
+      if (fs.existsSync(independentChecklistPath)) {
+        const checklistContent = fs.readFileSync(independentChecklistPath, 'utf-8');
+        const validation = validators.validateIndependentChecklist(checklistContent);
+        if (!validation.valid) {
+          appendLog(deviceId, { level: 'warn', message: `Independent checklist validation failed: ${validation.errors.join('; ')}` });
+          // This is a serious integrity failure — don't auto-retry, escalate
+          createEscalation(state, 'agent-failure' as Parameters<typeof createEscalation>[1],
+            `Auditor independence violated: ${validation.errors.join('; ')}`);
+          return;
+        }
+      } else {
+        appendLog(deviceId, { level: 'warn', message: 'Independent checklist file not created' });
+        if (!tryAutoRetry(state, 'agent-failure', 'Auditor did not create independent-checklist.md')) return;
+        return;
+      }
+    }
+  } finally {
+    // UNSEAL — restore extractor files (crash-safe: always runs)
+    if (sealed && fs.existsSync(sealedDir)) {
+      appendLog(deviceId, { level: 'info', message: 'Unsealing extractor output' });
+      // If extractorMemDir was recreated during the agent run, merge
+      if (fs.existsSync(extractorMemDir)) {
+        // Move sealed contents back — don't overwrite anything the auditor created
+        const sealedFiles = fs.readdirSync(sealedDir);
+        for (const file of sealedFiles) {
+          const src = path.join(sealedDir, file);
+          const dest = path.join(extractorMemDir, file);
+          if (!fs.existsSync(dest)) {
+            fs.renameSync(src, dest);
+          }
+        }
+        fs.rmSync(sealedDir, { recursive: true, force: true });
+      } else {
+        fs.renameSync(sealedDir, extractorMemDir);
+      }
+      sealed = false;
+    }
+  }
+
+  if (!isBudgetOk(state)) return;
+
+  // Phase 2: Comparative audit — now the auditor CAN see extractor output
+  if (!fs.existsSync(comparativeAuditPath)) {
+    state.lastCheckpoint = { phase: 'phase-4-audit', subStep: 'comparative-audit' };
+    writeState(deviceId, state);
+
+    appendLog(deviceId, { level: 'info', agent: 'coverage-auditor', message: 'Phase 2: Comparative audit' });
+    const phase2Result = await invokeAgent({
+      prompt: `COMPARATIVE COVERAGE AUDIT — Phase 2
+
+Now compare your independent checklist against the extractor's output.
+
+Read:
+1. Your independent checklist: .claude/agent-memory/coverage-auditor/independent-checklist.md
+2. The extractor's inventory: .claude/agent-memory/manual-extractor/sieve/pass-1-inventory.md
+3. The extractor's curriculum: .claude/agent-memory/manual-extractor/sieve/pass-3-curriculum.md
+4. The extractor's batch plan: .claude/agent-memory/manual-extractor/sieve/pass-4-batches.md
+
+Produce a comparative audit with these sections:
+
+## FEATURE GAP ANALYSIS
+Features YOU found that the extractor MISSED (list each with page reference)
+
+## EXTRA FEATURES
+Features the extractor found that you did NOT (verify these against the manual)
+
+## COVERAGE SCORE
+Percentage of your checklist features covered by the extractor
+
+## DEPENDENCY ERRORS
+Any dependency ordering mistakes in the extractor's curriculum/batch plan
+
+## RECOMMENDATIONS
+Specific fixes needed before the curriculum can be approved
+
+Write to: .claude/agent-memory/coverage-auditor/comparative-audit.md`,
+      deviceId, cwd: worktreeCwd, phase: 'phase-4-audit', agent: 'coverage-auditor',
+      model: 'claude-opus-4-6',
+      allowedTools: PIPELINE_TOOLS,
+      maxBudgetPerInvocation: 5,
+      remainingBudgetUsd: getRemainingBudget(state),
+      onChildPid: (pid) => trackChildPid(state, pid),
+    });
+    if (phase2Result.costEntry) { accumulateCost(state, phase2Result.costEntry); recordCostEntry(deviceId, phase2Result.costEntry); }
+    updateBurnRate(state, deviceId);
+    updateSubscription(state, phase2Result.rateLimitEvents);
+
+    // Validate comparative audit
+    if (fs.existsSync(comparativeAuditPath)) {
+      const auditContent = fs.readFileSync(comparativeAuditPath, 'utf-8');
+      if (!/FEATURE\s+GAP\s+ANALYSIS/i.test(auditContent)) {
+        appendLog(deviceId, { level: 'warn', message: 'Comparative audit missing FEATURE GAP ANALYSIS section' });
+        if (!tryAutoRetry(state, 'agent-failure', 'Comparative audit missing required sections')) return;
+        return;
+      }
+    } else {
+      appendLog(deviceId, { level: 'warn', message: 'Comparative audit file not created' });
+      if (!tryAutoRetry(state, 'agent-failure', 'Auditor did not create comparative-audit.md')) return;
+      return;
+    }
+  } else {
+    appendLog(deviceId, { level: 'info', message: 'Comparative audit already exists, skipping Phase 2' });
+  }
+
+  if (!isBudgetOk(state)) return;
+
+  // Phase 3: Final verdict
+  state.lastCheckpoint = { phase: 'phase-4-audit', subStep: 'verdict' };
+  writeState(deviceId, state);
+
+  appendLog(deviceId, { level: 'info', agent: 'coverage-auditor', message: 'Phase 3: Final verdict' });
+  const verdictResult = await invokeAgent({
+    prompt: `COVERAGE AUDIT — Phase 3: Verdict
+
+Read your comparative audit: .claude/agent-memory/coverage-auditor/comparative-audit.md
+
+Based on your analysis, render a final verdict:
+- APPROVED: Coverage is >= 90% and no critical gaps
+- REJECTED: Coverage is < 90% or critical features are missing
+
+Write your checkpoint to .claude/agent-memory/coverage-auditor/checkpoint.md with YAML frontmatter:
+agent: coverage-auditor, device_id: ${deviceId}, phase: 4, status: PASS or FAIL, verdict: APPROVED or REJECTED, score: <coverage percentage as 0-10>
+
+Include a summary of your findings in the checkpoint body.`,
     deviceId, cwd: worktreeCwd, phase: 'phase-4-audit', agent: 'coverage-auditor',
+    model: 'claude-opus-4-6',
     allowedTools: PIPELINE_TOOLS,
+    maxBudgetPerInvocation: 5,
     remainingBudgetUsd: getRemainingBudget(state),
     onChildPid: (pid) => trackChildPid(state, pid),
   });
-  if (result.costEntry) { accumulateCost(state, result.costEntry); recordCostEntry(deviceId, result.costEntry); }
+  if (verdictResult.costEntry) { accumulateCost(state, verdictResult.costEntry); recordCostEntry(deviceId, verdictResult.costEntry); }
   updateBurnRate(state, deviceId);
-  updateSubscription(state, result.rateLimitEvents);
+  updateSubscription(state, verdictResult.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('coverage-auditor');
   if (checkpoint.verdict === 'APPROVED') {

@@ -97,6 +97,7 @@ export function invokeAgent(opts: {
   allowedTools?: string[];
   maxTurns?: number;
   remainingBudgetUsd?: number;
+  maxBudgetPerInvocation?: number;
   onChildPid?: (pid: number) => void;
 }): Promise<InvokeResult> {
   return new Promise((resolve) => {
@@ -121,7 +122,7 @@ export function invokeAgent(opts: {
     }
 
     if (opts.remainingBudgetUsd !== undefined && opts.remainingBudgetUsd > 0) {
-      const perInvocationCap = 20;
+      const perInvocationCap = opts.maxBudgetPerInvocation ?? 20;
       const budget = Math.min(opts.remainingBudgetUsd, perInvocationCap);
       args.push('--max-budget-usd', budget.toFixed(2));
     }

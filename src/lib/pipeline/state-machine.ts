@@ -32,6 +32,7 @@ export function migrateState(state: PipelineState): PipelineState {
   if (state.subscription === undefined) state.subscription = null;
   if (state.burnRate === undefined) state.burnRate = null;
   if ((state as Record<string, unknown>).childPid === undefined) (state as Record<string, unknown>).childPid = null;
+  if (state.extractionProgress === undefined) state.extractionProgress = null;
 
   // TokenUsage migration: add cacheCreation/cacheRead if missing
   const migrateTokens = (t: { input: number; output: number; cacheCreation?: number; cacheRead?: number }) => {
@@ -109,6 +110,7 @@ export function createInitialState(opts: {
     runnerPid: null,
     childPid: null,
     worktreePath: null,
+    extractionProgress: null,
     lastCheckpoint: {
       phase: 'pending',
       subStep: 'init',
