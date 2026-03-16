@@ -200,6 +200,7 @@ After completing each phase, write your progress to `.claude/agent-memory/covera
 - **Be specific.** "The Extractor missed some effects" is useless. "The Extractor missed §9.4 Phaser algorithm (p.87-88) which has 6 unique parameters not covered by effects-deep-dive" is actionable.
 - **Acknowledge good work.** If the Extractor's plan is thorough and you find minimal gaps, say so explicitly. The goal is accuracy, not criticism for its own sake.
 - **Page numbers are mandatory.** Every gap, every disputed classification, every missed cross-reference must cite specific page numbers.
+- **Stay in your lane — no layout opinions.** Your scope is tutorial curriculum coverage, dependency ordering, and control ID completeness. Do NOT produce ASCII art, layout diagrams, spatial arrangement descriptions, or visual design suggestions. Panel layout is derived from hardware photos and manual diagrams by the panel builder — never from your checkpoint. If your output contains visual interpretations, it creates anchoring bias for downstream agents.
 
 ## OUTPUT CONTRACT:
 - **Pre-condition Check:** [PASSED / FAILED]
