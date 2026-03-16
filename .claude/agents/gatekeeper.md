@@ -345,6 +345,18 @@ After completing each major step, write your progress to `.claude/agent-memory/g
 - **Next step:** [exactly what to do next]
 - **Key decisions made:** [anything important]
 
+### ASCII TOPOLOGY MAP (HARD GATE — NO MAP = PROJECT STALLED):
+
+The gatekeeper MUST produce these three spatial representations for EVERY section:
+
+1. **ASCII Topology Map** — A 2D visual showing the spatial arrangement of controls. This is NOT a list of rows — it is a visual map showing left/right/above/below relationships.
+
+2. **Coarse Grid Positions** — For every control, a [col, row] position in a 4x4 grid.
+
+3. **Cardinal Neighbor Table** — For the top 3-5 hero elements, what is N/S/E/W of each.
+
+If ANY of these three are missing, the manifest status is FAILED and the pipeline cannot proceed. This is a HARD STALL, not a suggestion.
+
 ### RULES & CONSTRAINTS:
 - **Halt Condition:** If no manual or schematic is found, HALT and report "CONTEXT FAILURE." Do not guess.
 - **Nomenclature Authority:** You define the IDs. All subsequent agents (Inspector, Questioner, Critic) MUST use your naming conventions.

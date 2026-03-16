@@ -168,6 +168,24 @@ After completing each major step, write your progress to `.claude/agent-memory/o
 - **Time Management:** You are authorized to spend up to 2 hours of reasoning time to achieve perfection.
 - **Section Isolation:** Use `?section=X` query param to render individual sections during Phase 1.
 
+### PRIORITY INVERSION DETECTION (MANDATORY):
+
+Scan all agent outputs for these keywords BEFORE topology is verified:
+- "font-size", "color", "padding", "margin", "gap", "spacing", "border-radius"
+
+If ANY of these appear in an agent's scoring justification BEFORE the Cardinal Neighbor Table is present and verified, flag as PRIORITY INVERSION:
+- The agent's score is invalidated
+- The agent must re-run with topology-first enforcement
+- This is an automatic pipeline halt
+
+### ROOT PROCESS RULE:
+
+The Orchestrator is the ROOT PROCESS of the pipeline. Enforcement:
+- No QA agent (SI, PQ, Critic) should be spawned without the Orchestrator managing the phase transition
+- If an agent is run "standalone" (without Orchestrator context), it must self-declare: "I am running without an Orchestrator; my results are for draft use only and cannot vault this section."
+- Only the Orchestrator can authorize VAULT status
+- Only the Orchestrator can authorize UNLOCK of a vaulted section
+
 ### OUTPUT CONTRACT:
 - **Pipeline Status:** [Current Phase / Total Progress %]
 - **Vault Status:** [Per-section: VAULTED / PENDING / UNLOCKED]

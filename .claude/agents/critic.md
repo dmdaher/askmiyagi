@@ -208,7 +208,9 @@ Deductions (minimum score: 0.0):
 - (-2.0) Priority Inversion — Phase 1 agents checked spacing before verifying structural layout
 - (-2.0) Positional Audit Gap — Phase 1 agents validated "present = correct" without checking positions
 - (-2.0) Pipeline Blind Spot (topology mismatch found that both Phase 1 agents missed)
-**SPACING & VISUAL (checked only AFTER structural passes):**
+**CONTAINMENT (checked AFTER structural, BEFORE visual — physical hardware never has CSS overflow):**
+- (-1.0) Boundary Violation — text or icon spills outside its container (button face, screen bezel, section border). If PQ or SI missed this, cite the specific "Boundary Violation" rule to veto their score. A label wider than its button is a physical impossibility on real hardware.
+**SPACING & VISUAL (checked only AFTER structural and containment pass):**
 - (-2.0) Horizontal Balance failure (gap variance > 20% or fill ratio below target)
 - (-2.0) Unscalable or "airy" CSS architecture (e.g., flex-shrink-0 with no flex-grow causing clustering)
 - (-1.0) Any unaddressed "Vacuum Error"
