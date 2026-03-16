@@ -69,6 +69,27 @@ function getManufacturerUrls(manufacturer: string, model: string): string[] {
         `https://static.roland.com/assets/media/pdf/${modelUnderscore}_e.pdf`,
       );
       break;
+    case 'nord':
+    case 'clavia':
+      urls.push(
+        `https://www.nordkeyboards.com/sites/default/files/files/downloads/${modelSlug}/${modelUnderscore}-English-User-Manual-v1.x.pdf`,
+      );
+      break;
+    case 'elektron':
+      urls.push(
+        `https://www.elektron.se/wp-content/uploads/${modelUnderscore}_user_manual.pdf`,
+      );
+      break;
+    case 'teenage engineering':
+      urls.push(
+        `https://teenage.engineering/guides/${modelSlug}`,
+      );
+      break;
+    case 'akai':
+      urls.push(
+        `https://www.akaipro.com/amfile/file/download/file/${modelSlug}-user-guide.pdf`,
+      );
+      break;
   }
 
   return urls;
@@ -85,6 +106,8 @@ function getAggregatorUrls(manufacturer: string, model: string): string[] {
   return [
     `https://www.synthmanuals.com/manuals/${mfr}/${modelSlug}/`,
     `https://www.manualslib.com/manual-search/${encodeURIComponent(`${manufacturer} ${model}`)}/`,
+    `https://www.manualsonline.com/search?q=${encodeURIComponent(`${manufacturer} ${model}`)}`,
+    `https://www.vintagesynth.com/search/node/${encodeURIComponent(`${manufacturer} ${model}`)}`,
     `https://archive.org/search?query=${query}&and[]=mediatype%3A%22texts%22`,
   ];
 }

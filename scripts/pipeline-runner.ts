@@ -196,7 +196,7 @@ async function run() {
 
 async function doPending(state: PipelineState) {
   appendLog(deviceId, { level: 'info', message: 'Transitioning from pending...' });
-  advancePhase(state);
+  advancePhase(state, worktreeCwd);
 }
 
 async function doPreflight(state: PipelineState) {
@@ -206,11 +206,35 @@ async function doPreflight(state: PipelineState) {
 
   const outputDir = path.join(worktreeCwd, 'docs', state.manufacturer, deviceId);
 
-  // Install MCP server deps if needed
+  // Install MCP server deps if needed (with file lock to prevent races)
   const mcpDir = path.resolve('mcp-servers/synth-manual-mcp');
+  const lockFile = path.join(mcpDir, 'install.lock');
   if (!fs.existsSync(path.join(mcpDir, 'node_modules'))) {
-    appendLog(deviceId, { level: 'info', message: 'Installing MCP server dependencies...' });
-    execSync('npm install', { cwd: mcpDir, stdio: 'pipe' });
+    // Simple file lock: if lock exists and is recent (< 2 min), wait; otherwise take it
+    let locked = false;
+    try {
+      const lockStat = fs.statSync(lockFile);
+      locked = Date.now() - lockStat.mtimeMs < 120000;
+    } catch { /* no lock file */ }
+
+    if (locked) {
+      appendLog(deviceId, { level: 'info', message: 'Waiting for MCP server install (another pipeline is installing)...' });
+      // Wait up to 60s for the other install to finish
+      let waited = 0;
+      while (fs.existsSync(lockFile) && waited < 60000) {
+        const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+        await wait(2000);
+        waited += 2000;
+      }
+    } else {
+      try {
+        fs.writeFileSync(lockFile, String(process.pid));
+        appendLog(deviceId, { level: 'info', message: 'Installing MCP server dependencies...' });
+        execSync('npm install', { cwd: mcpDir, stdio: 'pipe' });
+      } finally {
+        try { fs.unlinkSync(lockFile); } catch { /* ignore */ }
+      }
+    }
   }
 
   // Write MCP config to worktree so Claude CLI discovers the server
@@ -275,7 +299,7 @@ If you cannot find or download the manual after trying all approaches, state cle
     state.manualPaths = downloadedPdfs.map((p) => path.relative(worktreeCwd, p));
     completePhase(state, 'phase-preflight', null, true);
     appendLog(deviceId, { level: 'info', message: `Manual downloaded: ${state.manualPaths.join(', ')}` });
-    advancePhase(state);
+    advancePhase(state, worktreeCwd);
   } else {
     completePhase(state, 'phase-preflight', null, false);
     createEscalation(state, 'manual-not-found',
@@ -341,7 +365,7 @@ Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML
     completePhase(state, 'phase-0-gatekeeper', checkpoint.score, true);
     const sections = parseSectionsFromGatekeeper();
     if (sections.length > 0) state.sections = sections;
-    advancePhase(state);
+    advancePhase(state, worktreeCwd);
   } else if (result.exitCode !== 0) {
     createEscalation(state, 'agent-failure', `Gatekeeper failed with exit code ${result.exitCode}`);
   } else {
@@ -408,7 +432,7 @@ async function doPhase1(state: PipelineState) {
   }
 
   completePhase(state, 'phase-1-section-loop', 10, true);
-  advancePhase(state);
+  advancePhase(state, worktreeCwd);
 }
 
 async function doPhase2(state: PipelineState) {
@@ -431,7 +455,7 @@ async function doPhase2(state: PipelineState) {
     const checkpoint = readAgentCheckpoint('structural-inspector');
     if (checkpoint.score !== null && checkpoint.score >= 10) {
       completePhase(state, 'phase-2-global-assembly', checkpoint.score, true);
-      advancePhase(state);
+      advancePhase(state, worktreeCwd);
       return;
     }
   }
@@ -454,7 +478,7 @@ async function doPhase3(state: PipelineState) {
   const checkpoint = readAgentCheckpoint('critic');
   if (checkpoint.score !== null && checkpoint.score >= 9.5) {
     completePhase(state, 'phase-3-harmonic-polish', checkpoint.score, true);
-    advancePhase(state);
+    advancePhase(state, worktreeCwd);
   } else {
     completePhase(state, 'phase-3-harmonic-polish', checkpoint.score, false);
     createEscalation(state, 'agent-failure', `Harmonic polish score ${checkpoint.score ?? 'unknown'} below threshold`);
@@ -494,7 +518,7 @@ async function doPhase4Extract(state: PipelineState) {
   const checkpoint = readAgentCheckpoint('manual-extractor');
   if (checkpoint.score !== null && checkpoint.score >= 9.0) {
     completePhase(state, 'phase-4-extraction', checkpoint.score, true);
-    advancePhase(state);
+    advancePhase(state, worktreeCwd);
   } else {
     completePhase(state, 'phase-4-extraction', checkpoint.score, false);
     createEscalation(state, 'agent-failure', `Manual extraction score ${checkpoint.score ?? 'unknown'} below threshold`);
@@ -517,7 +541,7 @@ async function doPhase4Audit(state: PipelineState) {
     completePhase(state, 'phase-4-audit', checkpoint.score, true);
     const batches = parseBatchesFromAuditor();
     if (batches.length > 0) state.tutorialBatches = batches;
-    advancePhase(state);
+    advancePhase(state, worktreeCwd);
   } else {
     completePhase(state, 'phase-4-audit', checkpoint.score, false);
     createEscalation(state, 'curriculum-review', `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'}. Review the tutorial plan.`);
@@ -570,7 +594,7 @@ async function doPhase5(state: PipelineState) {
   }
 
   completePhase(state, 'phase-5-tutorial-build', 10, true);
-  advancePhase(state);
+  advancePhase(state, worktreeCwd);
 }
 
 async function doTutorialPR(state: PipelineState) {
@@ -585,7 +609,7 @@ async function doTutorialPR(state: PipelineState) {
     const prUrl = prOutput.trim();
     appendLog(deviceId, { level: 'info', message: `Tutorial PR created: ${prUrl}` });
     completePhase(state, 'tutorial-pr', null, true);
-    advancePhase(state);
+    advancePhase(state, worktreeCwd);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     createEscalation(state, 'agent-failure', `Failed to create tutorial PR: ${message}`);

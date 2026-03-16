@@ -154,8 +154,22 @@ export function getNextPhase(
   return next;
 }
 
-export function advancePhase(state: PipelineState): void {
-  const hasManual = state.manualPaths.length > 0;
+/**
+ * Advance to the next pipeline phase.
+ * @param worktreePath — If provided, resolves manualPaths relative to this directory
+ *   for file existence checks. Without it, only checks manualPaths.length > 0.
+ */
+export function advancePhase(state: PipelineState, worktreePath?: string): void {
+  let hasManual = state.manualPaths.length > 0;
+
+  // When a worktree path is available, validate files actually exist on disk
+  if (hasManual && worktreePath) {
+    hasManual = state.manualPaths.some((p) => {
+      const resolved = path.isAbsolute(p) ? p : path.join(worktreePath, p);
+      return fs.existsSync(resolved);
+    });
+  }
+
   const next = getNextPhase(state.currentPhase, hasManual);
 
   if (next === 'completed') {
