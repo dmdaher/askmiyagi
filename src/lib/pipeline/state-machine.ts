@@ -31,8 +31,10 @@ export function migrateState(state: PipelineState): PipelineState {
   if (state.totalActualCostUsd === undefined) state.totalActualCostUsd = 0;
   if (state.subscription === undefined) state.subscription = null;
   if (state.burnRate === undefined) state.burnRate = null;
-  if ((state as Record<string, unknown>).childPid === undefined) (state as Record<string, unknown>).childPid = null;
-  if (state.extractionProgress === undefined) state.extractionProgress = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- migration: old state files may lack these fields
+  const raw = state as any;
+  if (raw.childPid === undefined) state.childPid = null;
+  if (raw.extractionProgress === undefined) state.extractionProgress = null;
 
   // TokenUsage migration: add cacheCreation/cacheRead if missing
   const migrateTokens = (t: { input: number; output: number; cacheCreation?: number; cacheRead?: number }) => {
