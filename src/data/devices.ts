@@ -25,6 +25,14 @@ export const devices: DeviceRegistry = {
     available: true,
     categories: ['basics', 'synthesis', 'modulation', 'effects', 'presets'],
   },
+  'cdj-3000': {
+    id: 'cdj-3000',
+    name: 'Pioneer DJ CDJ-3000',
+    manufacturer: 'Pioneer DJ',
+    description: 'Professional DJ media player with 9-inch touch display, high-resolution waveform, Pro DJ Link networking, and advanced performance features.',
+    available: false,
+    categories: ['basics', 'performance', 'effects', 'midi'],
+  },
 };
 
 export function getDevice(deviceId: string): DeviceInfo | undefined {
