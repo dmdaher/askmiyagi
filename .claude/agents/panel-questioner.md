@@ -290,7 +290,9 @@ Deductions (minimum score: 0.0):
 - (-3.0) Structural Layout Error: wrong orientation (horizontal row rendered as vertical column, or vice versa) — per group
 - (-3.0) Element in wrong section entirely (Positional Accuracy failure — per element)
 - (-2.0) Structural Position Error: correct orientation but wrong position within section (top vs bottom, left vs right) — per group
-**VISUAL (checked only AFTER structural layout passes):**
+**CONTAINMENT (checked BEFORE visual — physical hardware never has CSS overflow):**
+- (-1.0) Boundary Violation: Any text or icon that spills outside its logical container (button face, screen bezel, section border, knob label area). If a label doesn't fit on a button, the button is scaled incorrectly or the font-size is wrong. Treat every control as a physical object — a label wider than its button is a physical impossibility. "Still legible" is NOT sufficient; the text must fit within its control boundary.
+**VISUAL (checked only AFTER structural layout and containment pass):**
 - (-2.0) Horizontal Imbalance: Sections cluster on one side with large gaps elsewhere
 - (-2.0) Visual Weight Failure: element prominent on hardware but invisible/tiny in code, or vice versa
 - (-1.0) Proportional Drift: Vertical spacing has been "unrolled" or stretched
