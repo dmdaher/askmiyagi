@@ -44,6 +44,7 @@ import {
   preInspectGatekeeper,
   validateGatekeeperManifest,
   validateNeighborDirections,
+  validateArchetypeGeometry,
 } from '../src/lib/pipeline/checkpoint-validators';
 
 const deviceId = process.argv[2];
@@ -742,6 +743,22 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
         validation.errors.push(...neighborCheck.errors);
       } else {
         appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: '4-POINT: All neighbor directions consistent with parser centroids' });
+      }
+
+      // Archetype-Geometry Validation: does the archetype match the centroid distribution?
+      const archetypeCheck = validateArchetypeGeometry(manifestJson, blueprintJson);
+      if (archetypeCheck.mismatches.length > 0) {
+        for (const mm of archetypeCheck.mismatches) {
+          appendLog(deviceId, {
+            level: 'warn', agent: 'gatekeeper',
+            message: `ARCHETYPE-GEOMETRY: Section "${mm.sectionId}" — ${mm.reason} Suggest: ${mm.suggestion}`,
+          });
+        }
+        // Each archetype mismatch is a significant error — deduct heavily
+        validation.score = Math.max(0, validation.score - archetypeCheck.mismatches.length * 2.0);
+        validation.errors.push(...archetypeCheck.errors);
+      } else {
+        appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: 'ARCHETYPE-GEOMETRY: All archetypes consistent with centroid distribution' });
       }
     }
 

@@ -376,6 +376,106 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
 }
 
 /**
+ * Archetype-Geometry Validation: verify the chosen archetype makes sense
+ * for the centroid distribution. Catches wrong archetypes like using
+ * cluster-above-anchor for a side-by-side layout.
+ */
+export function validateArchetypeGeometry(
+  manifestJson: string,
+  blueprintJson: string
+): ValidationResult & { mismatches: Array<{ sectionId: string; archetype: string; reason: string; suggestion: string }> } {
+  const errors: string[] = [];
+  const mismatches: Array<{ sectionId: string; archetype: string; reason: string; suggestion: string }> = [];
+
+  let manifest: { sections: Array<{ id: string; archetype: string; controls: string[] }> };
+  let blueprint: { sections: Array<{ sectionId: string; controls: Array<{ id: number; centroid: { x: number; y: number } }> }> };
+
+  try {
+    manifest = JSON.parse(manifestJson);
+    blueprint = JSON.parse(blueprintJson);
+  } catch {
+    return { valid: false, errors: ['Could not parse JSON'], mismatches: [] };
+  }
+
+  for (const mSection of manifest.sections) {
+    const bSection = blueprint.sections.find(bs =>
+      bs.sectionId === mSection.id ||
+      bs.sectionId?.toLowerCase().includes(mSection.id.replace(/-/g, '').toLowerCase())
+    );
+    if (!bSection || bSection.controls.length < 2) continue;
+
+    const centroids = bSection.controls.map(c => c.centroid).filter(Boolean);
+    if (centroids.length < 2) continue;
+
+    // Compute spread: how much do centroids vary in X vs Y?
+    const xs = centroids.map(c => c.x);
+    const ys = centroids.map(c => c.y);
+    const xSpread = Math.max(...xs) - Math.min(...xs);
+    const ySpread = Math.max(...ys) - Math.min(...ys);
+
+    // Detect X-clusters: do centroids split into 2+ distinct X groups?
+    const sortedXs = [...xs].sort((a, b) => a - b);
+    let maxXGap = 0;
+    for (let i = 1; i < sortedXs.length; i++) {
+      maxXGap = Math.max(maxXGap, sortedXs[i] - sortedXs[i - 1]);
+    }
+    const hasTwoXClusters = maxXGap > 15; // >15% gap between X groups = two columns
+
+    const archetype = mSection.archetype;
+
+    // cluster-above-anchor / cluster-below-anchor: implies vertical stacking
+    // If controls spread more horizontally than vertically, archetype is likely wrong
+    // Exception: narrow sections (width < 20%) can have horizontal offset within a vertical stack
+    // because controls are small relative to the section width — X-spread is noise, not signal
+    const sectionWidth = bSection.controls.length > 0 ? 100 : 0; // We check spread relative to section
+    const isNarrowSection = xSpread < 30; // Less than 30% X-spread in a section = probably vertical
+    if ((archetype === 'cluster-above-anchor' || archetype === 'cluster-below-anchor') && hasTwoXClusters && !isNarrowSection) {
+      mismatches.push({
+        sectionId: mSection.id,
+        archetype,
+        reason: `Controls have two distinct X-clusters (gap: ${maxXGap.toFixed(0)}%). ` +
+          `${archetype} implies vertical stacking, but geometry shows side-by-side arrangement.`,
+        suggestion: 'dual-column',
+      });
+      errors.push(
+        `Section "${mSection.id}": archetype "${archetype}" mismatches geometry. ` +
+        `Controls split into two X-clusters (gap: ${maxXGap.toFixed(0)}%). Suggest "dual-column".`
+      );
+    }
+
+    // single-column: all controls should share similar X (within ±10%)
+    if (archetype === 'single-column' && xSpread > 20) {
+      mismatches.push({
+        sectionId: mSection.id,
+        archetype,
+        reason: `X-spread is ${xSpread.toFixed(0)}% but single-column expects <20%.`,
+        suggestion: xSpread > 30 ? 'dual-column' : 'stacked-rows',
+      });
+      errors.push(
+        `Section "${mSection.id}": archetype "single-column" but X-spread is ${xSpread.toFixed(0)}%. ` +
+        `Controls aren't in a single column.`
+      );
+    }
+
+    // single-row: all controls should share similar Y (within ±10%)
+    if (archetype === 'single-row' && ySpread > 20) {
+      mismatches.push({
+        sectionId: mSection.id,
+        archetype,
+        reason: `Y-spread is ${ySpread.toFixed(0)}% but single-row expects <20%.`,
+        suggestion: 'stacked-rows',
+      });
+      errors.push(
+        `Section "${mSection.id}": archetype "single-row" but Y-spread is ${ySpread.toFixed(0)}%. ` +
+        `Controls aren't in a single row.`
+      );
+    }
+  }
+
+  return { valid: mismatches.length === 0, errors, mismatches };
+}
+
+/**
  * Orchestrator 4-Point Validation: verify gatekeeper's neighbor directions
  * against parser's centroid coordinates. Catches flipped East/West errors.
  */
