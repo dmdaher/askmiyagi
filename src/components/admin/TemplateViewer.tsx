@@ -16,7 +16,7 @@ interface TemplateSpec {
   };
   componentStructure: string;
   controlSlots: string[];
-  containerAssignment?: Record<string, string[]>;
+  containerAssignment?: Record<string, string[] | Record<string, string[]>>;
   notes: string[];
 }
 
@@ -193,9 +193,13 @@ function LayoutWireframe({ template, manifest }: { template: TemplateSpec; manif
       let preAnchorSlots: string[];
       let anchorSlots: string[];
 
-      if (assignment?.cluster && assignment?.anchor) {
-        preAnchorSlots = assignment.cluster;
-        anchorSlots = assignment.anchor;
+      // Check if anchor is nested (sub-zones like { left: [...], right: [...] })
+      const anchorValue = assignment?.anchor;
+      const isNestedAnchor = anchorValue && !Array.isArray(anchorValue) && typeof anchorValue === 'object';
+
+      if (assignment?.cluster && anchorValue) {
+        preAnchorSlots = Array.isArray(assignment.cluster) ? assignment.cluster : Object.values(assignment.cluster).flat();
+        anchorSlots = Array.isArray(anchorValue) ? anchorValue : Object.values(anchorValue).flat();
       } else {
         // Fallback: identify anchor by type
         const anchorTypes = new Set(['fader', 'slider', 'wheel', 'screen']);
@@ -240,7 +244,7 @@ function LayoutWireframe({ template, manifest }: { template: TemplateSpec; manif
             anchor {anchorFlex ? `(${anchorFlex}%)` : ''}
           </div>
           <div
-            className="rounded p-1 flex flex-col items-center justify-center gap-1"
+            className="rounded p-1 flex items-stretch gap-1"
             style={{
               flex: anchorFlex ? `0 0 ${anchorFlex}%` : '2',
               backgroundColor: 'rgba(52, 211, 153, 0.08)',
@@ -248,9 +252,24 @@ function LayoutWireframe({ template, manifest }: { template: TemplateSpec; manif
               minHeight: '40px',
             }}
           >
-            {anchorSlots.map((id, i) => (
-              <ControlSlot key={id} name={id} index={preAnchorSlots.length + i} manifest={manifest} />
-            ))}
+            {isNestedAnchor && !Array.isArray(anchorValue) ? (
+              // Nested sub-zones: render as columns
+              Object.entries(anchorValue as Record<string, string[]>).map(([subRole, subIds]) => (
+                <div key={subRole} className="flex flex-col gap-1 justify-center" style={{ flex: subRole === 'right' ? '1' : '0 0 auto' }}>
+                  <div className="text-[6px] uppercase tracking-wider text-center" style={{ color: '#374151' }}>{subRole}</div>
+                  {subIds.map((id, i) => (
+                    <ControlSlot key={id} name={id} index={preAnchorSlots.length + i} manifest={manifest} />
+                  ))}
+                </div>
+              ))
+            ) : (
+              // Flat anchor: vertical stack
+              <div className="flex flex-col gap-1 items-center justify-center w-full">
+                {anchorSlots.map((id, i) => (
+                  <ControlSlot key={id} name={id} index={preAnchorSlots.length + i} manifest={manifest} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );

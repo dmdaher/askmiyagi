@@ -50,12 +50,15 @@ export interface ManifestSection {
    * cluster-below-anchor, anchor-layout, dual-column).
    *
    * Keys are container roles (e.g., "cluster", "anchor", "left-column", "right-column").
-   * Values are arrays of control IDs assigned to that container.
+   * Values are either:
+   *   - string[] — flat list of control IDs in that container
+   *   - Record<string, string[]> — nested sub-zones within the container
+   *     (e.g., anchor: { "left": ["reset-btn", "reset-led"], "right": ["slider"] })
    *
    * The Layout Engine validates that every control in `controls` appears in exactly
    * one container, and that no container references controls not in `controls`.
    */
-  containerAssignment?: Record<string, string[]>;
+  containerAssignment?: Record<string, string[] | Record<string, string[]>>;
   /** Proportional height splits for anchor-layout and cluster-above-anchor */
   heightSplits?: {
     cluster: number;
@@ -129,7 +132,7 @@ export interface TemplateSpec {
   componentStructure: string;
   controlSlots: string[];
   /** Explicit mapping of control IDs to container roles (from manifest containerAssignment) */
-  containerAssignment?: Record<string, string[]>;
+  containerAssignment?: Record<string, string[] | Record<string, string[]>>;
   notes: string[];
 }
 
@@ -518,8 +521,13 @@ function validateManifest(manifest: MasterManifest): string[] {
         );
       } else {
         // Every control must appear in exactly one container
+        // containerAssignment values can be string[] or nested Record<string, string[]>
         const assigned = new Set<string>();
-        for (const [role, ids] of Object.entries(section.containerAssignment)) {
+        for (const [role, value] of Object.entries(section.containerAssignment)) {
+          // Flatten: if value is a nested object, collect all IDs from sub-zones
+          const ids: string[] = Array.isArray(value)
+            ? value
+            : Object.values(value).flat();
           for (const id of ids) {
             if (!section.controls.includes(id)) {
               errors.push(`Section "${section.id}" containerAssignment["${role}"] references "${id}" not in controls list`);
