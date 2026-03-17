@@ -462,23 +462,43 @@ async function doPhase0DiagramParser(state: PipelineState) {
   if (!isBudgetOk(state)) return;
 
   const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
+
+  // Find hardware photos in the device's docs directory
+  const photoDir = path.join('docs', state.manufacturer, deviceId, 'photos');
+  const worktreePhotoDir = path.join(worktreeCwd, photoDir);
+  let photoList = '';
+  try {
+    const photos = fs.readdirSync(worktreePhotoDir)
+      .filter((f: string) => /\.(jpg|jpeg|png|webp)$/i.test(f));
+    if (photos.length > 0) {
+      photoList = '\n- Hardware photos (READ THESE — they are your PRIMARY input):\n' +
+        photos.map((p: string) => `  - ${photoDir}/${p}`).join('\n');
+    }
+  } catch { /* no photos dir */ }
+
   const resumeCtx = getResumeContext('diagram-parser');
   const prompt = `You are the Diagram Parser agent. Extract spatial geometry from hardware photos and manual diagrams for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
 - Manuals:
-${manualList}
+${manualList}${photoList}
+
+CRITICAL: You MUST read the hardware photos listed above. They are your PRIMARY input.
+Use the manual's front-panel diagrams as SECONDARY reference for control numbering.
+Your centroids must be derived from the PHOTOS, not estimated from line drawings.
 
 Your job is to be a SURVEYOR — extract spatial facts from images. Do NOT interpret, name, or design anything.
+Your output is consumed by a DETERMINISTIC MACHINE, not a human. Output JSON with coordinates, not prose.
 
 For each section on the hardware panel:
 1. Identify section boundaries (bounding boxes as % of panel)
-2. Extract control centroids (2 decimal precision, % of section)
+2. Extract control centroids (2 decimal precision, % of section) — FROM PHOTOS
 3. Discover neighbors (±3% threshold in 4 cardinal directions)
 4. Classify topology (grid-NxM, single-column, single-row, cluster-above-anchor, etc.)
 5. Lock proportions (height splits, aspect ratios)
 6. Document aspect ratios for all elements
+7. Assign containerZones for multi-zone topologies
 
 Output spatial-blueprint JSON per section.
 Write your checkpoint to .claude/agent-memory/diagram-parser/checkpoint.md with YAML frontmatter.
@@ -504,18 +524,38 @@ Include: agent: diagram-parser, deviceId: ${deviceId}, phase: 0, status, score, 
   updateSubscription(state, result.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('diagram-parser');
-  const checkpointFileExists = fs.existsSync(
-    path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'checkpoint.md')
-  );
+  const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'checkpoint.md');
+  const checkpointFileExists = fs.existsSync(checkpointPath);
+
+  // Structural validation: the parser must output spatial-blueprint JSON blocks,
+  // not just prose descriptions. Check for JSON with centroid data.
+  let hasStructuredOutput = false;
+  if (checkpointFileExists) {
+    const content = fs.readFileSync(checkpointPath, 'utf-8');
+    // Must contain at least one spatial-blueprint JSON block with centroids
+    hasStructuredOutput = content.includes('"centroid"') || content.includes('"topology"');
+    if (!hasStructuredOutput) {
+      appendLog(deviceId, {
+        level: 'warn',
+        message: 'Diagram Parser checkpoint lacks structured spatial-blueprint JSON (no centroid/topology data found). Output is prose-only.',
+      });
+    }
+  }
+
   const parserPassed =
-    (checkpoint.score !== null && checkpoint.score >= 9.0) ||
-    (result.exitCode === 0 && checkpointFileExists);
+    checkpoint.score !== null && checkpoint.score >= 9.0 && hasStructuredOutput;
 
   if (parserPassed) {
-    completePhase(state, 'phase-0-diagram-parser', checkpoint.score ?? 10, true);
+    completePhase(state, 'phase-0-diagram-parser', checkpoint.score, true);
     advancePhase(state, worktreeCwd);
   } else if (result.exitCode !== 0) {
     if (!tryAutoRetry(state, 'agent-failure', `Diagram Parser failed with exit code ${result.exitCode}`)) return;
+  } else if (!hasStructuredOutput && checkpointFileExists) {
+    completePhase(state, 'phase-0-diagram-parser', checkpoint.score, false);
+    if (!tryAutoRetry(state, 'agent-failure',
+      `Diagram Parser produced prose but not structured spatial-blueprint JSON. ` +
+      `Checkpoint must contain centroid coordinates and topology classifications per section. ` +
+      `Score: ${checkpoint.score ?? 'unknown'}`)) return;
   } else {
     completePhase(state, 'phase-0-diagram-parser', checkpoint.score, false);
     if (!tryAutoRetry(state, 'agent-failure', `Diagram Parser scored below 9.0`)) return;
