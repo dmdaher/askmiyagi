@@ -108,6 +108,22 @@ For every cluster and anchor element, specify the width:height ratio of its boun
 
 This is CRITICAL for non-square elements. A fader rendered as a square is a topology error.
 
+### CONTAINER ZONE ASSIGNMENT (MANDATORY for multi-zone topologies):
+For topologies with distinct spatial zones (cluster-above-anchor, cluster-below-anchor, anchor-layout), you MUST output a `containerZones` map that assigns each control index to its containing zone based on **geometric containment**.
+
+**The rule:** A control belongs to the zone whose bounding rectangle contains its centroid. This is a geometric fact, not an interpretation.
+
+```json
+"containerZones": {
+  "cluster": [0, 1, 2, 3],
+  "anchor": [4, 5, 6]
+}
+```
+
+**Why this matters:** The Gatekeeper uses this geometric assignment to build the `containerAssignment` field in the manifest (mapping control NAMES to containers). Without it, the Gatekeeper guesses based on control order in the manifest, which causes misassignment (e.g., a reset button physically next to the fader gets placed in the button cluster).
+
+**Verification:** Every control index must appear in exactly one zone. The union of all zone indices must equal the full control index set. If a control's centroid falls on the boundary between two zones, assign it to the zone whose center is closer.
+
 ### LIST LOGIC BAN (MANDATORY):
 You MUST NOT output controls as a flat list. Every control must be placed in a 2D spatial structure. If you catch yourself writing:
 ```
@@ -167,6 +183,10 @@ For each section, produce a `spatial-blueprint` JSON:
     "clusterHeightRatio": 0.52,
     "anchorHeightRatio": 0.42,
     "gapRatio": 0.06
+  },
+  "containerZones": {
+    "cluster": [0, 1, 2, 3, 4, 5],
+    "anchor": [6]
   }
 }
 ```

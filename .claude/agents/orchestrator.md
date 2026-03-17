@@ -98,6 +98,15 @@ For sections with anchors, verify the Gatekeeper's height splits match the Parse
 - If Parser says `anchorHeightRatio: 0.42` but Gatekeeper says `anchor: 0.25` → **REJECT** — proportions don't match
 - Tolerance: ±5% (e.g., 0.42 ± 0.02)
 
+#### 4. Container-Integrity Validation
+For sections with `containerAssignment`, verify each control's geometric placement matches its assigned container:
+- Read the Parser's `containerZones` (which control indices are in which bounding box)
+- Read the Gatekeeper's `containerAssignment` (which named controls are in which container)
+- Map names back to indices using the control order
+- If the Gatekeeper assigns `control-X` to "cluster" but the Parser's geometry shows `control-X`'s centroid is inside the "anchor" bounding box → **REJECT** — "Positional Perjury: control-X assigned to cluster but geometrically located in anchor zone"
+
+**Why this check exists:** Without it, the Gatekeeper can silently misassign controls to make the manifest "read well" (e.g., putting a reset button in the cluster because it's listed near the top of the manual, when it's physically next to the fader). This is Textual Gravity operating on container assignment.
+
 ### TWO-STRIKE RETRY LOGIC (MANDATORY):
 When validation fails, the Gatekeeper gets retry attempts:
 

@@ -57,6 +57,14 @@ let worktreeCwd: string;
  */
 const PIPELINE_TOOLS = ['Read', 'Write', 'Edit', 'Glob', 'Grep', 'Bash'];
 
+/**
+ * Gatekeeper-specific tool set: no Bash.
+ * The gatekeeper is a JUDGE — it reads manuals, reads parser output, and writes
+ * the manifest JSON via the Write tool. It must NOT execute scripts (layout-engine.ts)
+ * or spawn processes. Removing Bash is the mechanical boundary that enforces this.
+ */
+const GATEKEEPER_TOOLS = ['Read', 'Write', 'Edit', 'Glob', 'Grep'];
+
 /** Max auto-retries per phase before escalating to human */
 const MAX_PHASE_RETRIES = 2;
 
@@ -576,7 +584,7 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
     phase: 'phase-0-gatekeeper',
     agent: 'gatekeeper',
     model: 'claude-opus-4-6',
-    allowedTools: PIPELINE_TOOLS,
+    allowedTools: GATEKEEPER_TOOLS,
     remainingBudgetUsd: getRemainingBudget(state),
     onChildPid: (pid) => trackChildPid(state, pid),
   });

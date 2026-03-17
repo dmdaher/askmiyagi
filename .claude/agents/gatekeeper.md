@@ -104,7 +104,11 @@ The manifest is a JSON document conforming to the `MasterManifest` interface in 
       "archetype": "cluster-above-anchor",
       "gridRows": 3,
       "gridCols": 2,
-      "controls": ["sync-btn", "master-tempo-btn", "tempo-range-btn", ...],
+      "controls": ["sync-btn", "master-tempo-btn", "tempo-range-btn", "tempo-slider", "tempo-reset-btn"],
+      "containerAssignment": {
+        "cluster": ["sync-btn", "master-tempo-btn", "tempo-range-btn"],
+        "anchor": ["tempo-slider", "tempo-reset-btn"]
+      },
       "heightSplits": { "cluster": 0.52, "anchor": 0.42, "gap": 0.06 },
       "widthPercent": 8,
       "complexity": "HIGH"
@@ -144,6 +148,18 @@ The manifest is a JSON document conforming to the `MasterManifest` interface in 
    - **Merging separate groups:** The Parser clusters controls together that the manual lists as separate functional groups. Keep them separate.
 
 **Verification checkpoint:** After building the manifest, count controls per section. Compare to the Extractor's per-group count AND the Parser's per-section count. All three must agree, or conflicts must be flagged.
+
+### CONTAINER ASSIGNMENT (MANDATORY for multi-container archetypes):
+For archetypes with distinct spatial zones (cluster-above-anchor, cluster-below-anchor, anchor-layout, dual-column), you MUST include a `containerAssignment` field in the section manifest.
+
+**How to build it:**
+1. Read the Diagram Parser's `containerZones` — it tells you which control INDICES belong to which geometric zone (e.g., `"cluster": [0, 1], "anchor": [2, 3, 4]`)
+2. Map those indices to control NAMES using the Extractor's inventory — this is the "Rosetta Stone" that only you possess
+3. Output the named map: `{"cluster": ["tempo-range-btn", "master-tempo-btn"], "anchor": ["tempo-slider", "tempo-reset-indicator", "tempo-reset-btn"]}`
+
+**Why you own this field:** The Parser sees geometry (which centroids are in which bounding box). The Extractor sees names (what each control is called). Only you can connect them. The Layout Engine is deterministic — it needs named containers, not index references.
+
+**Validation:** The Orchestrator will verify your containerAssignment against the Parser's containerZones. If you put a control in the "cluster" container but its centroid is geometrically inside the "anchor" bounding box, the Orchestrator will trigger a Strike ("Positional Perjury").
 
 ### DENSITY ANCHOR (MANDATORY):
 At the top of the Manifest, define the device's Expected Density Index:
