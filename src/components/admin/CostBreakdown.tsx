@@ -6,7 +6,9 @@ import type { PhaseResult, SectionStatus, SubscriptionUsage, BurnRate } from '@/
 
 const PHASE_LABELS: Record<string, string> = {
   'phase-preflight': 'Preflight',
+  'phase-0-diagram-parser': 'Diagram Parser',
   'phase-0-gatekeeper': 'Gatekeeper',
+  'phase-0-layout-engine': 'Layout Engine',
   'phase-1-section-loop': 'Sections',
   'phase-2-global-assembly': 'Assembly',
   'phase-3-harmonic-polish': 'Polish',

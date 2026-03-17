@@ -11,7 +11,9 @@ import CostBreakdown from './CostBreakdown';
 import DiagnosticsPanel from './DiagnosticsPanel';
 
 const AGENT_PHASE_MAP: Record<string, string> = {
+  'phase-0-diagram-parser': 'diagram-parser',
   'phase-0-gatekeeper': 'gatekeeper',
+  'phase-0-layout-engine': 'layout-engine',
   'phase-1-section-loop': 'structural-inspector',
   'phase-2-global-assembly': 'panel-questioner',
   'phase-3-harmonic-polish': 'critic',
@@ -22,6 +24,7 @@ const AGENT_PHASE_MAP: Record<string, string> = {
 };
 
 const ALL_AGENTS = [
+  'diagram-parser',
   'gatekeeper',
   'structural-inspector',
   'panel-questioner',

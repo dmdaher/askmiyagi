@@ -5,7 +5,9 @@ import type { PhaseResult, PipelinePhase } from '@/lib/pipeline/types';
 
 const PHASE_LABELS: Record<string, string> = {
   'phase-preflight': 'Preflight',
+  'phase-0-diagram-parser': 'Parser',
   'phase-0-gatekeeper': 'Gatekeeper',
+  'phase-0-layout-engine': 'Layout',
   'phase-1-section-loop': 'Sections',
   'phase-2-global-assembly': 'Assembly',
   'phase-3-harmonic-polish': 'Polish',
@@ -18,7 +20,9 @@ const PHASE_LABELS: Record<string, string> = {
 
 const DISPLAY_PHASES: PipelinePhase[] = [
   'phase-preflight',
+  'phase-0-diagram-parser',
   'phase-0-gatekeeper',
+  'phase-0-layout-engine',
   'phase-1-section-loop',
   'phase-2-global-assembly',
   'phase-3-harmonic-polish',
