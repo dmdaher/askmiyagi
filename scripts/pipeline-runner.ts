@@ -73,6 +73,9 @@ const HUMAN_REQUIRED_ESCALATIONS = new Set([
   'panel-pr-review',
   'curriculum-review',
   'topology-deadlock',
+  'two-strike-halt',
+  'physical-impossibility',
+  'template-review',
 ]);
 
 /**
@@ -243,8 +246,14 @@ async function run() {
         case 'phase-preflight':
           await doPreflight(state);
           break;
+        case 'phase-0-diagram-parser':
+          await doPhase0DiagramParser(state);
+          break;
         case 'phase-0-gatekeeper':
           await doPhase0(state);
+          break;
+        case 'phase-0-layout-engine':
+          await doPhase0LayoutEngine(state);
           break;
         case 'phase-1-section-loop':
           await doPhase1(state);
@@ -439,6 +448,72 @@ If you cannot find or download the manual after trying all approaches, state cle
   }
 }
 
+async function doPhase0DiagramParser(state: PipelineState) {
+  startPhase(state, 'phase-0-diagram-parser');
+  appendLog(deviceId, { level: 'info', agent: 'diagram-parser', message: 'Starting Phase 0a: Diagram Parser (vision extraction)' });
+  if (!isBudgetOk(state)) return;
+
+  const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
+  const resumeCtx = getResumeContext('diagram-parser');
+  const prompt = `You are the Diagram Parser agent. Extract spatial geometry from hardware photos and manual diagrams for:
+- Device: ${state.deviceName}
+- Manufacturer: ${state.manufacturer}
+- Device ID: ${deviceId}
+- Manuals:
+${manualList}
+
+Your job is to be a SURVEYOR — extract spatial facts from images. Do NOT interpret, name, or design anything.
+
+For each section on the hardware panel:
+1. Identify section boundaries (bounding boxes as % of panel)
+2. Extract control centroids (2 decimal precision, % of section)
+3. Discover neighbors (±3% threshold in 4 cardinal directions)
+4. Classify topology (grid-NxM, single-column, single-row, cluster-above-anchor, etc.)
+5. Lock proportions (height splits, aspect ratios)
+6. Document aspect ratios for all elements
+
+Output spatial-blueprint JSON per section.
+Write your checkpoint to .claude/agent-memory/diagram-parser/checkpoint.md with YAML frontmatter.
+Include: agent: diagram-parser, deviceId: ${deviceId}, phase: 0, status, score, verdict, timestamp${resumeCtx}`;
+
+  const result = await invokeAgent({
+    prompt,
+    deviceId,
+    cwd: worktreeCwd,
+    phase: 'phase-0-diagram-parser',
+    agent: 'diagram-parser',
+    model: 'claude-opus-4-6',
+    allowedTools: PIPELINE_TOOLS,
+    remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
+  });
+
+  if (result.costEntry) {
+    accumulateCost(state, result.costEntry);
+    recordCostEntry(deviceId, result.costEntry);
+  }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, result.rateLimitEvents);
+
+  const checkpoint = readAgentCheckpoint('diagram-parser');
+  const checkpointFileExists = fs.existsSync(
+    path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'checkpoint.md')
+  );
+  const parserPassed =
+    (checkpoint.score !== null && checkpoint.score >= 9.0) ||
+    (result.exitCode === 0 && checkpointFileExists);
+
+  if (parserPassed) {
+    completePhase(state, 'phase-0-diagram-parser', checkpoint.score ?? 10, true);
+    advancePhase(state, worktreeCwd);
+  } else if (result.exitCode !== 0) {
+    if (!tryAutoRetry(state, 'agent-failure', `Diagram Parser failed with exit code ${result.exitCode}`)) return;
+  } else {
+    completePhase(state, 'phase-0-diagram-parser', checkpoint.score, false);
+    if (!tryAutoRetry(state, 'agent-failure', `Diagram Parser scored below 9.0`)) return;
+  }
+}
+
 async function doPhase0(state: PipelineState) {
   startPhase(state, 'phase-0-gatekeeper');
   appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: 'Starting Phase 0: Gatekeeper' });
@@ -461,23 +536,34 @@ async function doPhase0(state: PipelineState) {
 
   const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
   const resumeCtx = getResumeContext('gatekeeper');
-  const prompt = `You are the Gatekeeper agent. Initialize the digital twin build for:
+  const prompt = `You are the Gatekeeper agent (JUDGE ONLY). Produce the Master Manifest for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
 - Manuals:
 ${manualList}
 
-Read all manual PDFs and produce:
-1. The Master Manifest of all hardware controls
-2. Density Anchors
-3. Layout Architecture classification
-4. Section Width Ratios
-5. Section Topology Maps with Grid Notation and DOM assertions
-6. Key Component Proportions
+IMPORTANT: You are the JUDGE. You reconcile TWO independent data streams:
+1. Manual text (read the PDFs for control names, functional groups, parameter info)
+2. Diagram Parser output (read .claude/agent-memory/diagram-parser/checkpoint.md for spatial geometry)
+
+Your job is to RECONCILE these into a Master Manifest JSON. Rules:
+- Geometry (Parser) wins PLACEMENT decisions
+- Text (Manual) wins NAMING decisions
+- Conflicts must be FLAGGED, not smoothed
+
+You must select archetypes ONLY from the Layout Engine's defined library:
+grid-NxM, single-column, single-row, anchor-layout, cluster-above-anchor,
+cluster-below-anchor, dual-column, stacked-rows.
+Unknown layouts = flag for manual review, do NOT invent archetype names.
+
+You DO NOT produce: ASCII maps, CSS, section templates, or component structure.
+The Layout Engine (a deterministic script) will generate templates from your manifest.
+
+Output the Master Manifest JSON conforming to the MasterManifest interface in scripts/layout-engine.ts.
 
 Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML frontmatter.
-Include these fields in the frontmatter: agent: gatekeeper, device_id: ${deviceId}, phase: 0, status: PASS, score: 10${resumeCtx}`;
+Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verdict, timestamp, conflicts${resumeCtx}`;
 
   const result = await invokeAgent({
     prompt,
@@ -518,6 +604,126 @@ Include these fields in the frontmatter: agent: gatekeeper, device_id: ${deviceI
   } else {
     completePhase(state, 'phase-0-gatekeeper', checkpoint.score, false);
     if (!tryAutoRetry(state, 'agent-failure', `Gatekeeper produced no checkpoint file`)) return;
+  }
+}
+
+async function doPhase0LayoutEngine(state: PipelineState) {
+  // If templates already exist and phase was completed (resuming after template-review approval),
+  // just advance to the next phase.
+  const outputPath = path.join('.pipeline', deviceId, 'templates.json');
+  const phaseResult = state.phases.find(p => p.phase === 'phase-0-layout-engine');
+  if (phaseResult?.status === 'passed' && fs.existsSync(outputPath)) {
+    appendLog(deviceId, { level: 'info', message: 'Layout Engine: templates already generated, advancing after review approval' });
+    advancePhase(state, worktreeCwd);
+    return;
+  }
+
+  startPhase(state, 'phase-0-layout-engine');
+  appendLog(deviceId, { level: 'info', message: 'Starting Phase 0e: Layout Engine (deterministic template generation)' });
+
+  // Extract manifest JSON from gatekeeper checkpoint
+  const gatekeeperCheckpointPath = path.join(
+    worktreeCwd, '.claude', 'agent-memory', 'gatekeeper', 'checkpoint.md'
+  );
+
+  if (!fs.existsSync(gatekeeperCheckpointPath)) {
+    completePhase(state, 'phase-0-layout-engine', null, false);
+    if (!tryAutoRetry(state, 'agent-failure', 'Gatekeeper checkpoint not found — cannot run Layout Engine')) return;
+    return;
+  }
+
+  // Try to extract JSON manifest from gatekeeper checkpoint
+  const checkpointContent = fs.readFileSync(gatekeeperCheckpointPath, 'utf-8');
+  const jsonMatch = checkpointContent.match(/```json\s*([\s\S]*?)\s*```/);
+
+  if (!jsonMatch) {
+    completePhase(state, 'phase-0-layout-engine', null, false);
+    if (!tryAutoRetry(state, 'agent-failure', 'No JSON manifest found in gatekeeper checkpoint')) return;
+    return;
+  }
+
+  // Write manifest to pipeline dir for the layout engine
+  const manifestPath = path.join('.pipeline', deviceId, 'manifest.json');
+  const outputPath = path.join('.pipeline', deviceId, 'templates.json');
+
+  try {
+    // Validate JSON is parseable before writing
+    JSON.parse(jsonMatch[1]);
+    fs.writeFileSync(manifestPath, jsonMatch[1], 'utf-8');
+  } catch (e) {
+    completePhase(state, 'phase-0-layout-engine', null, false);
+    if (!tryAutoRetry(state, 'agent-failure', `Manifest JSON is invalid: ${(e as Error).message}`)) return;
+    return;
+  }
+
+  // Run the deterministic layout engine
+  try {
+    const layoutEnginePath = path.resolve('scripts/layout-engine.ts');
+    appendLog(deviceId, { level: 'info', message: `Running layout engine: ${manifestPath} → ${outputPath}` });
+
+    execSync(
+      `npx tsx "${layoutEnginePath}" "${manifestPath}" --output "${outputPath}"`,
+      { cwd: worktreeCwd, stdio: 'pipe', timeout: 30_000 }
+    );
+
+    if (fs.existsSync(outputPath)) {
+      const output = JSON.parse(fs.readFileSync(outputPath, 'utf-8'));
+      const templateCount = output.templates?.length ?? 0;
+      const controlCount = output.panelArchitecture?.totalControls ?? 0;
+      appendLog(deviceId, {
+        level: 'info',
+        message: `Layout Engine: ${templateCount} templates generated for ${controlCount} controls`,
+      });
+      completePhase(state, 'phase-0-layout-engine', 10, true);
+
+      // --- Template Review Gate ---
+      // Pause so the user can inspect manifest + templates before Panel Builder runs.
+      // Templates: .pipeline/<deviceId>/templates.json
+      // Manifest:  .pipeline/<deviceId>/manifest.json
+      const archetypeSummary = (output.templates ?? [])
+        .map((t: { sectionId: string; archetype: string }) => `${t.sectionId} → ${t.archetype}`)
+        .join(', ');
+      createEscalation(state, 'template-review',
+        `Layout Engine produced ${templateCount} section templates for ${controlCount} controls. ` +
+        `Review templates at .pipeline/${deviceId}/templates.json before Panel Builder runs.\n` +
+        `Archetypes: ${archetypeSummary}`);
+      sendNotification('Miyagi Pipeline', `Templates ready for review: ${state.deviceName}`);
+    } else {
+      completePhase(state, 'phase-0-layout-engine', null, false);
+      if (!tryAutoRetry(state, 'agent-failure', 'Layout Engine produced no output file')) return;
+    }
+  } catch (e) {
+    const errorMsg = (e as Error).message || String(e);
+    appendLog(deviceId, { level: 'error', message: `Layout Engine failed: ${errorMsg}` });
+
+    // Check if this is a LayoutEngineError (unknown archetype, missing fields)
+    if (errorMsg.includes('LAYOUT ENGINE ERROR') || errorMsg.includes('LayoutEngineError')) {
+      // This means the manifest has an unknown archetype or missing required fields.
+      // Increment strike count for the gatekeeper and potentially re-run it.
+      const currentStrikes = (state.strikeTracker['layout-engine'] ?? 0) + 1;
+      state.strikeTracker['layout-engine'] = currentStrikes;
+
+      if (currentStrikes >= 2) {
+        // Two-Strike Rule: fatal halt
+        completePhase(state, 'phase-0-layout-engine', null, false);
+        createEscalation(state, 'two-strike-halt',
+          `Layout Engine failed twice. The Gatekeeper's manifest uses archetypes or fields not supported by the Layout Engine. Error: ${errorMsg}`);
+        sendNotification('Miyagi Pipeline', `Two-Strike halt: Layout Engine for ${state.deviceName}`);
+        return;
+      }
+
+      // Strike 1: retry — go back to gatekeeper with correction context
+      appendLog(deviceId, {
+        level: 'warn',
+        message: `Layout Engine Strike ${currentStrikes}: ${errorMsg}. Re-running Gatekeeper with correction.`,
+      });
+      completePhase(state, 'phase-0-layout-engine', null, false);
+      state.currentPhase = 'phase-0-gatekeeper';
+      return;
+    }
+
+    completePhase(state, 'phase-0-layout-engine', null, false);
+    if (!tryAutoRetry(state, 'agent-failure', `Layout Engine failed: ${errorMsg}`)) return;
   }
 }
 

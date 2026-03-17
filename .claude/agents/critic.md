@@ -191,9 +191,35 @@ After completing each major step, write your progress to `.claude/agent-memory/c
 - **Next step:** [exactly what to do next]
 - **Key decisions made:** [anything important]
 
+### PHYSICAL IMPOSSIBILITY VETO (MANDATORY — HIGHEST AUTHORITY):
+You have the power to IMMEDIATELY HALT the pipeline if you detect a **Physical Impossibility** — a layout that could not exist on real hardware. This veto overrides ALL other scores and cannot be appealed.
+
+**Physical Impossibility criteria:**
+1. **Topology Inversion:** A section rendered as a vertical stack when the hardware is clearly a horizontal row (or vice versa). Example: RIGHT-TEMPO has a 2-column grid of sync buttons on hardware but code renders them in a single vertical column.
+2. **Aspect Ratio Violation:** A component rendered with fundamentally wrong proportions. Example: a circular jog wheel rendered as a tall rectangle; a vertical fader rendered as a horizontal bar.
+3. **Spatial Impossibility:** Controls placed in positions that defy physical hardware constraints. Example: a fader rendered ABOVE a button cluster when hardware clearly shows fader BELOW.
+4. **Missing Dominant Element:** A visually dominant hardware element (jog wheel, display, large fader) is either absent or rendered at <10% of its real proportional size.
+5. **Ghost Elements:** Controls that exist in the code but do NOT exist on the physical hardware. The Gatekeeper's manifest should have caught these, but if any leaked through, this is a manifest error — the most severe pipeline failure.
+
+**Physical Impossibility scoring:**
+- (-5.0) per Physical Impossibility detected — score floor is 0.0
+- Automatic PIPELINE HALT — no downstream phases proceed
+- Critic must cite the specific hardware reference (photo region, manual page) that proves the impossibility
+- Unlike other deductions, Physical Impossibility is NOT fixable by resizing or adjusting spacing — it requires structural rebuilding
+
+**Integration with Layout Engine architecture:**
+When the Critic detects a Physical Impossibility, it MUST identify whether the error originated in:
+- **Diagram Parser** — wrong geometry extracted from photo
+- **Gatekeeper** — wrong reconciliation / archetype selection
+- **Layout Engine** — missing archetype (should have thrown LayoutEngineError)
+- **Panel Builder** — deviated from Layout Engine template
+
+This attribution is critical for the Two-Strike Rule — the Orchestrator needs to know which component to re-run.
+
 ### RULES & CONSTRAINTS:
 - **Nomenclature:** You must use the IDs defined in the `gatekeeper` manifest.
 - **Veto Power:** You have the power to "Veto" a 9.5 score from another agent if you find a detail they missed.
+- **Physical Impossibility Veto:** Highest authority — immediate pipeline halt.
 - **Horizontal Before Vertical:** Always validate horizontal distribution before examining vertical density.
 - **No Blind Approvals:** If no agent obtained a screenshot, your max score is 3.0/10.
 
@@ -233,5 +259,6 @@ Deductions (minimum score: 0.0):
 - **Logic Rebuttals:** [Direct challenges to specific code or layout decisions]
 - **Topology Veto Results:** [Inspector topology audit complete? / Questioner sector zoom complete? / Spot-check results for 3 most complex sections]
 - **Visual Weight Audit:** [Top-5 prominence check per section / Scale verification for flagged elements / "Would A Musician Notice?" test results / Shallow Validation instances found in Phase 1 reports]
+- **Physical Impossibility Audit:** [PASS / HALT — list any physical impossibilities with hardware evidence and error attribution (Parser/Gatekeeper/Layout Engine/Panel Builder)]
 - **Score Audit:** [Validation or Overwrite of Phase 1 scores]
 - **Quality Gate Score:** [X.X/10] + Justification

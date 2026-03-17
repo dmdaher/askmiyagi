@@ -105,12 +105,43 @@ Additional rules: chapter-by-chapter extraction with immediate checkpointing. Co
 
 ## Process Gates
 
+### Full Split Architecture (Panel Pipeline)
+The panel pipeline uses a 3-component architecture that separates creative/probabilistic work (LLMs) from deterministic execution:
+
+```
+LLM AGENTS (creative/probabilistic):
+  Manual Extractor (text)  ──┐
+  Diagram Parser (vision) ───┤
+                             ▼
+  Gatekeeper (JUDGE ONLY — reconciliation → Master Manifest JSON)
+  ⚠️ NO template writing, NO ASCII maps, NO CSS decisions
+        │
+  ORCHESTRATOR CHECKPOINT:
+    Three-Point Validation (topology, ordinal, proportional)
+    Two-Strike Rule (Strike 2 = fatal halt)
+        │
+DETERMINISTIC SCRIPT (execution/certainty):
+  Layout Engine (scripts/layout-engine.ts) → Section Template Specs
+  ⚠️ NO manual access, NO photo access — manifest JSON only
+        │
+LLM AGENTS (build + QA):
+  Panel Builder → SI + PQ + Critic → VAULT
+```
+
+**Three components (Gatekeeper is judge-only, templates are deterministic):**
+| Component | Nature | Role | Output |
+|-----------|--------|------|--------|
+| Diagram Parser | LLM (Vision) | Surveyor | Raw Geometry & Topology JSON |
+| Gatekeeper | LLM (Logic) | Judge (NO creating) | Master Manifest (IDs → Archetypes) |
+| Layout Engine | Deterministic Script | Draftsman (NO thinking) | Section Template Specs |
+
 ### Enforce QA Pipeline
 The full panel QA pipeline must run before tutorial building. No exceptions, no "we can QA later."
 
 ```
-Manual Extractor → Coverage Auditor → Panel Build
-→ GATE: Gatekeeper (Master Manifest)
+Diagram Parser + Manual Extractor → Gatekeeper (Judge) → Layout Engine (Deterministic)
+→ GATE: Orchestrator Three-Point Validation
+→ Panel Builder
 → GATE: Structural Inspector + Panel Questioner (parallel)
 → GATE: Critic (adversarial, veto power)
 → GATE: User Design Review (visual approval in browser)
@@ -207,6 +238,8 @@ curl -X POST http://localhost:3000/api/pipeline/<device-id>/recover \
 - State: `.pipeline/<device-id>/state.json` (atomic writes, survives crashes)
 - Logs: `.pipeline/<device-id>/runner.log` (append-only)
 - Cost: `.pipeline/<device-id>/cost.json`
+- Manifest: `.pipeline/<device-id>/manifest.json` (gatekeeper output, layout engine input)
+- Templates: `.pipeline/<device-id>/templates.json` (layout engine output)
 - Worktree: `.worktrees/<device-id>/` (isolated git checkout)
 - All gitignored — not committed to the repo
 
@@ -221,8 +254,12 @@ curl -X POST http://localhost:3000/api/pipeline/<device-id>/recover \
 | Rule | Why |
 |---|---|
 | **Orchestrator is the root process** | No QA agent runs without orchestrator managing phase transitions. Standalone runs are "draft only" and cannot vault. |
+| **Full split architecture** | Gatekeeper = judge (manifest only). Layout Engine = deterministic draftsman (templates). No LLM writes templates. |
+| **Three-Point Validation** | Orchestrator validates topology, ordinal, and proportional consistency between Parser and Gatekeeper before Layout Engine runs. |
+| **Two-Strike Rule** | Gatekeeper gets 1 retry on validation failure. Strike 2 = fatal halt, escalate to human. |
 | **Topology before styling** | Agents must produce Cardinal Neighbor Tables before scoring. Checking font-size/color/padding before topology = Priority Inversion = automatic score invalidation. |
 | **Adversarial blindness** | PQ generates its own position map from photos/manual BEFORE reading the gatekeeper template. Reading gatekeeper first = automatic 0.0/10. |
+| **Physical impossibility veto** | Critic can immediately halt pipeline for topology inversions, aspect ratio violations, spatial impossibilities. (-5.0) per instance. |
 | **Boundary containment** | Any label/icon that overflows its container = (-1.0). Physical hardware never has CSS overflow. |
 | **Sieve extraction** | Manual extractor reads in 10-page buckets: Sieve → Verify → Anchor → Checkpoint. Separates perception from cognition. |
 | **Scope isolation** | Curriculum agents (extractor, auditor, builder) produce no layout opinions. Panel agents (gatekeeper, SI, PQ) produce no curriculum opinions. |

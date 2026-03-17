@@ -220,6 +220,33 @@
 
 ---
 
+## Pattern: Textual Gravity (Vertical-Stack Bias in Template Writing)
+
+- **Mistake**: RIGHT-TEMPO section was written as a vertical stack (single column of controls) when the hardware clearly shows a 2-column grid layout with a fader below. The Gatekeeper's text-based template writing defaulted to listing controls top-to-bottom, which the Panel Builder interpreted as a single column.
+- **Root cause**: When an LLM writes a template (text output), it naturally serializes controls top-to-bottom — the structure of text itself creates a vertical bias. A 2D grid arrangement gets compressed into a 1D list, losing the horizontal relationships. This is "Textual Gravity" — text pulls everything into a vertical stack because text IS a vertical stack.
+- **Prevention rule**: The Gatekeeper no longer writes templates. The Diagram Parser extracts 2D geometry from photos (centroids, grids), the Gatekeeper reconciles text+geometry into a manifest with archetype selections, and the Layout Engine (a deterministic TypeScript script) maps archetypes to CSS. No LLM writes layout templates.
+- **Automated check**: Layout Engine throws LayoutEngineError for unknown archetypes. Three-Point Validation (topology, ordinal, proportional) catches manifest-vs-geometry mismatches before any code is written.
+
+---
+
+## Pattern: Creator-Critic Conflict (Judge Who Also Creates)
+
+- **Mistake**: The Gatekeeper was both JUDGING data (reconciling manual text with photos) AND CREATING output (writing section templates, ASCII maps, CSS architecture). When conflicts arose between text and geometry, the Gatekeeper "smoothed" — resolving ambiguity by hallucinating plausible layouts instead of flagging the conflict.
+- **Root cause**: A single agent performing both judgment and creation has an incentive to smooth conflicts rather than flag them, because flagging means admitting uncertainty (which feels like failure), while smoothing produces a complete output (which feels like success). The judge and creator roles have conflicting objectives.
+- **Prevention rule**: Full Split Architecture — the Gatekeeper is the JUDGE (reconciliation only, selects archetypes from a fixed library, flags conflicts). The Layout Engine is the CREATOR (deterministic script, maps archetypes to CSS, cannot smooth because it's a switch statement). Neither role can leak into the other.
+- **Automated check**: Gatekeeper SOUL has a (-1.0) deduction for "Contains ASCII maps, CSS decisions, or section templates (JUDGE BOUNDARY VIOLATION)". Layout Engine throws hard errors for unknown archetypes. Orchestrator validates manifest against Parser geometry before Layout Engine runs.
+
+---
+
+## Pattern: Accountant's Trap (Inventory Without Topology)
+
+- **Mistake**: 3 rounds of QA passed CDJ-3000 RIGHT-TEMPO while 6 of 11 controls overflowed the section boundary. Agents checked "does the button exist?" and "does the label match?" (inventory) but never checked "is the button inside its section?" or "are buttons in the right spatial arrangement?" (topology). The agents were accountants counting inventory, not inspectors checking structure.
+- **Root cause**: Inventory checks are computationally cheap and produce high scores quickly. Topology checks require spatial reasoning (comparing centroids, verifying grid alignment) which is harder. Without an explicit rule requiring topology BEFORE inventory, agents default to the easy check and score high.
+- **Prevention rule**: Agents must produce a Cardinal Neighbor Table (N/S/E/W for all controls) BEFORE scoring any other dimension. The Orchestrator scans agent outputs for styling keywords (font-size, color, padding) appearing before topology is verified — if found, it's a Priority Inversion and the score is invalidated. The Critic has a Physical Impossibility Veto that catches topology errors the other agents missed.
+- **Automated check**: Orchestrator Priority Inversion detection — rejects scores that mention styling keywords without a completed Cardinal Neighbor Table. Critic's Physical Impossibility Veto is a (-5.0) deduction per instance with automatic pipeline halt.
+
+---
+
 ## Pattern: Wrong LED Color (Unchecked Hardware Assumption)
 
 - **Mistake**: CDJ-3000 MASTER TEMPO LED was coded as green (`CDJ_COLORS.ledGreen`). Hardware uses orange/amber — visually distinct from the blue sync group LEDs. No agent caught this in 3 QA rounds.

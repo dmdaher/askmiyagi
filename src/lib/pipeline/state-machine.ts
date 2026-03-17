@@ -35,6 +35,7 @@ export function migrateState(state: PipelineState): PipelineState {
   const raw = state as any;
   if (raw.childPid === undefined) state.childPid = null;
   if (raw.extractionProgress === undefined) state.extractionProgress = null;
+  if (raw.strikeTracker === undefined) (state as PipelineState).strikeTracker = {};
 
   // TokenUsage migration: add cacheCreation/cacheRead if missing
   const migrateTokens = (t: { input: number; output: number; cacheCreation?: number; cacheRead?: number }) => {
@@ -113,6 +114,7 @@ export function createInitialState(opts: {
     childPid: null,
     worktreePath: null,
     extractionProgress: null,
+    strikeTracker: {},
     lastCheckpoint: {
       phase: 'pending',
       subStep: 'init',
@@ -125,7 +127,9 @@ export function createInitialState(opts: {
 const PHASE_ORDER: PipelinePhase[] = [
   'pending',
   'phase-preflight',
+  'phase-0-diagram-parser',
   'phase-0-gatekeeper',
+  'phase-0-layout-engine',
   'phase-1-section-loop',
   'phase-2-global-assembly',
   'phase-3-harmonic-polish',
@@ -189,7 +193,7 @@ export function getNextPhase(
   hasManual: boolean
 ): PipelinePhase | null {
   if (currentPhase === 'pending') {
-    return hasManual ? 'phase-0-gatekeeper' : 'phase-preflight';
+    return hasManual ? 'phase-0-diagram-parser' : 'phase-preflight';
   }
 
   const idx = PHASE_ORDER.indexOf(currentPhase);
@@ -197,7 +201,7 @@ export function getNextPhase(
 
   const next = PHASE_ORDER[idx + 1];
   if (next === 'phase-preflight' && hasManual) {
-    return 'phase-0-gatekeeper';
+    return 'phase-0-diagram-parser';
   }
 
   return next;

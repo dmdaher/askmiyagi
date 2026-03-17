@@ -59,6 +59,39 @@ const ESCALATION_CONFIG: Record<
       { label: 'Cancel', resolution: 'cancel', variant: 'danger' },
     ],
   },
+  'geometric-mismatch': {
+    bg: 'rgba(239, 68, 68, 0.1)',
+    border: '#ef4444',
+    buttons: [
+      { label: 'Re-run Gatekeeper', resolution: 'retry', variant: 'primary' },
+      { label: 'Cancel', resolution: 'cancel', variant: 'danger' },
+    ],
+  },
+  'two-strike-halt': {
+    bg: 'rgba(239, 68, 68, 0.1)',
+    border: '#ef4444',
+    buttons: [
+      { label: 'Manual Review', resolution: 'manual-review', variant: 'primary' },
+      { label: 'Cancel', resolution: 'cancel', variant: 'danger' },
+    ],
+  },
+  'physical-impossibility': {
+    bg: 'rgba(239, 68, 68, 0.1)',
+    border: '#ef4444',
+    buttons: [
+      { label: 'Fix & Retry', resolution: 'retry', variant: 'primary' },
+      { label: 'Cancel Pipeline', resolution: 'cancel', variant: 'danger' },
+    ],
+  },
+  'template-review': {
+    bg: 'rgba(59, 130, 246, 0.1)',
+    border: '#3b82f6',
+    buttons: [
+      { label: 'Approve Templates', resolution: 'approved', variant: 'primary' },
+      { label: 'Request Changes', resolution: 'changes-requested', variant: 'secondary' },
+      { label: 'Cancel', resolution: 'cancel', variant: 'danger' },
+    ],
+  },
 };
 
 const BUTTON_STYLES: Record<string, { bg: string; text: string; hover: string }> = {

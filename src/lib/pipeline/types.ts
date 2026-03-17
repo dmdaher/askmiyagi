@@ -1,7 +1,9 @@
 export type PipelinePhase =
   | 'pending'
   | 'phase-preflight'
+  | 'phase-0-diagram-parser'
   | 'phase-0-gatekeeper'
+  | 'phase-0-layout-engine'
   | 'phase-1-section-loop'
   | 'phase-2-global-assembly'
   | 'phase-3-harmonic-polish'
@@ -81,7 +83,11 @@ export type EscalationType =
   | 'curriculum-review'
   | 'budget-exceeded'
   | 'agent-failure'
-  | 'manual-not-found';
+  | 'manual-not-found'
+  | 'geometric-mismatch'
+  | 'two-strike-halt'
+  | 'physical-impossibility'
+  | 'template-review';
 
 export interface Escalation {
   id: string;
@@ -130,6 +136,9 @@ export interface PipelineState {
   worktreePath: string | null;
 
   extractionProgress: ExtractionProgress | null;
+
+  /** Per-section strike counts for the Two-Strike Rule (gatekeeper retries) */
+  strikeTracker: Record<string, number>;
 
   lastCheckpoint: {
     phase: PipelinePhase;
