@@ -97,15 +97,17 @@ function MiniControl({ control }: { control: ManifestControl }) {
 
   return (
     <div
-      className="rounded flex items-center justify-center text-center"
+      className="rounded flex items-center justify-center text-center overflow-hidden"
       style={{
         backgroundColor: bg,
         border: `1px solid ${border}`,
-        padding: '2px 3px',
-        minHeight: '20px',
-        fontSize: '7px',
+        padding: '2px 2px',
+        minHeight: '18px',
+        fontSize: '6px',
         lineHeight: 1.1,
         color: '#d1d5db',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
       }}
       title={`${control.verbatimLabel} (${control.id}) — ${control.type}`}
     >
@@ -138,10 +140,11 @@ function PanelSection({
     <div
       className="rounded-lg p-1.5 cursor-pointer transition-all flex flex-col gap-0.5 overflow-hidden"
       style={{
-        flex: `0 0 ${section.widthPercent}%`,
+        flex: `${section.widthPercent} 1 0%`,
         backgroundColor: isSelected ? 'rgba(59, 130, 246, 0.1)' : 'rgba(20, 20, 32, 0.8)',
         border: isSelected ? '2px solid rgba(59, 130, 246, 0.5)' : '1px solid rgba(42, 42, 58, 0.5)',
         minHeight: '100px',
+        minWidth: '60px',
       }}
       onClick={onClick}
     >
@@ -183,11 +186,11 @@ function PanelSection({
                 <span style={{ fontSize: '6px', color: '#4b5563', textTransform: 'uppercase' }}>{role}</span>
                 {isNested ? (
                   // Render sub-zones as columns
-                  <div className="flex gap-0.5 flex-1">
+                  <div className="flex gap-0.5 flex-1 overflow-hidden">
                     {Object.entries(value as Record<string, string[]>).map(([subRole, subIds]) => {
                       const subControls = subIds.map(id => sectionControls.find(c => c.id === id)).filter(Boolean) as ManifestControl[];
                       return (
-                        <div key={subRole} className="flex flex-col gap-0.5 justify-center" style={{ flex: subRole === 'right' ? '1' : '0 0 auto' }}>
+                        <div key={subRole} className="flex flex-col gap-0.5 justify-center overflow-hidden" style={{ flex: '1', minWidth: 0 }}>
                           <span style={{ fontSize: '5px', color: '#374151', textTransform: 'uppercase' }}>{subRole}</span>
                           {subControls.map(c => <MiniControl key={c.id} control={c} />)}
                         </div>
@@ -477,72 +480,53 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* Panel view — 3 cols */}
-        <div className="lg:col-span-3">
-          <div
-            className="rounded-xl p-3 space-y-2"
-            style={{
-              backgroundColor: '#0a0a14',
-              border: '2px solid #1a1a2a',
-              minHeight: '400px',
-            }}
-          >
-            {rows.map((row) => (
-              <div key={row.label}>
-                <div className="text-[7px] uppercase tracking-widest mb-1 px-1" style={{ color: '#333' }}>
-                  {row.label}
-                </div>
-                <div className="flex gap-1.5">
-                  {row.sections.map(s => (
-                    <PanelSection
-                      key={s.id}
-                      section={s}
-                      controls={manifest.controls}
-                      isSelected={selectedSection === s.id}
-                      onClick={() => setSelectedSection(selectedSection === s.id ? null : s.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Properties sidebar — 1 col */}
-        <div className="lg:col-span-1">
-          {selected ? (
-            <PropertiesPanel
-              section={selected}
-              controls={manifest.controls}
-              onUpdate={(updates) => handleSectionUpdate(selected.id, updates)}
-            />
-          ) : (
-            <div
-              className="rounded-lg p-4 text-center text-xs"
-              style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)', color: '#4b5563' }}
-            >
-              Click a section to edit its properties
+      {/* Panel view — full width */}
+      <div
+        className="rounded-xl p-3 space-y-2"
+        style={{
+          backgroundColor: '#0a0a14',
+          border: '2px solid #1a1a2a',
+          minHeight: '300px',
+        }}
+      >
+        {rows.map((row) => (
+          <div key={row.label}>
+            <div className="text-[7px] uppercase tracking-widest mb-1 px-1" style={{ color: '#333' }}>
+              {row.label}
             </div>
-          )}
-
-          {/* Type legend */}
-          <div
-            className="rounded-lg p-3 mt-3"
-            style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
-          >
-            <div className="text-[9px] uppercase tracking-wider mb-2" style={{ color: '#6b7280' }}>Control Types</div>
-            <div className="grid grid-cols-2 gap-1">
-              {Object.entries(TYPE_COLORS).map(([type, bg]) => (
-                <div key={type} className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded" style={{ backgroundColor: bg, border: `1px solid ${TYPE_BORDERS[type]}` }} />
-                  <span style={{ fontSize: '8px', color: '#9ca3af' }}>{type}</span>
-                </div>
+            <div className="flex gap-1.5" style={{ overflow: 'hidden' }}>
+              {row.sections.map(s => (
+                <PanelSection
+                  key={s.id}
+                  section={s}
+                  controls={manifest.controls}
+                  isSelected={selectedSection === s.id}
+                  onClick={() => setSelectedSection(selectedSection === s.id ? null : s.id)}
+                />
               ))}
             </div>
           </div>
+        ))}
+
+        {/* Type legend — inline below sections */}
+        <div className="flex flex-wrap gap-3 pt-2 px-1" style={{ borderTop: '1px solid #1a1a2a' }}>
+          {Object.entries(TYPE_COLORS).map(([type, bg]) => (
+            <div key={type} className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded" style={{ backgroundColor: bg, border: `1px solid ${TYPE_BORDERS[type]}` }} />
+              <span style={{ fontSize: '7px', color: '#6b7280' }}>{type}</span>
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* Properties panel — full width, only when section selected */}
+      {selected && (
+        <PropertiesPanel
+          section={selected}
+          controls={manifest.controls}
+          onUpdate={(updates) => handleSectionUpdate(selected.id, updates)}
+        />
+      )}
     </div>
   );
 }
