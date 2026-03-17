@@ -12,6 +12,7 @@ import CostBreakdown from './CostBreakdown';
 import DiagnosticsPanel from './DiagnosticsPanel';
 import TemplateViewer from './TemplateViewer';
 import ManifestViewer from './ManifestViewer';
+import PanelLayoutEditor from './PanelLayoutEditor';
 
 const AGENT_PHASE_MAP: Record<string, string> = {
   'phase-0-diagram-parser': 'diagram-parser',
@@ -38,12 +39,13 @@ const ALL_AGENTS = [
   'tutorial-reviewer',
 ];
 
-type DetailTab = 'logs' | 'templates' | 'manifest';
+type DetailTab = 'logs' | 'templates' | 'manifest' | 'layout';
 
 const TABS: { id: DetailTab; label: string }[] = [
   { id: 'logs', label: 'Logs' },
   { id: 'manifest', label: 'Manifest' },
   { id: 'templates', label: 'Templates' },
+  { id: 'layout', label: 'Layout' },
 ];
 
 interface PipelineDetailProps {
@@ -114,7 +116,8 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
         {TABS.map((tab) => {
           const isDisabled =
             (tab.id === 'templates' && !layoutEnginePassed) ||
-            (tab.id === 'manifest' && !gatekeeperPassed);
+            (tab.id === 'manifest' && !gatekeeperPassed) ||
+            (tab.id === 'layout' && !gatekeeperPassed);
 
           return (
             <button
@@ -191,6 +194,10 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
 
       {activeTab === 'manifest' && (
         <ManifestViewer deviceId={pipeline.deviceId} />
+      )}
+
+      {activeTab === 'layout' && (
+        <PanelLayoutEditor deviceId={pipeline.deviceId} />
       )}
 
       {/* Cost Breakdown — full width, always visible */}
