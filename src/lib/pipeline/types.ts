@@ -2,6 +2,7 @@ export type PipelinePhase =
   | 'pending'
   | 'phase-preflight'
   | 'phase-0-diagram-parser'
+  | 'phase-0-control-extractor'
   | 'phase-0-gatekeeper'
   | 'phase-0-layout-engine'
   | 'phase-1-section-loop'

@@ -16,6 +16,7 @@ import PanelLayoutEditor from './PanelLayoutEditor';
 
 const AGENT_PHASE_MAP: Record<string, string> = {
   'phase-0-diagram-parser': 'diagram-parser',
+  'phase-0-control-extractor': 'control-extractor',
   'phase-0-gatekeeper': 'gatekeeper',
   'phase-0-layout-engine': 'layout-engine',
   'phase-1-section-loop': 'structural-inspector',
@@ -29,6 +30,7 @@ const AGENT_PHASE_MAP: Record<string, string> = {
 
 const ALL_AGENTS = [
   'diagram-parser',
+  'control-extractor',
   'gatekeeper',
   'structural-inspector',
   'panel-questioner',

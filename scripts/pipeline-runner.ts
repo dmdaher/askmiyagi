@@ -264,6 +264,9 @@ async function run() {
         case 'phase-0-diagram-parser':
           await doPhase0DiagramParser(state);
           break;
+        case 'phase-0-control-extractor':
+          await doPhase0ControlExtractor(state);
+          break;
         case 'phase-0-gatekeeper':
           await doPhase0(state);
           break;
@@ -517,29 +520,25 @@ async function doPhase0DiagramParser(state: PipelineState) {
     }
   }
 
-  const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
-
-  // Reuse photo paths from pre-inspection for the prompt
-  const relPhotoDir = path.join('docs', state.manufacturer, deviceId, 'photos');
-  let photoList = '';
-  if (photoPaths.length > 0) {
-    photoList = '\n- Hardware photos (READ THESE — they are your PRIMARY input):\n' +
-      photoPaths.map((p: string) => `  - ${path.relative(worktreeCwd, p)}`).join('\n');
-  }
+  // Photo-only prompt — NO manual access for the parser
+  const photoListStr = photoPaths
+    .map((p: string) => `  - ${path.relative(worktreeCwd, p)}`)
+    .join('\n');
 
   const resumeCtx = getResumeContext('diagram-parser');
-  const prompt = `You are the Diagram Parser agent. Extract spatial geometry from hardware photos and manual diagrams for:
+  const prompt = `You are the Diagram Parser agent. Extract spatial geometry from hardware photos ONLY for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
-- Manuals:
-${manualList}${photoList}
+- Hardware photos:
+${photoListStr}
 
-CRITICAL: You MUST read the hardware photos listed above. They are your PRIMARY input.
-Use the manual's front-panel diagrams as SECONDARY reference for control numbering.
-Your centroids must be derived from the PHOTOS, not estimated from line drawings.
+PHOTO-ONLY MODE: You must ONLY read the hardware photos listed above.
+Do NOT read any manual PDFs. Do NOT read any text documents.
+A separate Control Extractor agent handles the manual. You handle the photos.
 
-Your job is to be a SURVEYOR — extract spatial facts from images. Do NOT interpret, name, or design anything.
+Your job is to be a SURVEYOR — extract spatial facts from images. Do NOT name controls.
+Use generic labels like "button-1", "slider-A", "led-top-right" based on what you SEE.
 Your output is consumed by a DETERMINISTIC MACHINE, not a human. Output JSON with coordinates, not prose.
 
 For each section on the hardware panel:
@@ -634,6 +633,88 @@ Include: agent: diagram-parser, deviceId: ${deviceId}, phase: 0, status, score, 
   }
 }
 
+async function doPhase0ControlExtractor(state: PipelineState) {
+  startPhase(state, 'phase-0-control-extractor');
+  appendLog(deviceId, { level: 'info', agent: 'control-extractor', message: 'Starting Phase 0b: Control Extractor (manual-only)' });
+  if (!isBudgetOk(state)) return;
+
+  // Skip if inventory already exists and is valid
+  const inventoryPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'control-extractor', 'control-inventory.json');
+  if (fs.existsSync(inventoryPath)) {
+    try {
+      const inv = JSON.parse(fs.readFileSync(inventoryPath, 'utf-8'));
+      if (inv.controls && inv.controls.length > 0) {
+        appendLog(deviceId, { level: 'info', agent: 'control-extractor',
+          message: `Existing control-inventory.json valid (${inv.controls.length} controls). Skipping re-run.` });
+        completePhase(state, 'phase-0-control-extractor', 10, true);
+        advancePhase(state, worktreeCwd);
+        return;
+      }
+    } catch { /* invalid JSON, re-run */ }
+  }
+
+  const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
+  const resumeCtx = getResumeContext('control-extractor');
+  const prompt = `You are the Control Extractor agent. Read the manual and extract a structured control inventory for:
+- Device: ${state.deviceName}
+- Manufacturer: ${state.manufacturer}
+- Device ID: ${deviceId}
+- Manuals:
+${manualList}
+
+MANUAL-ONLY MODE: Read ONLY the manual PDF. Do NOT look at photos.
+A separate Diagram Parser agent handles the photos. You handle the text.
+
+Find the "Part Names" or "Controls" section of the manual. Extract every numbered item:
+- item number, verbatim label, control type, functional group, description, page number
+- Flag compound items (one manual item = multiple physical controls)
+
+Output a JSON file to .claude/agent-memory/control-extractor/control-inventory.json
+Write checkpoint to .claude/agent-memory/control-extractor/checkpoint.md${resumeCtx}`;
+
+  const result = await invokeAgent({
+    prompt,
+    deviceId,
+    cwd: worktreeCwd,
+    phase: 'phase-0-control-extractor',
+    agent: 'control-extractor',
+    allowedTools: GATEKEEPER_TOOLS, // Read, Write, Edit, Glob, Grep — no Bash
+    remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
+  });
+
+  if (result.costEntry) {
+    accumulateCost(state, result.costEntry);
+    recordCostEntry(deviceId, result.costEntry);
+  }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, result.rateLimitEvents);
+
+  // Validate output
+  if (fs.existsSync(inventoryPath)) {
+    try {
+      const inv = JSON.parse(fs.readFileSync(inventoryPath, 'utf-8'));
+      const controlCount = inv.controls?.length ?? 0;
+      appendLog(deviceId, { level: 'info', agent: 'control-extractor',
+        message: `POST-INSPECT: ${controlCount} controls extracted` });
+
+      if (controlCount > 0) {
+        completePhase(state, 'phase-0-control-extractor', 10, true);
+        advancePhase(state, worktreeCwd);
+      } else {
+        completePhase(state, 'phase-0-control-extractor', null, false);
+        if (!tryAutoRetry(state, 'agent-failure', 'Control Extractor produced empty inventory')) return;
+      }
+    } catch (e) {
+      completePhase(state, 'phase-0-control-extractor', null, false);
+      if (!tryAutoRetry(state, 'agent-failure', `Control inventory JSON invalid: ${(e as Error).message}`)) return;
+    }
+  } else {
+    completePhase(state, 'phase-0-control-extractor', null, false);
+    if (!tryAutoRetry(state, 'agent-failure', 'Control Extractor produced no inventory file')) return;
+  }
+}
+
 async function doPhase0(state: PipelineState) {
   startPhase(state, 'phase-0-gatekeeper');
   appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: 'Starting Phase 0: Gatekeeper' });
@@ -654,22 +735,21 @@ async function doPhase0(state: PipelineState) {
     execSync('npm install', { cwd: worktreeCwd, stdio: 'pipe' });
   }
 
-  const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
   const resumeCtx = getResumeContext('gatekeeper');
   const prompt = `You are the Gatekeeper agent (JUDGE ONLY). Produce the Master Manifest for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
-- Manuals:
-${manualList}
 
-IMPORTANT: You are the JUDGE. You reconcile TWO independent data streams:
-1. Manual text (read the PDFs for control names, functional groups, parameter info)
-2. Diagram Parser output (read .claude/agent-memory/diagram-parser/checkpoint.md for spatial geometry)
+IMPORTANT: You are the JUDGE. You reconcile TWO independent JSON data streams.
+Do NOT read the manual PDF directly. Do NOT read photos directly.
+Your ONLY inputs are:
+1. Control Extractor output (read .claude/agent-memory/control-extractor/control-inventory.json for names, types, counts)
+2. Diagram Parser output (read .claude/agent-memory/diagram-parser/spatial-blueprint.json for spatial geometry)
 
 Your job is to RECONCILE these into a Master Manifest JSON. Rules:
 - Geometry (Parser) wins PLACEMENT decisions
-- Text (Manual) wins NAMING decisions
+- Text (Extractor) wins NAMING decisions
 - Conflicts must be FLAGGED, not smoothed
 
 You must select archetypes ONLY from the Layout Engine's defined library:
