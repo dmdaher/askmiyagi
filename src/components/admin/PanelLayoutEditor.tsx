@@ -822,7 +822,8 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
 
   // Ghost overlay state
   const [showPhoto, setShowPhoto] = useState(false);
-  const [photoMode, setPhotoMode] = useState<'overlay' | 'side-by-side'>('overlay');
+  const [photoMode, setPhotoMode] = useState<'overlay' | 'side-by-side' | 'photo-only'>('overlay');
+  const [photoZoom, setPhotoZoom] = useState(1);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [photoLoading, setPhotoLoading] = useState(false);
 
@@ -1065,7 +1066,9 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
 
           {showPhoto && (
             <button
-              onClick={() => setPhotoMode(m => m === 'overlay' ? 'side-by-side' : 'overlay')}
+              onClick={() => setPhotoMode(m =>
+                m === 'overlay' ? 'side-by-side' : m === 'side-by-side' ? 'photo-only' : 'overlay'
+              )}
               style={{
                 fontSize: '11px',
                 padding: '4px 10px',
@@ -1076,7 +1079,7 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
                 cursor: 'pointer',
               }}
             >
-              {photoMode === 'overlay' ? 'Side-by-Side' : 'Overlay'}
+              {photoMode === 'overlay' ? 'Side-by-Side' : photoMode === 'side-by-side' ? 'Photo Only' : 'Overlay'}
             </button>
           )}
 
@@ -1102,14 +1105,66 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+      {/* Photo-only mode — zoomable photo, no layout */}
+      {showPhoto && photoUrl && photoMode === 'photo-only' && (
+        <div
+          style={{
+            borderRadius: '12px',
+            overflow: 'auto',
+            border: '2px solid #1a1a2a',
+            backgroundColor: '#0a0a14',
+            maxHeight: '80vh',
+            cursor: photoZoom > 1 ? 'grab' : 'zoom-in',
+          }}
+          onWheel={(e) => {
+            e.preventDefault();
+            setPhotoZoom(z => Math.max(0.5, Math.min(5, z + (e.deltaY > 0 ? -0.2 : 0.2))));
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', borderBottom: '1px solid #1a1a2a' }}>
+            <span style={{ fontSize: '10px', color: '#6b7280' }}>Scroll to zoom &middot; {(photoZoom * 100).toFixed(0)}%</span>
+            <button
+              onClick={() => setPhotoZoom(1)}
+              style={{ fontSize: '10px', color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              Reset zoom
+            </button>
+          </div>
+          <img
+            src={photoUrl}
+            alt="Hardware reference"
+            style={{
+              width: `${photoZoom * 100}%`,
+              display: 'block',
+              transformOrigin: 'top left',
+            }}
+          />
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', ...(photoMode === 'photo-only' ? { display: 'none' } : {}) }}>
         {/* Side-by-side photo */}
         {showPhoto && photoUrl && photoMode === 'side-by-side' && (
-          <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', border: '2px solid #1a1a2a' }}>
+          <div
+            style={{
+              flex: 1,
+              borderRadius: '12px',
+              overflow: 'auto',
+              border: '2px solid #1a1a2a',
+              maxHeight: '80vh',
+            }}
+            onWheel={(e) => {
+              e.preventDefault();
+              setPhotoZoom(z => Math.max(0.5, Math.min(5, z + (e.deltaY > 0 ? -0.2 : 0.2))));
+            }}
+          >
             <img
               src={photoUrl}
               alt="Hardware reference"
-              style={{ width: '100%', display: 'block' }}
+              style={{
+                width: `${photoZoom * 100}%`,
+                display: 'block',
+              }}
             />
           </div>
         )}
