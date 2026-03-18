@@ -35,6 +35,19 @@ export interface ManifestControl {
   };
 }
 
+/** A sub-zone within a container — either a flat list or controls + direction */
+export type SubZone = string[] | { controls: string[]; direction: 'row' | 'column' };
+
+/** Helper to get control IDs from a SubZone */
+export function subZoneControls(sz: SubZone): string[] {
+  return Array.isArray(sz) ? sz : sz.controls;
+}
+
+/** Helper to get direction from a SubZone (defaults to column) */
+export function subZoneDirection(sz: SubZone): 'row' | 'column' {
+  return Array.isArray(sz) ? 'column' : sz.direction;
+}
+
 export interface ManifestSection {
   id: string;
   headerLabel: string | null;
@@ -55,14 +68,17 @@ export interface ManifestSection {
    *
    * Keys are container roles (e.g., "cluster", "anchor", "left-column", "right-column").
    * Values are either:
-   *   - string[] — flat list of control IDs in that container
-   *   - Record<string, string[]> — nested sub-zones within the container
-   *     (e.g., anchor: { "left": ["reset-btn", "reset-led"], "right": ["slider"] })
+   *   - string[] — flat list of control IDs in that container (direction defaults to column)
+   *   - Record<string, SubZone> — nested sub-zones within the container
+   *
+   * SubZone is either:
+   *   - string[] — control IDs (direction defaults to column)
+   *   - { controls: string[], direction: 'row' | 'column' } — control IDs + layout direction
    *
    * The Layout Engine validates that every control in `controls` appears in exactly
    * one container, and that no container references controls not in `controls`.
    */
-  containerAssignment?: Record<string, string[] | Record<string, string[]>>;
+  containerAssignment?: Record<string, string[] | Record<string, SubZone>>;
   /** Proportional height splits for anchor-layout and cluster-above-anchor */
   heightSplits?: {
     cluster: number;
@@ -136,7 +152,7 @@ export interface TemplateSpec {
   componentStructure: string;
   controlSlots: string[];
   /** Explicit mapping of control IDs to container roles (from manifest containerAssignment) */
-  containerAssignment?: Record<string, string[] | Record<string, string[]>>;
+  containerAssignment?: Record<string, string[] | Record<string, SubZone>>;
   notes: string[];
 }
 
@@ -525,13 +541,18 @@ function validateManifest(manifest: MasterManifest): string[] {
         );
       } else {
         // Every control must appear in exactly one container
-        // containerAssignment values can be string[] or nested Record<string, string[]>
+        // containerAssignment values can be string[], Record<string, SubZone>, or SubZone
         const assigned = new Set<string>();
         for (const [role, value] of Object.entries(section.containerAssignment)) {
-          // Flatten: if value is a nested object, collect all IDs from sub-zones
-          const ids: string[] = Array.isArray(value)
-            ? value
-            : Object.values(value).flat();
+          // Flatten: collect all IDs from sub-zones (handles string[], {controls,direction}, and nested)
+          let ids: string[];
+          if (Array.isArray(value)) {
+            ids = value;
+          } else if (typeof value === 'object' && 'controls' in value) {
+            ids = (value as { controls: string[] }).controls;
+          } else {
+            ids = Object.values(value as Record<string, SubZone>).flatMap(sz => subZoneControls(sz));
+          }
           for (const id of ids) {
             if (!section.controls.includes(id)) {
               errors.push(`Section "${section.id}" containerAssignment["${role}"] references "${id}" not in controls list`);

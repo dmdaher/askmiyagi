@@ -18,12 +18,16 @@ interface ManifestSection {
   gridRows?: number;
   gridCols?: number;
   controls: string[];
-  containerAssignment?: Record<string, string[] | Record<string, string[]>>;
+  containerAssignment?: Record<string, string[] | Record<string, SubZone>>;
   heightSplits?: { cluster: number; anchor: number; gap: number };
   panelBoundingBox?: { x: number; y: number; w: number; h: number };
   widthPercent: number;
   complexity: string;
 }
+
+type SubZone = string[] | { controls: string[]; direction: 'row' | 'column' };
+function szControls(sz: SubZone): string[] { return Array.isArray(sz) ? sz : sz.controls; }
+function szDirection(sz: SubZone): 'row' | 'column' { return Array.isArray(sz) ? 'column' : sz.direction; }
 
 interface MasterManifest {
   deviceId: string;
@@ -111,15 +115,18 @@ const INPUT_STYLE: React.CSSProperties = {
 
 /** Flatten a containerAssignment into a list of { slot, ids } entries */
 function flattenAssignment(
-  assignment: Record<string, string[] | Record<string, string[]>>
-): Array<{ slot: string; ids: string[] }> {
-  const result: Array<{ slot: string; ids: string[] }> = [];
+  assignment: Record<string, string[] | Record<string, SubZone>>
+): Array<{ slot: string; ids: string[]; direction: 'row' | 'column' }> {
+  const result: Array<{ slot: string; ids: string[]; direction: 'row' | 'column' }> = [];
   for (const [role, value] of Object.entries(assignment)) {
     if (Array.isArray(value)) {
-      result.push({ slot: role, ids: value });
+      result.push({ slot: role, ids: value, direction: 'column' });
+    } else if (typeof value === 'object' && value !== null && 'controls' in value) {
+      const sz = value as unknown as { controls: string[]; direction: 'row' | 'column' };
+      result.push({ slot: role, ids: sz.controls, direction: sz.direction });
     } else {
-      for (const [subRole, subIds] of Object.entries(value as Record<string, string[]>)) {
-        result.push({ slot: `${role}.${subRole}`, ids: subIds });
+      for (const [subRole, subValue] of Object.entries(value as Record<string, SubZone>)) {
+        result.push({ slot: `${role}.${subRole}`, ids: szControls(subValue), direction: szDirection(subValue) });
       }
     }
   }
@@ -129,15 +136,17 @@ function flattenAssignment(
 /** Return the current slot key for a control id within an assignment */
 function getControlSlot(
   controlId: string,
-  assignment: Record<string, string[] | Record<string, string[]>> | undefined
+  assignment: Record<string, string[] | Record<string, SubZone>> | undefined
 ): string {
   if (!assignment) return 'unassigned';
   for (const [role, value] of Object.entries(assignment)) {
     if (Array.isArray(value)) {
       if (value.includes(controlId)) return role;
+    } else if (typeof value === 'object' && 'controls' in value) {
+      if ((value as { controls: string[] }).controls.includes(controlId)) return role;
     } else {
-      for (const [subRole, subIds] of Object.entries(value as Record<string, string[]>)) {
-        if ((subIds as string[]).includes(controlId)) return `${role}.${subRole}`;
+      for (const [subRole, subValue] of Object.entries(value as Record<string, SubZone>)) {
+        if (szControls(subValue).includes(controlId)) return `${role}.${subRole}`;
       }
     }
   }
@@ -148,20 +157,26 @@ function getControlSlot(
 function moveControlInAssignment(
   controlId: string,
   targetSlot: string,
-  assignment: Record<string, string[] | Record<string, string[]>>
-): Record<string, string[] | Record<string, string[]>> {
-  // Deep clone
-  const next = JSON.parse(JSON.stringify(assignment)) as Record<string, string[] | Record<string, string[]>>;
+  assignment: Record<string, string[] | Record<string, SubZone>>
+): Record<string, string[] | Record<string, SubZone>> {
+  const next = JSON.parse(JSON.stringify(assignment)) as Record<string, string[] | Record<string, SubZone>>;
 
   // Remove from all current locations
   for (const role of Object.keys(next)) {
     const value = next[role];
     if (Array.isArray(value)) {
-      next[role] = (value as string[]).filter(id => id !== controlId);
+      next[role] = value.filter(id => id !== controlId);
+    } else if (typeof value === 'object' && 'controls' in value) {
+      (value as { controls: string[] }).controls = (value as { controls: string[] }).controls.filter(id => id !== controlId);
     } else {
-      const nested = value as Record<string, string[]>;
+      const nested = value as Record<string, SubZone>;
       for (const subRole of Object.keys(nested)) {
-        nested[subRole] = nested[subRole].filter(id => id !== controlId);
+        const sz = nested[subRole];
+        if (Array.isArray(sz)) {
+          nested[subRole] = sz.filter(id => id !== controlId);
+        } else {
+          sz.controls = sz.controls.filter(id => id !== controlId);
+        }
       }
     }
   }
@@ -172,12 +187,17 @@ function moveControlInAssignment(
     if (parts.length === 1) {
       const existing = next[parts[0]];
       if (Array.isArray(existing)) {
-        (existing as string[]).push(controlId);
+        existing.push(controlId);
       }
     } else if (parts.length === 2) {
-      const nested = next[parts[0]] as Record<string, string[]>;
-      if (nested && Array.isArray(nested[parts[1]])) {
-        nested[parts[1]].push(controlId);
+      const nested = next[parts[0]] as Record<string, SubZone>;
+      if (nested) {
+        const sz = nested[parts[1]];
+        if (Array.isArray(sz)) {
+          sz.push(controlId);
+        } else if (sz && typeof sz === 'object' && 'controls' in sz) {
+          sz.controls.push(controlId);
+        }
       }
     }
   }
@@ -366,12 +386,13 @@ function PanelSection({
                 <span style={{ fontSize: '6px', color: '#4b5563', textTransform: 'uppercase' }}>{role}</span>
                 {isNested ? (
                   <div style={{ display: 'flex', gap: '2px', flex: 1, overflow: 'hidden' }}>
-                    {Object.entries(value as Record<string, string[]>).map(([subRole, subIds]) => {
-                      const subControls = (subIds as string[])
+                    {Object.entries(value as Record<string, SubZone>).map(([subRole, sz]) => {
+                      const subControls = szControls(sz)
                         .map(id => sectionControls.find(c => c.id === id))
                         .filter(Boolean) as ManifestControl[];
+                      const dir = szDirection(sz);
                       return (
-                        <div key={subRole} style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0 }}>
+                        <div key={subRole} style={{ display: 'flex', flexDirection: dir, gap: '2px', flex: 1, minWidth: 0, alignItems: dir === 'row' ? 'center' : undefined }}>
                           <span style={{ fontSize: '5px', color: '#374151', textTransform: 'uppercase' }}>{subRole}</span>
                           {subControls.map(c => (
                             <MiniControl
@@ -710,8 +731,8 @@ function PropertiesPanel({
                     {isNested ? (
                       <button
                         onClick={() => {
-                          // Merge: flatten nested back to flat array
-                          const flat = Object.values(value as Record<string, string[]>).flat();
+                          // Merge: flatten nested sub-zones back to flat array
+                          const flat = Object.values(value as Record<string, SubZone>).flatMap(sz => szControls(sz));
                           const next = { ...section.containerAssignment!, [role]: flat };
                           onUpdate({ containerAssignment: next });
                         }}
@@ -722,9 +743,15 @@ function PropertiesPanel({
                     ) : (
                       <button
                         onClick={() => {
-                          // Split: convert flat array to { left: [...], right: [] }
+                          // Split: convert flat array to { left: {controls, direction:'row'}, right: {controls:[], direction:'column'} }
                           const ids = value as string[];
-                          const next = { ...section.containerAssignment!, [role]: { left: [...ids], right: [] as string[] } };
+                          const next = {
+                            ...section.containerAssignment!,
+                            [role]: {
+                              left: { controls: [...ids], direction: 'row' as const },
+                              right: { controls: [] as string[], direction: 'column' as const },
+                            },
+                          };
                           onUpdate({ containerAssignment: next });
                         }}
                         style={{ fontSize: '8px', padding: '1px 4px', borderRadius: '2px', backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa', cursor: 'pointer' }}
@@ -734,10 +761,27 @@ function PropertiesPanel({
                     )}
                   </div>
                   {isNested && (
-                    <div style={{ fontSize: '8px', color: '#6b7280' }}>
-                      {Object.entries(value as Record<string, string[]>).map(([sub, ids]) => (
-                        <span key={sub} style={{ marginRight: '8px' }}>{sub}: {ids.length}</span>
-                      ))}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
+                      {Object.entries(value as Record<string, SubZone>).map(([sub, sz]) => {
+                        const dir = szDirection(sz);
+                        const count = szControls(sz).length;
+                        return (
+                          <div key={sub} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '8px' }}>
+                            <span style={{ color: '#6b7280' }}>{sub}: {count} controls</span>
+                            <button
+                              onClick={() => {
+                                const newDir = dir === 'row' ? 'column' : 'row';
+                                const nested = { ...(value as Record<string, SubZone>) };
+                                nested[sub] = { controls: szControls(sz), direction: newDir };
+                                onUpdate({ containerAssignment: { ...section.containerAssignment!, [role]: nested } });
+                              }}
+                              style={{ fontSize: '7px', padding: '1px 4px', borderRadius: '2px', backgroundColor: 'rgba(107, 114, 128, 0.1)', border: '1px solid rgba(107, 114, 128, 0.2)', color: '#9ca3af', cursor: 'pointer' }}
+                            >
+                              {dir === 'row' ? '→ horizontal' : '↓ vertical'}
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -904,7 +948,27 @@ function PropertiesPanel({
 // ─── Main component ─────────────────────────────────────────
 
 export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) {
-  const [manifest, setManifest] = useState<MasterManifest | null>(null);
+  const [manifest, setManifestRaw] = useState<MasterManifest | null>(null);
+  const [undoStack, setUndoStack] = useState<MasterManifest[]>([]);
+
+  // Wrap setManifest to push to undo stack
+  const setManifest = useCallback((updater: MasterManifest | null | ((prev: MasterManifest | null) => MasterManifest | null)) => {
+    setManifestRaw(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (prev && next && prev !== next) {
+        setUndoStack(stack => [...stack.slice(-20), prev]); // Keep last 20 states
+      }
+      return next;
+    });
+  }, []);
+
+  const handleUndo = useCallback(() => {
+    if (undoStack.length === 0) return;
+    const prev = undoStack[undoStack.length - 1];
+    setUndoStack(stack => stack.slice(0, -1));
+    setManifestRaw(prev);
+    setDirty(true);
+  }, [undoStack]);
   const [error, setError] = useState<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [selectedControl, setSelectedControl] = useState<string | null>(null);
@@ -1193,6 +1257,23 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
               }}
             >
               {spatialMode ? 'Row View' : 'Spatial View'}
+            </button>
+          )}
+
+          {undoStack.length > 0 && (
+            <button
+              onClick={handleUndo}
+              style={{
+                fontSize: '11px',
+                padding: '4px 10px',
+                borderRadius: '5px',
+                backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                border: '1px solid rgba(75, 85, 99, 0.4)',
+                color: '#9ca3af',
+                cursor: 'pointer',
+              }}
+            >
+              Undo ({undoStack.length})
             </button>
           )}
 
