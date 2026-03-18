@@ -544,18 +544,71 @@ function PropertiesPanel({
         </select>
       </div>
 
-      {/* Width */}
+      {/* Width — updates panelBoundingBox.w in absolute mode, widthPercent in fallback */}
       <div style={rowStyle}>
-        <label style={labelStyle}>Width: {section.widthPercent}%</label>
+        <label style={labelStyle}>Width: {section.panelBoundingBox?.w ?? section.widthPercent}%</label>
         <input
           type="range"
           min={5}
-          max={70}
-          value={section.widthPercent}
-          onChange={(e) => onUpdate({ widthPercent: parseInt(e.target.value) })}
+          max={80}
+          value={section.panelBoundingBox?.w ?? section.widthPercent}
+          onChange={(e) => {
+            const w = parseInt(e.target.value);
+            if (section.panelBoundingBox) {
+              onUpdate({ panelBoundingBox: { ...section.panelBoundingBox, w }, widthPercent: w });
+            } else {
+              onUpdate({ widthPercent: w });
+            }
+          }}
           style={{ width: '100%' }}
         />
       </div>
+
+      {/* Height — only in absolute mode */}
+      {section.panelBoundingBox && (
+        <div style={rowStyle}>
+          <label style={labelStyle}>Height: {section.panelBoundingBox.h}%</label>
+          <input
+            type="range"
+            min={3}
+            max={60}
+            value={section.panelBoundingBox.h}
+            onChange={(e) => {
+              const h = parseInt(e.target.value);
+              onUpdate({ panelBoundingBox: { ...section.panelBoundingBox!, h } });
+            }}
+            style={{ width: '100%' }}
+          />
+        </div>
+      )}
+
+      {/* Position X/Y — only in absolute mode */}
+      {section.panelBoundingBox && (
+        <div style={{ ...rowStyle, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <div>
+            <label style={labelStyle}>X: {section.panelBoundingBox.x}%</label>
+            <input
+              type="range"
+              min={0}
+              max={90}
+              value={section.panelBoundingBox.x}
+              onChange={(e) => onUpdate({ panelBoundingBox: { ...section.panelBoundingBox!, x: parseInt(e.target.value) } })}
+              style={{ width: '100%' }}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Y: {section.panelBoundingBox.y}%</label>
+            <input
+              type="range"
+              min={0}
+              max={90}
+              value={section.panelBoundingBox.y}
+              onChange={(e) => onUpdate({ panelBoundingBox: { ...section.panelBoundingBox!, y: parseInt(e.target.value) } })}
+              style={{ width: '100%' }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Grid dimensions */}
       {(section.archetype === 'grid-NxM' || section.archetype.includes('cluster')) && (
@@ -768,6 +821,7 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
 
   // Ghost overlay state
   const [showPhoto, setShowPhoto] = useState(false);
+  const [photoMode, setPhotoMode] = useState<'overlay' | 'side-by-side'>('overlay');
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [photoLoading, setPhotoLoading] = useState(false);
 
@@ -1008,6 +1062,23 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
             {photoLoading ? 'Loading photo...' : showPhoto ? 'Hide Photo' : 'Show Photo'}
           </button>
 
+          {showPhoto && (
+            <button
+              onClick={() => setPhotoMode(m => m === 'overlay' ? 'side-by-side' : 'overlay')}
+              style={{
+                fontSize: '11px',
+                padding: '4px 10px',
+                borderRadius: '5px',
+                backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                border: '1px solid rgba(75, 85, 99, 0.4)',
+                color: '#9ca3af',
+                cursor: 'pointer',
+              }}
+            >
+              {photoMode === 'overlay' ? 'Side-by-Side' : 'Overlay'}
+            </button>
+          )}
+
           {dirty && (
             <button
               onClick={handleRegenerate}
@@ -1031,6 +1102,17 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
       </div>
 
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+        {/* Side-by-side photo */}
+        {showPhoto && photoUrl && photoMode === 'side-by-side' && (
+          <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', border: '2px solid #1a1a2a' }}>
+            <img
+              src={photoUrl}
+              alt="Hardware reference"
+              style={{ width: '100%', display: 'block' }}
+            />
+          </div>
+        )}
+
         {/* Panel view */}
         <div
           style={{
@@ -1066,7 +1148,7 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
                 }}
               >
                 {/* Ghost photo overlay */}
-                {showPhoto && photoUrl && (
+                {showPhoto && photoUrl && photoMode === 'overlay' && (
                   <img
                     src={photoUrl}
                     alt="Hardware panel reference"
