@@ -245,6 +245,7 @@ function PanelSection({
   onClick,
   onControlClick,
   onReviewCycle,
+  onHover,
   absoluteMode,
 }: {
   section: ManifestSection;
@@ -255,6 +256,7 @@ function PanelSection({
   onClick: () => void;
   onControlClick: (id: string) => void;
   onReviewCycle: () => void;
+  onHover?: (hovering: boolean) => void;
   absoluteMode: boolean;
 }) {
   const sectionControls = controls.filter(c => c.section === section.id);
@@ -286,6 +288,8 @@ function PanelSection({
   return (
     <div
       onClick={onClick}
+      onMouseEnter={() => onHover?.(true)}
+      onMouseLeave={() => onHover?.(false)}
       style={{
         ...boxStyle,
         borderRadius: '6px',
@@ -822,6 +826,7 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
 
   // View mode state
   const [spatialMode, setSpatialMode] = useState(false);
+  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
 
   // Ghost overlay state
   const [showPhoto, setShowPhoto] = useState(false);
@@ -1242,22 +1247,49 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
               {/* Ghost photo overlay behind rows */}
               {showPhoto && photoUrl && photoMode === 'overlay' && (
-                <img
-                  src={photoUrl}
-                  alt="Hardware panel reference"
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    objectPosition: 'top',
-                    opacity: 0.3,
-                    pointerEvents: 'none',
-                    zIndex: 0,
-                    borderRadius: '4px',
-                  }}
-                />
+                <>
+                  <img
+                    src={photoUrl}
+                    alt="Hardware panel reference"
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      objectPosition: 'top',
+                      opacity: 0.3,
+                      pointerEvents: 'none',
+                      zIndex: 0,
+                      borderRadius: '4px',
+                    }}
+                  />
+                  {/* Highlight rectangle on photo for selected/hovered section */}
+                  {(selectedSection || hoveredSection) && (() => {
+                    const activeId = hoveredSection || selectedSection;
+                    const sec = manifest.sections.find(s => s.id === activeId);
+                    const bb = sec?.panelBoundingBox;
+                    if (!bb) return null;
+                    const isSelected = activeId === selectedSection;
+                    return (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: `${bb.x}%`,
+                          top: `${bb.y}%`,
+                          width: `${bb.w}%`,
+                          height: `${bb.h}%`,
+                          border: `2px solid ${isSelected ? 'rgba(59, 130, 246, 0.8)' : 'rgba(251, 191, 36, 0.6)'}`,
+                          backgroundColor: isSelected ? 'rgba(59, 130, 246, 0.1)' : 'rgba(251, 191, 36, 0.05)',
+                          borderRadius: '3px',
+                          pointerEvents: 'none',
+                          zIndex: 1,
+                          transition: 'all 0.15s ease',
+                        }}
+                      />
+                    );
+                  })()}
+                </>
               )}
 
               {rows.map((row) => (
@@ -1281,6 +1313,7 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
                         }}
                         onControlClick={(id) => setSelectedControl(selectedControl === id ? null : id)}
                         onReviewCycle={() => cycleReviewStatus(s.id)}
+                        onHover={(h) => setHoveredSection(h ? s.id : null)}
                       />
                     ))}
                   </div>
