@@ -686,6 +686,65 @@ function PropertiesPanel({
         </div>
       </div>
 
+      {/* Container zone management */}
+      {section.containerAssignment && (
+        <div style={rowStyle}>
+          <label style={labelStyle}>Container Zones</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {Object.entries(section.containerAssignment).map(([role, value]) => {
+              const isNested = value && !Array.isArray(value) && typeof value === 'object';
+              const controlCount = Array.isArray(value) ? value.length : Object.values(value as Record<string, string[]>).flat().length;
+              return (
+                <div key={role} style={{
+                  padding: '4px 6px',
+                  borderRadius: '4px',
+                  backgroundColor: role === 'anchor' ? 'rgba(52, 211, 153, 0.08)' : 'rgba(96, 165, 250, 0.08)',
+                  border: `1px solid ${role === 'anchor' ? 'rgba(52, 211, 153, 0.2)' : 'rgba(96, 165, 250, 0.2)'}`,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' }}>
+                    <span style={{ fontSize: '9px', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase' }}>
+                      {role} ({controlCount})
+                    </span>
+                    {isNested ? (
+                      <button
+                        onClick={() => {
+                          // Merge: flatten nested back to flat array
+                          const flat = Object.values(value as Record<string, string[]>).flat();
+                          const next = { ...section.containerAssignment!, [role]: flat };
+                          onUpdate({ containerAssignment: next });
+                        }}
+                        style={{ fontSize: '8px', padding: '1px 4px', borderRadius: '2px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#f87171', cursor: 'pointer' }}
+                      >
+                        Merge
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          // Split: convert flat array to { left: [...], right: [] }
+                          const ids = value as string[];
+                          const next = { ...section.containerAssignment!, [role]: { left: [...ids], right: [] as string[] } };
+                          onUpdate({ containerAssignment: next });
+                        }}
+                        style={{ fontSize: '8px', padding: '1px 4px', borderRadius: '2px', backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa', cursor: 'pointer' }}
+                      >
+                        Split ↔
+                      </button>
+                    )}
+                  </div>
+                  {isNested && (
+                    <div style={{ fontSize: '8px', color: '#6b7280' }}>
+                      {Object.entries(value as Record<string, string[]>).map(([sub, ids]) => (
+                        <span key={sub} style={{ marginRight: '8px' }}>{sub}: {ids.length}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Controls list with reassignment */}
       <div style={rowStyle}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
