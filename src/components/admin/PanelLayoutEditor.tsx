@@ -268,13 +268,14 @@ function PanelSection({
       ? { char: '!', color: '#fbbf24' }
       : null;
 
+  const inset = 0.5; // Visual breathing room — doesn't change manifest data
   const boxStyle: React.CSSProperties = absoluteMode && section.panelBoundingBox
     ? {
         position: 'absolute',
-        left: `${section.panelBoundingBox.x}%`,
-        top: `${section.panelBoundingBox.y}%`,
-        width: `${section.panelBoundingBox.w}%`,
-        height: `${section.panelBoundingBox.h}%`,
+        left: `${section.panelBoundingBox.x + inset}%`,
+        top: `${section.panelBoundingBox.y + inset}%`,
+        width: `${Math.max(1, section.panelBoundingBox.w - inset * 2)}%`,
+        height: `${Math.max(1, section.panelBoundingBox.h - inset * 2)}%`,
       }
     : {
         flex: `${section.widthPercent} 1 0%`,
