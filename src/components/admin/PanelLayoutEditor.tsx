@@ -1272,7 +1272,10 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
                         setSelectedSection(selectedSection === s.id ? null : s.id);
                         setSelectedControl(null);
                       }}
-                      onControlClick={(id) => setSelectedControl(selectedControl === id ? null : id)}
+                      onControlClick={(id) => {
+                        setSelectedControl(selectedControl === id ? null : id);
+                        setSelectedSection(s.id);
+                      }}
                       onReviewCycle={() => cycleReviewStatus(s.id)}
                     />
                   ))
@@ -1299,7 +1302,10 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
                           setSelectedSection(selectedSection === s.id ? null : s.id);
                           setSelectedControl(null);
                         }}
-                        onControlClick={(id) => setSelectedControl(selectedControl === id ? null : id)}
+                        onControlClick={(id) => {
+                          setSelectedControl(selectedControl === id ? null : id);
+                          setSelectedSection(s.id);
+                        }}
                         onReviewCycle={() => cycleReviewStatus(s.id)}
                       />
                     ))}
@@ -1399,7 +1405,10 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
                           setSelectedSection(selectedSection === s.id ? null : s.id);
                           setSelectedControl(null);
                         }}
-                        onControlClick={(id) => setSelectedControl(selectedControl === id ? null : id)}
+                        onControlClick={(id) => {
+                          setSelectedControl(selectedControl === id ? null : id);
+                          setSelectedSection(s.id); // Also select the section so photo highlight works
+                        }}
                         onReviewCycle={() => cycleReviewStatus(s.id)}
                         onHover={(h) => setHoveredSection(h ? s.id : null)}
                       />
