@@ -875,10 +875,13 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
       message: `Effective score: ${effectiveGkScore.toFixed(1)} (mechanical: ${validation.score.toFixed(1)}, self: ${rawGkScore} → normalized: ${normalizedGkScore.toFixed(1)})`,
     });
 
-    // Gatekeeper threshold is 8.0 (not 9.0) because the self-score reflects
-    // reconciliation conflicts, not data quality. Resolved conflicts are expected
-    // behavior, not errors. Mechanical validator confirms structural completeness.
-    if (effectiveGkScore >= 8.0 && validation.valid) {
+    // Gatekeeper threshold uses mechanical score only. The self-score reflects
+    // reconciliation difficulty (number of conflicts), not data quality. A manifest
+    // with 7 documented conflicts and a self-score of 7.5 is MORE trustworthy than
+    // one with 0 conflicts and a 10/10 (which likely smoothed over issues silently).
+    // The mechanical validator (structural completeness + 4-Point + archetype-geometry)
+    // is the authoritative gate.
+    if (validation.score >= 9.0 && validation.valid) {
       // Copy manifest to main pipeline dir if needed
       if (manifestPath === worktreeManifest && !fs.existsSync(mainManifest)) {
         fs.mkdirSync(path.dirname(mainManifest), { recursive: true });
