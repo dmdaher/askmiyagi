@@ -979,20 +979,16 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
     );
   }
 
-  // Whether we can use absolute spatial positioning
+  // Spatial mode toggle — row-based is default (cleaner), absolute is optional (more accurate)
   const hasBoundingBoxes = manifest.sections.some(s => s.panelBoundingBox);
+  const [spatialMode, setSpatialMode] = useState(false);
+  const useAbsolute = hasBoundingBoxes && spatialMode;
 
   // ── Build row groups for fallback (non-absolute) mode ──
   const rows: { label: string; sections: ManifestSection[] }[] = [];
 
-  if (!hasBoundingBoxes) {
-    const chunkSize = 4;
-    for (let i = 0; i < manifest.sections.length; i += chunkSize) {
-      const chunk = manifest.sections.slice(i, i + chunkSize);
-      rows.push({ label: `Row ${Math.floor(i / chunkSize) + 1}`, sections: chunk });
-    }
-  } else {
-    // Group by Y-position bands for labeled row display (still used for the label overlay)
+  if (hasBoundingBoxes) {
+    // Group by Y-position bands — sections at similar Y share a row
     const sorted = [...manifest.sections]
       .filter(s => s.panelBoundingBox)
       .sort((a, b) => (a.panelBoundingBox?.y ?? 0) - (b.panelBoundingBox?.y ?? 0));
@@ -1019,6 +1015,12 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
     const without = manifest.sections.filter(s => !withBoxes.has(s.id));
     if (without.length > 0) {
       rows.push({ label: 'Unpositioned', sections: without });
+    }
+  } else {
+    const chunkSize = 4;
+    for (let i = 0; i < manifest.sections.length; i += chunkSize) {
+      const chunk = manifest.sections.slice(i, i + chunkSize);
+      rows.push({ label: `Row ${Math.floor(i / chunkSize) + 1}`, sections: chunk });
     }
   }
 
@@ -1062,6 +1064,23 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
           >
             {photoLoading ? 'Loading photo...' : showPhoto ? 'Hide Photo' : 'Show Photo'}
           </button>
+
+          {hasBoundingBoxes && (
+            <button
+              onClick={() => setSpatialMode(v => !v)}
+              style={{
+                fontSize: '11px',
+                padding: '4px 10px',
+                borderRadius: '5px',
+                backgroundColor: spatialMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(107, 114, 128, 0.1)',
+                border: `1px solid ${spatialMode ? 'rgba(139, 92, 246, 0.4)' : 'rgba(75, 85, 99, 0.4)'}`,
+                color: spatialMode ? '#a78bfa' : '#9ca3af',
+                cursor: 'pointer',
+              }}
+            >
+              {spatialMode ? 'Row View' : 'Spatial View'}
+            </button>
+          )}
 
           {showPhoto && (
             <button
@@ -1125,7 +1144,7 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
             minHeight: '300px',
           }}
         >
-          {hasBoundingBoxes ? (
+          {useAbsolute ? (
             // Spatial absolute-position mode
             <div>
               {/* Absolute panel canvas with fixed aspect ratio */}
