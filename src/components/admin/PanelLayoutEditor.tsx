@@ -1130,12 +1130,36 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
         {/* Side-by-side photo */}
         {showPhoto && photoUrl && photoMode === 'side-by-side' && (
-          <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', border: '2px solid #1a1a2a' }}>
+          <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', border: '2px solid #1a1a2a', position: 'relative' }}>
             <img
               src={photoUrl}
               alt="Hardware reference"
               style={{ width: '100%', display: 'block' }}
             />
+            {/* Highlight rectangle on photo for selected/hovered section */}
+            {(selectedSection || hoveredSection) && (() => {
+              const activeId = hoveredSection || selectedSection;
+              const sec = manifest.sections.find(s => s.id === activeId);
+              const bb = sec?.panelBoundingBox;
+              if (!bb) return null;
+              const isSelected = activeId === selectedSection;
+              return (
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: `${bb.x}%`,
+                    top: `${bb.y}%`,
+                    width: `${bb.w}%`,
+                    height: `${bb.h}%`,
+                    border: `2px solid ${isSelected ? 'rgba(59, 130, 246, 0.8)' : 'rgba(251, 191, 36, 0.6)'}`,
+                    backgroundColor: isSelected ? 'rgba(59, 130, 246, 0.15)' : 'rgba(251, 191, 36, 0.08)',
+                    borderRadius: '3px',
+                    pointerEvents: 'none',
+                    transition: 'all 0.15s ease',
+                  }}
+                />
+              );
+            })()}
           </div>
         )}
 
