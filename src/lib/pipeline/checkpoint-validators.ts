@@ -372,7 +372,20 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
     score -= 0.5;
   }
 
-  // 8. panelBoundingBox — sections should have global positioning data
+  // 8. heightSplits must be 0-1 range (not integers like 30, 65)
+  for (const s of sections) {
+    const splits = s.heightSplits as { cluster?: number; anchor?: number; gap?: number } | undefined;
+    if (splits) {
+      const values = [splits.cluster, splits.anchor, splits.gap].filter(v => v !== undefined) as number[];
+      const hasIntegers = values.some(v => v > 1.0);
+      if (hasIntegers) {
+        errors.push(`Section "${s.id}" heightSplits has values > 1.0 (${JSON.stringify(splits)}). Must be 0-1 range (e.g., 0.30 not 30).`);
+        score -= 1.0;
+      }
+    }
+  }
+
+  // 9. panelBoundingBox — sections should have global positioning data
   const missingBBox = sections.filter(s => !s.panelBoundingBox);
   if (missingBBox.length > 0) {
     errors.push(`${missingBBox.length} sections missing panelBoundingBox: ${missingBBox.slice(0, 3).map(s => s.id).join(', ')}`);

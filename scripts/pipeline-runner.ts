@@ -531,25 +531,28 @@ async function doPhase0DiagramParser(state: PipelineState) {
     }
   }
 
-  // Photo-only prompt — NO manual access for the parser
+  const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
   const photoListStr = photoPaths
     .map((p: string) => `  - ${path.relative(worktreeCwd, p)}`)
     .join('\n');
 
   const resumeCtx = getResumeContext('diagram-parser');
-  const prompt = `You are the Diagram Parser agent. Extract spatial geometry from hardware photos ONLY for:
+  const prompt = `You are the Diagram Parser agent. Extract spatial geometry from hardware photos and manual for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
-- Hardware photos:
+- Hardware photos (PRIMARY — all coordinates come from these):
 ${photoListStr}
+- Manual (SECONDARY — for control count, identity, and type hints only):
+${manualList}
 
-PHOTO-ONLY MODE: You must ONLY read the hardware photos listed above.
-Do NOT read any manual PDFs. Do NOT read any text documents.
-A separate Control Extractor agent handles the manual. You handle the photos.
+COORDINATE RULE (NON-NEGOTIABLE): ALL centroid coordinates must come from the PHOTOS.
+The manual tells you WHAT exists (names, types, count). The photos tell you WHERE it is.
+If you cannot clearly see a control's position in the photos, output centroid: null.
+NEVER derive coordinates from manual diagram callout line positions.
 
-Your job is to be a SURVEYOR — extract spatial facts from images. Do NOT name controls.
-Use generic labels like "button-1", "slider-A", "led-top-right" based on what you SEE.
+Your job is to be a SURVEYOR — extract spatial facts from images.
+Use the manual to know what to look for and verify your count, but measure positions from photos.
 Your output is consumed by a DETERMINISTIC MACHINE, not a human. Output JSON with coordinates, not prose.
 
 For each section on the hardware panel:
@@ -748,21 +751,24 @@ async function doPhase0(state: PipelineState) {
     execSync('npm install', { cwd: worktreeCwd, stdio: 'pipe' });
   }
 
+  const manualListGk = state.manualPaths.map((p) => `  - ${p}`).join('\n');
   const resumeCtx = getResumeContext('gatekeeper');
   const prompt = `You are the Gatekeeper agent (JUDGE ONLY). Produce the Master Manifest for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
+- Manuals:
+${manualListGk}
 
-IMPORTANT: You are the JUDGE. You reconcile TWO independent JSON data streams.
-Do NOT read the manual PDF directly. Do NOT read photos directly.
-Your ONLY inputs are:
-1. Control Extractor output (read .claude/agent-memory/control-extractor/control-inventory.json for names, types, counts)
+IMPORTANT: You are the JUDGE. You reconcile TWO data streams:
+1. Manual text (read the PDFs for control names, functional groups, parameter info)
 2. Diagram Parser output (read .claude/agent-memory/diagram-parser/spatial-blueprint.json for spatial geometry)
+
+Also check if a Control Extractor inventory exists at .claude/agent-memory/control-extractor/control-inventory.json — if so, use it as an additional reference for control naming.
 
 Your job is to RECONCILE these into a Master Manifest JSON. Rules:
 - Geometry (Parser) wins PLACEMENT decisions
-- Text (Extractor) wins NAMING decisions
+- Text (Manual) wins NAMING decisions
 - Conflicts must be FLAGGED, not smoothed
 
 You must select archetypes ONLY from the Layout Engine's defined library:
