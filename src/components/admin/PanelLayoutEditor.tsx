@@ -1050,7 +1050,14 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
                 style={{
                   position: 'relative',
                   width: '100%',
-                  paddingBottom: '33%', // ~3:1 aspect ratio typical for hardware panels
+                  paddingBottom: (() => {
+                    // Compute aspect ratio from bounding box extents
+                    const bboxes = manifest.sections.map(s => s.panelBoundingBox).filter(Boolean) as Array<{x:number;y:number;w:number;h:number}>;
+                    if (bboxes.length === 0) return '100%';
+                    const maxY = Math.max(...bboxes.map(b => b.y + b.h));
+                    const maxX = Math.max(...bboxes.map(b => b.x + b.w));
+                    return `${Math.min(150, (maxY / Math.max(maxX, 1)) * 100)}%`;
+                  })(),
                   overflow: 'hidden',
                   borderRadius: '6px',
                   backgroundColor: '#06060f',
@@ -1132,7 +1139,7 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {/* Ghost photo overlay for row mode — shown above rows */}
               {showPhoto && photoUrl && (
-                <div style={{ position: 'relative', width: '100%', paddingBottom: '33%', overflow: 'hidden', borderRadius: '4px', marginBottom: '4px' }}>
+                <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', overflow: 'hidden', borderRadius: '4px', marginBottom: '4px' }}>
                   <img
                     src={photoUrl}
                     alt="Hardware panel reference"
