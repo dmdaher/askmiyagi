@@ -1150,7 +1150,7 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
         {/* Side-by-side photo */}
         {showPhoto && photoUrl && photoMode === 'side-by-side' && (
-          <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', border: '2px solid #1a1a2a', position: 'relative' }}>
+          <div style={{ flex: '0 0 40%', borderRadius: '12px', overflow: 'hidden', border: '2px solid #1a1a2a', position: 'relative' }}>
             <img
               src={photoUrl}
               alt="Hardware reference"
