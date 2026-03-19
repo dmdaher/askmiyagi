@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { PipelineState, LogEntry, Escalation } from '@/lib/pipeline/types';
 import PhaseTimeline from './PhaseTimeline';
 import EscalationBanner from './EscalationBanner';
@@ -9,7 +10,8 @@ import SectionProgress from './SectionProgress';
 import BatchProgress from './BatchProgress';
 import CostBreakdown from './CostBreakdown';
 import DiagnosticsPanel from './DiagnosticsPanel';
-import TemplateViewer from './TemplateViewer';
+import ManifestViewer from './ManifestViewer';
+import PanelLayoutEditor from './PanelLayoutEditor';
 
 const AGENT_PHASE_MAP: Record<string, string> = {
   'phase-0-diagram-parser': 'diagram-parser',
@@ -36,6 +38,14 @@ const ALL_AGENTS = [
   'tutorial-reviewer',
 ];
 
+type DetailTab = 'logs' | 'manifest' | 'layout';
+
+const TABS: { id: DetailTab; label: string }[] = [
+  { id: 'logs', label: 'Logs' },
+  { id: 'manifest', label: 'Manifest' },
+  { id: 'layout', label: 'Layout' },
+];
+
 interface PipelineDetailProps {
   pipeline: PipelineState;
   logs: LogEntry[];
@@ -50,6 +60,17 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
   const isPhase1 = pipeline.currentPhase === 'phase-1-section-loop';
   const isPhase5 = pipeline.currentPhase === 'phase-5-tutorial-build';
   const isTemplateReview = activeEscalation?.type === 'template-review';
+
+  // Default to layout tab when at template review, otherwise logs
+  const [activeTab, setActiveTab] = useState<DetailTab>(isTemplateReview ? 'layout' : 'logs');
+
+  // Check if layout engine has passed (manifest/templates available)
+  const layoutEnginePassed = pipeline.phases.some(
+    (p) => p.phase === 'phase-0-layout-engine' && p.status === 'passed'
+  );
+  const gatekeeperPassed = pipeline.phases.some(
+    (p) => p.phase === 'phase-0-gatekeeper' && p.status === 'passed'
+  );
 
   // Extract agent scores and statuses from pipeline phases
   const agentData = ALL_AGENTS.map((agent) => {
@@ -88,58 +109,91 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
         />
       )}
 
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        {/* Left column — LogStream (~60%) */}
-        <div className="lg:col-span-3">
-          <LogStream logs={logs} />
-        </div>
+      {/* Tab bar */}
+      <div className="flex gap-1 rounded-lg p-1" style={{ backgroundColor: 'var(--card-bg, #141420)' }}>
+        {TABS.map((tab) => {
+          const isDisabled =
+            (tab.id === 'manifest' && !gatekeeperPassed) ||
+            (tab.id === 'layout' && !gatekeeperPassed);
 
-        {/* Right column — Agent scores + context panel (~40%) */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Agent score cards grid */}
-          <div
-            className="rounded-lg p-3"
-            style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
-          >
-            <h3
-              className="text-xs font-semibold uppercase tracking-wide mb-2"
-              style={{ color: 'var(--foreground, #e0e0e0)' }}
+          return (
+            <button
+              key={tab.id}
+              onClick={() => !isDisabled && setActiveTab(tab.id)}
+              disabled={isDisabled}
+              className="flex-1 text-xs font-medium py-1.5 px-3 rounded transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
+              style={{
+                backgroundColor: activeTab === tab.id ? 'var(--surface, #1a1a2a)' : 'transparent',
+                color: activeTab === tab.id ? 'var(--foreground, #e0e0e0)' : '#6b7280',
+                border: activeTab === tab.id ? '1px solid var(--card-border, #2a2a3a)' : '1px solid transparent',
+              }}
             >
-              Agent Scores
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              {agentData.map((a) => (
-                <AgentScoreCard
-                  key={a.agentName}
-                  agentName={a.agentName}
-                  score={a.score}
-                  status={a.status}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Template Viewer — shown during template review */}
-          {isTemplateReview && (
-            <TemplateViewer deviceId={pipeline.deviceId} />
-          )}
-
-          {/* Diagnostics — always visible */}
-          <DiagnosticsPanel deviceId={pipeline.deviceId} />
-
-          {/* Context panel: SectionProgress or BatchProgress */}
-          {isPhase1 && pipeline.sections.length > 0 && (
-            <SectionProgress sections={pipeline.sections} currentSection={currentSection} />
-          )}
-
-          {isPhase5 && pipeline.tutorialBatches.length > 0 && (
-            <BatchProgress batches={pipeline.tutorialBatches} />
-          )}
-        </div>
+              {tab.label}
+              {tab.id === 'layout' && isTemplateReview && (
+                <span className="ml-1.5 w-1.5 h-1.5 rounded-full inline-block" style={{ backgroundColor: '#3b82f6' }} />
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Cost Breakdown — full width */}
+      {/* Tab content */}
+      {activeTab === 'logs' && (
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          {/* Left column — LogStream (~60%) */}
+          <div className="lg:col-span-3">
+            <LogStream logs={logs} />
+          </div>
+
+          {/* Right column — Agent scores + context panel (~40%) */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Agent score cards grid */}
+            <div
+              className="rounded-lg p-3"
+              style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
+            >
+              <h3
+                className="text-xs font-semibold uppercase tracking-wide mb-2"
+                style={{ color: 'var(--foreground, #e0e0e0)' }}
+              >
+                Agent Scores
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                {agentData.map((a) => (
+                  <AgentScoreCard
+                    key={a.agentName}
+                    agentName={a.agentName}
+                    score={a.score}
+                    status={a.status}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Diagnostics — always visible */}
+            <DiagnosticsPanel deviceId={pipeline.deviceId} />
+
+            {/* Context panel: SectionProgress or BatchProgress */}
+            {isPhase1 && pipeline.sections.length > 0 && (
+              <SectionProgress sections={pipeline.sections} currentSection={currentSection} />
+            )}
+
+            {isPhase5 && pipeline.tutorialBatches.length > 0 && (
+              <BatchProgress batches={pipeline.tutorialBatches} />
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'manifest' && (
+        <ManifestViewer deviceId={pipeline.deviceId} />
+      )}
+
+      {activeTab === 'layout' && (
+        <PanelLayoutEditor deviceId={pipeline.deviceId} />
+      )}
+
+      {/* Cost Breakdown — full width, always visible */}
       <CostBreakdown
         phases={pipeline.phases}
         sections={isPhase1 || pipeline.sections.length > 0 ? pipeline.sections : undefined}

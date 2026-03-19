@@ -38,6 +38,14 @@ import {
   updateSubscription,
 } from '../src/lib/pipeline/cost-tracker';
 import { PipelineState, SectionStatus } from '../src/lib/pipeline/types';
+import {
+  preInspectDiagramParser,
+  validateDiagramParserOutput,
+  preInspectGatekeeper,
+  validateGatekeeperManifest,
+  validateNeighborDirections,
+  validateArchetypeGeometry,
+} from '../src/lib/pipeline/checkpoint-validators';
 import * as validators from '../src/lib/pipeline/checkpoint-validators';
 
 const deviceId = process.argv[2];
@@ -56,6 +64,14 @@ let worktreeCwd: string;
  * which would bypass the pipeline orchestration.
  */
 const PIPELINE_TOOLS = ['Read', 'Write', 'Edit', 'Glob', 'Grep', 'Bash'];
+
+/**
+ * Gatekeeper-specific tool set: no Bash.
+ * The gatekeeper is a JUDGE — it reads manuals, reads parser output, and writes
+ * the manifest JSON via the Write tool. It must NOT execute scripts (layout-engine.ts)
+ * or spawn processes. Removing Bash is the mechanical boundary that enforces this.
+ */
+const GATEKEEPER_TOOLS = ['Read', 'Write', 'Edit', 'Glob', 'Grep'];
 
 /** Max auto-retries per phase before escalating to human */
 const MAX_PHASE_RETRIES = 2;
@@ -194,6 +210,17 @@ async function run() {
 
   worktreeCwd = state.worktreePath!;
 
+  // Pull latest code into worktree — ensures SOULs, validators, and scripts are current
+  try {
+    execSync('git fetch origin test && git merge origin/test --no-edit', {
+      cwd: worktreeCwd,
+      stdio: 'pipe',
+    });
+    appendLog(deviceId, { level: 'info', message: 'Worktree updated to latest test' });
+  } catch {
+    appendLog(deviceId, { level: 'warn', message: 'Could not update worktree — using existing code' });
+  }
+
   // Copy uploaded manuals into worktree (they're in the project root, not in the git checkout)
   for (const manualPath of state.manualPaths) {
     const absSource = path.resolve(manualPath);
@@ -248,6 +275,9 @@ async function run() {
           break;
         case 'phase-0-diagram-parser':
           await doPhase0DiagramParser(state);
+          break;
+        case 'phase-0-control-extractor':
+          await doPhase0ControlExtractor(state);
           break;
         case 'phase-0-gatekeeper':
           await doPhase0(state);
@@ -451,26 +481,89 @@ If you cannot find or download the manual after trying all approaches, state cle
 async function doPhase0DiagramParser(state: PipelineState) {
   startPhase(state, 'phase-0-diagram-parser');
   appendLog(deviceId, { level: 'info', agent: 'diagram-parser', message: 'Starting Phase 0a: Diagram Parser (vision extraction)' });
+
+  // Check if parser already produced valid output (spatial-blueprint.json exists)
+  const existingBlueprint = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'spatial-blueprint.json');
+  if (fs.existsSync(existingBlueprint)) {
+    const blueprintJson = fs.readFileSync(existingBlueprint, 'utf-8');
+    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'checkpoint.md');
+    const checkpointContent = fs.existsSync(checkpointPath) ? fs.readFileSync(checkpointPath, 'utf-8') : '';
+    const { validateDiagramParserOutput: validate } = await import('../src/lib/pipeline/checkpoint-validators');
+    const validation = validate(checkpointContent, blueprintJson);
+    if (validation.score >= 9.0) {
+      appendLog(deviceId, { level: 'info', agent: 'diagram-parser',
+        message: `Existing spatial-blueprint.json passes validation (${validation.score.toFixed(1)}/10). Skipping re-run.` });
+      completePhase(state, 'phase-0-diagram-parser', validation.score, true);
+      advancePhase(state, worktreeCwd);
+      return;
+    }
+  }
+
   if (!isBudgetOk(state)) return;
 
+  // --- PRE-INSPECTION ---
+  const photoDir = path.join(worktreeCwd, 'docs', state.manufacturer, deviceId, 'photos');
+  let photoPaths: string[] = [];
+  try {
+    photoPaths = fs.readdirSync(photoDir)
+      .filter((f: string) => /\.(jpg|jpeg|png|webp)$/i.test(f))
+      .map((f: string) => path.join(photoDir, f));
+  } catch { /* no photos dir */ }
+
+  const preCheck = preInspectDiagramParser({
+    manualPaths: state.manualPaths,
+    photoPaths,
+  });
+  if (!preCheck.valid) {
+    for (const err of preCheck.errors) {
+      appendLog(deviceId, { level: 'warn', agent: 'diagram-parser', message: `PRE-INSPECT: ${err}` });
+    }
+    if (state.manualPaths.length === 0) {
+      completePhase(state, 'phase-0-diagram-parser', null, false);
+      createEscalation(state, 'manual-not-found', 'No manual available for Diagram Parser');
+      return;
+    }
+    if (photoPaths.length === 0) {
+      completePhase(state, 'phase-0-diagram-parser', null, false);
+      createEscalation(state, 'agent-failure',
+        `No hardware photos found at docs/${state.manufacturer}/${deviceId}/photos/. ` +
+        `The Diagram Parser requires photos as PRIMARY input. Upload photos before running.`);
+      return;
+    }
+  }
+
   const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
+  const photoListStr = photoPaths
+    .map((p: string) => `  - ${path.relative(worktreeCwd, p)}`)
+    .join('\n');
+
   const resumeCtx = getResumeContext('diagram-parser');
-  const prompt = `You are the Diagram Parser agent. Extract spatial geometry from hardware photos and manual diagrams for:
+  const prompt = `You are the Diagram Parser agent. Extract spatial geometry from hardware photos and manual for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
-- Manuals:
+- Hardware photos (PRIMARY — all coordinates come from these):
+${photoListStr}
+- Manual (SECONDARY — for control count, identity, and type hints only):
 ${manualList}
 
-Your job is to be a SURVEYOR — extract spatial facts from images. Do NOT interpret, name, or design anything.
+COORDINATE RULE (NON-NEGOTIABLE): ALL centroid coordinates must come from the PHOTOS.
+The manual tells you WHAT exists (names, types, count). The photos tell you WHERE it is.
+If you cannot clearly see a control's position in the photos, output centroid: null.
+NEVER derive coordinates from manual diagram callout line positions.
+
+Your job is to be a SURVEYOR — extract spatial facts from images.
+Use the manual to know what to look for and verify your count, but measure positions from photos.
+Your output is consumed by a DETERMINISTIC MACHINE, not a human. Output JSON with coordinates, not prose.
 
 For each section on the hardware panel:
 1. Identify section boundaries (bounding boxes as % of panel)
-2. Extract control centroids (2 decimal precision, % of section)
+2. Extract control centroids (2 decimal precision, % of section) — FROM PHOTOS
 3. Discover neighbors (±3% threshold in 4 cardinal directions)
 4. Classify topology (grid-NxM, single-column, single-row, cluster-above-anchor, etc.)
 5. Lock proportions (height splits, aspect ratios)
 6. Document aspect ratios for all elements
+7. Assign containerZones for multi-zone topologies
 
 Output spatial-blueprint JSON per section.
 Write your checkpoint to .claude/agent-memory/diagram-parser/checkpoint.md with YAML frontmatter.
@@ -496,21 +589,146 @@ Include: agent: diagram-parser, deviceId: ${deviceId}, phase: 0, status, score, 
   updateSubscription(state, result.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('diagram-parser');
-  const checkpointFileExists = fs.existsSync(
-    path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'checkpoint.md')
-  );
-  const parserPassed =
-    (checkpoint.score !== null && checkpoint.score >= 9.0) ||
-    (result.exitCode === 0 && checkpointFileExists);
+  const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'checkpoint.md');
+  const checkpointFileExists = fs.existsSync(checkpointPath);
 
-  if (parserPassed) {
-    completePhase(state, 'phase-0-diagram-parser', checkpoint.score ?? 10, true);
-    advancePhase(state, worktreeCwd);
+  // --- POST-INSPECTION (mechanical validation) ---
+  if (checkpointFileExists) {
+    const content = fs.readFileSync(checkpointPath, 'utf-8');
+
+    // Also check for a separate spatial-blueprint.json file (parser may write structured data there)
+    const blueprintPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'spatial-blueprint.json');
+    let blueprintJson: string | undefined;
+    if (fs.existsSync(blueprintPath)) {
+      blueprintJson = fs.readFileSync(blueprintPath, 'utf-8');
+      appendLog(deviceId, { level: 'info', agent: 'diagram-parser', message: `Found spatial-blueprint.json (${(blueprintJson.length / 1024).toFixed(1)}KB)` });
+    }
+
+    const validation = validateDiagramParserOutput(content, blueprintJson);
+
+    // Log all mechanical findings
+    for (const err of validation.errors) {
+      appendLog(deviceId, { level: 'warn', agent: 'diagram-parser', message: `POST-INSPECT: ${err}` });
+    }
+    appendLog(deviceId, {
+      level: 'info', agent: 'diagram-parser',
+      message: `POST-INSPECT: mechanical score ${validation.score.toFixed(1)}/10 (agent self-score: ${checkpoint.score ?? 'none'})`,
+    });
+
+    // Normalize agent self-score: if < 1.0, assume 0-1 scale and multiply by 10
+    const rawSelfScore = checkpoint.score ?? 0;
+    const normalizedSelfScore = rawSelfScore <= 1.0 && rawSelfScore > 0 ? rawSelfScore * 10 : rawSelfScore;
+
+    // Effective score = min(mechanical, normalized self-score)
+    // Mechanical validates structure (fields exist). Self-score validates quality (data correct).
+    // Neither alone is sufficient — structure without quality is garbage in correct format,
+    // quality without structure means the validator has a bug.
+    const effectiveScore = Math.min(validation.score, normalizedSelfScore > 0 ? normalizedSelfScore : validation.score);
+    appendLog(deviceId, {
+      level: 'info', agent: 'diagram-parser',
+      message: `Effective score: ${effectiveScore.toFixed(1)} (mechanical: ${validation.score.toFixed(1)}, self: ${rawSelfScore} → normalized: ${normalizedSelfScore.toFixed(1)})`,
+    });
+
+    if (effectiveScore >= 9.0 && validation.valid) {
+      completePhase(state, 'phase-0-diagram-parser', effectiveScore, true);
+      advancePhase(state, worktreeCwd);
+    } else {
+      completePhase(state, 'phase-0-diagram-parser', effectiveScore, false);
+      // Send specific errors back as retry context
+      const errorSummary = validation.errors.slice(0, 3).join('; ');
+      if (!tryAutoRetry(state, 'agent-failure',
+        `Diagram Parser failed mechanical validation (score: ${effectiveScore.toFixed(1)}). ` +
+        `Errors: ${errorSummary}`)) return;
+    }
   } else if (result.exitCode !== 0) {
     if (!tryAutoRetry(state, 'agent-failure', `Diagram Parser failed with exit code ${result.exitCode}`)) return;
   } else {
     completePhase(state, 'phase-0-diagram-parser', checkpoint.score, false);
     if (!tryAutoRetry(state, 'agent-failure', `Diagram Parser scored below 9.0`)) return;
+  }
+}
+
+async function doPhase0ControlExtractor(state: PipelineState) {
+  startPhase(state, 'phase-0-control-extractor');
+  appendLog(deviceId, { level: 'info', agent: 'control-extractor', message: 'Starting Phase 0b: Control Extractor (manual-only)' });
+  if (!isBudgetOk(state)) return;
+
+  // Skip if inventory already exists and is valid
+  const inventoryPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'control-extractor', 'control-inventory.json');
+  if (fs.existsSync(inventoryPath)) {
+    try {
+      const inv = JSON.parse(fs.readFileSync(inventoryPath, 'utf-8'));
+      const skipCount = inv.controls?.length ?? inv.topPanel?.length ?? inv.items?.length ?? 0;
+      if (skipCount > 0) {
+        appendLog(deviceId, { level: 'info', agent: 'control-extractor',
+          message: `Existing control-inventory.json valid (${inv.controls.length} controls). Skipping re-run.` });
+        completePhase(state, 'phase-0-control-extractor', 10, true);
+        advancePhase(state, worktreeCwd);
+        return;
+      }
+    } catch { /* invalid JSON, re-run */ }
+  }
+
+  const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
+  const resumeCtx = getResumeContext('control-extractor');
+  const prompt = `You are the Control Extractor agent. Read the manual and extract a structured control inventory for:
+- Device: ${state.deviceName}
+- Manufacturer: ${state.manufacturer}
+- Device ID: ${deviceId}
+- Manuals:
+${manualList}
+
+MANUAL-ONLY MODE: Read ONLY the manual PDF. Do NOT look at photos.
+A separate Diagram Parser agent handles the photos. You handle the text.
+
+Find the "Part Names" or "Controls" section of the manual. Extract every numbered item:
+- item number, verbatim label, control type, functional group, description, page number
+- Flag compound items (one manual item = multiple physical controls)
+
+Output a JSON file to .claude/agent-memory/control-extractor/control-inventory.json
+Write checkpoint to .claude/agent-memory/control-extractor/checkpoint.md${resumeCtx}`;
+
+  const result = await invokeAgent({
+    prompt,
+    deviceId,
+    cwd: worktreeCwd,
+    phase: 'phase-0-control-extractor',
+    agent: 'control-extractor',
+    allowedTools: GATEKEEPER_TOOLS, // Read, Write, Edit, Glob, Grep — no Bash
+    remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
+  });
+
+  if (result.costEntry) {
+    accumulateCost(state, result.costEntry);
+    recordCostEntry(deviceId, result.costEntry);
+  }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, result.rateLimitEvents);
+
+  // Validate output
+  if (fs.existsSync(inventoryPath)) {
+    try {
+      const inv = JSON.parse(fs.readFileSync(inventoryPath, 'utf-8'));
+      // Accept various key names for the controls array
+      const controlCount = inv.controls?.length ?? inv.topPanel?.length ?? inv.items?.length ?? 0;
+      appendLog(deviceId, { level: 'info', agent: 'control-extractor',
+        message: `POST-INSPECT: ${controlCount} controls extracted` });
+
+      if (controlCount > 0) {
+        completePhase(state, 'phase-0-control-extractor', 10, true);
+        advancePhase(state, worktreeCwd);
+      } else {
+        completePhase(state, 'phase-0-control-extractor', null, false);
+        if (!tryAutoRetry(state, 'agent-failure', 'Control Extractor produced empty inventory')) return;
+      }
+    } catch (e) {
+      completePhase(state, 'phase-0-control-extractor', null, false);
+      if (!tryAutoRetry(state, 'agent-failure', `Control inventory JSON invalid: ${(e as Error).message}`)) return;
+    }
+  } else {
+    completePhase(state, 'phase-0-control-extractor', null, false);
+    if (!tryAutoRetry(state, 'agent-failure', 'Control Extractor produced no inventory file')) return;
   }
 }
 
@@ -534,18 +752,20 @@ async function doPhase0(state: PipelineState) {
     execSync('npm install', { cwd: worktreeCwd, stdio: 'pipe' });
   }
 
-  const manualList = state.manualPaths.map((p) => `  - ${p}`).join('\n');
+  const manualListGk = state.manualPaths.map((p) => `  - ${p}`).join('\n');
   const resumeCtx = getResumeContext('gatekeeper');
   const prompt = `You are the Gatekeeper agent (JUDGE ONLY). Produce the Master Manifest for:
 - Device: ${state.deviceName}
 - Manufacturer: ${state.manufacturer}
 - Device ID: ${deviceId}
 - Manuals:
-${manualList}
+${manualListGk}
 
-IMPORTANT: You are the JUDGE. You reconcile TWO independent data streams:
+IMPORTANT: You are the JUDGE. You reconcile TWO data streams:
 1. Manual text (read the PDFs for control names, functional groups, parameter info)
-2. Diagram Parser output (read .claude/agent-memory/diagram-parser/checkpoint.md for spatial geometry)
+2. Diagram Parser output (read .claude/agent-memory/diagram-parser/spatial-blueprint.json for spatial geometry)
+
+Also check if a Control Extractor inventory exists at .claude/agent-memory/control-extractor/control-inventory.json — if so, use it as an additional reference for control naming.
 
 Your job is to RECONCILE these into a Master Manifest JSON. Rules:
 - Geometry (Parser) wins PLACEMENT decisions
@@ -559,8 +779,16 @@ Unknown layouts = flag for manual review, do NOT invent archetype names.
 
 You DO NOT produce: ASCII maps, CSS, section templates, or component structure.
 The Layout Engine (a deterministic script) will generate templates from your manifest.
+DO NOT run the layout engine yourself. DO NOT execute scripts/layout-engine.ts via Bash.
+The pipeline runner handles layout engine execution after your manifest is validated.
 
-Output the Master Manifest JSON conforming to the MasterManifest interface in scripts/layout-engine.ts.
+IMPORTANT: For each section, include panelBoundingBox from the Parser's spatial-blueprint.
+Copy the Parser's bounding box values (x, y, w, h as % of panel) into each section.
+This defines WHERE on the physical panel each section sits — critical for global layout.
+
+Output the Master Manifest JSON in a \`\`\`json code block in your checkpoint.
+The JSON must conform to the MasterManifest interface in scripts/layout-engine.ts.
+Also write the manifest to .pipeline/${deviceId}/manifest.json
 
 Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML frontmatter.
 Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verdict, timestamp, conflicts${resumeCtx}`;
@@ -572,7 +800,7 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
     phase: 'phase-0-gatekeeper',
     agent: 'gatekeeper',
     model: 'claude-opus-4-6',
-    allowedTools: PIPELINE_TOOLS,
+    allowedTools: GATEKEEPER_TOOLS,
     remainingBudgetUsd: getRemainingBudget(state),
     onChildPid: (pid) => trackChildPid(state, pid),
   });
@@ -585,89 +813,208 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
   updateSubscription(state, result.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('gatekeeper');
-  // Gatekeeper passes if: score >= 9.5, OR exit code 0 with a checkpoint file written
-  // (the gatekeeper produces a manifest, not a self-score — status: complete is sufficient)
-  const checkpointFileExists = fs.existsSync(
-    path.join(worktreeCwd, '.claude', 'agent-memory', 'gatekeeper', 'checkpoint.md')
-  );
-  const gatekeeperPassed =
-    (checkpoint.score !== null && checkpoint.score >= 9.5) ||
-    (result.exitCode === 0 && checkpointFileExists);
 
-  if (gatekeeperPassed) {
-    completePhase(state, 'phase-0-gatekeeper', checkpoint.score ?? 10, true);
-    const sections = parseSectionsFromGatekeeper();
-    if (sections.length > 0) state.sections = sections;
-    advancePhase(state, worktreeCwd);
+  // --- POST-INSPECTION: validate the manifest.json file mechanically ---
+  const worktreeManifest = path.join(worktreeCwd, '.pipeline', deviceId, 'manifest.json');
+  const mainManifest = path.join('.pipeline', deviceId, 'manifest.json');
+  const manifestPath = fs.existsSync(worktreeManifest) ? worktreeManifest
+    : fs.existsSync(mainManifest) ? mainManifest
+    : null;
+
+  if (manifestPath) {
+    const manifestJson = fs.readFileSync(manifestPath, 'utf-8');
+    const validation = validateGatekeeperManifest(manifestJson);
+
+    for (const err of validation.errors) {
+      appendLog(deviceId, { level: 'warn', agent: 'gatekeeper', message: `POST-INSPECT: ${err}` });
+    }
+    appendLog(deviceId, {
+      level: 'info', agent: 'gatekeeper',
+      message: `POST-INSPECT: mechanical score ${validation.score.toFixed(1)}/10 (agent self-score: ${checkpoint.score ?? 'none'})`,
+    });
+
+    // 4-Point Validation: check neighbor directions against parser centroids
+    const blueprintPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'spatial-blueprint.json');
+    if (fs.existsSync(blueprintPath)) {
+      const blueprintJson = fs.readFileSync(blueprintPath, 'utf-8');
+      const neighborCheck = validateNeighborDirections(manifestJson, blueprintJson);
+      if (neighborCheck.flippedNeighbors.length > 0) {
+        for (const flip of neighborCheck.flippedNeighbors) {
+          appendLog(deviceId, {
+            level: 'warn', agent: 'gatekeeper',
+            message: `4-POINT: Flipped neighbor — ${flip.control}.${flip.direction} = ${flip.neighbor}, but geometry says ${flip.expected}`,
+          });
+        }
+        appendLog(deviceId, {
+          level: 'warn', agent: 'gatekeeper',
+          message: `4-POINT: ${neighborCheck.flippedNeighbors.length} flipped neighbor direction(s) found. Deducting from score.`,
+        });
+        // Deduct but don't fail entirely — flipped neighbors are correctable
+        validation.score = Math.max(0, validation.score - neighborCheck.flippedNeighbors.length * 0.5);
+        validation.errors.push(...neighborCheck.errors);
+      } else {
+        appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: '4-POINT: All neighbor directions consistent with parser centroids' });
+      }
+
+      // Archetype-Geometry Validation: does the archetype match the centroid distribution?
+      const archetypeCheck = validateArchetypeGeometry(manifestJson, blueprintJson);
+      if (archetypeCheck.mismatches.length > 0) {
+        for (const mm of archetypeCheck.mismatches) {
+          appendLog(deviceId, {
+            level: 'warn', agent: 'gatekeeper',
+            message: `ARCHETYPE-GEOMETRY: Section "${mm.sectionId}" — ${mm.reason} Suggest: ${mm.suggestion}`,
+          });
+        }
+        // Each archetype mismatch is a significant error — deduct heavily
+        validation.score = Math.max(0, validation.score - archetypeCheck.mismatches.length * 2.0);
+        validation.errors.push(...archetypeCheck.errors);
+      } else {
+        appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: 'ARCHETYPE-GEOMETRY: All archetypes consistent with centroid distribution' });
+      }
+    }
+
+    // Normalize gatekeeper self-score
+    const rawGkScore = checkpoint.score ?? 0;
+    const normalizedGkScore = rawGkScore <= 1.0 && rawGkScore > 0 ? rawGkScore * 10 : rawGkScore;
+    const effectiveGkScore = Math.min(validation.score, normalizedGkScore > 0 ? normalizedGkScore : validation.score);
+    appendLog(deviceId, {
+      level: 'info', agent: 'gatekeeper',
+      message: `Effective score: ${effectiveGkScore.toFixed(1)} (mechanical: ${validation.score.toFixed(1)}, self: ${rawGkScore} → normalized: ${normalizedGkScore.toFixed(1)})`,
+    });
+
+    // Gatekeeper threshold uses mechanical score only. The self-score reflects
+    // reconciliation difficulty (number of conflicts), not data quality. A manifest
+    // with 7 documented conflicts and a self-score of 7.5 is MORE trustworthy than
+    // one with 0 conflicts and a 10/10 (which likely smoothed over issues silently).
+    // The mechanical validator (structural completeness + 4-Point + archetype-geometry)
+    // is the authoritative gate.
+    if (validation.score >= 9.0 && validation.valid) {
+      // Copy manifest to main pipeline dir if needed
+      if (manifestPath === worktreeManifest && !fs.existsSync(mainManifest)) {
+        fs.mkdirSync(path.dirname(mainManifest), { recursive: true });
+        fs.copyFileSync(worktreeManifest, mainManifest);
+      }
+      completePhase(state, 'phase-0-gatekeeper', effectiveGkScore, true);
+      const sections = parseSectionsFromGatekeeper();
+      if (sections.length > 0) state.sections = sections;
+      advancePhase(state, worktreeCwd);
+    } else {
+      completePhase(state, 'phase-0-gatekeeper', effectiveGkScore, false);
+      const errorSummary = validation.errors.slice(0, 3).join('; ');
+      if (!tryAutoRetry(state, 'agent-failure',
+        `Gatekeeper manifest failed validation (score: ${effectiveGkScore.toFixed(1)}). ` +
+        `Errors: ${errorSummary}`)) return;
+    }
   } else if (result.exitCode !== 0) {
     if (!tryAutoRetry(state, 'agent-failure', `Gatekeeper failed with exit code ${result.exitCode}`)) return;
   } else {
     completePhase(state, 'phase-0-gatekeeper', checkpoint.score, false);
-    if (!tryAutoRetry(state, 'agent-failure', `Gatekeeper produced no checkpoint file`)) return;
+    if (!tryAutoRetry(state, 'agent-failure', `Gatekeeper produced no manifest.json file`)) return;
   }
 }
 
 async function doPhase0LayoutEngine(state: PipelineState) {
-  // If templates already exist and phase was completed (resuming after template-review approval),
-  // just advance to the next phase.
+  // If templates already exist and phase was completed AND the template-review
+  // escalation was already resolved, advance. Otherwise re-trigger the review gate.
   const outputPath = path.join('.pipeline', deviceId, 'templates.json');
   const phaseResult = state.phases.find(p => p.phase === 'phase-0-layout-engine');
-  if (phaseResult?.status === 'passed' && fs.existsSync(outputPath)) {
-    appendLog(deviceId, { level: 'info', message: 'Layout Engine: templates already generated, advancing after review approval' });
+  const templateReviewResolved = state.escalations.some(
+    e => e.type === 'template-review' && e.resolvedAt !== null
+  );
+  if (phaseResult?.status === 'passed' && fs.existsSync(outputPath) && templateReviewResolved) {
+    appendLog(deviceId, { level: 'info', message: 'Layout Engine: templates already reviewed and approved, advancing' });
     advancePhase(state, worktreeCwd);
+    return;
+  }
+  if (phaseResult?.status === 'passed' && fs.existsSync(outputPath) && !templateReviewResolved) {
+    // Templates exist but haven't been reviewed — re-trigger the review gate
+    appendLog(deviceId, { level: 'info', message: 'Layout Engine: templates exist but not yet reviewed, pausing for review' });
+    const output = JSON.parse(fs.readFileSync(outputPath, 'utf-8'));
+    const templateCount = output.templates?.length ?? 0;
+    const controlCount = output.panelArchitecture?.totalControls ?? 0;
+    const archetypeSummary = (output.templates ?? [])
+      .map((t: { sectionId: string; archetype: string }) => `${t.sectionId} → ${t.archetype}`)
+      .join(', ');
+    createEscalation(state, 'template-review',
+      `Layout Engine produced ${templateCount} section templates for ${controlCount} controls. ` +
+      `Review templates at .pipeline/${deviceId}/templates.json before Panel Builder runs.\n` +
+      `Archetypes: ${archetypeSummary}`);
+    sendNotification('Miyagi Pipeline', `Templates ready for review: ${state.deviceName}`);
     return;
   }
 
   startPhase(state, 'phase-0-layout-engine');
   appendLog(deviceId, { level: 'info', message: 'Starting Phase 0e: Layout Engine (deterministic template generation)' });
 
-  // Extract manifest JSON from gatekeeper checkpoint
-  const gatekeeperCheckpointPath = path.join(
-    worktreeCwd, '.claude', 'agent-memory', 'gatekeeper', 'checkpoint.md'
-  );
-
-  if (!fs.existsSync(gatekeeperCheckpointPath)) {
-    completePhase(state, 'phase-0-layout-engine', null, false);
-    if (!tryAutoRetry(state, 'agent-failure', 'Gatekeeper checkpoint not found — cannot run Layout Engine')) return;
-    return;
-  }
-
-  // Try to extract JSON manifest from gatekeeper checkpoint
-  const checkpointContent = fs.readFileSync(gatekeeperCheckpointPath, 'utf-8');
-  const jsonMatch = checkpointContent.match(/```json\s*([\s\S]*?)\s*```/);
-
-  if (!jsonMatch) {
-    completePhase(state, 'phase-0-layout-engine', null, false);
-    if (!tryAutoRetry(state, 'agent-failure', 'No JSON manifest found in gatekeeper checkpoint')) return;
-    return;
-  }
-
-  // Write manifest to pipeline dir for the layout engine
   const manifestPath = path.join('.pipeline', deviceId, 'manifest.json');
-  const outputPath = path.join('.pipeline', deviceId, 'templates.json');
 
-  try {
-    // Validate JSON is parseable before writing
-    JSON.parse(jsonMatch[1]);
-    fs.writeFileSync(manifestPath, jsonMatch[1], 'utf-8');
-  } catch (e) {
-    completePhase(state, 'phase-0-layout-engine', null, false);
-    if (!tryAutoRetry(state, 'agent-failure', `Manifest JSON is invalid: ${(e as Error).message}`)) return;
-    return;
+  // Find the manifest JSON — check multiple locations:
+  // 1. Worktree's .pipeline/<deviceId>/manifest.json (gatekeeper may have written it there via Bash)
+  // 2. Main .pipeline/<deviceId>/manifest.json (if already copied)
+  // 3. Embedded in gatekeeper checkpoint as a ```json code block (original approach)
+  const worktreeManifestPath = path.join(worktreeCwd, '.pipeline', deviceId, 'manifest.json');
+
+  if (fs.existsSync(worktreeManifestPath) && !fs.existsSync(manifestPath)) {
+    // Copy from worktree to main pipeline dir
+    fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
+    fs.copyFileSync(worktreeManifestPath, manifestPath);
+    appendLog(deviceId, { level: 'info', message: 'Copied manifest from worktree to pipeline dir' });
+
+    // Also copy templates if the gatekeeper already ran the layout engine
+    const worktreeTemplatesPath = path.join(worktreeCwd, '.pipeline', deviceId, 'templates.json');
+    if (fs.existsSync(worktreeTemplatesPath)) {
+      fs.copyFileSync(worktreeTemplatesPath, outputPath);
+      appendLog(deviceId, { level: 'info', message: 'Copied templates from worktree (gatekeeper pre-ran layout engine)' });
+    }
+  }
+
+  if (!fs.existsSync(manifestPath)) {
+    // Fallback: extract JSON from gatekeeper checkpoint
+    const gatekeeperCheckpointPath = path.join(
+      worktreeCwd, '.claude', 'agent-memory', 'gatekeeper', 'checkpoint.md'
+    );
+
+    if (!fs.existsSync(gatekeeperCheckpointPath)) {
+      completePhase(state, 'phase-0-layout-engine', null, false);
+      if (!tryAutoRetry(state, 'agent-failure', 'No manifest found — checked worktree .pipeline/, main .pipeline/, and gatekeeper checkpoint')) return;
+      return;
+    }
+
+    const checkpointContent = fs.readFileSync(gatekeeperCheckpointPath, 'utf-8');
+    const jsonMatch = checkpointContent.match(/```json\s*([\s\S]*?)\s*```/);
+
+    if (!jsonMatch) {
+      completePhase(state, 'phase-0-layout-engine', null, false);
+      if (!tryAutoRetry(state, 'agent-failure', 'No manifest.json file and no JSON block in gatekeeper checkpoint')) return;
+      return;
+    }
+
+    try {
+      JSON.parse(jsonMatch[1]);
+      fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
+      fs.writeFileSync(manifestPath, jsonMatch[1], 'utf-8');
+    } catch (e) {
+      completePhase(state, 'phase-0-layout-engine', null, false);
+      if (!tryAutoRetry(state, 'agent-failure', `Manifest JSON is invalid: ${(e as Error).message}`)) return;
+      return;
+    }
   }
 
   // Run the deterministic layout engine
+  // Use absolute paths to avoid cwd-relative resolution issues
   try {
     const layoutEnginePath = path.resolve('scripts/layout-engine.ts');
-    appendLog(deviceId, { level: 'info', message: `Running layout engine: ${manifestPath} → ${outputPath}` });
+    const absManifestPath = path.resolve(manifestPath);
+    const absOutputPath = path.resolve(outputPath);
+    appendLog(deviceId, { level: 'info', message: `Running layout engine: ${absManifestPath} → ${absOutputPath}` });
 
     execSync(
-      `npx tsx "${layoutEnginePath}" "${manifestPath}" --output "${outputPath}"`,
-      { cwd: worktreeCwd, stdio: 'pipe', timeout: 30_000 }
+      `npx tsx "${layoutEnginePath}" "${absManifestPath}" --output "${absOutputPath}"`,
+      { stdio: 'pipe', timeout: 30_000 }
     );
 
-    if (fs.existsSync(outputPath)) {
-      const output = JSON.parse(fs.readFileSync(outputPath, 'utf-8'));
+    if (fs.existsSync(absOutputPath)) {
+      const output = JSON.parse(fs.readFileSync(absOutputPath, 'utf-8'));
       const templateCount = output.templates?.length ?? 0;
       const controlCount = output.panelArchitecture?.totalControls ?? 0;
       appendLog(deviceId, {
@@ -1561,28 +1908,37 @@ function readAgentCheckpoint(agent: string) {
 
 function parseSectionsFromGatekeeper(): SectionStatus[] {
   try {
-    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'gatekeeper', 'checkpoint.md');
-    const content = fs.readFileSync(checkpointPath, 'utf-8');
-    const sections: SectionStatus[] = [];
-    const lines = content.split('\n');
+    // Parse sections from manifest.json directly — not the checkpoint markdown
+    const worktreeManifest = path.join(worktreeCwd, '.pipeline', deviceId, 'manifest.json');
+    const mainManifest = path.join('.pipeline', deviceId, 'manifest.json');
+    const manifestPath = fs.existsSync(worktreeManifest) ? worktreeManifest
+      : fs.existsSync(mainManifest) ? mainManifest
+      : null;
 
-    let inManifest = false;
-    for (const line of lines) {
-      if (line.includes('MANIFEST') || (line.includes('Section') && line.includes('|'))) {
-        inManifest = true;
-        continue;
-      }
-      if (inManifest && line.startsWith('|') && !line.includes('---')) {
-        const cells = line.split('|').map((c) => c.trim()).filter(Boolean);
-        if (cells.length > 0 && cells[0] && !cells[0].includes('Section') && !cells[0].includes('ID')) {
-          const id = cells[0].toLowerCase().replace(/\s+/g, '-');
-          if (!sections.find((s) => s.id === id)) {
-            sections.push({ id, siScore: null, pqScore: null, criticScore: null, vaulted: false, attempts: 0, costUsd: 0, tokens: { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 } });
-          }
-        }
-      }
-      if (inManifest && line.trim() === '') inManifest = false;
+    if (!manifestPath) {
+      appendLog(deviceId, { level: 'warn', message: 'No manifest.json found — cannot parse sections' });
+      return [];
     }
+
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+    const sections: SectionStatus[] = [];
+
+    for (const s of manifest.sections ?? []) {
+      if (s.id) {
+        sections.push({
+          id: s.id,
+          siScore: null,
+          pqScore: null,
+          criticScore: null,
+          vaulted: false,
+          attempts: 0,
+          costUsd: 0,
+          tokens: { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 },
+        });
+      }
+    }
+
+    appendLog(deviceId, { level: 'info', message: `Parsed ${sections.length} sections from manifest.json` });
     return sections;
   } catch {
     return [];

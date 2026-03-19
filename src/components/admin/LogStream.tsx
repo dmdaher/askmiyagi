@@ -4,7 +4,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { LogEntry } from '@/lib/pipeline/types';
 
 const AGENT_COLORS: Record<string, string> = {
+  preflight: '#94a3b8',
+  'diagram-parser': '#2dd4bf',
   gatekeeper: '#facc15',
+  'layout-engine': '#a3e635',
   'structural-inspector': '#f97316',
   'panel-questioner': '#a855f7',
   critic: '#ef4444',

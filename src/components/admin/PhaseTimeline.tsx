@@ -18,6 +18,42 @@ const PHASE_LABELS: Record<string, string> = {
   'tutorial-pr': 'Tutorial PR',
 };
 
+/** Agents involved in each phase. Phases with 1 agent don't need sub-labels. */
+const PHASE_AGENTS: Record<string, string[]> = {
+  'phase-0-diagram-parser': ['diagram-parser'],
+  'phase-0-gatekeeper': ['gatekeeper'],
+  'phase-1-section-loop': ['structural-inspector', 'panel-questioner', 'critic'],
+  'phase-2-global-assembly': ['structural-inspector'],
+  'phase-3-harmonic-polish': ['panel-questioner', 'critic'],
+  'phase-4-extraction': ['manual-extractor'],
+  'phase-4-audit': ['coverage-auditor'],
+  'phase-5-tutorial-build': ['tutorial-builder', 'tutorial-reviewer'],
+};
+
+const AGENT_SHORT: Record<string, string> = {
+  'diagram-parser': 'Parser',
+  'gatekeeper': 'GK',
+  'structural-inspector': 'SI',
+  'panel-questioner': 'PQ',
+  'critic': 'Critic',
+  'manual-extractor': 'Extractor',
+  'coverage-auditor': 'Auditor',
+  'tutorial-builder': 'Builder',
+  'tutorial-reviewer': 'Reviewer',
+};
+
+const AGENT_COLORS: Record<string, string> = {
+  'diagram-parser': '#2dd4bf',
+  'gatekeeper': '#facc15',
+  'structural-inspector': '#f97316',
+  'panel-questioner': '#a855f7',
+  'critic': '#ef4444',
+  'manual-extractor': '#06b6d4',
+  'coverage-auditor': '#22c55e',
+  'tutorial-builder': '#3b82f6',
+  'tutorial-reviewer': '#ec4899',
+};
+
 const DISPLAY_PHASES: PipelinePhase[] = [
   'phase-preflight',
   'phase-0-diagram-parser',
@@ -61,13 +97,16 @@ export default function PhaseTimeline({ phases, currentPhase }: PhaseTimelinePro
           const status = getPhaseStatus(phase);
           const score = getPhaseScore(phase);
           const isLast = i === DISPLAY_PHASES.length - 1;
+          const agents = PHASE_AGENTS[phase];
+          const isMultiAgent = agents && agents.length > 1;
+          const isCurrent = status === 'current';
 
           return (
             <div key={phase} className="flex items-center flex-1 last:flex-none">
               {/* Phase node */}
               <div className="flex flex-col items-center min-w-[60px]">
                 {/* Circle */}
-                {status === 'current' ? (
+                {isCurrent ? (
                   <motion.div
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: 'var(--accent, #00aaff)' }}
@@ -95,12 +134,12 @@ export default function PhaseTimeline({ phases, currentPhase }: PhaseTimelinePro
                   />
                 )}
 
-                {/* Label */}
+                {/* Phase label */}
                 <span
                   className="text-[10px] mt-1.5 text-center leading-tight"
                   style={{
                     color:
-                      status === 'completed' || status === 'current'
+                      status === 'completed' || isCurrent
                         ? 'var(--foreground, #e0e0e0)'
                         : status === 'failed'
                           ? '#ef4444'
@@ -115,6 +154,25 @@ export default function PhaseTimeline({ phases, currentPhase }: PhaseTimelinePro
                   <span className="text-[9px] font-mono" style={{ color: 'var(--accent, #00aaff)' }}>
                     {score.toFixed(1)}
                   </span>
+                )}
+
+                {/* Agent sub-labels for multi-agent phases */}
+                {isMultiAgent && (
+                  <div className="flex gap-0.5 mt-0.5">
+                    {agents.map((agent) => (
+                      <span
+                        key={agent}
+                        className="text-[7px] px-1 py-0.5 rounded"
+                        style={{
+                          backgroundColor: `${AGENT_COLORS[agent] ?? '#6b7280'}20`,
+                          color: isCurrent ? (AGENT_COLORS[agent] ?? '#6b7280') : '#4b5563',
+                          border: `1px solid ${isCurrent ? `${AGENT_COLORS[agent] ?? '#6b7280'}40` : 'transparent'}`,
+                        }}
+                      >
+                        {AGENT_SHORT[agent] ?? agent}
+                      </span>
+                    ))}
+                  </div>
                 )}
               </div>
 

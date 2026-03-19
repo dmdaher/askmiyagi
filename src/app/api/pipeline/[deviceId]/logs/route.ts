@@ -67,13 +67,38 @@ export async function GET(
         }
       } catch { /* Directory doesn't exist yet */ }
 
+      // Poll every 2s as a fallback — fs.watch on macOS can miss events
+      const pollInterval = setInterval(() => {
+        try {
+          const stat = fs.statSync(logPath);
+          if (stat.size > logOffset) {
+            const fd = fs.openSync(logPath, 'r');
+            const buffer = Buffer.alloc(stat.size - logOffset);
+            fs.readSync(fd, buffer, 0, buffer.length, logOffset);
+            fs.closeSync(fd);
+            logOffset = stat.size;
+            const newLines = buffer.toString().trim().split('\n');
+            for (const line of newLines) {
+              if (line) controller.enqueue(encoder.encode(`event: log\ndata: ${line}\n\n`));
+            }
+          }
+        } catch { /* file not ready */ }
+
+        // Also push state updates
+        try {
+          const state = readState(deviceId);
+          if (state) controller.enqueue(encoder.encode(`event: state\ndata: ${JSON.stringify(state)}\n\n`));
+        } catch { /* state not ready */ }
+      }, 2_000);
+
       const keepalive = setInterval(() => {
         try { controller.enqueue(encoder.encode(`: keepalive\n\n`)); }
-        catch { clearInterval(keepalive); }
+        catch { clearInterval(keepalive); clearInterval(pollInterval); }
       }, 30_000);
 
       request.signal.addEventListener('abort', () => {
         clearInterval(keepalive);
+        clearInterval(pollInterval);
         logWatcher?.close();
         stateWatcher?.close();
         try { controller.close(); } catch { /* already closed */ }

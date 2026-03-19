@@ -35,15 +35,50 @@ export interface ManifestControl {
   };
 }
 
+/** A sub-zone within a container — either a flat list or controls + direction */
+export type SubZone = string[] | { controls: string[]; direction: 'row' | 'column' };
+
+/** Helper to get control IDs from a SubZone */
+export function subZoneControls(sz: SubZone): string[] {
+  return Array.isArray(sz) ? sz : sz.controls;
+}
+
+/** Helper to get direction from a SubZone (defaults to column) */
+export function subZoneDirection(sz: SubZone): 'row' | 'column' {
+  return Array.isArray(sz) ? 'column' : sz.direction;
+}
+
 export interface ManifestSection {
   id: string;
   headerLabel: string | null;
   archetype: LayoutArchetype;
+  /** Position and size on the physical panel as % of total panel dimensions.
+   *  Derived from Parser's section bounding boxes. Used by the Layout tab
+   *  for accurate spatial positioning and by SI for global layout verification. */
+  panelBoundingBox?: { x: number; y: number; w: number; h: number };
   /** Grid dimensions — required for grid-NxM archetype */
   gridRows?: number;
   gridCols?: number;
   /** Controls in this section, ordered top-to-bottom, left-to-right */
   controls: string[];
+  /**
+   * Explicit assignment of controls to sub-containers.
+   * Required for archetypes with multiple containers (cluster-above-anchor,
+   * cluster-below-anchor, anchor-layout, dual-column).
+   *
+   * Keys are container roles (e.g., "cluster", "anchor", "left-column", "right-column").
+   * Values are either:
+   *   - string[] — flat list of control IDs in that container (direction defaults to column)
+   *   - Record<string, SubZone> — nested sub-zones within the container
+   *
+   * SubZone is either:
+   *   - string[] — control IDs (direction defaults to column)
+   *   - { controls: string[], direction: 'row' | 'column' } — control IDs + layout direction
+   *
+   * The Layout Engine validates that every control in `controls` appears in exactly
+   * one container, and that no container references controls not in `controls`.
+   */
+  containerAssignment?: Record<string, string[] | Record<string, SubZone>>;
   /** Proportional height splits for anchor-layout and cluster-above-anchor */
   heightSplits?: {
     cluster: number;
@@ -116,6 +151,8 @@ export interface TemplateSpec {
   };
   componentStructure: string;
   controlSlots: string[];
+  /** Explicit mapping of control IDs to container roles (from manifest containerAssignment) */
+  containerAssignment?: Record<string, string[] | Record<string, SubZone>>;
   notes: string[];
 }
 
@@ -482,6 +519,7 @@ function validateManifest(manifest: MasterManifest): string[] {
     }
 
     // Check height splits for anchor archetypes
+    const needsContainers = ['cluster-above-anchor', 'cluster-below-anchor', 'anchor-layout', 'dual-column'];
     if (
       (section.archetype === 'cluster-above-anchor' ||
         section.archetype === 'cluster-below-anchor' ||
@@ -491,6 +529,46 @@ function validateManifest(manifest: MasterManifest): string[] {
       errors.push(
         `Section "${section.id}" uses ${section.archetype} but missing heightSplits (will use defaults)`
       );
+    }
+
+    // Validate containerAssignment for multi-container archetypes
+    if (needsContainers.includes(section.archetype)) {
+      if (!section.containerAssignment) {
+        errors.push(
+          `Section "${section.id}" uses ${section.archetype} but missing containerAssignment — ` +
+          `gatekeeper must specify which controls go in each container (e.g., {"cluster": [...], "anchor": [...]}). ` +
+          `FATAL: ambiguous control placement causes misassignment (Textual Gravity).`
+        );
+      } else {
+        // Every control must appear in exactly one container
+        // containerAssignment values can be string[], Record<string, SubZone>, or SubZone
+        const assigned = new Set<string>();
+        for (const [role, value] of Object.entries(section.containerAssignment)) {
+          // Flatten: collect all IDs from sub-zones (handles string[], {controls,direction}, and nested)
+          let ids: string[];
+          if (Array.isArray(value)) {
+            ids = value;
+          } else if (typeof value === 'object' && 'controls' in value) {
+            ids = (value as { controls: string[] }).controls;
+          } else {
+            ids = Object.values(value as Record<string, SubZone>).flatMap(sz => subZoneControls(sz));
+          }
+          for (const id of ids) {
+            if (!section.controls.includes(id)) {
+              errors.push(`Section "${section.id}" containerAssignment["${role}"] references "${id}" not in controls list`);
+            }
+            if (assigned.has(id)) {
+              errors.push(`Section "${section.id}" control "${id}" assigned to multiple containers`);
+            }
+            assigned.add(id);
+          }
+        }
+        for (const id of section.controls) {
+          if (!assigned.has(id)) {
+            errors.push(`Section "${section.id}" control "${id}" not assigned to any container (will use type-based heuristic)`);
+          }
+        }
+      }
     }
 
     // Check all controls in this section exist in the controls array
@@ -534,9 +612,9 @@ export function runLayoutEngine(manifest: MasterManifest): LayoutEngineOutput {
   const validationErrors = validateManifest(manifest);
   const warnings: string[] = [];
 
-  // Treat missing heightSplits as warnings, not errors
-  const fatalErrors = validationErrors.filter(e => !e.includes('will use defaults'));
-  const nonFatalWarnings = validationErrors.filter(e => e.includes('will use defaults'));
+  // Treat missing heightSplits and containerAssignment as warnings, not fatal errors
+  const fatalErrors = validationErrors.filter(e => !e.includes('will use defaults') && !e.includes('will use type-based heuristic'));
+  const nonFatalWarnings = validationErrors.filter(e => e.includes('will use defaults') || e.includes('will use type-based heuristic'));
   warnings.push(...nonFatalWarnings);
 
   if (fatalErrors.length > 0) {
@@ -551,6 +629,56 @@ export function runLayoutEngine(manifest: MasterManifest): LayoutEngineOutput {
   const templates: TemplateSpec[] = [];
   for (const section of manifest.sections) {
     const template = generateTemplate(section, manifest.controls);
+    // Pass through containerAssignment from manifest if present
+    if (section.containerAssignment) {
+      template.containerAssignment = section.containerAssignment;
+
+      // Generate sub-zone CSS for nested containerAssignment
+      // When a container has sub-zones (e.g., anchor: { left: {...}, right: {...} }),
+      // add childContainers entries with the correct flex-direction.
+      for (const [role, value] of Object.entries(section.containerAssignment)) {
+        if (!Array.isArray(value) && typeof value === 'object' && !('controls' in value)) {
+          // This is a nested Record<string, SubZone>
+          const subZones = value as Record<string, SubZone>;
+          const subContainers = Object.entries(subZones).map(([subRole, sz]) => ({
+            role: `${role}.${subRole}`,
+            display: 'flex',
+            properties: {
+              'flex-direction': subZoneDirection(sz),
+              'gap': '4px',
+              'align-items': subZoneDirection(sz) === 'row' ? 'center' : 'stretch',
+              'flex': '1',
+            },
+            children: subZoneControls(sz),
+          }));
+
+          // Replace or add the parent container to show it has sub-zones
+          if (template.cssArchitecture.childContainers) {
+            // Find the parent container and replace its children with sub-containers
+            const parentIdx = template.cssArchitecture.childContainers.findIndex(c => c.role === role);
+            if (parentIdx >= 0) {
+              template.cssArchitecture.childContainers[parentIdx].properties['display'] = 'flex';
+              template.cssArchitecture.childContainers[parentIdx].properties['flex-direction'] = 'row';
+              template.cssArchitecture.childContainers[parentIdx].properties['gap'] = '4px';
+              template.cssArchitecture.childContainers[parentIdx].children = subContainers.flatMap(sc => sc.children);
+            }
+          }
+
+          // Add sub-containers to the template
+          if (!template.cssArchitecture.childContainers) {
+            template.cssArchitecture.childContainers = [];
+          }
+          template.cssArchitecture.childContainers.push(...subContainers);
+
+          // Update component structure to reflect sub-zones
+          template.notes.push(
+            `${role} has sub-zones: ${Object.entries(subZones).map(([sr, sz]) =>
+              `${sr} (${subZoneDirection(sz)}, ${subZoneControls(sz).length} controls)`
+            ).join(', ')}`
+          );
+        }
+      }
+    }
     templates.push(template);
   }
 
