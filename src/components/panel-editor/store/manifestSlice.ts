@@ -79,6 +79,13 @@ export interface ControlDef {
   labelPosition: 'above' | 'below' | 'left' | 'right' | 'on-button';
   locked: boolean;
   secondaryLabel?: string;
+  spatialNeighbors?: {
+    above: string | null;
+    below: string | null;
+    left: string | null;
+    right: string | null;
+  };
+  functionalGroup?: string;
 }
 
 export interface SectionDef {
@@ -90,6 +97,10 @@ export interface SectionDef {
   w: number;
   h: number;
   childIds: string[];
+  containerAssignment?: Record<string, unknown>;
+  heightSplits?: Record<string, number>;
+  gridCols?: number;
+  gridRows?: number;
 }
 
 // ─── Slice interface ────────────────────────────────────────────────────────
@@ -177,6 +188,10 @@ export const createManifestSlice: StateCreator<
         w: sectionW,
         h: sectionH,
         childIds: [...ms.controls],
+        containerAssignment: ms.containerAssignment as Record<string, unknown> | undefined,
+        heightSplits: ms.heightSplits as Record<string, number> | undefined,
+        gridCols: ms.gridCols,
+        gridRows: ms.gridRows,
       };
 
       // ── Archetype-aware control placement ──────────────────────────────
@@ -236,6 +251,8 @@ export const createManifestSlice: StateCreator<
           sectionId: ms.id,
           labelPosition: defaultLabelPosition(mc.type),
           locked: false,
+          spatialNeighbors: mc.spatialNeighbors,
+          functionalGroup: mc.functionalGroup,
         };
       };
 
@@ -261,8 +278,8 @@ export const createManifestSlice: StateCreator<
         });
       };
 
-      const placeGrid = (ids: string[], gx: number, gy: number, gw: number, gh: number, cols: number) => {
-        const rows = Math.ceil(ids.length / cols);
+      const placeGrid = (ids: string[], gx: number, gy: number, gw: number, gh: number, cols: number, explicitRows?: number) => {
+        const rows = explicitRows ?? Math.ceil(ids.length / cols);
         const cellW = gw / cols;
         const cellH = gh / rows;
         ids.forEach((id, i) => {
@@ -288,7 +305,7 @@ export const createManifestSlice: StateCreator<
       } else if (archetype.startsWith('grid') || archetype === 'dual-column') {
         // grid-NxM or dual-column
         const cols = archetype === 'dual-column' ? 2 : (ms.gridCols ?? 2);
-        placeGrid(ms.controls, startX, startY, availW, availH, cols);
+        placeGrid(ms.controls, startX, startY, availW, availH, cols, ms.gridRows);
 
       } else if (archetype === 'stacked-rows' && ms.containerAssignment) {
         // Each container row is a horizontal flex row, stacked vertically
@@ -363,14 +380,14 @@ export const createManifestSlice: StateCreator<
         if (archetype === 'cluster-above-anchor') {
           // Cluster on top, anchor on bottom
           if (Array.isArray(clusterIds)) {
-            placeGrid(clusterIds, startX, startY, availW, clusterH, cols);
+            placeGrid(clusterIds, startX, startY, availW, clusterH, cols, ms.gridRows);
           }
           placeAnchor(startX, startY + clusterH + gapH, availW, anchorH);
         } else {
           // Anchor on top, cluster on bottom
           placeAnchor(startX, startY, availW, anchorH);
           if (Array.isArray(clusterIds)) {
-            placeGrid(clusterIds, startX, startY + anchorH + gapH, availW, clusterH, cols);
+            placeGrid(clusterIds, startX, startY + anchorH + gapH, availW, clusterH, cols, ms.gridRows);
           }
         }
 
