@@ -1,18 +1,14 @@
 'use client';
 
 import { useEditorStore, CANVAS_BASE_W, CANVAS_BASE_H } from './store';
-
-/**
- * Section hue palette — gives each section a distinct colour.
- * Indexed by section position (modulo palette length).
- */
-const SECTION_HUES = [210, 30, 150, 330, 90, 270, 60, 180, 0, 120];
+import SectionFrame from './SectionFrame';
 
 export default function PanCanvas() {
   const zoom = useEditorStore((s) => s.zoom);
   const panX = useEditorStore((s) => s.panX);
   const panY = useEditorStore((s) => s.panY);
   const sections = useEditorStore((s) => s.sections);
+  const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
 
   const sectionEntries = Object.values(sections);
 
@@ -25,6 +21,7 @@ export default function PanCanvas() {
         height: CANVAS_BASE_H,
         position: 'relative',
       }}
+      onClick={() => setSelectedIds([])}
     >
       {/* Canvas background */}
       <div
@@ -32,35 +29,10 @@ export default function PanCanvas() {
         style={{ backgroundColor: '#111122' }}
       />
 
-      {/* Section rectangles */}
-      {sectionEntries.map((section, index) => {
-        const hue = SECTION_HUES[index % SECTION_HUES.length];
-        return (
-          <div
-            key={section.id}
-            className="absolute flex flex-col items-center justify-center rounded border"
-            style={{
-              left: section.x,
-              top: section.y,
-              width: section.w,
-              height: section.h,
-              backgroundColor: `hsla(${hue}, 60%, 30%, 0.35)`,
-              borderColor: `hsla(${hue}, 60%, 50%, 0.6)`,
-            }}
-          >
-            <span
-              className="text-xs font-medium leading-tight"
-              style={{ color: `hsl(${hue}, 70%, 75%)` }}
-            >
-              {section.id}
-            </span>
-            <span className="mt-0.5 text-[10px] text-gray-500">
-              {section.childIds.length} control
-              {section.childIds.length !== 1 ? 's' : ''}
-            </span>
-          </div>
-        );
-      })}
+      {/* Section frames with real controls */}
+      {sectionEntries.map((section) => (
+        <SectionFrame key={section.id} sectionId={section.id} />
+      ))}
     </div>
   );
 }
