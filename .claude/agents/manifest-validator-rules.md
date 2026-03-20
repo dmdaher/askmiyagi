@@ -20,9 +20,21 @@ Base score: 10.0. Deductions per issue found.
 | Missing interactionType | -0.25 |
 | Missing buttonStyle on button-type control | -0.25 |
 
+| Duplicate control ID | -2.0 (CRITICAL) |
+| Invalid spatialNeighbor reference (neighbor ID doesn't exist) | -0.5 per broken reference |
+| Missing deviceDimensions at top level | -1.0 |
+| groupLabel controlIds don't match per-control sharedLabel fields | -0.5 per mismatch |
+| `switch` type with `positions >= 3` not converted to `lever` | -0.5 |
+
 **Pass threshold: ≥ 9.0**
 
 If score < 9.0: escalate to Visual Extractor for retry with specific feedback listing which controls need attention.
+
+## Integrity Checks
+
+- [ ] **No duplicate control IDs** — every control ID in the manifest must be unique. Duplicate = CRITICAL error.
+- [ ] **All spatialNeighbor references are valid** — if control A says `above: 'B'`, control B must exist in the manifest. Invalid references = broken topology.
+- [ ] **deviceDimensions is set** — required for correct canvas aspect ratio. If missing, flag as error (cannot auto-fix — must come from manual specs page).
 
 ## Required Field Checks
 
@@ -51,7 +63,7 @@ For controls where `labelDisplay === 'icon-only'`:
 | `verbatimLabel` contains "port" AND `type === 'button'` | `type` should be `'port'` | YES — auto-fix |
 | `verbatimLabel` contains "slot" AND `type === 'button'` | `type` should be `'slot'` | YES — auto-fix |
 | `verbatimLabel` contains "indicator" AND `type === 'button'` | `type` should be `'led'` | YES — auto-fix |
-| `type === 'switch'` AND `positions > 2` | Consider `type: 'lever'` | FLAG — don't auto-fix |
+| `type === 'switch'` AND `positions >= 3` | `type` should be `'lever'` | YES — auto-fix to `'lever'` |
 
 ## Pairing Checks
 
@@ -70,6 +82,8 @@ For controls where `labelDisplay === 'icon-only'`:
 
 - Every `controlId` in `groupLabels[].controlIds` MUST exist in the manifest
 - All controls in a group label MUST be in the same section
+- **Cross-check with per-control fields:** If `groupLabels[]` lists controlIds [A, B] with text "SEARCH", then controls A and B MUST both have `sharedLabel: "SEARCH"`. If mismatched, auto-fix the per-control field to match the groupLabel.
+- **Reverse check:** If control A has `sharedLabel: "SEARCH"` but no `groupLabels[]` entry references it, FLAG — the groupLabel entry is missing
 
 ## Physical Constraint Checks
 
@@ -104,6 +118,12 @@ Enforce physically impossible interaction type combinations:
 7. Missing `interactionType` on `type === 'knob'` → set `interactionType = 'rotary'`
 8. Missing `interactionType` on `type === 'fader'` → set `interactionType = 'slide'`
 9. Missing `sizeClass` → compute from parser bounding box area relative to section median
+10. `type === 'switch'` + `positions >= 3` → set `type = 'lever'`
+11. `sharedLabel` on control but no matching `groupLabels[]` entry → auto-create the groupLabel entry
+12. Missing `interactionType` on `type === 'encoder'` → set `interactionType = 'rotary'`
+13. Missing `interactionType` on `type === 'button'` → set `interactionType = 'momentary'` (safest default)
+14. Missing `labelDisplay` on `type === 'port'` or `type === 'slot'` → set `labelDisplay = 'hidden'`
+15. Missing `labelDisplay` on `type === 'led'` → set `labelDisplay = 'below'`
 
 ## Output
 
