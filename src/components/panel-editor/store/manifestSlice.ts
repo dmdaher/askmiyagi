@@ -179,8 +179,34 @@ export const createManifestSlice: StateCreator<
       // ── Archetype-aware control placement ──────────────────────────────
       const padding = 8;
       const headerOffset = ms.headerLabel ? 16 : 0;
-      const availW = sectionW - padding * 2;
-      const availH = sectionH - padding * 2 - headerOffset;
+      const MIN_CONTROL_H = 24;
+      const MIN_CONTROL_W = 24;
+
+      // Calculate minimum section height needed to fit controls
+      const controlCount = ms.controls.length;
+      const archetype = ms.archetype;
+      let neededRows = 1;
+      if (archetype === 'single-column') {
+        neededRows = controlCount;
+      } else if (archetype === 'single-row') {
+        neededRows = 1;
+      } else if (archetype.startsWith('grid') || archetype === 'dual-column') {
+        const cols = archetype === 'dual-column' ? 2 : (ms.gridCols ?? 2);
+        neededRows = Math.ceil(controlCount / cols);
+      } else if (archetype === 'stacked-rows' && ms.containerAssignment) {
+        neededRows = Object.keys(ms.containerAssignment).length;
+      } else {
+        neededRows = Math.ceil(Math.sqrt(controlCount));
+      }
+      const minNeededH = neededRows * (MIN_CONTROL_H + 4) + padding * 2 + headerOffset;
+      // Expand section if too small
+      if (sectionH < minNeededH) {
+        sections[ms.id].h = minNeededH;
+      }
+      const finalSectionH = Math.max(sectionH, minNeededH);
+
+      const availW = sections[ms.id].w - padding * 2;
+      const availH = finalSectionH - padding * 2 - headerOffset;
       const startX = sectionX + padding;
       const startY = sectionY + padding + headerOffset;
 
@@ -194,8 +220,8 @@ export const createManifestSlice: StateCreator<
         const mc = mcById.get(controlId);
         if (!mc) return;
         const size = defaultSize(mc.type);
-        const fitW = maxW ? Math.min(size.w, maxW - 4) : size.w;
-        const fitH = maxH ? Math.min(size.h, maxH - 4) : size.h;
+        const fitW = Math.max(MIN_CONTROL_W, maxW ? Math.min(size.w, maxW - 4) : size.w);
+        const fitH = Math.max(MIN_CONTROL_H, maxH ? Math.min(size.h, maxH - 4) : size.h);
         controls[controlId] = {
           id: controlId,
           label: mc.verbatimLabel,
@@ -247,7 +273,6 @@ export const createManifestSlice: StateCreator<
         });
       };
 
-      const archetype = ms.archetype;
 
       if (archetype === 'single-row') {
         // All controls in one horizontal row
