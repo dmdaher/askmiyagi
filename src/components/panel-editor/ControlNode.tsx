@@ -89,7 +89,63 @@ function renderControl(control: ControlDef, isSelected: boolean) {
         />
       );
     case 'led':
-    case 'indicator':
+    case 'indicator': {
+      if (control.ledVariant === 'dual-label') {
+        // Dual-label indicator (e.g., VINYL/CDJ — top and bottom rows)
+        const parts = control.label.split('/').map(s => s.trim());
+        const topLabel = parts[0] || 'MODE A';
+        const bottomLabel = parts[1] || 'MODE B';
+        return (
+          <div
+            className="flex flex-col rounded overflow-hidden"
+            style={{ width: Math.max(control.w, 48), border: '1px solid #333' }}
+            data-control-id={control.id}
+          >
+            {/* Top mode */}
+            <div
+              className="flex items-center justify-center py-1 px-2"
+              style={{
+                backgroundColor: '#0a2e1a',
+                borderBottom: '1px solid #333',
+              }}
+            >
+              <div className="flex items-center gap-1.5">
+                <div
+                  className="rounded-full"
+                  style={{
+                    width: 6, height: 6,
+                    backgroundColor: '#22c55e',
+                    boxShadow: '0 0 4px #22c55e',
+                  }}
+                />
+                <span className="text-[8px] font-medium text-green-400 uppercase">
+                  {topLabel}
+                </span>
+              </div>
+            </div>
+            {/* Bottom mode */}
+            <div
+              className="flex items-center justify-center py-1 px-2"
+              style={{ backgroundColor: '#1a1a2a' }}
+            >
+              <div className="flex items-center gap-1.5">
+                <div
+                  className="rounded-full"
+                  style={{
+                    width: 6, height: 6,
+                    backgroundColor: '#333',
+                    border: '1px solid #444',
+                  }}
+                />
+                <span className="text-[8px] font-medium text-gray-500 uppercase">
+                  {bottomLabel}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      // Default: simple green dot indicator
       return (
         <div
           className="flex flex-col items-center justify-center gap-1 rounded"
@@ -111,6 +167,7 @@ function renderControl(control: ControlDef, isSelected: boolean) {
           </span>
         </div>
       );
+    }
     case 'wheel':
       return (
         <Wheel

@@ -207,6 +207,43 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         onChange={handleTypeChange}
       />
 
+      {/* LED Variant (led/indicator only) */}
+      {(control.type === 'led' || control.type === 'indicator') && (
+        <>
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wide text-gray-500">LED Style</label>
+            <div className="flex gap-1.5">
+              <button
+                onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledVariant', 'dot'); }}
+                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                  (control.ledVariant ?? 'dot') === 'dot'
+                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                }`}
+              >
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                Dot
+              </button>
+              <button
+                onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledVariant', 'dual-label'); }}
+                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                  control.ledVariant === 'dual-label'
+                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                }`}
+              >
+                <div className="flex flex-col gap-px">
+                  <div className="w-4 h-1.5 rounded-sm bg-green-800 border border-green-600" />
+                  <div className="w-4 h-1.5 rounded-sm bg-gray-800 border border-gray-600" />
+                </div>
+                Dual
+              </button>
+            </div>
+          </div>
+          <div className="h-px bg-gray-800" />
+        </>
+      )}
+
       {/* Shape (buttons only) */}
       {control.type === 'button' && (
         <>

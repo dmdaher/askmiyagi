@@ -95,6 +95,7 @@ export interface ControlDef {
   labelPosition: 'above' | 'below' | 'left' | 'right' | 'on-button';
   locked: boolean;
   shape?: 'rectangle' | 'circle';
+  ledVariant?: 'dot' | 'dual-label';
   secondaryLabel?: string;
   spatialNeighbors?: {
     above: string | null;
