@@ -131,28 +131,23 @@ export default function EditorToolbar({
         <span className="text-[10px]">Grid</span>
       </button>
 
-      {/* Canvas Size */}
-      <div className="flex items-center gap-1">
-        <label className="text-[10px] uppercase tracking-wider text-gray-500">W</label>
+      {/* Canvas Scale */}
+      <div className="flex items-center gap-1.5">
+        <label className="text-[10px] uppercase tracking-wider text-gray-500">Scale</label>
         <input
-          type="number"
-          value={canvasWidth}
-          onChange={(e) => setCanvasSize(Number(e.target.value), canvasHeight)}
-          className="h-6 w-14 rounded border border-gray-700 bg-gray-900 px-1 text-xs text-gray-300 outline-none focus:border-blue-500"
-          title="Canvas Width"
-          step={50}
-          min={400}
+          type="range"
+          min={25}
+          max={200}
+          value={Math.round((canvasWidth / 2400) * 100)}
+          onChange={(e) => {
+            const pct = Number(e.target.value) / 100;
+            const aspect = canvasHeight / canvasWidth;
+            setCanvasSize(Math.round(2400 * pct), Math.round(2400 * pct * aspect));
+          }}
+          className="h-1 w-20 cursor-pointer accent-blue-500"
+          title={`Canvas Scale: ${Math.round((canvasWidth / 2400) * 100)}%`}
         />
-        <label className="text-[10px] uppercase tracking-wider text-gray-500">H</label>
-        <input
-          type="number"
-          value={canvasHeight}
-          onChange={(e) => setCanvasSize(canvasWidth, Number(e.target.value))}
-          className="h-6 w-14 rounded border border-gray-700 bg-gray-900 px-1 text-xs text-gray-300 outline-none focus:border-blue-500"
-          title="Canvas Height"
-          step={50}
-          min={300}
-        />
+        <span className="text-[10px] text-gray-500 w-8">{Math.round((canvasWidth / 2400) * 100)}%</span>
       </div>
 
       {/* Divider */}
