@@ -9,9 +9,27 @@
  * back to the agent as a "Compiler Error" for retry.
  */
 
+import type {
+  MasterManifest,
+  ManifestControl,
+  ControlType,
+} from '@/types/manifest';
+
 export interface ValidationResult {
   valid: boolean;
   errors: string[];
+}
+
+export interface ValidationReport {
+  score: number;
+  passed: boolean;
+  autoFixes: Array<{ controlId: string; field: string; from: unknown; to: unknown; rule: string }>;
+  flags: Array<{ controlId: string; field: string; message: string }>;
+  missing: Array<{ controlId: string; field: string; severity: 'critical' | 'major' | 'minor' }>;
+  totalControls: number;
+  fullyEnriched: number;
+  partiallyEnriched: number;
+  unenriched: number;
 }
 
 /**
@@ -611,4 +629,606 @@ export function preInspectGatekeeper(opts: {
   }
 
   return { valid: errors.length === 0, errors };
+}
+
+// ─── Phase 0: Manifest Completeness Validator ──────────────────────────────
+
+/**
+ * Blueprint control with bounding box info for geometric checks.
+ */
+interface BlueprintControl {
+  id: number | string;
+  centroid?: { x: number; y: number };
+  boundingBox?: { x: number; y: number; w: number; h: number };
+}
+
+interface BlueprintSection {
+  sectionId: string;
+  controls: BlueprintControl[];
+}
+
+interface Blueprint {
+  sections: BlueprintSection[];
+}
+
+/**
+ * Validate manifest completeness after the Visual Extractor, before the Layout Engine.
+ *
+ * This is a PURE function — no file I/O, no side effects.
+ * 1. Parses the manifest JSON
+ * 2. Applies auto-fixes (modifies the parsed manifest in-place)
+ * 3. Runs all checks and computes score (base 10.0, deductions per issue)
+ * 4. Returns { score, passed (>= 9.0), report, correctedManifest }
+ */
+export function validateManifestCompleteness(
+  manifestJson: string,
+  blueprintJson?: string,
+): { score: number; passed: boolean; report: ValidationReport; correctedManifest: string } {
+  // ── Parse inputs ─────────────────────────────────────────────────────────
+
+  let manifest: MasterManifest;
+  try {
+    manifest = JSON.parse(manifestJson) as MasterManifest;
+  } catch (e) {
+    const emptyReport: ValidationReport = {
+      score: 0, passed: false,
+      autoFixes: [], flags: [], missing: [],
+      totalControls: 0, fullyEnriched: 0, partiallyEnriched: 0, unenriched: 0,
+    };
+    return { score: 0, passed: false, report: emptyReport, correctedManifest: manifestJson };
+  }
+
+  let blueprint: Blueprint | null = null;
+  if (blueprintJson) {
+    try {
+      blueprint = JSON.parse(blueprintJson) as Blueprint;
+    } catch {
+      // Non-fatal — geometric checks will be skipped
+    }
+  }
+
+  const controls = manifest.controls ?? [];
+  const sections = manifest.sections ?? [];
+  const groupLabels = manifest.groupLabels ?? [];
+
+  const autoFixes: ValidationReport['autoFixes'] = [];
+  const flags: ValidationReport['flags'] = [];
+  const missing: ValidationReport['missing'] = [];
+
+  // Build control ID lookup
+  const controlMap = new Map<string, ManifestControl>();
+  for (const c of controls) {
+    controlMap.set(c.id, c);
+  }
+
+  // Build section lookup (control → section)
+  const controlToSection = new Map<string, string>();
+  for (const s of sections) {
+    for (const cId of s.controls) {
+      controlToSection.set(cId, s.id);
+    }
+  }
+
+  // ── Auto-Fixes (applied before scoring) ──────────────────────────────────
+
+  for (const c of controls) {
+    const label = (c.verbatimLabel ?? '').toLowerCase();
+
+    // Rule 1: label contains "port" + type is "button" → type = "port", labelDisplay = "hidden"
+    if (label.includes('port') && c.type === 'button') {
+      autoFixes.push({ controlId: c.id, field: 'type', from: c.type, to: 'port', rule: 'label-contains-port' });
+      autoFixes.push({ controlId: c.id, field: 'labelDisplay', from: c.labelDisplay, to: 'hidden', rule: 'label-contains-port' });
+      c.type = 'port';
+      c.labelDisplay = 'hidden';
+    }
+
+    // Rule 2: label contains "slot" + type is "button" → type = "slot", labelDisplay = "hidden"
+    if (label.includes('slot') && c.type === 'button') {
+      autoFixes.push({ controlId: c.id, field: 'type', from: c.type, to: 'slot', rule: 'label-contains-slot' });
+      autoFixes.push({ controlId: c.id, field: 'labelDisplay', from: c.labelDisplay, to: 'hidden', rule: 'label-contains-slot' });
+      c.type = 'slot';
+      c.labelDisplay = 'hidden';
+    }
+
+    // Rule 3: label contains "indicator" + type is "button" → type = "led"
+    if (label.includes('indicator') && c.type === 'button') {
+      autoFixes.push({ controlId: c.id, field: 'type', from: c.type, to: 'led', rule: 'label-contains-indicator' });
+      c.type = 'led';
+    }
+
+    // Rule 10: switch + positions >= 3 → type = "lever"
+    if (c.type === 'switch' && (c.positions ?? 0) >= 3) {
+      autoFixes.push({ controlId: c.id, field: 'type', from: c.type, to: 'lever', rule: 'switch-positions-gte-3' });
+      c.type = 'lever';
+    }
+
+    // Rule 4: Missing shape on knob/encoder → shape = "circle"
+    if ((c.type === 'knob' || c.type === 'encoder') && !c.shape) {
+      autoFixes.push({ controlId: c.id, field: 'shape', from: c.shape, to: 'circle', rule: 'default-shape-knob-encoder' });
+      c.shape = 'circle';
+    }
+
+    // Rule 5: Missing shape on pad → shape = "square"
+    if (c.type === 'pad' && !c.shape) {
+      autoFixes.push({ controlId: c.id, field: 'shape', from: c.shape, to: 'square', rule: 'default-shape-pad' });
+      c.shape = 'square';
+    }
+
+    // Rule 6: Missing orientation on fader/slider → orientation = "vertical"
+    if ((c.type === 'fader' || c.type === 'slider') && !c.orientation) {
+      autoFixes.push({ controlId: c.id, field: 'orientation', from: c.orientation, to: 'vertical', rule: 'default-orientation-fader-slider' });
+      c.orientation = 'vertical';
+    }
+
+    // Rule 7: Missing interactionType on knob → interactionType = "rotary"
+    if (c.type === 'knob' && !c.interactionType) {
+      autoFixes.push({ controlId: c.id, field: 'interactionType', from: c.interactionType, to: 'rotary', rule: 'default-interaction-knob' });
+      c.interactionType = 'rotary';
+    }
+
+    // Rule 12: Missing interactionType on encoder → interactionType = "rotary"
+    if (c.type === 'encoder' && !c.interactionType) {
+      autoFixes.push({ controlId: c.id, field: 'interactionType', from: c.interactionType, to: 'rotary', rule: 'default-interaction-encoder' });
+      c.interactionType = 'rotary';
+    }
+
+    // Rule 8: Missing interactionType on fader → interactionType = "slide"
+    if (c.type === 'fader' && !c.interactionType) {
+      autoFixes.push({ controlId: c.id, field: 'interactionType', from: c.interactionType, to: 'slide', rule: 'default-interaction-fader' });
+      c.interactionType = 'slide';
+    }
+
+    // Rule 13: Missing interactionType on button → interactionType = "momentary"
+    if (c.type === 'button' && !c.interactionType) {
+      autoFixes.push({ controlId: c.id, field: 'interactionType', from: c.interactionType, to: 'momentary', rule: 'default-interaction-button' });
+      c.interactionType = 'momentary';
+    }
+
+    // Rule 14: Missing labelDisplay on port/slot → labelDisplay = "hidden"
+    if ((c.type === 'port' || c.type === 'slot') && !c.labelDisplay) {
+      autoFixes.push({ controlId: c.id, field: 'labelDisplay', from: c.labelDisplay, to: 'hidden', rule: 'default-labelDisplay-port-slot' });
+      c.labelDisplay = 'hidden';
+    }
+
+    // Rule 15: Missing labelDisplay on led → labelDisplay = "below"
+    if (c.type === 'led' && !c.labelDisplay) {
+      autoFixes.push({ controlId: c.id, field: 'labelDisplay', from: c.labelDisplay, to: 'below', rule: 'default-labelDisplay-led' });
+      c.labelDisplay = 'below';
+    }
+
+    // Rule 9: Missing sizeClass → default to "md"
+    if (!c.sizeClass) {
+      autoFixes.push({ controlId: c.id, field: 'sizeClass', from: c.sizeClass, to: 'md', rule: 'default-sizeClass' });
+      c.sizeClass = 'md';
+    }
+
+    // Physical constraint auto-fixes: enforce correct interactionType
+    if ((c.type === 'knob' || c.type === 'encoder') && c.interactionType && c.interactionType !== 'rotary') {
+      autoFixes.push({ controlId: c.id, field: 'interactionType', from: c.interactionType, to: 'rotary', rule: 'physical-constraint-rotary' });
+      c.interactionType = 'rotary';
+    }
+    if ((c.type === 'fader' || c.type === 'slider') && c.interactionType && c.interactionType !== 'slide') {
+      autoFixes.push({ controlId: c.id, field: 'interactionType', from: c.interactionType, to: 'slide', rule: 'physical-constraint-slide' });
+      c.interactionType = 'slide';
+    }
+    if ((c.type === 'led' || c.type === 'port' || c.type === 'slot') && c.interactionType != null) {
+      autoFixes.push({ controlId: c.id, field: 'interactionType', from: c.interactionType, to: null, rule: 'physical-constraint-non-interactive' });
+      c.interactionType = undefined;
+    }
+  }
+
+  // Rule 11: sharedLabel on control but no matching groupLabels entry → flag (don't auto-create structure)
+  const groupLabelTextSet = new Set<string>();
+  for (const gl of groupLabels) {
+    groupLabelTextSet.add(gl.text);
+  }
+  for (const c of controls) {
+    if (c.sharedLabel && !groupLabelTextSet.has(c.sharedLabel)) {
+      flags.push({
+        controlId: c.id,
+        field: 'sharedLabel',
+        message: `Control has sharedLabel "${c.sharedLabel}" but no matching groupLabels[] entry exists`,
+      });
+    }
+  }
+
+  // ── Scoring ──────────────────────────────────────────────────────────────
+
+  let score = 10.0;
+
+  // --- Integrity: Duplicate control IDs ---
+  const seenIds = new Set<string>();
+  const duplicateIds = new Set<string>();
+  for (const c of controls) {
+    if (seenIds.has(c.id)) {
+      duplicateIds.add(c.id);
+    }
+    seenIds.add(c.id);
+  }
+  for (const dupId of duplicateIds) {
+    score -= 2.0;
+    missing.push({ controlId: dupId, field: 'id', severity: 'critical' });
+    flags.push({ controlId: dupId, field: 'id', message: `Duplicate control ID: "${dupId}"` });
+  }
+
+  // --- Integrity: Valid spatialNeighbor references ---
+  for (const c of controls) {
+    if (!c.spatialNeighbors) continue;
+    const dirs = ['above', 'below', 'left', 'right'] as const;
+    for (const dir of dirs) {
+      const neighborId = c.spatialNeighbors[dir];
+      if (neighborId && !controlMap.has(neighborId)) {
+        score -= 0.5;
+        flags.push({
+          controlId: c.id,
+          field: `spatialNeighbors.${dir}`,
+          message: `Invalid spatialNeighbor reference: "${neighborId}" does not exist in manifest`,
+        });
+      }
+    }
+  }
+
+  // --- Integrity: deviceDimensions present ---
+  if (!manifest.deviceDimensions) {
+    score -= 1.0;
+    missing.push({ controlId: '_manifest', field: 'deviceDimensions', severity: 'major' });
+  }
+
+  // --- Required field checks (post auto-fix) ---
+  for (const c of controls) {
+    if (duplicateIds.has(c.id)) continue; // Already penalized
+
+    // shape
+    if (!c.shape) {
+      score -= 0.5;
+      missing.push({ controlId: c.id, field: 'shape', severity: 'major' });
+    }
+
+    // sizeClass
+    if (!c.sizeClass) {
+      score -= 0.5;
+      missing.push({ controlId: c.id, field: 'sizeClass', severity: 'major' });
+    }
+
+    // labelDisplay
+    if (!c.labelDisplay) {
+      score -= 0.5;
+      missing.push({ controlId: c.id, field: 'labelDisplay', severity: 'major' });
+    }
+
+    // buttonStyle on buttons
+    if (c.type === 'button' && !c.buttonStyle) {
+      score -= 0.25;
+      missing.push({ controlId: c.id, field: 'buttonStyle', severity: 'minor' });
+    }
+
+    // ledColor on LED-type controls
+    if ((c.type === 'led') && !c.ledColor) {
+      score -= 0.5;
+      missing.push({ controlId: c.id, field: 'ledColor', severity: 'major' });
+    }
+
+    // hasLed === true → ledColor and ledBehavior
+    if (c.hasLed) {
+      if (!c.ledColor) {
+        score -= 0.5;
+        missing.push({ controlId: c.id, field: 'ledColor', severity: 'major' });
+      }
+      if (!c.ledBehavior) {
+        score -= 0.25;
+        missing.push({ controlId: c.id, field: 'ledBehavior', severity: 'minor' });
+      }
+    }
+
+    // labelDisplay === 'icon-only' → icon must be set
+    if (c.labelDisplay === 'icon-only' && !c.icon) {
+      score -= 0.5;
+      missing.push({ controlId: c.id, field: 'icon', severity: 'major' });
+    }
+
+    // interactionType (post auto-fix, so only flag types that weren't auto-fixed)
+    if (!c.interactionType && !['led', 'port', 'slot'].includes(c.type)) {
+      score -= 0.25;
+      missing.push({ controlId: c.id, field: 'interactionType', severity: 'minor' });
+    }
+  }
+
+  // --- Physical constraint flags (for button/pad/screen — not auto-fixed, just flagged) ---
+  for (const c of controls) {
+    if (c.type === 'button' && c.interactionType && ['rotary', 'slide'].includes(c.interactionType)) {
+      score -= 1.0;
+      flags.push({
+        controlId: c.id,
+        field: 'interactionType',
+        message: `Button has physically impossible interactionType "${c.interactionType}" — expected momentary/toggle/hold`,
+      });
+    }
+    if (c.type === 'pad' && c.interactionType && ['rotary', 'slide'].includes(c.interactionType)) {
+      score -= 1.0;
+      flags.push({
+        controlId: c.id,
+        field: 'interactionType',
+        message: `Pad has physically impossible interactionType "${c.interactionType}" — expected momentary/toggle`,
+      });
+    }
+    if (c.type === 'screen' && c.interactionType && ['rotary', 'slide'].includes(c.interactionType)) {
+      flags.push({
+        controlId: c.id,
+        field: 'interactionType',
+        message: `Screen has interactionType "${c.interactionType}" — expected touch or null`,
+      });
+    }
+  }
+
+  // --- switch + positions >= 3 not converted to lever (post auto-fix check) ---
+  for (const c of controls) {
+    if (c.type === 'switch' && (c.positions ?? 0) >= 3) {
+      score -= 0.5;
+      flags.push({
+        controlId: c.id,
+        field: 'type',
+        message: `type is 'switch' but positions >= 3, should be 'lever'`,
+      });
+    }
+  }
+
+  // --- Pairing checks ---
+  for (const c of controls) {
+    if (!c.pairedWith) continue;
+    const partner = controlMap.get(c.pairedWith);
+
+    // Broken pairing: A→B but B doesn't exist or B↛A
+    if (!partner) {
+      score -= 1.0;
+      flags.push({
+        controlId: c.id,
+        field: 'pairedWith',
+        message: `Paired with "${c.pairedWith}" but that control does not exist`,
+      });
+      continue;
+    }
+
+    if (partner.pairedWith !== c.id) {
+      score -= 1.0;
+      flags.push({
+        controlId: c.id,
+        field: 'pairedWith',
+        message: `Broken pairing: ${c.id}→${c.pairedWith} but ${c.pairedWith}→${partner.pairedWith ?? 'null'}`,
+      });
+    }
+
+    // Shared label consistency
+    if (c.sharedLabel && partner.sharedLabel && c.sharedLabel !== partner.sharedLabel) {
+      flags.push({
+        controlId: c.id,
+        field: 'sharedLabel',
+        message: `Paired controls have different sharedLabel: "${c.sharedLabel}" vs "${partner.sharedLabel}"`,
+      });
+    }
+
+    // Both must be in same section
+    const cSection = controlToSection.get(c.id);
+    const pSection = controlToSection.get(c.pairedWith);
+    if (cSection && pSection && cSection !== pSection) {
+      flags.push({
+        controlId: c.id,
+        field: 'pairedWith',
+        message: `Paired controls in different sections: "${cSection}" vs "${pSection}"`,
+      });
+    }
+  }
+
+  // --- Nesting checks ---
+  for (const c of controls) {
+    if (!c.nestedIn) continue;
+    const parent = controlMap.get(c.nestedIn);
+
+    if (!parent) {
+      score -= 1.0;
+      flags.push({
+        controlId: c.id,
+        field: 'nestedIn',
+        message: `nestedIn references "${c.nestedIn}" which does not exist in manifest`,
+      });
+      continue;
+    }
+
+    // Container-capable types
+    const containerTypes: ControlType[] = ['wheel', 'screen'];
+    if (!containerTypes.includes(parent.type)) {
+      flags.push({
+        controlId: c.id,
+        field: 'nestedIn',
+        message: `Parent "${c.nestedIn}" has type "${parent.type}" which is not container-capable (expected wheel/screen)`,
+      });
+    }
+
+    // Same section
+    const cSection = controlToSection.get(c.id);
+    const pSection = controlToSection.get(c.nestedIn);
+    if (cSection && pSection && cSection !== pSection) {
+      flags.push({
+        controlId: c.id,
+        field: 'nestedIn',
+        message: `Nested control and parent in different sections: "${cSection}" vs "${pSection}"`,
+      });
+    }
+
+    // Geometric containment check (if blueprint bounding boxes are available)
+    if (blueprint) {
+      const childBBox = findBoundingBox(blueprint, c.id);
+      const parentBBox = findBoundingBox(blueprint, c.nestedIn);
+      if (childBBox && parentBBox) {
+        const contained =
+          childBBox.x >= parentBBox.x &&
+          childBBox.y >= parentBBox.y &&
+          (childBBox.x + childBBox.w) <= (parentBBox.x + parentBBox.w) &&
+          (childBBox.y + childBBox.h) <= (parentBBox.y + parentBBox.h);
+        if (!contained) {
+          score -= 1.0;
+          flags.push({
+            controlId: c.id,
+            field: 'nestedIn',
+            message: `CRITICAL: "${c.id}" bounding box is not contained within parent "${c.nestedIn}" — geometric paradox`,
+          });
+        }
+      }
+    }
+  }
+
+  // --- Group label checks ---
+  for (const gl of groupLabels) {
+    for (const cId of gl.controlIds) {
+      // Every controlId in groupLabels must exist
+      if (!controlMap.has(cId)) {
+        score -= 0.5;
+        flags.push({
+          controlId: cId,
+          field: 'groupLabels',
+          message: `groupLabels entry "${gl.text}" references non-existent control "${cId}"`,
+        });
+        continue;
+      }
+
+      // All controls in a group label must be in the same section
+      const firstSection = controlToSection.get(gl.controlIds[0]);
+      const thisSection = controlToSection.get(cId);
+      if (firstSection && thisSection && firstSection !== thisSection) {
+        flags.push({
+          controlId: cId,
+          field: 'groupLabels',
+          message: `groupLabels entry "${gl.text}": control "${cId}" is in section "${thisSection}" but first control is in "${firstSection}"`,
+        });
+      }
+
+      // Cross-check: control's sharedLabel must match groupLabel text
+      const ctrl = controlMap.get(cId);
+      if (ctrl && ctrl.sharedLabel !== gl.text) {
+        score -= 0.5;
+        flags.push({
+          controlId: cId,
+          field: 'sharedLabel',
+          message: `groupLabels says sharedLabel should be "${gl.text}" but control has "${ctrl.sharedLabel ?? 'null'}"`,
+        });
+      }
+    }
+  }
+
+  // --- Size class checks (if blueprint available) ---
+  if (blueprint) {
+    for (const s of sections) {
+      const bSection = findBlueprintSection(blueprint, s.id);
+      if (!bSection) continue;
+
+      const areas: Array<{ controlId: string; area: number }> = [];
+      for (let i = 0; i < s.controls.length && i < bSection.controls.length; i++) {
+        const bc = bSection.controls[i];
+        if (bc.boundingBox) {
+          areas.push({ controlId: s.controls[i], area: bc.boundingBox.w * bc.boundingBox.h });
+        }
+      }
+
+      if (areas.length === 0) continue;
+      const medianArea = computeMedian(areas.map(a => a.area));
+      if (medianArea === 0) continue;
+
+      const sizeClassSteps: Array<{ key: string; min: number; max: number }> = [
+        { key: 'xs', min: 0, max: 0.4 },
+        { key: 'sm', min: 0.4, max: 0.7 },
+        { key: 'md', min: 0.7, max: 1.3 },
+        { key: 'lg', min: 1.3, max: 2.0 },
+        { key: 'xl', min: 2.0, max: Infinity },
+      ];
+      const sizeOrder = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+      for (const { controlId, area } of areas) {
+        const ctrl = controlMap.get(controlId);
+        if (!ctrl || !ctrl.sizeClass) continue;
+
+        const ratio = area / medianArea;
+        const computed = sizeClassSteps.find(s => ratio >= s.min && ratio < s.max)?.key ?? 'md';
+        const ctrlIdx = sizeOrder.indexOf(ctrl.sizeClass);
+        const computedIdx = sizeOrder.indexOf(computed);
+
+        if (Math.abs(ctrlIdx - computedIdx) > 1) {
+          flags.push({
+            controlId,
+            field: 'sizeClass',
+            message: `sizeClass "${ctrl.sizeClass}" differs from geometry-computed "${computed}" by more than 1 step (ratio: ${ratio.toFixed(2)})`,
+          });
+        }
+      }
+    }
+  }
+
+  // ── Enrichment stats ─────────────────────────────────────────────────────
+
+  const enrichmentFields: (keyof ManifestControl)[] = [
+    'shape', 'sizeClass', 'labelDisplay', 'buttonStyle', 'interactionType',
+    'surfaceColor', 'icon', 'primaryLabel',
+  ];
+
+  let fullyEnriched = 0;
+  let partiallyEnriched = 0;
+  let unenriched = 0;
+
+  for (const c of controls) {
+    const filled = enrichmentFields.filter(f => c[f] != null).length;
+    if (filled === enrichmentFields.length) {
+      fullyEnriched++;
+    } else if (filled > 0) {
+      partiallyEnriched++;
+    } else {
+      unenriched++;
+    }
+  }
+
+  // ── Clamp score and build result ─────────────────────────────────────────
+
+  score = Math.max(0, Math.min(10, score));
+  const passed = score >= 9.0;
+
+  const report: ValidationReport = {
+    score,
+    passed,
+    autoFixes,
+    flags,
+    missing,
+    totalControls: controls.length,
+    fullyEnriched,
+    partiallyEnriched,
+    unenriched,
+  };
+
+  const correctedManifest = JSON.stringify(manifest, null, 2);
+
+  return { score, passed, report, correctedManifest };
+}
+
+// ─── Manifest Completeness Validator Helpers ─────────────────────────────────
+
+function findBlueprintSection(blueprint: Blueprint, sectionId: string): BlueprintSection | undefined {
+  return blueprint.sections.find(bs =>
+    bs.sectionId === sectionId ||
+    bs.sectionId?.toLowerCase().includes(sectionId.replace(/-/g, '').toLowerCase())
+  );
+}
+
+function findBoundingBox(blueprint: Blueprint, controlId: string): { x: number; y: number; w: number; h: number } | undefined {
+  for (const s of blueprint.sections) {
+    for (const c of s.controls) {
+      const cId = String(c.id);
+      if (cId === controlId && c.boundingBox) {
+        return c.boundingBox;
+      }
+    }
+  }
+  return undefined;
+}
+
+function computeMedian(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
