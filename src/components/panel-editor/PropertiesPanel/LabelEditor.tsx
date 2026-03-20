@@ -16,6 +16,7 @@ interface LabelEditorProps {
   label: string;
   labelPosition: ControlDef['labelPosition'];
   secondaryLabel: string | undefined;
+  labelFontSize?: number;
   /** When true, the fields show "Mixed" placeholder (multi-select with differing values) */
   labelMixed?: boolean;
   positionMixed?: boolean;
@@ -23,18 +24,21 @@ interface LabelEditorProps {
   onLabelChange: (value: string) => void;
   onPositionChange: (value: ControlDef['labelPosition']) => void;
   onSecondaryLabelChange: (value: string) => void;
+  onFontSizeChange?: (value: number) => void;
 }
 
 export default function LabelEditor({
   label,
   labelPosition,
   secondaryLabel,
+  labelFontSize,
   labelMixed,
   positionMixed,
   secondaryMixed,
   onLabelChange,
   onPositionChange,
   onSecondaryLabelChange,
+  onFontSizeChange,
 }: LabelEditorProps) {
   const handleLabelChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,6 +100,24 @@ export default function LabelEditor({
           ))}
         </select>
       </div>
+
+      {/* Font size */}
+      {onFontSizeChange && (
+        <div className="space-y-1">
+          <label className="text-[10px] text-gray-500">Size</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="range"
+              min={6}
+              max={20}
+              value={labelFontSize ?? 8}
+              onChange={(e) => onFontSizeChange(Number(e.target.value))}
+              className="h-1 flex-1 cursor-pointer accent-blue-500"
+            />
+            <span className="text-[10px] text-gray-500 w-6">{labelFontSize ?? 8}px</span>
+          </div>
+        </div>
+      )}
 
       {/* Secondary label */}
       {showSecondary ? (

@@ -283,9 +283,11 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         label={control.label}
         labelPosition={control.labelPosition}
         secondaryLabel={control.secondaryLabel}
+        labelFontSize={control.labelFontSize}
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
+        onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
       />
 
       {/* Divider */}

@@ -113,6 +113,7 @@ export interface ControlDef {
   sharedLabel?: string | null;
   groupId?: string | null;
   nestedIn?: string | null;
+  labelFontSize?: number;  // px, defaults based on sizeClass
 }
 
 export interface SectionDef {

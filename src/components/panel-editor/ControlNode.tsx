@@ -102,8 +102,15 @@ function withLabel(control: ControlDef, component: React.ReactNode) {
   // If label is on-button or no label, just return the component
   if (pos === 'on-button' || !label) return component;
 
+  // Font size: use labelFontSize if set, otherwise scale with sizeClass
+  const fontSize = control.labelFontSize
+    ?? (control.sizeClass === 'xl' ? 11 : control.sizeClass === 'lg' ? 10 : control.sizeClass === 'sm' ? 7 : 8);
+
   const labelEl = (
-    <span className="text-[8px] font-medium text-gray-400 uppercase text-center leading-tight truncate w-full">
+    <span
+      className="font-medium text-gray-400 uppercase text-center leading-tight truncate w-full"
+      style={{ fontSize }}
+    >
       {label}
     </span>
   );
