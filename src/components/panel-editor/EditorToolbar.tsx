@@ -22,8 +22,6 @@ export default function EditorToolbar({
   const showGrid = useEditorStore((s) => s.showGrid);
   const showPhoto = useEditorStore((s) => s.showPhoto);
   const photoOpacity = useEditorStore((s) => s.photoOpacity);
-  const canvasWidth = useEditorStore((s) => s.canvasWidth);
-  const canvasHeight = useEditorStore((s) => s.canvasHeight);
   const past = useEditorStore((s) => s.past);
   const future = useEditorStore((s) => s.future);
 
@@ -32,7 +30,6 @@ export default function EditorToolbar({
   const toggleGrid = useEditorStore((s) => s.toggleGrid);
   const togglePhoto = useEditorStore((s) => s.togglePhoto);
   const setPhotoOpacity = useEditorStore((s) => s.setPhotoOpacity);
-  const setCanvasSize = useEditorStore((s) => s.setCanvasSize);
   const undo = useEditorStore((s) => s.undo);
   const redo = useEditorStore((s) => s.redo);
 
@@ -130,28 +127,6 @@ export default function EditorToolbar({
       >
         <span className="text-[10px]">Grid</span>
       </button>
-
-      {/* Canvas Scale */}
-      <div className="flex items-center gap-1.5">
-        <label className="text-[10px] uppercase tracking-wider text-gray-500">Scale</label>
-        <input
-          type="range"
-          min={25}
-          max={200}
-          value={Math.round((canvasWidth / 1200) * 100)}
-          onChange={(e) => {
-            const pct = Number(e.target.value) / 100;
-            const aspect = canvasHeight / canvasWidth;
-            setCanvasSize(Math.round(1200 * pct), Math.round(1200 * pct * aspect));
-          }}
-          className="h-1 w-20 cursor-pointer accent-blue-500"
-          title={`Canvas Scale: ${Math.round((canvasWidth / 1200) * 100)}%`}
-        />
-        <span className="text-[10px] text-gray-500 w-8">{Math.round((canvasWidth / 1200) * 100)}%</span>
-      </div>
-
-      {/* Divider */}
-      <div className="h-5 w-px bg-gray-800" />
 
       {/* Photo Overlay Toggle + Opacity */}
       <div className="flex items-center gap-1.5">

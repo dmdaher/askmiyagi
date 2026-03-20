@@ -121,7 +121,8 @@ export interface ManifestSlice {
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function defaultLabelPosition(type: string): ControlDef['labelPosition'] {
-  if (type === 'button' || type === 'pad') return 'on-button';
+  if (type === 'pad') return 'on-button';
+  if (type === 'button') return 'above';
   if (type === 'led') return 'right';
   return 'below';
 }
@@ -295,7 +296,23 @@ export const createManifestSlice: StateCreator<
         const rowCount = rowEntries.length;
         const rowH = availH / rowCount;
         rowEntries.forEach(([, ids], rowIdx) => {
-          const rowIds = Array.isArray(ids) ? ids : [];
+          let rowIds: string[];
+          if (Array.isArray(ids)) {
+            rowIds = ids;
+          } else if (ids && typeof ids === 'object') {
+            // Nested sub-zone object — extract controls
+            const nested = ids as Record<string, SubZone>;
+            rowIds = [];
+            Object.values(nested).forEach((sz) => {
+              if (Array.isArray(sz)) {
+                rowIds.push(...sz);
+              } else if (sz && typeof sz === 'object' && 'controls' in sz) {
+                rowIds.push(...(sz as { controls: string[] }).controls);
+              }
+            });
+          } else {
+            rowIds = [];
+          }
           placeRow(rowIds, startX, startY + rowIdx * rowH, availW, rowH);
         });
 
@@ -312,30 +329,46 @@ export const createManifestSlice: StateCreator<
         const clusterIds = ms.containerAssignment.cluster;
         const anchorValue = ms.containerAssignment.anchor;
 
-        // Get flat anchor IDs (handle nested sub-zones)
-        const anchorIds: string[] = [];
-        if (Array.isArray(anchorValue)) {
-          anchorIds.push(...anchorValue);
-        } else if (anchorValue && typeof anchorValue === 'object') {
-          // Nested sub-zones — flatten for positioning
-          Object.values(anchorValue).forEach((sz) => {
-            if (Array.isArray(sz)) {
-              anchorIds.push(...sz);
-            } else if (sz && typeof sz === 'object' && 'controls' in sz) {
-              anchorIds.push(...(sz as { controls: string[] }).controls);
-            }
-          });
-        }
+        // Place anchor controls — handle nested sub-zones as side-by-side columns
+        const placeAnchor = (ax: number, ay: number, aw: number, ah: number) => {
+          if (Array.isArray(anchorValue)) {
+            placeRow(anchorValue, ax, ay, aw, ah);
+          } else if (anchorValue && typeof anchorValue === 'object') {
+            // Nested sub-zones (e.g. { slider: [...], reset: [...] })
+            // Place each sub-zone in its own column, side by side
+            const subZoneEntries = Object.entries(anchorValue);
+            const colW = aw / subZoneEntries.length;
+            subZoneEntries.forEach(([, sz], colIdx) => {
+              let ids: string[];
+              let direction: 'row' | 'column' = 'column';
+              if (Array.isArray(sz)) {
+                ids = sz;
+              } else if (sz && typeof sz === 'object' && 'controls' in sz) {
+                const typed = sz as { controls: string[]; direction?: 'row' | 'column' };
+                ids = typed.controls;
+                direction = typed.direction ?? 'column';
+              } else {
+                return;
+              }
+              const colX = ax + colIdx * colW;
+              if (direction === 'row') {
+                placeRow(ids, colX, ay, colW, ah);
+              } else {
+                placeColumn(ids, colX, ay, colW, ah);
+              }
+            });
+          }
+        };
 
         if (archetype === 'cluster-above-anchor') {
           // Cluster on top, anchor on bottom
           if (Array.isArray(clusterIds)) {
             placeGrid(clusterIds, startX, startY, availW, clusterH, cols);
           }
-          placeRow(anchorIds, startX, startY + clusterH + gapH, availW, anchorH);
+          placeAnchor(startX, startY + clusterH + gapH, availW, anchorH);
         } else {
           // Anchor on top, cluster on bottom
-          placeRow(anchorIds, startX, startY, availW, anchorH);
+          placeAnchor(startX, startY, availW, anchorH);
           if (Array.isArray(clusterIds)) {
             placeGrid(clusterIds, startX, startY + anchorH + gapH, availW, clusterH, cols);
           }

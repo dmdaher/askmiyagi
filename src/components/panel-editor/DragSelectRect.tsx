@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { useEditorStore, CANVAS_BASE_W, CANVAS_BASE_H } from './store';
+import { useEditorStore } from './store';
 
 interface Rect {
   x1: number;
@@ -17,6 +17,8 @@ interface Rect {
  * bounding boxes intersect the selection rect.
  */
 export default function DragSelectRect() {
+  const canvasWidth = useEditorStore((s) => s.canvasWidth);
+  const canvasHeight = useEditorStore((s) => s.canvasHeight);
   const [rect, setRect] = useState<Rect | null>(null);
   const dragging = useRef(false);
   const origin = useRef({ x: 0, y: 0 });
@@ -74,11 +76,12 @@ export default function DragSelectRect() {
       const y = e.clientY - parentRect.top;
 
       // Compute the final selection rectangle in canvas-local px
-      // The overlay div is the size of CANVAS_BASE (the transform is on the parent).
+      // The overlay div is the size of the canvas (the transform is on the parent).
       // Since the overlay is a direct child of the transformed container,
       // the parentRect already accounts for zoom. We need canvas coords.
-      const scaleX = CANVAS_BASE_W / parentRect.width;
-      const scaleY = CANVAS_BASE_H / parentRect.height;
+      const { canvasWidth: cw, canvasHeight: ch } = useEditorStore.getState();
+      const scaleX = cw / parentRect.width;
+      const scaleY = ch / parentRect.height;
 
       const sx1 = Math.min(origin.current.x, x) * scaleX;
       const sy1 = Math.min(origin.current.y, y) * scaleY;
@@ -121,8 +124,8 @@ export default function DragSelectRect() {
     <div
       className="absolute inset-0"
       style={{
-        width: CANVAS_BASE_W,
-        height: CANVAS_BASE_H,
+        width: canvasWidth,
+        height: canvasHeight,
         zIndex: 0,
         cursor: 'crosshair',
       }}
