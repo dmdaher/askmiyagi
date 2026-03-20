@@ -64,11 +64,27 @@ For controls where `labelDisplay === 'icon-only'`:
 - If control A has `nestedIn: 'B'`, control B MUST exist in the manifest
 - Control B's type should be a container-capable type (wheel, screen)
 - A and B MUST be in the same section
+- **Geometric containment:** If parser bounding boxes are available, verify that control A's bounding box is mathematically contained within control B's bounding box. If A is outside B's bounds, flag as CRITICAL — this is a geometric paradox that will break rendering
 
 ## Group Label Checks
 
 - Every `controlId` in `groupLabels[].controlIds` MUST exist in the manifest
 - All controls in a group label MUST be in the same section
+
+## Physical Constraint Checks
+
+Enforce physically impossible interaction type combinations:
+
+| Type | Allowed interactionType | If violated |
+|---|---|---|
+| `knob` | `rotary` only | AUTO-FIX to `rotary` |
+| `encoder` | `rotary` only | AUTO-FIX to `rotary` |
+| `fader`, `slider` | `slide` only | AUTO-FIX to `slide` |
+| `button` | `momentary`, `toggle`, `hold` | FLAG if `rotary` or `slide` |
+| `pad` | `momentary`, `toggle` | FLAG if `rotary` or `slide` |
+| `led` | null (not interactive) | AUTO-FIX to null |
+| `screen` | `touch` or null | FLAG if `rotary` or `slide` |
+| `port`, `slot` | null (not interactive) | AUTO-FIX to null |
 
 ## Size Class Checks
 
