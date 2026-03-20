@@ -15,6 +15,7 @@ import Port from '@/components/controls/Port';
 import TouchDisplay from '@/components/controls/TouchDisplay';
 import JogWheelAssembly from '@/components/controls/JogWheelAssembly';
 import DirectionSwitch from '@/components/controls/DirectionSwitch';
+import JogDisplay from '@/components/controls/JogDisplay';
 import { HARDWARE_ICONS } from '@/lib/hardware-icons';
 
 interface ControlNodeProps {
@@ -449,7 +450,22 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         />
       );
     case 'screen':
-    case 'display':
+    case 'display': {
+      // Detect circular jog displays from label or shape
+      const isJogDisplay = control.shape === 'circle'
+        || control.label.toLowerCase().includes('jog')
+        || control.nestedIn != null;
+      if (isJogDisplay) {
+        return (
+          <JogDisplay
+            id={control.id}
+            label={control.labelDisplay === 'hidden' ? undefined : control.label}
+            size={Math.min(control.w, control.h)}
+            highlighted={isSelected}
+            showMockContent
+          />
+        );
+      }
       return (
         <TouchDisplay
           id={control.id}
@@ -457,8 +473,10 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           highlighted={isSelected}
           width={control.w}
           height={control.h}
+          showMockContent
         />
       );
+    }
     default:
       return <div className="text-xs text-red-400">Unknown: {control.type}</div>;
   }
