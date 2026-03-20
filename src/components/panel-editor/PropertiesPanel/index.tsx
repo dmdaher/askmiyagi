@@ -460,6 +460,26 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         onWChange={handleWChange}
         onHChange={handleHChange}
       />
+
+      {/* Match Sizes — sets all selected controls to the size of the first */}
+      {controls.length > 1 && (!allSame(ws) || !allSame(hs)) && (
+        <>
+          <div className="h-px bg-gray-800" />
+          <button
+            onClick={() => {
+              pushSnapshot();
+              const targetW = controls[0].w;
+              const targetH = controls[0].h;
+              updateControlProp(ids, 'w', targetW);
+              updateControlProp(ids, 'h', targetH);
+            }}
+            className="flex h-7 items-center justify-center rounded border border-blue-600/30 bg-blue-600/10 px-3 text-[10px] font-medium text-blue-400 transition-colors hover:bg-blue-600/20"
+            title={`Set all ${controls.length} controls to ${controls[0].w}×${controls[0].h}`}
+          >
+            Match Sizes ({controls[0].w}×{controls[0].h})
+          </button>
+        </>
+      )}
     </div>
   );
 }
