@@ -27,9 +27,13 @@ export default function PhotoOverlay() {
         // API returns { photos: [{ name, path, size }] }
         const photos = data.photos ?? data;
         if (!cancelled && Array.isArray(photos) && photos.length > 0) {
-          const first = photos[0];
-          // Use the path field (API serves images via ?file= query)
-          const url = first.path ?? first.url ?? null;
+          // Prefer the top-view photo if available, otherwise first photo
+          const topView = photos.find((p: { name: string }) =>
+            p.name.toLowerCase().includes('top-view') || p.name.toLowerCase().includes('top_view')
+          );
+          const chosen = topView ?? photos[0];
+          // API serves photos via ?file= query param, not subpath
+          const url = `/api/pipeline/${deviceId}/photos?file=${encodeURIComponent(chosen.name)}`;
           setPhotoUrl(url);
         }
       } catch {
