@@ -112,9 +112,21 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
             body.error ?? `Failed to load manifest (${res.status})`
           );
         }
-        const data: MasterManifestInput = await res.json();
+        const data = await res.json();
         if (!cancelled) {
-          useEditorStore.getState().loadFromManifest(data);
+          if (data._source === 'editor' && data.sections && data.controls) {
+            // Restore previously saved editor state (flat sections/controls)
+            useEditorStore.setState({
+              deviceId,
+              sections: data.sections,
+              controls: data.controls,
+              selectedIds: [],
+              lockedIds: [],
+            });
+          } else {
+            // First load — convert original pipeline manifest to editor format
+            useEditorStore.getState().loadFromManifest(data as MasterManifestInput);
+          }
           setLoading(false);
         }
       } catch (err) {

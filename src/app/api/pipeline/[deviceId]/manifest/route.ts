@@ -8,7 +8,20 @@ export async function GET(
 ) {
   const { deviceId } = await params;
 
-  // Check main pipeline dir first, then worktree
+  // Check for editor-saved manifest first (preserves contractor edits)
+  const editorPath = path.join('.pipeline', deviceId, 'manifest-editor.json');
+  if (fs.existsSync(editorPath)) {
+    try {
+      const data = fs.readFileSync(editorPath, 'utf-8');
+      const parsed = JSON.parse(data);
+      // Return with a flag so the client knows this is pre-edited data
+      return NextResponse.json({ ...parsed, _source: 'editor' });
+    } catch {
+      // Fall through to original manifest
+    }
+  }
+
+  // Fall back to original pipeline manifest
   const mainPath = path.join('.pipeline', deviceId, 'manifest.json');
   const worktreePath = path.join('.worktrees', deviceId, '.pipeline', deviceId, 'manifest.json');
 
