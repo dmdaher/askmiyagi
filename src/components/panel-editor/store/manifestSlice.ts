@@ -191,19 +191,24 @@ export const createManifestSlice: StateCreator<
 
         // Offset within the section with some padding
         const padding = 8;
+        const headerOffset = ms.headerLabel ? 16 : 0;
+        const availH = sectionH - padding * 2 - headerOffset;
+        const rows = Math.ceil(controlCount / cols);
         const cellW = (sectionW - padding * 2) / cols;
-        const cellH = controlCount > cols
-          ? (sectionH - padding * 2) / Math.ceil(controlCount / cols)
-          : sectionH - padding * 2;
+        const cellH = rows > 1 ? availH / rows : availH;
+
+        // Clamp control size to fit within cell (with 4px gap)
+        const fitW = Math.min(size.w, cellW - 4);
+        const fitH = Math.min(size.h, cellH - 4);
 
         controls[controlId] = {
           id: controlId,
           label: mc.verbatimLabel,
           type: mc.type,
-          x: sectionX + padding + col * cellW + (cellW - size.w) / 2,
-          y: sectionY + padding + row * cellH + (cellH - size.h) / 2,
-          w: size.w,
-          h: size.h,
+          x: sectionX + padding + col * cellW + (cellW - fitW) / 2,
+          y: sectionY + padding + headerOffset + row * cellH + (cellH - fitH) / 2,
+          w: fitW,
+          h: fitH,
           sectionId: ms.id,
           labelPosition: defaultLabelPosition(mc.type),
           locked: false,
