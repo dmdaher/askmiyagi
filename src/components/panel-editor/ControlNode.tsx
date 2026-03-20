@@ -163,8 +163,10 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       if (control.shape === 'circle') {
         const diameter = Math.min(control.w, control.h);
         const { text, isIcon } = resolveDisplayContent(control);
-        return (
-          <div className="relative flex flex-col items-center gap-1" data-control-id={control.id}>
+        // Only show text inside the circle if label is on-button or icon-only
+        const showInside = control.labelPosition === 'on-button' || control.labelDisplay === 'icon-only';
+        const circleButton = (
+          <div className="relative" data-control-id={control.id}>
             {renderButtonLed(control)}
             <div
               className="rounded-full flex items-center justify-center cursor-pointer"
@@ -176,15 +178,19 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
                 boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)',
               }}
             >
-              <span
-                className="font-medium text-gray-300 uppercase text-center leading-tight px-1"
-                style={{ fontSize: isIcon ? 14 : 8 }}
-              >
-                {text}
-              </span>
+              {showInside && (
+                <span
+                  className="font-medium text-gray-300 uppercase text-center leading-tight px-1"
+                  style={{ fontSize: isIcon ? 14 : 8 }}
+                >
+                  {text}
+                </span>
+              )}
             </div>
           </div>
         );
+        // Use withLabel for above/below/left/right positioning
+        return withLabel(control, circleButton);
       }
 
       // Map buttonStyle to PanelButton variant ('raised' maps to 'standard')
