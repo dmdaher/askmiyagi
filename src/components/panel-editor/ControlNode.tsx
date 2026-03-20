@@ -210,9 +210,11 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
               style={{
                 width: diameter,
                 height: diameter,
-                backgroundColor: control.surfaceColor ?? '#2a2a2a',
-                border: '2px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)',
+                backgroundColor: '#2a2a2a',
+                border: `3px solid ${control.surfaceColor ?? '#444'}`,
+                boxShadow: control.surfaceColor
+                  ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40, 0 1px 0 rgba(255,255,255,0.05)`
+                  : 'inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)',
               }}
             >
               {showInside && (
