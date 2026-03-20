@@ -29,6 +29,53 @@ function mapButtonLabelPosition(
   return 'on';
 }
 
+/** Wrap a control component with label positioning handled by the editor */
+function withLabel(control: ControlDef, component: React.ReactNode) {
+  const label = control.label;
+  const pos = control.labelPosition;
+
+  // If label is on-button or no label, just return the component
+  if (pos === 'on-button' || !label) return component;
+
+  const labelEl = (
+    <span className="text-[8px] font-medium text-gray-400 uppercase text-center leading-tight truncate w-full">
+      {label}
+    </span>
+  );
+
+  if (pos === 'above') {
+    return (
+      <div className="flex flex-col items-center gap-0.5">
+        {labelEl}
+        {component}
+      </div>
+    );
+  }
+  if (pos === 'left') {
+    return (
+      <div className="flex items-center gap-1">
+        {labelEl}
+        {component}
+      </div>
+    );
+  }
+  if (pos === 'right') {
+    return (
+      <div className="flex items-center gap-1">
+        {component}
+        {labelEl}
+      </div>
+    );
+  }
+  // Default: below
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      {component}
+      {labelEl}
+    </div>
+  );
+}
+
 /** Render the real hardware control component based on control type */
 function renderControl(control: ControlDef, isSelected: boolean) {
   switch (control.type) {
@@ -68,10 +115,10 @@ function renderControl(control: ControlDef, isSelected: boolean) {
     }
     case 'knob': {
       const knobSize: 'sm' | 'md' = control.w <= 48 ? 'sm' : 'md';
-      return (
+      return withLabel(control,
         <Knob
           id={control.id}
-          label={control.label}
+          label=""
           highlighted={isSelected}
           size={knobSize}
         />
@@ -79,10 +126,10 @@ function renderControl(control: ControlDef, isSelected: boolean) {
     }
     case 'fader':
     case 'slider':
-      return (
+      return withLabel(control,
         <Slider
           id={control.id}
-          label={control.label}
+          label=""
           highlighted={isSelected}
           trackHeight={control.h - 20}
           trackWidth={control.w - 10}
@@ -169,10 +216,10 @@ function renderControl(control: ControlDef, isSelected: boolean) {
       );
     }
     case 'wheel':
-      return (
+      return withLabel(control,
         <Wheel
           id={control.id}
-          label={control.label}
+          label=""
           highlighted={isSelected}
           width={control.w}
           height={control.h}
@@ -190,10 +237,10 @@ function renderControl(control: ControlDef, isSelected: boolean) {
       );
     case 'encoder': {
       const dialSize: 'sm' | 'lg' = control.w <= 48 ? 'sm' : 'lg';
-      return (
+      return withLabel(control,
         <ValueDial
           id={control.id}
-          label={control.label}
+          label=""
           highlighted={isSelected}
           size={dialSize}
         />
@@ -203,10 +250,10 @@ function renderControl(control: ControlDef, isSelected: boolean) {
     case 'lever': {
       // Lever default height is ~62px at scale=1. Derive scale from control height.
       const leverScale = control.h / 62;
-      return (
+      return withLabel(control,
         <Lever
           id={control.id}
-          label={control.label}
+          label=""
           highlighted={isSelected}
           scale={leverScale}
         />
