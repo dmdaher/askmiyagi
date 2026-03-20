@@ -6,9 +6,31 @@ import type { MasterManifestInput } from './store';
 import EditorToolbar from './EditorToolbar';
 import EditorWorkspace from './EditorWorkspace';
 import PropertiesPanel from './PropertiesPanel';
+import ContextMenu from './ContextMenu';
+import { useEditorKeyboard } from './hooks/useEditorKeyboard';
+import { useAutoSave } from './hooks/useAutoSave';
 
 interface PanelEditorProps {
   deviceId: string;
+}
+
+/** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
+function EditorShell({ deviceId }: { deviceId: string }) {
+  useEditorKeyboard();
+  useAutoSave(deviceId);
+
+  return (
+    <div className="flex flex-col h-screen bg-[#0d0d1a]">
+      <EditorToolbar />
+      <div className="flex flex-1 overflow-hidden">
+        <EditorWorkspace deviceId={deviceId} />
+        <div className="w-72 border-l border-gray-800 bg-[#0d0d1a]">
+          <PropertiesPanel />
+        </div>
+      </div>
+      <ContextMenu />
+    </div>
+  );
 }
 
 export default function PanelEditor({ deviceId }: PanelEditorProps) {
@@ -62,15 +84,5 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
     );
   }
 
-  return (
-    <div className="flex flex-col h-screen bg-[#0d0d1a]">
-      <EditorToolbar />
-      <div className="flex flex-1 overflow-hidden">
-        <EditorWorkspace deviceId={deviceId} />
-        <div className="w-72 border-l border-gray-800 bg-[#0d0d1a]">
-          <PropertiesPanel />
-        </div>
-      </div>
-    </div>
-  );
+  return <EditorShell deviceId={deviceId} />;
 }
