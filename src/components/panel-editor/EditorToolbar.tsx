@@ -138,16 +138,16 @@ export default function EditorToolbar({
           type="range"
           min={25}
           max={200}
-          value={Math.round((canvasWidth / 2400) * 100)}
+          value={Math.round((canvasWidth / 1200) * 100)}
           onChange={(e) => {
             const pct = Number(e.target.value) / 100;
             const aspect = canvasHeight / canvasWidth;
-            setCanvasSize(Math.round(2400 * pct), Math.round(2400 * pct * aspect));
+            setCanvasSize(Math.round(1200 * pct), Math.round(1200 * pct * aspect));
           }}
           className="h-1 w-20 cursor-pointer accent-blue-500"
-          title={`Canvas Scale: ${Math.round((canvasWidth / 2400) * 100)}%`}
+          title={`Canvas Scale: ${Math.round((canvasWidth / 1200) * 100)}%`}
         />
-        <span className="text-[10px] text-gray-500 w-8">{Math.round((canvasWidth / 2400) * 100)}%</span>
+        <span className="text-[10px] text-gray-500 w-8">{Math.round((canvasWidth / 1200) * 100)}%</span>
       </div>
 
       {/* Divider */}

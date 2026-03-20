@@ -2,22 +2,24 @@ import { StateCreator } from 'zustand';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-/** Canvas base size for converting manifest % to px coordinates */
-export const CANVAS_BASE_W = 2400;
-export const CANVAS_BASE_H = 1600;
+/** Canvas base size for converting manifest % to px coordinates.
+ *  Bounding boxes in the manifest are 0-100% normalized.
+ *  These values define the pixel space and the panel's aspect ratio. */
+export const CANVAS_BASE_W = 1200;
+export const CANVAS_BASE_H = 1650;
 
-/** Default pixel dimensions per control type (scaled for 2400x1600 canvas) */
+/** Default pixel dimensions per control type */
 const DEFAULT_SIZES: Record<string, { w: number; h: number }> = {
-  button:  { w: 96,  h: 64  },
-  knob:    { w: 96,  h: 96  },
-  slider:  { w: 64,  h: 240 },
-  fader:   { w: 64,  h: 240 },
-  led:     { w: 32,  h: 32  },
-  wheel:   { w: 240, h: 240 },
-  pad:     { w: 96,  h: 96  },
-  encoder: { w: 96,  h: 96  },
-  lever:   { w: 48,  h: 96  },
-  switch:  { w: 48,  h: 96  },
+  button:  { w: 64,  h: 40  },
+  knob:    { w: 64,  h: 64  },
+  slider:  { w: 40,  h: 160 },
+  fader:   { w: 40,  h: 160 },
+  led:     { w: 24,  h: 24  },
+  wheel:   { w: 160, h: 160 },
+  pad:     { w: 64,  h: 64  },
+  encoder: { w: 64,  h: 64  },
+  lever:   { w: 32,  h: 64  },
+  switch:  { w: 32,  h: 64  },
   screen:  { w: 200, h: 120 },
 };
 
@@ -179,8 +181,8 @@ export const createManifestSlice: StateCreator<
       // ── Archetype-aware control placement ──────────────────────────────
       const padding = 8;
       const headerOffset = ms.headerLabel ? 16 : 0;
-      const MIN_CONTROL_H = 48;
-      const MIN_CONTROL_W = 48;
+      const MIN_CONTROL_H = 28;
+      const MIN_CONTROL_W = 28;
 
       // Calculate minimum section height needed to fit controls
       const controlCount = ms.controls.length;
