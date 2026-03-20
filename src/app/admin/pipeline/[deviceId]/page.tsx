@@ -54,6 +54,12 @@ export default function PipelineDetailPage() {
           <p className="text-sm text-gray-500">{activePipeline.manufacturer}</p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push(`/admin/pipeline/${deviceId}/editor`)}
+            className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-4 py-2 text-sm font-medium text-blue-400 transition-colors hover:bg-blue-500/20"
+          >
+            Visual Editor
+          </button>
           {activePipeline.status === 'paused' && (
             <button
               onClick={() => startPipeline(deviceId)}
