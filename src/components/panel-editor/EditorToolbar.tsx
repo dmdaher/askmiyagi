@@ -22,6 +22,8 @@ export default function EditorToolbar({
   const showGrid = useEditorStore((s) => s.showGrid);
   const showPhoto = useEditorStore((s) => s.showPhoto);
   const photoOpacity = useEditorStore((s) => s.photoOpacity);
+  const canvasWidth = useEditorStore((s) => s.canvasWidth);
+  const canvasHeight = useEditorStore((s) => s.canvasHeight);
   const past = useEditorStore((s) => s.past);
   const future = useEditorStore((s) => s.future);
 
@@ -30,6 +32,7 @@ export default function EditorToolbar({
   const toggleGrid = useEditorStore((s) => s.toggleGrid);
   const togglePhoto = useEditorStore((s) => s.togglePhoto);
   const setPhotoOpacity = useEditorStore((s) => s.setPhotoOpacity);
+  const setCanvasSize = useEditorStore((s) => s.setCanvasSize);
   const undo = useEditorStore((s) => s.undo);
   const redo = useEditorStore((s) => s.redo);
 
@@ -127,6 +130,33 @@ export default function EditorToolbar({
       >
         <span className="text-[10px]">Grid</span>
       </button>
+
+      {/* Canvas Size */}
+      <div className="flex items-center gap-1">
+        <label className="text-[10px] uppercase tracking-wider text-gray-500">W</label>
+        <input
+          type="number"
+          value={canvasWidth}
+          onChange={(e) => setCanvasSize(Number(e.target.value), canvasHeight)}
+          className="h-6 w-14 rounded border border-gray-700 bg-gray-900 px-1 text-xs text-gray-300 outline-none focus:border-blue-500"
+          title="Canvas Width"
+          step={50}
+          min={400}
+        />
+        <label className="text-[10px] uppercase tracking-wider text-gray-500">H</label>
+        <input
+          type="number"
+          value={canvasHeight}
+          onChange={(e) => setCanvasSize(canvasWidth, Number(e.target.value))}
+          className="h-6 w-14 rounded border border-gray-700 bg-gray-900 px-1 text-xs text-gray-300 outline-none focus:border-blue-500"
+          title="Canvas Height"
+          step={50}
+          min={300}
+        />
+      </div>
+
+      {/* Divider */}
+      <div className="h-5 w-px bg-gray-800" />
 
       {/* Photo Overlay Toggle + Opacity */}
       <div className="flex items-center gap-1.5">

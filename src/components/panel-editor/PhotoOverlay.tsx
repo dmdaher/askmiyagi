@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useEditorStore, CANVAS_BASE_W, CANVAS_BASE_H } from './store';
+import { useEditorStore } from './store';
 
 /**
  * Renders the first hardware reference photo behind the canvas content.
@@ -11,6 +11,11 @@ import { useEditorStore, CANVAS_BASE_W, CANVAS_BASE_H } from './store';
 export default function PhotoOverlay() {
   const showPhoto = useEditorStore((s) => s.showPhoto);
   const photoOpacity = useEditorStore((s) => s.photoOpacity);
+  const photoOffsetX = useEditorStore((s) => s.photoOffsetX);
+  const photoOffsetY = useEditorStore((s) => s.photoOffsetY);
+  const photoScale = useEditorStore((s) => s.photoScale);
+  const canvasWidth = useEditorStore((s) => s.canvasWidth);
+  const canvasHeight = useEditorStore((s) => s.canvasHeight);
   const deviceId = useEditorStore((s) => s.deviceId);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
@@ -59,10 +64,12 @@ export default function PhotoOverlay() {
         src={photoUrl}
         alt="Hardware reference photo"
         style={{
-          width: CANVAS_BASE_W,
-          height: CANVAS_BASE_H,
+          width: canvasWidth,
+          height: canvasHeight,
           objectFit: 'contain',
           opacity: photoOpacity,
+          transform: `translate(${photoOffsetX}px, ${photoOffsetY}px) scale(${photoScale})`,
+          transformOrigin: '0 0',
         }}
       />
     </div>

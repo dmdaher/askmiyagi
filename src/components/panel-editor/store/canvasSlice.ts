@@ -13,6 +13,11 @@ export interface CanvasSlice {
   showGrid: boolean;
   showPhoto: boolean;
   photoOpacity: number;
+  canvasWidth: number;
+  canvasHeight: number;
+  photoOffsetX: number;
+  photoOffsetY: number;
+  photoScale: number;
 
   // Actions
   setZoom: (z: number) => void;
@@ -21,6 +26,9 @@ export interface CanvasSlice {
   toggleGrid: () => void;
   togglePhoto: () => void;
   setPhotoOpacity: (o: number) => void;
+  setCanvasSize: (w: number, h: number) => void;
+  setPhotoOffset: (x: number, y: number) => void;
+  setPhotoScale: (s: number) => void;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────
@@ -39,6 +47,11 @@ export const createCanvasSlice: StateCreator<
   showGrid: true,
   showPhoto: false,
   photoOpacity: 0.3,
+  canvasWidth: 1200,
+  canvasHeight: 800,
+  photoOffsetX: 0,
+  photoOffsetY: 0,
+  photoScale: 1,
 
   // Actions
   setZoom: (z) => set({ zoom: Math.max(0.1, Math.min(5, z)) }),
@@ -52,4 +65,10 @@ export const createCanvasSlice: StateCreator<
   togglePhoto: () => set((s) => ({ showPhoto: !s.showPhoto })),
 
   setPhotoOpacity: (o) => set({ photoOpacity: Math.max(0, Math.min(1, o)) }),
+
+  setCanvasSize: (w, h) => set({ canvasWidth: Math.max(400, w), canvasHeight: Math.max(300, h) }),
+
+  setPhotoOffset: (x, y) => set({ photoOffsetX: x, photoOffsetY: y }),
+
+  setPhotoScale: (s) => set({ photoScale: Math.max(0.1, Math.min(5, s)) }),
 });

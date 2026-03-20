@@ -1,6 +1,6 @@
 'use client';
 
-import { useEditorStore, CANVAS_BASE_W, CANVAS_BASE_H } from './store';
+import { useEditorStore } from './store';
 import SectionFrame from './SectionFrame';
 import GridOverlay from './GridOverlay';
 import PhotoOverlay from './PhotoOverlay';
@@ -10,6 +10,8 @@ export default function PanCanvas() {
   const zoom = useEditorStore((s) => s.zoom);
   const panX = useEditorStore((s) => s.panX);
   const panY = useEditorStore((s) => s.panY);
+  const canvasWidth = useEditorStore((s) => s.canvasWidth);
+  const canvasHeight = useEditorStore((s) => s.canvasHeight);
   const sections = useEditorStore((s) => s.sections);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
 
@@ -20,8 +22,8 @@ export default function PanCanvas() {
       style={{
         transform: `translate(${panX}px, ${panY}px) scale(${zoom})`,
         transformOrigin: '0 0',
-        width: CANVAS_BASE_W,
-        height: CANVAS_BASE_H,
+        width: canvasWidth,
+        height: canvasHeight,
         position: 'relative',
       }}
       onClick={() => setSelectedIds([])}

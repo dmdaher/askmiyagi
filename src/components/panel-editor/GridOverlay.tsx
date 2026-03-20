@@ -1,6 +1,6 @@
 'use client';
 
-import { useEditorStore, CANVAS_BASE_W, CANVAS_BASE_H } from './store';
+import { useEditorStore } from './store';
 
 /**
  * SVG pattern that draws grid lines at the current snapGrid interval.
@@ -9,6 +9,8 @@ import { useEditorStore, CANVAS_BASE_W, CANVAS_BASE_H } from './store';
 export default function GridOverlay() {
   const showGrid = useEditorStore((s) => s.showGrid);
   const snapGrid = useEditorStore((s) => s.snapGrid);
+  const canvasWidth = useEditorStore((s) => s.canvasWidth);
+  const canvasHeight = useEditorStore((s) => s.canvasHeight);
 
   if (!showGrid) return null;
 
@@ -17,8 +19,8 @@ export default function GridOverlay() {
   return (
     <svg
       className="absolute inset-0 pointer-events-none"
-      width={CANVAS_BASE_W}
-      height={CANVAS_BASE_H}
+      width={canvasWidth}
+      height={canvasHeight}
       style={{ zIndex: 1 }}
     >
       <defs>
@@ -49,8 +51,8 @@ export default function GridOverlay() {
         </pattern>
       </defs>
       <rect
-        width={CANVAS_BASE_W}
-        height={CANVAS_BASE_H}
+        width={canvasWidth}
+        height={canvasHeight}
         fill={`url(#${patternId})`}
       />
     </svg>
