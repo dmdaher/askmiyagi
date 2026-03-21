@@ -59,7 +59,7 @@ export default function LeftTransportSection({
         <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="track-search-bwd-btn"
-            label="TRACK SEARCH I◄◄"
+            label="Track/Search"
             variant="standard"
             iconContent="|◀◀"
             active={getState('track-search-bwd-btn').active}
@@ -70,7 +70,7 @@ export default function LeftTransportSection({
         <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="track-search-fwd-btn"
-            label="TRACK SEARCH ►►I"
+            label="Track/Search"
             variant="standard"
             iconContent="▶▶|"
             active={getState('track-search-fwd-btn').active}
@@ -81,7 +81,7 @@ export default function LeftTransportSection({
         <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="search-bwd-btn"
-            label="SEARCH ◄◄"
+            label="Search"
             variant="standard"
             iconContent="◀◀"
             active={getState('search-bwd-btn').active}
@@ -92,7 +92,7 @@ export default function LeftTransportSection({
         <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="search-fwd-btn"
-            label="SEARCH ►►"
+            label="Search"
             variant="standard"
             iconContent="▶▶"
             active={getState('search-fwd-btn').active}

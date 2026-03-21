@@ -34,7 +34,7 @@ import { HARDWARE_ICONS } from '../src/lib/hardware-icons';
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
 const DEFAULT_PANEL_WIDTH = 1200;
-const DEFAULT_PANEL_HEIGHT = 800;
+const DEFAULT_PANEL_HEIGHT = 1650;
 
 /**
  * Control type -> React component mapping.

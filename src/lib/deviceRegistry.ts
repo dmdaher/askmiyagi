@@ -35,6 +35,6 @@ export const DEVICE_REGISTRY: Record<string, DeviceRegistryEntry> = {
   'cdj-3000': {
     tutorials: [],
     PanelComponent: CDJ3000Panel,
-    dimensions: { width: 1200, height: 800 },
+    dimensions: { width: 1200, height: 1650 },
   },
 };

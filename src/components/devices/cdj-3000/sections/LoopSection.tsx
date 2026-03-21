@@ -28,7 +28,7 @@ export default function LoopSection({
         <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="loop-in-cue-btn"
-            label="LOOP IN/CUE (IN ADJUST)"
+            label="IN/CUE"
             variant="standard"
             hasLed
             ledColor="#22c55e"
@@ -40,7 +40,7 @@ export default function LoopSection({
         <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="loop-out-btn"
-            label="LOOP OUT (OUT ADJUST)"
+            label="OUT"
             variant="standard"
             hasLed
             ledColor="#22c55e"

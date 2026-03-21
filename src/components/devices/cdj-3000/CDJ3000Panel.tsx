@@ -75,9 +75,9 @@ export default function CDJ3000Panel({
           className="absolute"
           style={{
             left: '12%',
-            top: '0%',
-            width: '68%',
-            height: '4%',
+            top: '2.1%',
+            width: '66.7%',
+            height: '3.9%',
           }}
         >
           <div
@@ -122,10 +122,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '12%',
-            top: '4%',
+            left: '17.7%',
+            top: '7.3%',
             width: '64%',
-            height: '29%',
+            height: '25.7%',
           }}
         >
           <div
@@ -171,7 +171,7 @@ export default function CDJ3000Panel({
           className="absolute"
           style={{
             left: '0%',
-            top: '22%',
+            top: '21.3%',
             width: '12%',
             height: '12%',
           }}
@@ -194,10 +194,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '2%',
+            left: '9.8%',
             top: '34%',
-            width: '53%',
-            height: '5%',
+            width: '75.3%',
+            height: '4.8%',
           }}
         >
           <div
@@ -243,9 +243,9 @@ export default function CDJ3000Panel({
           className="absolute"
           style={{
             left: '76%',
-            top: '33%',
+            top: '32.9%',
             width: '24%',
-            height: '12%',
+            height: '12.1%',
           }}
         >
           <div
@@ -316,8 +316,8 @@ export default function CDJ3000Panel({
           style={{
             left: '76%',
             top: '45%',
-            width: '20%',
-            height: '11%',
+            width: '10%',
+            height: '11.2%',
           }}
         >
           <div

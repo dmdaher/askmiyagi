@@ -29,7 +29,7 @@ export default function BeatSyncSection({
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="beat-sync-inst-doubles-btn"
-              label="BEAT SYNC/INST.DOUBLES"
+              label="INST.DOUBLES"
               variant="standard"
               hasLed
               ledColor="#3b82f6"
