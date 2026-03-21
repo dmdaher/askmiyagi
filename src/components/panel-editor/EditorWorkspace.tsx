@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useZoomPan } from './hooks/useZoomPan';
 import { useEditorStore } from './store';
 import PanCanvas from './PanCanvas';
@@ -39,19 +39,53 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
   }, [deviceId]);
 
   const isSideBySide = showPhoto && photoMode === 'side-by-side';
+  const [photoWidth, setPhotoWidth] = useState(40); // percentage
+  const isDraggingRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleDividerDown = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    isDraggingRef.current = true;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, []);
+
+  const handleDividerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDraggingRef.current || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const pct = ((e.clientX - rect.left) / rect.width) * 100;
+    setPhotoWidth(Math.max(20, Math.min(70, pct)));
+  }, []);
+
+  const handleDividerUp = useCallback((e: React.PointerEvent) => {
+    isDraggingRef.current = false;
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+  }, []);
 
   return (
-    <div className={`relative flex-1 flex ${isSideBySide ? 'flex-row' : ''} overflow-hidden`}>
+    <div ref={containerRef} className={`relative flex-1 flex ${isSideBySide ? 'flex-row' : ''} overflow-hidden`}>
       {/* Side-by-side photo panel */}
       {isSideBySide && photoUrl && (
-        <div className="w-[40%] min-w-[300px] border-r border-gray-800 overflow-auto bg-[#0a0a14] flex items-start justify-center p-4">
-          <img
-            src={photoUrl}
-            alt="Hardware reference"
-            className="max-w-full h-auto object-contain"
-            style={{ maxHeight: '100%' }}
+        <>
+          <div
+            className="overflow-auto bg-[#0a0a14] flex items-start justify-center p-4"
+            style={{ width: `${photoWidth}%`, minWidth: 200 }}
+          >
+            <img
+              src={photoUrl}
+              alt="Hardware reference"
+              className="max-w-full h-auto object-contain"
+              style={{ maxHeight: '100%' }}
+            />
+          </div>
+          {/* Draggable divider */}
+          <div
+            className="w-1.5 cursor-col-resize bg-gray-800 hover:bg-blue-600 transition-colors flex-shrink-0"
+            onPointerDown={handleDividerDown}
+            onPointerMove={handleDividerMove}
+            onPointerUp={handleDividerUp}
+            title="Drag to resize"
           />
-        </div>
+        </>
       )}
 
       {/* Canvas */}
