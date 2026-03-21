@@ -122,7 +122,7 @@ export async function POST(
     }
 
     // ── Step 5: Run codegen ──
-    const output = execSync(
+    const codegenOutput = execSync(
       `npx tsx scripts/panel-codegen.ts ${deviceId}`,
       {
         cwd: process.cwd(),
@@ -133,7 +133,8 @@ export async function POST(
 
     return NextResponse.json({
       ok: true,
-      output: output.toString(),
+      output: codegenOutput.toString(),
+      note: 'Codegen complete. If running dev server, components hot-reload automatically. If running production server, restart with: npm run build && npx next start -p 3000',
     });
   } catch (err) {
     const error = err as Error & { stdout?: Buffer; stderr?: Buffer };
