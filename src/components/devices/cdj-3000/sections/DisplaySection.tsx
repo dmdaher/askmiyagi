@@ -25,15 +25,15 @@ export default function DisplaySection({
       transition={{ duration: 0.3, delay: 0.10 }}
     >
       <div data-section-id="display" className="flex flex-row items-center gap-1">
-        <TouchDisplay
-          id="touch-display"
-          label="Touch display"
-          variant="main"
-          showMockContent
-          width={200}
-          height={120}
-          highlighted={isHighlighted('touch-display')}
-        />
+          <TouchDisplay
+            id="touch-display"
+            label="Touch display"
+            variant="main"
+            showMockContent
+            width={200}
+            height={120}
+            highlighted={isHighlighted('touch-display')}
+          />
       </div>
     </motion.div>
   );

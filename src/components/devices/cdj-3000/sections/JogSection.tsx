@@ -27,14 +27,14 @@ export default function JogSection({
       transition={{ duration: 0.3, delay: 0.45 }}
     >
       <div data-section-id="jog" className="flex flex-col items-center gap-1">
-        <JogWheelAssembly
-          id="jog-wheel"
-          label="Jog wheel (–REV/+FWD)"
-          wheelSize={160}
-          displaySize={60}
-          ringColor="#22c55e"
-          highlighted={isHighlighted('jog-wheel')}
-        />
+          <JogWheelAssembly
+            id="jog-wheel"
+            label="Jog wheel (–REV/+FWD)"
+            wheelSize={160}
+            displaySize={60}
+            ringColor="#22c55e"
+            highlighted={isHighlighted('jog-wheel')}
+          />
       </div>
     </motion.div>
   );

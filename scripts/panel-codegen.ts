@@ -327,7 +327,19 @@ function renderControlsById(
       if (!ctrl) {
         throw new Error(`Control "${id}" referenced in containerAssignment but not found in manifest controls.`);
       }
-      return renderControl(id, ctrl, indent, controlMap);
+      const jsx = renderControl(id, ctrl, indent + '  ', controlMap);
+      // If editor dimensions are available, wrap control in a sized container
+      const ep = (ctrl as any).editorPosition as { w: number; h: number } | undefined;
+      if (ep) {
+        const pxW = Math.round((ep.w / 100) * 1200);
+        const pxH = Math.round((ep.h / 100) * 1650);
+        return [
+          `${indent}<div style={{ width: ${pxW}, height: ${pxH}, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>`,
+          jsx,
+          `${indent}</div>`,
+        ].join('\n');
+      }
+      return jsx;
     })
     .join('\n');
 }
@@ -687,10 +699,6 @@ function renderSectionBody(
   section: ManifestSection,
   controlMap: Map<string, ManifestControl>,
 ): string {
-  // If editor positions are available, use absolute positioning for exact match
-  const absoluteLayout = renderAbsolutePositioned(section, controlMap);
-  if (absoluteLayout) return absoluteLayout;
-
   switch (template.archetype) {
     case 'single-row':
       return renderSingleRow(template.controlSlots, controlMap, section.id);

@@ -27,40 +27,40 @@ export default function MediaSection({
       transition={{ duration: 0.3, delay: 0.05 }}
     >
       <div data-section-id="media" className="grid" style={{ gridTemplateColumns: 'repeat(undefined, 1fr)', gap: '4px' }}>
-        <Port
-          id="usb-port"
-          label="USB port"
-          variant="usb-a"
-          highlighted={isHighlighted('usb-port')}
-        />
-        <LEDIndicator
-          id="usb-indicator"
-          on={getState('usb-indicator').ledOn ?? false}
-          color="#22c55e"
-          highlighted={isHighlighted('usb-indicator')}
-        />
-        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-          <PanelButton
-            id="usb-stop-btn"
-            label="USB STOP"
-            variant="standard"
-            active={getState('usb-stop-btn').active}
-            highlighted={isHighlighted('usb-stop-btn')}
-            onClick={() => onButtonClick?.('usb-stop-btn')}
+          <Port
+            id="usb-port"
+            label="USB port"
+            variant="usb-a"
+            highlighted={isHighlighted('usb-port')}
           />
-        </motion.div>
-        <Port
-          id="sd-card-slot"
-          label="SD memory card slot"
-          variant="sd-card"
-          highlighted={isHighlighted('sd-card-slot')}
-        />
-        <LEDIndicator
-          id="sd-indicator"
-          on={getState('sd-indicator').ledOn ?? false}
-          color="#f59e0b"
-          highlighted={isHighlighted('sd-indicator')}
-        />
+          <LEDIndicator
+            id="usb-indicator"
+            on={getState('usb-indicator').ledOn ?? false}
+            color="#22c55e"
+            highlighted={isHighlighted('usb-indicator')}
+          />
+          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <PanelButton
+              id="usb-stop-btn"
+              label="USB STOP"
+              variant="standard"
+              active={getState('usb-stop-btn').active}
+              highlighted={isHighlighted('usb-stop-btn')}
+              onClick={() => onButtonClick?.('usb-stop-btn')}
+            />
+          </motion.div>
+          <Port
+            id="sd-card-slot"
+            label="SD memory card slot"
+            variant="sd-card"
+            highlighted={isHighlighted('sd-card-slot')}
+          />
+          <LEDIndicator
+            id="sd-indicator"
+            on={getState('sd-indicator').ledOn ?? false}
+            color="#f59e0b"
+            highlighted={isHighlighted('sd-indicator')}
+          />
       </div>
     </motion.div>
   );

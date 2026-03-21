@@ -28,28 +28,28 @@ export default function JogModeControlsSection({
     >
       <div data-section-id="jog-mode-controls" className="flex flex-col gap-1">
         <div className="flex flex-row gap-1 justify-center">
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="jog-mode-btn"
-              label="JOG MODE"
-              variant="standard"
-              active={getState('jog-mode-btn').active}
-              highlighted={isHighlighted('jog-mode-btn')}
-              onClick={() => onButtonClick?.('jog-mode-btn')}
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="jog-mode-btn"
+                label="JOG MODE"
+                variant="standard"
+                active={getState('jog-mode-btn').active}
+                highlighted={isHighlighted('jog-mode-btn')}
+                onClick={() => onButtonClick?.('jog-mode-btn')}
+              />
+            </motion.div>
+            <LEDIndicator
+              id="vinyl-cdj-indicator"
+              on={getState('vinyl-cdj-indicator').ledOn ?? false}
+              color="#22c55e"
+              highlighted={isHighlighted('vinyl-cdj-indicator')}
             />
-          </motion.div>
-          <LEDIndicator
-            id="vinyl-cdj-indicator"
-            on={getState('vinyl-cdj-indicator').ledOn ?? false}
-            color="#22c55e"
-            highlighted={isHighlighted('vinyl-cdj-indicator')}
-          />
-          <Knob
-            id="jog-adjust-knob"
-            label="JOG ADJUST"
-            value={getState('jog-adjust-knob').value ?? 64}
-            highlighted={isHighlighted('jog-adjust-knob')}
-          />
+            <Knob
+              id="jog-adjust-knob"
+              label="JOG ADJUST"
+              value={getState('jog-adjust-knob').value ?? 64}
+              highlighted={isHighlighted('jog-adjust-knob')}
+            />
         </div>
       </div>
     </motion.div>
