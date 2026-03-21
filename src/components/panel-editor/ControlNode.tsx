@@ -54,9 +54,8 @@ function shouldShowFloatingLabel(control: ControlDef): boolean {
   const effectivePos = control.labelDisplay ?? control.labelPosition;
   if (effectivePos === 'hidden') return false;
   if (control.labelPosition === 'on-button') {
-    // on-button labels are rendered by the component itself;
-    // but a secondary label still floats below
-    return !!control.secondaryLabel;
+    // on-button labels are rendered by the component itself — no floating needed
+    return false;
   }
   if (!control.label) return false;
   return true;
