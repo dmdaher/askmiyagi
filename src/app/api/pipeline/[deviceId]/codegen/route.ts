@@ -2,15 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { cleanupGeometry } from '@/lib/layout-inference';
+import type { SectionDef, ControlDef } from '@/components/panel-editor/store/manifestSlice';
 
 /**
  * POST /api/pipeline/{deviceId}/codegen
  *
  * Before running codegen:
- * 1. If manifest-editor.json exists, merge editor positions into manifest.json
- * 2. This ensures codegen uses the contractor's positioning work
- *
- * Then runs: npx tsx scripts/panel-codegen.ts {deviceId}
+ * 1. Read manifest-editor.json (the contractor's pixel positions)
+ * 2. Run cleanupGeometry() on the positions (snap alignment, normalize sizes)
+ * 3. Write cleaned positions as editorPosition percentages on each control in manifest.json
+ * 4. Write cleaned geometry to .pipeline/{deviceId}/cleaned-geometry.json for reference
+ * 5. Run codegen
  */
 export async function POST(
   _request: NextRequest,
@@ -20,7 +23,6 @@ export async function POST(
   const pipelineDir = path.join(process.cwd(), '.pipeline', deviceId);
 
   try {
-    // Merge editor positions into manifest before codegen
     const editorPath = path.join(pipelineDir, 'manifest-editor.json');
     const manifestPath = path.join(pipelineDir, 'manifest.json');
 
@@ -28,39 +30,57 @@ export async function POST(
       const editorData = JSON.parse(fs.readFileSync(editorPath, 'utf-8'));
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
 
-      // The editor stores flat Records: { sections: Record<id, SectionDef>, controls: Record<id, ControlDef> }
-      // The manifest has arrays: { sections: ManifestSection[], controls: ManifestControl[] }
-      // Merge: update manifest control/section positions from editor data
-
       if (editorData.sections && editorData.controls) {
-        const editorSections = editorData.sections as Record<string, any>;
-        const editorControls = editorData.controls as Record<string, any>;
+        const editorSections = editorData.sections as Record<string, SectionDef>;
+        const editorControls = editorData.controls as Record<string, ControlDef>;
 
-        // Update section bounding boxes from editor positions
-        // Editor uses pixel coords, manifest uses percentages
-        // We need to know the canvas size to convert back
-        const canvasW = 1200; // CANVAS_BASE_W
-        const canvasH = 1650; // CANVAS_BASE_H — or use deviceDimensions if available
-
+        // Determine canvas dimensions
+        let canvasW = 1200; // CANVAS_BASE_W
+        let canvasH = 1650; // CANVAS_BASE_H
         if (manifest.deviceDimensions) {
-          const aspect = manifest.deviceDimensions.widthMm / manifest.deviceDimensions.depthMm;
-          // canvasH would be CANVAS_BASE_W / aspect
+          const { widthMm, depthMm } = manifest.deviceDimensions;
+          if (widthMm > 0 && depthMm > 0) {
+            canvasH = Math.round(canvasW / (widthMm / depthMm));
+          }
         }
 
+        // ── Step 1: Run geometry cleanup on the editor's pixel positions ──
+        const cleanupResult = cleanupGeometry(
+          editorSections,
+          editorControls,
+          canvasW,
+          canvasH,
+        );
+
+        // Write cleaned geometry for reference (NEVER overwrite manifest-editor.json)
+        const cleanedGeometryPath = path.join(pipelineDir, 'cleaned-geometry.json');
+        fs.writeFileSync(cleanedGeometryPath, JSON.stringify(cleanupResult, null, 2));
+        console.log(`Wrote cleaned geometry to ${cleanedGeometryPath}`);
+
+        // Build lookup from cleaned sections/controls
+        const cleanedSectionMap = new Map<string, typeof cleanupResult.sections[number]>();
+        const cleanedControlMap = new Map<string, { x: number; y: number; w: number; h: number }>();
+        for (const cs of cleanupResult.sections) {
+          cleanedSectionMap.set(cs.id, cs);
+          for (const cc of cs.controls) {
+            cleanedControlMap.set(cc.id, { x: cc.x, y: cc.y, w: cc.w, h: cc.h });
+          }
+        }
+
+        // ── Step 2: Update section bounding boxes from cleaned positions ──
         for (const section of manifest.sections) {
-          const editorSection = editorSections[section.id];
-          if (editorSection) {
-            // Convert pixel coords back to percentages
+          const cleaned = cleanedSectionMap.get(section.id);
+          if (cleaned) {
             section.panelBoundingBox = {
-              x: Math.round((editorSection.x / canvasW) * 100 * 10) / 10,
-              y: Math.round((editorSection.y / canvasH) * 100 * 10) / 10,
-              w: Math.round((editorSection.w / canvasW) * 100 * 10) / 10,
-              h: Math.round((editorSection.h / canvasH) * 100 * 10) / 10,
+              x: Math.round((cleaned.x / canvasW) * 100 * 10) / 10,
+              y: Math.round((cleaned.y / canvasH) * 100 * 10) / 10,
+              w: Math.round((cleaned.w / canvasW) * 100 * 10) / 10,
+              h: Math.round((cleaned.h / canvasH) * 100 * 10) / 10,
             };
           }
         }
 
-        // Update control enriched fields AND positions from editor
+        // ── Step 3: Merge editor overrides + cleaned positions into controls ──
         for (const control of manifest.controls) {
           const editorControl = editorControls[control.id];
           if (editorControl) {
@@ -76,30 +96,32 @@ export async function POST(
             if (editorControl.ledColor !== undefined) control.ledColor = editorControl.ledColor;
             if (editorControl.hasLed !== undefined) control.hasLed = editorControl.hasLed;
             if (editorControl.type) control.type = editorControl.type;
+          }
 
-            // Save the contractor's exact pixel positions as percentages relative to the panel
-            // This allows codegen to place controls at exact positions
+          // Use CLEANED positions (snapped/normalized) instead of raw editor positions
+          const cleanedPos = cleanedControlMap.get(control.id);
+          if (cleanedPos) {
             (control as any).editorPosition = {
-              x: Math.round((editorControl.x / canvasW) * 1000) / 10,
-              y: Math.round((editorControl.y / canvasH) * 1000) / 10,
-              w: Math.round((editorControl.w / canvasW) * 1000) / 10,
-              h: Math.round((editorControl.h / canvasH) * 1000) / 10,
+              x: Math.round((cleanedPos.x / canvasW) * 1000) / 10,
+              y: Math.round((cleanedPos.y / canvasH) * 1000) / 10,
+              w: Math.round((cleanedPos.w / canvasW) * 1000) / 10,
+              h: Math.round((cleanedPos.h / canvasH) * 1000) / 10,
             };
           }
         }
 
-        // Write the merged manifest back (backup the original first)
+        // ── Step 4: Backup manifest.json before overwriting ──
         const backupDir = path.join(pipelineDir, 'backups');
         if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         fs.copyFileSync(manifestPath, path.join(backupDir, `manifest-pre-codegen-${timestamp}.json`));
 
         fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-        console.log(`Merged editor positions into manifest.json`);
+        console.log(`Merged cleaned editor positions into manifest.json`);
       }
     }
 
-    // Run codegen
+    // ── Step 5: Run codegen ──
     const output = execSync(
       `npx tsx scripts/panel-codegen.ts ${deviceId}`,
       {

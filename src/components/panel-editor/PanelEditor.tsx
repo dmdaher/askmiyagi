@@ -11,7 +11,12 @@ import ContextMenu from './ContextMenu';
 import InferenceReview from './InferenceReview';
 import { useEditorKeyboard } from './hooks/useEditorKeyboard';
 import { useAutoSave } from './hooks/useAutoSave';
-import { inferLayout, type InferredSection } from '@/lib/layout-inference';
+import {
+  cleanupGeometry,
+  type GeometryCleanupResult,
+  inferLayout,
+  type InferredSection,
+} from '@/lib/layout-inference';
 
 interface PanelEditorProps {
   deviceId: string;
@@ -28,11 +33,13 @@ function EditorShell({ deviceId }: { deviceId: string }) {
   >('idle');
   const [showInferenceReview, setShowInferenceReview] = useState(false);
   const [inferenceResults, setInferenceResults] = useState<InferredSection[]>([]);
+  const [cleanupResult, setCleanupResult] = useState<GeometryCleanupResult | null>(null);
   const [codegenError, setCodegenError] = useState<string | null>(null);
 
   const handleApproveAndBuild = useCallback(async () => {
     // Force-save current manifest (bypass debounce)
-    const { sections, controls } = useEditorStore.getState();
+    const state = useEditorStore.getState();
+    const { sections, controls, canvasWidth, canvasHeight } = state;
     setBuildStatus('building');
     setCodegenError(null);
     try {
@@ -45,7 +52,11 @@ function EditorShell({ deviceId }: { deviceId: string }) {
       // Best-effort save
     }
 
-    // Run layout inference
+    // Run geometry cleanup (snap alignment, normalize sizes)
+    const cleaned = cleanupGeometry(sections, controls, canvasWidth, canvasHeight);
+    setCleanupResult(cleaned);
+
+    // Also run layout inference for the review modal (archetype overrides)
     const result = inferLayout(sections, controls);
     setInferenceResults(result.sections);
     setShowInferenceReview(true);
@@ -55,6 +66,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
   const handleInferenceBack = useCallback(() => {
     setShowInferenceReview(false);
     setInferenceResults([]);
+    setCleanupResult(null);
   }, []);
 
   const handleInferenceGenerate = useCallback(async (sections: InferredSection[]) => {
@@ -188,6 +200,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
       {showInferenceReview && (
         <InferenceReview
           sections={inferenceResults}
+          cleanupResult={cleanupResult}
           onBack={handleInferenceBack}
           onGenerate={handleInferenceGenerate}
         />

@@ -327,19 +327,7 @@ function renderControlsById(
       if (!ctrl) {
         throw new Error(`Control "${id}" referenced in containerAssignment but not found in manifest controls.`);
       }
-      const jsx = renderControl(id, ctrl, indent + '  ', controlMap);
-      // If editor dimensions are available, wrap control in a sized container
-      const ep = (ctrl as any).editorPosition as { w: number; h: number } | undefined;
-      if (ep) {
-        const pxW = Math.round((ep.w / 100) * 1200);
-        const pxH = Math.round((ep.h / 100) * 1650);
-        return [
-          `${indent}<div style={{ width: ${pxW}, height: ${pxH}, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>`,
-          jsx,
-          `${indent}</div>`,
-        ].join('\n');
-      }
-      return jsx;
+      return renderControl(id, ctrl, indent + '  ', controlMap);
     })
     .join('\n');
 }
@@ -641,8 +629,9 @@ function renderTransportPair(
 }
 
 /**
- * If controls have editorPosition (set by the codegen API merge from editor data),
- * render them with absolute positioning to exactly match the contractor's layout.
+ * If controls have editorPosition (set by the codegen API after geometry cleanup),
+ * render them with percentage-based absolute positioning within a relative container.
+ * Each control gets position/size as percentages RELATIVE to its section.
  * This bypasses archetype-based flex/grid layout entirely.
  */
 function renderAbsolutePositioned(
@@ -653,7 +642,7 @@ function renderAbsolutePositioned(
     .map(id => ({ id, ctrl: controlMap.get(id) }))
     .filter(({ ctrl }) => ctrl && !ctrl.nestedIn && (ctrl as any).editorPosition);
 
-  // Only use absolute positioning if ALL controls have editor positions
+  // Only use absolute positioning if ALL non-nested controls have editor positions
   if (sectionControls.length === 0) return null;
   const allHavePositions = section.controls.every(id => {
     const ctrl = controlMap.get(id);
@@ -664,7 +653,7 @@ function renderAbsolutePositioned(
   const bb = section.panelBoundingBox ?? { x: 0, y: 0, w: 100, h: 100 };
 
   const controlJsx = sectionControls.map(({ id, ctrl }) => {
-    const ep = (ctrl as any).editorPosition;
+    const ep = (ctrl as any).editorPosition as { x: number; y: number; w: number; h: number };
     // Convert control position from panel-% to section-relative-%
     const relX = ((ep.x - bb.x) / bb.w) * 100;
     const relY = ((ep.y - bb.y) / bb.h) * 100;
@@ -674,12 +663,12 @@ function renderAbsolutePositioned(
     const controlJsxStr = renderControl(id, ctrl!, '            ', controlMap);
     return [
       `          <div`,
-      `            className="absolute"`,
+      `            className="absolute flex items-center justify-center"`,
       `            style={{`,
-      `              left: '${relX.toFixed(1)}%',`,
-      `              top: '${relY.toFixed(1)}%',`,
-      `              width: '${relW.toFixed(1)}%',`,
-      `              height: '${relH.toFixed(1)}%',`,
+      `              left: '${relX.toFixed(2)}%',`,
+      `              top: '${relY.toFixed(2)}%',`,
+      `              width: '${relW.toFixed(2)}%',`,
+      `              height: '${relH.toFixed(2)}%',`,
       `            }}`,
       `          >`,
       controlJsxStr,
@@ -699,6 +688,14 @@ function renderSectionBody(
   section: ManifestSection,
   controlMap: Map<string, ManifestControl>,
 ): string {
+  // First: check if controls have editorPosition data (from geometry cleanup).
+  // If they do, use percentage-based absolute positioning — bypasses archetypes.
+  const absoluteResult = renderAbsolutePositioned(section, controlMap);
+  if (absoluteResult) {
+    return absoluteResult;
+  }
+
+  // Fallback: archetype-based layout (for first codegen before editor)
   switch (template.archetype) {
     case 'single-row':
       return renderSingleRow(template.controlSlots, controlMap, section.id);
