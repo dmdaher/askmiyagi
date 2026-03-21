@@ -25,8 +25,16 @@ export default function BrowseBarSection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.00 }}
     >
-      <div data-section-id="browse-bar" className="flex flex-col gap-1">
-        <div className="flex flex-row gap-1 justify-center">
+      <div data-section-id="browse-bar">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '11.20%',
+              top: '2.00%',
+              width: '21.30%',
+              height: '3.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="source-btn"
@@ -37,6 +45,16 @@ export default function BrowseBarSection({
                 onClick={() => onButtonClick?.('source-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '22.30%',
+              top: '2.00%',
+              width: '21.30%',
+              height: '3.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="browse-btn"
@@ -47,6 +65,16 @@ export default function BrowseBarSection({
                 onClick={() => onButtonClick?.('browse-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '44.60%',
+              top: '2.00%',
+              width: '21.30%',
+              height: '3.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="tag-list-btn"
@@ -57,12 +85,32 @@ export default function BrowseBarSection({
                 onClick={() => onButtonClick?.('tag-list-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '48.50%',
+              top: '2.00%',
+              width: '2.50%',
+              height: '1.70%',
+            }}
+          >
             <LEDIndicator
               id="source-indicator"
               on={getState('source-indicator').ledOn ?? false}
               color="#22c55e"
               highlighted={isHighlighted('source-indicator')}
             />
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '34.70%',
+              top: '2.00%',
+              width: '21.30%',
+              height: '3.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="playlist-btn"
@@ -73,6 +121,16 @@ export default function BrowseBarSection({
                 onClick={() => onButtonClick?.('playlist-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '55.60%',
+              top: '2.00%',
+              width: '21.30%',
+              height: '3.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="search-btn"
@@ -83,6 +141,16 @@ export default function BrowseBarSection({
                 onClick={() => onButtonClick?.('search-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '67.00%',
+              top: '2.00%',
+              width: '21.30%',
+              height: '3.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="menu-utility-btn"
@@ -93,7 +161,7 @@ export default function BrowseBarSection({
                 onClick={() => onButtonClick?.('menu-utility-btn')}
               />
             </motion.div>
-        </div>
+          </div>
       </div>
     </motion.div>
   );

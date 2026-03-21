@@ -26,8 +26,16 @@ export default function JogModeControlsSection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.50 }}
     >
-      <div data-section-id="jog-mode-controls" className="flex flex-col gap-1">
-        <div className="flex flex-row gap-1 justify-center">
+      <div data-section-id="jog-mode-controls">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '91.70%',
+              top: '41.00%',
+              width: '6.70%',
+              height: '2.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="jog-mode-btn"
@@ -38,19 +46,39 @@ export default function JogModeControlsSection({
                 onClick={() => onButtonClick?.('jog-mode-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '84.80%',
+              top: '41.00%',
+              width: '6.70%',
+              height: '2.90%',
+            }}
+          >
             <LEDIndicator
               id="vinyl-cdj-indicator"
               on={getState('vinyl-cdj-indicator').ledOn ?? false}
               color="#22c55e"
               highlighted={isHighlighted('vinyl-cdj-indicator')}
             />
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '70.40%',
+              top: '47.30%',
+              width: '14.70%',
+              height: '2.90%',
+            }}
+          >
             <Knob
               id="jog-adjust-knob"
               label="JOG ADJUST"
               value={getState('jog-adjust-knob').value ?? 64}
               highlighted={isHighlighted('jog-adjust-knob')}
             />
-        </div>
+          </div>
       </div>
     </motion.div>
   );

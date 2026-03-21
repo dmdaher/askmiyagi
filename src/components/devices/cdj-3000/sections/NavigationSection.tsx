@@ -25,53 +25,103 @@ export default function NavigationSection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.15 }}
     >
-      <div data-section-id="navigation" className="grid" style={{ gridTemplateColumns: 'repeat(undefined, 1fr)', gap: '4px' }}>
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="back-btn"
-              label="BACK"
-              variant="standard"
-              active={getState('back-btn').active}
-              highlighted={isHighlighted('back-btn')}
-              onClick={() => onButtonClick?.('back-btn')}
+      <div data-section-id="navigation">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '78.90%',
+              top: '11.00%',
+              width: '12.70%',
+              height: '4.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="back-btn"
+                label="BACK"
+                variant="standard"
+                active={getState('back-btn').active}
+                highlighted={isHighlighted('back-btn')}
+                onClick={() => onButtonClick?.('back-btn')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '88.30%',
+              top: '11.00%',
+              width: '12.70%',
+              height: '4.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="tag-track-remove-btn"
+                label="TAG TRACK/REMOVE"
+                variant="standard"
+                active={getState('tag-track-remove-btn').active}
+                highlighted={isHighlighted('tag-track-remove-btn')}
+                onClick={() => onButtonClick?.('tag-track-remove-btn')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '83.90%',
+              top: '13.80%',
+              width: '12.00%',
+              height: '9.70%',
+            }}
+          >
+            <ValueDial
+              id="rotary-selector"
+              label="Rotary selector"
+              hasPush
+              highlighted={isHighlighted('rotary-selector')}
             />
-          </motion.div>
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="tag-track-remove-btn"
-              label="TAG TRACK/REMOVE"
-              variant="standard"
-              active={getState('tag-track-remove-btn').active}
-              highlighted={isHighlighted('tag-track-remove-btn')}
-              onClick={() => onButtonClick?.('tag-track-remove-btn')}
-            />
-          </motion.div>
-          <ValueDial
-            id="rotary-selector"
-            label="Rotary selector"
-            hasPush
-            highlighted={isHighlighted('rotary-selector')}
-          />
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="track-filter-edit-btn"
-              label="TRACK FILTER/EDIT"
-              variant="standard"
-              active={getState('track-filter-edit-btn').active}
-              highlighted={isHighlighted('track-filter-edit-btn')}
-              onClick={() => onButtonClick?.('track-filter-edit-btn')}
-            />
-          </motion.div>
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="shortcut-btn"
-              label="SHORTCUT"
-              variant="standard"
-              active={getState('shortcut-btn').active}
-              highlighted={isHighlighted('shortcut-btn')}
-              onClick={() => onButtonClick?.('shortcut-btn')}
-            />
-          </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '81.70%',
+              top: '24.20%',
+              width: '12.70%',
+              height: '4.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="track-filter-edit-btn"
+                label="TRACK FILTER/EDIT"
+                variant="standard"
+                active={getState('track-filter-edit-btn').active}
+                highlighted={isHighlighted('track-filter-edit-btn')}
+                onClick={() => onButtonClick?.('track-filter-edit-btn')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '86.50%',
+              top: '25.20%',
+              width: '12.70%',
+              height: '4.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="shortcut-btn"
+                label="SHORTCUT"
+                variant="standard"
+                active={getState('shortcut-btn').active}
+                highlighted={isHighlighted('shortcut-btn')}
+                onClick={() => onButtonClick?.('shortcut-btn')}
+              />
+            </motion.div>
+          </div>
       </div>
     </motion.div>
   );

@@ -74,10 +74,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '12%',
-            top: '2.1%',
-            width: '66.7%',
-            height: '3.9%',
+            left: '10.6%',
+            top: '1.5%',
+            width: '78.3%',
+            height: '4.8%',
           }}
         >
           <div
@@ -98,10 +98,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '0%',
-            top: '2%',
-            width: '12%',
-            height: '20%',
+            left: '2.3%',
+            top: '7.5%',
+            width: '12.8%',
+            height: '15%',
           }}
         >
           <div
@@ -122,10 +122,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '17.7%',
-            top: '7.3%',
-            width: '64%',
-            height: '25.7%',
+            left: '19%',
+            top: '7.1%',
+            width: '61.3%',
+            height: '26.2%',
           }}
         >
           <div
@@ -146,10 +146,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '76%',
-            top: '2%',
-            width: '24%',
-            height: '31%',
+            left: '78.2%',
+            top: '10.5%',
+            width: '23.3%',
+            height: '19.5%',
           }}
         >
           <div
@@ -170,10 +170,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '0%',
-            top: '21.3%',
-            width: '12%',
-            height: '12%',
+            left: '1.2%',
+            top: '23.8%',
+            width: '14.3%',
+            height: '7.8%',
           }}
         >
           <div
@@ -194,10 +194,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '9.8%',
-            top: '34%',
-            width: '75.3%',
-            height: '4.8%',
+            left: '14.4%',
+            top: '34.4%',
+            width: '70.7%',
+            height: '3.9%',
           }}
         >
           <div
@@ -218,10 +218,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '2%',
-            top: '39%',
-            width: '48%',
-            height: '9%',
+            left: '-0.8%',
+            top: '40.2%',
+            width: '29.2%',
+            height: '10%',
           }}
         >
           <div
@@ -242,10 +242,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '76%',
-            top: '32.9%',
-            width: '24%',
-            height: '12.1%',
+            left: '59.4%',
+            top: '34.5%',
+            width: '36%',
+            height: '9.5%',
           }}
         >
           <div
@@ -266,10 +266,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '0%',
-            top: '48%',
-            width: '18%',
-            height: '48%',
+            left: '0.6%',
+            top: '50.4%',
+            width: '15.6%',
+            height: '46.6%',
           }}
         >
           <div
@@ -290,10 +290,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '14%',
-            top: '44%',
-            width: '55%',
-            height: '50%',
+            left: '13.6%',
+            top: '44.5%',
+            width: '75.3%',
+            height: '48.9%',
           }}
         >
           <div
@@ -314,10 +314,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '76%',
-            top: '45%',
-            width: '10%',
-            height: '11.2%',
+            left: '69.8%',
+            top: '40.5%',
+            width: '29.2%',
+            height: '10.2%',
           }}
         >
           <div
@@ -338,10 +338,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '76%',
-            top: '56%',
-            width: '20%',
-            height: '12%',
+            left: '85%',
+            top: '46.5%',
+            width: '13.2%',
+            height: '8.5%',
           }}
         >
           <div
@@ -362,10 +362,10 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '78%',
-            top: '66%',
-            width: '22%',
-            height: '34%',
+            left: '79.2%',
+            top: '58%',
+            width: '21.3%',
+            height: '36.9%',
           }}
         >
           <div

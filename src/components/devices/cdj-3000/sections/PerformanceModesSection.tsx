@@ -24,8 +24,16 @@ export default function PerformanceModesSection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.20 }}
     >
-      <div data-section-id="performance-modes" className="flex flex-col gap-1">
-        <div className="flex flex-row gap-1 justify-center">
+      <div data-section-id="performance-modes">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '4.20%',
+              top: '24.30%',
+              width: '8.30%',
+              height: '2.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="time-mode-btn"
@@ -38,6 +46,16 @@ export default function PerformanceModesSection({
                 onClick={() => onButtonClick?.('time-mode-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '6.50%',
+              top: '28.30%',
+              width: '8.30%',
+              height: '2.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="quantize-btn"
@@ -50,6 +68,16 @@ export default function PerformanceModesSection({
                 onClick={() => onButtonClick?.('quantize-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '1.90%',
+              top: '28.30%',
+              width: '8.30%',
+              height: '2.90%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="slip-btn"
@@ -62,7 +90,7 @@ export default function PerformanceModesSection({
                 onClick={() => onButtonClick?.('slip-btn')}
               />
             </motion.div>
-        </div>
+          </div>
       </div>
     </motion.div>
   );

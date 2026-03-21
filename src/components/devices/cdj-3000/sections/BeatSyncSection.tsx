@@ -24,8 +24,16 @@ export default function BeatSyncSection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.55 }}
     >
-      <div data-section-id="beat-sync" className="flex flex-col gap-1">
-        <div className="flex flex-row gap-1 justify-center">
+      <div data-section-id="beat-sync">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '85.60%',
+              top: '47.00%',
+              width: '5.30%',
+              height: '3.40%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="beat-sync-inst-doubles-btn"
@@ -38,6 +46,16 @@ export default function BeatSyncSection({
                 onClick={() => onButtonClick?.('beat-sync-inst-doubles-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '92.10%',
+              top: '47.00%',
+              width: '5.30%',
+              height: '3.40%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="master-btn"
@@ -50,6 +68,16 @@ export default function BeatSyncSection({
                 onClick={() => onButtonClick?.('master-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '88.90%',
+              top: '51.10%',
+              width: '5.30%',
+              height: '3.40%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="key-sync-btn"
@@ -63,7 +91,7 @@ export default function BeatSyncSection({
                 onClick={() => onButtonClick?.('key-sync-btn')}
               />
             </motion.div>
-        </div>
+          </div>
       </div>
     </motion.div>
   );

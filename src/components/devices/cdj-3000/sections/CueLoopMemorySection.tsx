@@ -27,16 +27,32 @@ export default function CueLoopMemorySection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.35 }}
     >
-      <div data-section-id="cue-loop-memory" className="flex flex-col gap-1">
-        <div className="flex flex-row gap-1 justify-center">
+      <div data-section-id="cue-loop-memory">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '89.50%',
+              top: '35.00%',
+              width: '5.30%',
+              height: '3.90%',
+            }}
+          >
             <Knob
               id="vinyl-speed-adj-knob"
               label="VINYL SPEED ADJ. TOUCH/BRAKE"
               value={getState('vinyl-speed-adj-knob').value ?? 64}
               highlighted={isHighlighted('vinyl-speed-adj-knob')}
             />
-        </div>
-        <div className="flex flex-row gap-1 justify-center">
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '60.10%',
+              top: '41.20%',
+              width: '8.80%',
+              height: '2.40%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="cue-loop-call-left-btn"
@@ -48,6 +64,16 @@ export default function CueLoopMemorySection({
                 onClick={() => onButtonClick?.('cue-loop-call-left-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '64.80%',
+              top: '41.20%',
+              width: '8.80%',
+              height: '2.40%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="cue-loop-call-right-btn"
@@ -59,6 +85,16 @@ export default function CueLoopMemorySection({
                 onClick={() => onButtonClick?.('cue-loop-call-right-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '71.30%',
+              top: '41.20%',
+              width: '8.80%',
+              height: '2.40%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="delete-btn"
@@ -69,6 +105,16 @@ export default function CueLoopMemorySection({
                 onClick={() => onButtonClick?.('delete-btn')}
               />
             </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '77.10%',
+              top: '41.20%',
+              width: '8.80%',
+              height: '2.40%',
+            }}
+          >
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="memory-btn"
@@ -79,7 +125,7 @@ export default function CueLoopMemorySection({
                 onClick={() => onButtonClick?.('memory-btn')}
               />
             </motion.div>
-        </div>
+          </div>
       </div>
     </motion.div>
   );

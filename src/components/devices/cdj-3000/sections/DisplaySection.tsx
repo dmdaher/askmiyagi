@@ -24,16 +24,26 @@ export default function DisplaySection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.10 }}
     >
-      <div data-section-id="display" className="flex flex-row items-center gap-1">
-          <TouchDisplay
-            id="touch-display"
-            label="Touch display"
-            variant="main"
-            showMockContent
-            width={200}
-            height={120}
-            highlighted={isHighlighted('touch-display')}
-          />
+      <div data-section-id="display">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '19.70%',
+              top: '7.60%',
+              width: '60.00%',
+              height: '25.20%',
+            }}
+          >
+            <TouchDisplay
+              id="touch-display"
+              label="Touch display"
+              variant="main"
+              showMockContent
+              width={200}
+              height={120}
+              highlighted={isHighlighted('touch-display')}
+            />
+          </div>
       </div>
     </motion.div>
   );
