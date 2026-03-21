@@ -450,6 +450,12 @@ const SNAP_TOLERANCE = 8;
 /** Size normalization tolerance: sizes within 10% are normalized to average */
 const SIZE_NORM_TOLERANCE = 0.10;
 
+/** Gap normalization tolerance: gaps within this many pixels are normalized */
+const GAP_TOLERANCE = 6;
+
+/** Edge padding snap tolerance: controls near section edge snap to consistent padding */
+const EDGE_SNAP_TOLERANCE = 10;
+
 /** Section auto-fit padding in pixels */
 const SECTION_PAD = 8;
 
@@ -525,6 +531,16 @@ export function cleanupGeometry(
       if (group.length < 2) continue;
       normalizeSizes(group);
     }
+
+    // ── Equal spacing: normalize gaps in rows/columns ──────────────
+    equalizeSpacing(sectionControls, 'x');
+    equalizeSpacing(sectionControls, 'y');
+
+    // ── Center alignment: snap controls near section center ────────
+    centerSnapControls(sectionControls, section);
+
+    // ── Edge alignment: snap controls near section edges ──────────
+    edgeSnapControls(sectionControls, section);
 
     // ── Section auto-fit ────────────────────────────────────────────
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -619,5 +635,134 @@ function normalizeSizes(group: CleanedControl[]): void {
     for (const c of group) {
       c.h = roundedH;
     }
+  }
+}
+
+/**
+ * Equalize spacing: if controls are in a row (same Y) or column (same X),
+ * and the gaps between them are similar, normalize to equal spacing.
+ */
+function equalizeSpacing(controls: CleanedControl[], axis: 'x' | 'y'): void {
+  const sizeKey = axis === 'x' ? 'w' : 'h';
+  const centerKey = axis;
+
+  // Find rows/columns (controls with same center on the perpendicular axis)
+  const perpAxis = axis === 'x' ? 'y' : 'x';
+  const perpSize = axis === 'x' ? 'h' : 'w';
+
+  // Group into rows/columns
+  const groups: CleanedControl[][] = [];
+  const assigned = new Set<string>();
+
+  for (const ctrl of controls) {
+    if (assigned.has(ctrl.id)) continue;
+    const center = ctrl[perpAxis] + ctrl[perpSize] / 2;
+    const group = [ctrl];
+    assigned.add(ctrl.id);
+
+    for (const other of controls) {
+      if (assigned.has(other.id)) continue;
+      const otherCenter = other[perpAxis] + other[perpSize] / 2;
+      if (Math.abs(otherCenter - center) <= SNAP_TOLERANCE) {
+        group.push(other);
+        assigned.add(other.id);
+      }
+    }
+    if (group.length >= 2) groups.push(group);
+  }
+
+  // For each row/column, equalize gaps
+  for (const group of groups) {
+    // Sort by position on the primary axis
+    group.sort((a, b) => a[centerKey] - b[centerKey]);
+
+    // Compute gaps between adjacent controls
+    const gaps: number[] = [];
+    for (let i = 1; i < group.length; i++) {
+      const prevEnd = group[i - 1][centerKey] + group[i - 1][sizeKey];
+      const nextStart = group[i][centerKey];
+      gaps.push(nextStart - prevEnd);
+    }
+
+    if (gaps.length === 0) continue;
+
+    // Check if gaps are similar (within GAP_TOLERANCE)
+    const avgGap = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+    const allSimilar = gaps.every(g => Math.abs(g - avgGap) <= GAP_TOLERANCE);
+
+    if (allSimilar && avgGap >= 0) {
+      // Normalize: redistribute controls with equal gaps
+      const roundedGap = Math.round(avgGap);
+      let currentPos = group[0][centerKey]; // keep first control's position
+      for (let i = 1; i < group.length; i++) {
+        currentPos = group[i - 1][centerKey] + group[i - 1][sizeKey] + roundedGap;
+        group[i][centerKey] = currentPos;
+      }
+    }
+  }
+}
+
+/**
+ * Center alignment: if a control is nearly centered horizontally or
+ * vertically within its section, snap it to exact center.
+ */
+function centerSnapControls(controls: CleanedControl[], section: SectionDef): void {
+  const sectionCenterX = section.x + section.w / 2;
+  const sectionCenterY = section.y + section.h / 2;
+
+  for (const ctrl of controls) {
+    const ctrlCenterX = ctrl.x + ctrl.w / 2;
+    const ctrlCenterY = ctrl.y + ctrl.h / 2;
+
+    // Snap to horizontal center if close
+    if (Math.abs(ctrlCenterX - sectionCenterX) <= SNAP_TOLERANCE) {
+      ctrl.x = sectionCenterX - ctrl.w / 2;
+    }
+
+    // Snap to vertical center if close
+    if (Math.abs(ctrlCenterY - sectionCenterY) <= SNAP_TOLERANCE) {
+      ctrl.y = sectionCenterY - ctrl.h / 2;
+    }
+  }
+}
+
+/**
+ * Edge alignment: controls near section edges snap to consistent padding.
+ * If multiple controls are near the left/right/top/bottom edge,
+ * they all get the same padding from that edge.
+ */
+function edgeSnapControls(controls: CleanedControl[], section: SectionDef): void {
+  // Left edge
+  const nearLeft = controls.filter(c => Math.abs(c.x - section.x) <= EDGE_SNAP_TOLERANCE);
+  if (nearLeft.length >= 2) {
+    const avgPad = nearLeft.reduce((sum, c) => sum + (c.x - section.x), 0) / nearLeft.length;
+    const pad = Math.round(avgPad);
+    for (const c of nearLeft) c.x = section.x + pad;
+  }
+
+  // Top edge
+  const nearTop = controls.filter(c => Math.abs(c.y - section.y) <= EDGE_SNAP_TOLERANCE);
+  if (nearTop.length >= 2) {
+    const avgPad = nearTop.reduce((sum, c) => sum + (c.y - section.y), 0) / nearTop.length;
+    const pad = Math.round(avgPad);
+    for (const c of nearTop) c.y = section.y + pad;
+  }
+
+  // Right edge
+  const sectionRight = section.x + section.w;
+  const nearRight = controls.filter(c => Math.abs((c.x + c.w) - sectionRight) <= EDGE_SNAP_TOLERANCE);
+  if (nearRight.length >= 2) {
+    const avgPad = nearRight.reduce((sum, c) => sum + (sectionRight - (c.x + c.w)), 0) / nearRight.length;
+    const pad = Math.round(avgPad);
+    for (const c of nearRight) c.x = sectionRight - c.w - pad;
+  }
+
+  // Bottom edge
+  const sectionBottom = section.y + section.h;
+  const nearBottom = controls.filter(c => Math.abs((c.y + c.h) - sectionBottom) <= EDGE_SNAP_TOLERANCE);
+  if (nearBottom.length >= 2) {
+    const avgPad = nearBottom.reduce((sum, c) => sum + (sectionBottom - (c.y + c.h)), 0) / nearBottom.length;
+    const pad = Math.round(avgPad);
+    for (const c of nearBottom) c.y = sectionBottom - c.h - pad;
   }
 }
