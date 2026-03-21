@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import JogWheelAssembly from '@/components/controls/JogWheelAssembly';
 import TouchDisplay from '@/components/controls/TouchDisplay';
 import Wheel from '@/components/controls/Wheel';
@@ -20,6 +21,11 @@ export default function JogSection({
   const getState = (id: string) => panelState[id] ?? { active: false };
 
   return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 0.45 }}
+    >
       <div data-section-id="jog" className="flex flex-col items-center gap-1">
         <JogWheelAssembly
           id="jog-wheel"
@@ -30,5 +36,6 @@ export default function JogSection({
           highlighted={isHighlighted('jog-wheel')}
         />
       </div>
+    </motion.div>
   );
 }

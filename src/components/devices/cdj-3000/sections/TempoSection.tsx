@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import LEDIndicator from '@/components/controls/LEDIndicator';
 import PanelButton from '@/components/controls/PanelButton';
 import Slider from '@/components/controls/Slider';
@@ -20,8 +21,13 @@ export default function TempoSection({
   const getState = (id: string) => panelState[id] ?? { active: false };
 
   return (
-      <div data-section-id="tempo" className="flex flex-col h-full">
-        <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(1, 1fr)', flex: '0 0 20%' }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 0.60 }}
+    >
+      <div data-section-id="tempo" className="grid" style={{ gridTemplateColumns: 'repeat(1, 1fr)', gap: '4px' }}>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="tempo-range-btn"
             label="TEMPO ±6/±10/±16/WIDE"
@@ -30,6 +36,8 @@ export default function TempoSection({
             highlighted={isHighlighted('tempo-range-btn')}
             onClick={() => onButtonClick?.('tempo-range-btn')}
           />
+        </motion.div>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="master-tempo-btn"
             label="MASTER TEMPO"
@@ -40,35 +48,30 @@ export default function TempoSection({
             highlighted={isHighlighted('master-tempo-btn')}
             onClick={() => onButtonClick?.('master-tempo-btn')}
           />
-        </div>
-        <div className="flex flex-col items-center" style={{ flex: '0 0 75%' }}>
-          <div className="flex flex-row gap-1 w-full h-full">
-            <div className="flex flex-col gap-1 flex-1">
-              <Slider
-                id="tempo-slider"
-                label="TEMPO slider"
-                value={getState('tempo-slider').value ?? 64}
-                highlighted={isHighlighted('tempo-slider')}
-              />
-            </div>
-            <div className="flex flex-col gap-1 flex-1">
-              <PanelButton
-                id="tempo-reset-btn"
-                label="TEMPO RESET"
-                variant="standard"
-                active={getState('tempo-reset-btn').active}
-                highlighted={isHighlighted('tempo-reset-btn')}
-                onClick={() => onButtonClick?.('tempo-reset-btn')}
-              />
-              <LEDIndicator
-                id="tempo-reset-indicator"
-                on={getState('tempo-reset-indicator').ledOn ?? false}
-                color="#22c55e"
-                highlighted={isHighlighted('tempo-reset-indicator')}
-              />
-            </div>
-          </div>
-        </div>
+        </motion.div>
+        <Slider
+          id="tempo-slider"
+          label="TEMPO slider"
+          value={getState('tempo-slider').value ?? 64}
+          highlighted={isHighlighted('tempo-slider')}
+        />
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <PanelButton
+            id="tempo-reset-btn"
+            label="TEMPO RESET"
+            variant="standard"
+            active={getState('tempo-reset-btn').active}
+            highlighted={isHighlighted('tempo-reset-btn')}
+            onClick={() => onButtonClick?.('tempo-reset-btn')}
+          />
+        </motion.div>
+        <LEDIndicator
+          id="tempo-reset-indicator"
+          on={getState('tempo-reset-indicator').ledOn ?? false}
+          color="#22c55e"
+          highlighted={isHighlighted('tempo-reset-indicator')}
+        />
       </div>
+    </motion.div>
   );
 }

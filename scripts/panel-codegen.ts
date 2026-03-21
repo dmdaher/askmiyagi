@@ -118,20 +118,22 @@ function renderControl(
         : rawStyle ?? (control.shape === 'circle' ? 'transport' : undefined);
       const useIcon = resolvedIcon && control.labelDisplay === 'icon-only';
       const lines: string[] = [
-        `${indent}<PanelButton`,
-        `${indent}  id="${controlId}"`,
-        `${indent}  label="${escapeJsx(label)}"`,
+        `${indent}<motion.div whileTap={{ scale: 0.95, y: 2 }}>`,
+        `${indent}  <PanelButton`,
+        `${indent}    id="${controlId}"`,
+        `${indent}    label="${escapeJsx(label)}"`,
       ];
-      if (variant) lines.push(`${indent}  variant="${variant}"`);
-      if (control.surfaceColor) lines.push(`${indent}  surfaceColor="${control.surfaceColor}"`);
-      if (useIcon) lines.push(`${indent}  iconContent="${escapeJsx(resolvedIcon!)}"`);
-      if (control.hasLed) lines.push(`${indent}  hasLed`);
-      if (control.ledColor) lines.push(`${indent}  ledColor="${control.ledColor}"`);
+      if (variant) lines.push(`${indent}    variant="${variant}"`);
+      if (control.surfaceColor) lines.push(`${indent}    surfaceColor="${control.surfaceColor}"`);
+      if (useIcon) lines.push(`${indent}    iconContent="${escapeJsx(resolvedIcon!)}"`);
+      if (control.hasLed) lines.push(`${indent}    hasLed`);
+      if (control.ledColor) lines.push(`${indent}    ledColor="${control.ledColor}"`);
       lines.push(
-        `${indent}  active={getState('${controlId}').active}`,
-        `${indent}  highlighted={isHighlighted('${controlId}')}`,
-        `${indent}  onClick={() => onButtonClick?.('${controlId}')}`,
-        `${indent}/>`,
+        `${indent}    active={getState('${controlId}').active}`,
+        `${indent}    highlighted={isHighlighted('${controlId}')}`,
+        `${indent}    onClick={() => onButtonClick?.('${controlId}')}`,
+        `${indent}  />`,
+        `${indent}</motion.div>`,
       );
       return lines.join('\n');
     }
@@ -215,13 +217,15 @@ function renderControl(
 
     case 'pad':
       return [
-        `${indent}<PadButton`,
-        `${indent}  id="${controlId}"`,
-        `${indent}  label="${escapeJsx(label)}"`,
-        `${indent}  active={getState('${controlId}').active}`,
-        `${indent}  highlighted={isHighlighted('${controlId}')}`,
-        `${indent}  onClick={() => onButtonClick?.('${controlId}')}`,
-        `${indent}/>`,
+        `${indent}<motion.div whileTap={{ scale: 0.93, y: 2 }}>`,
+        `${indent}  <PadButton`,
+        `${indent}    id="${controlId}"`,
+        `${indent}    label="${escapeJsx(label)}"`,
+        `${indent}    active={getState('${controlId}').active}`,
+        `${indent}    highlighted={isHighlighted('${controlId}')}`,
+        `${indent}    onClick={() => onButtonClick?.('${controlId}')}`,
+        `${indent}  />`,
+        `${indent}</motion.div>`,
       ].join('\n');
 
     case 'encoder': {
@@ -693,6 +697,7 @@ function generateSectionFile(
   sectionControls: ManifestControl[],
   allControlMap: Map<string, ManifestControl>,
   groupLabels?: Array<{ id: string; text: string; controlIds: string[]; position: string }>,
+  sectionIndex?: number,
 ): string {
   const sectionPascal = sectionIdToPascal(section.id);
   const imports = collectImports(sectionControls, allControlMap);
@@ -727,8 +732,11 @@ function generateSectionFile(
     groupLabelComment = '\n  // Group labels are rendered inline within the section body\n';
   }
 
+  const animDelay = ((sectionIndex ?? 0) * 0.05).toFixed(2);
+
   return `'use client';
 
+import { motion } from 'framer-motion';
 ${importBlock}import { PanelState } from '@/types/panel';
 
 interface ${sectionPascal}SectionProps {
@@ -746,7 +754,13 @@ export default function ${sectionPascal}Section({
   const getState = (id: string) => panelState[id] ?? { active: false };
 ${groupLabelComment}
   return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: ${animDelay} }}
+    >
 ${body}
+    </motion.div>
   );
 }
 `;
@@ -783,11 +797,20 @@ function generateRootPanel(
           `            height: '${bb.h}%',`,
           `          }}`,
           `        >`,
-          `          <${pascal}Section`,
-          `            panelState={panelState}`,
-          `            highlightedControls={highlightedControls}`,
-          `            onButtonClick={onButtonClick}`,
-          `          />`,
+          `          <div`,
+          `            className="w-full h-full rounded-lg"`,
+          `            style={{`,
+          `              backgroundColor: 'rgba(0,0,0,0.12)',`,
+          `              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',`,
+          `              padding: '6px',`,
+          `            }}`,
+          `          >`,
+          `            <${pascal}Section`,
+          `              panelState={panelState}`,
+          `              highlightedControls={highlightedControls}`,
+          `              onButtonClick={onButtonClick}`,
+          `            />`,
+          `          </div>`,
           `        </div>`,
         ].join('\n');
       } else {
@@ -804,6 +827,7 @@ function generateRootPanel(
 
   return `'use client';
 
+import { motion } from 'framer-motion';
 import { PanelState } from '@/types/panel';
 import { ${constPrefix}_PANEL } from '@/lib/devices/${manifest.deviceId}-constants';
 ${sectionImports}
@@ -823,17 +847,47 @@ export default function ${pascalName}Panel({
 }: ${pascalName}PanelProps) {
   return (
     <div className="w-full h-full overflow-x-auto">
-      <div
+      <motion.div
         className="relative rounded-2xl overflow-hidden select-none"
         style={{
           width: ${constPrefix}_PANEL.width,
           minWidth: ${constPrefix}_PANEL.width,
           height: ${constPrefix}_PANEL.height,
           backgroundColor: '#1a1a1a',
+          boxShadow: '0 0 0 1px rgba(80,80,80,0.3), 0 8px 32px rgba(0,0,0,0.6), 0 2px 0 0 rgba(255,255,255,0.04) inset, 0 -2px 0 0 rgba(0,0,0,0.4) inset',
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
+        {/* Panel texture overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            backgroundImage: 'radial-gradient(ellipse at 30% 20%, rgba(60,60,60,0.12) 0%, transparent 60%)',
+          }}
+        />
+
+        {/* Top bezel accent */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none z-30"
+          style={{
+            background: 'linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 70%, transparent 95%)',
+          }}
+        />
+
+        {/* Branding bar */}
+        <div className="absolute top-1 left-4 z-30 pointer-events-none flex items-center gap-2">
+          <span className="text-[10px] font-bold text-neutral-500 tracking-[0.35em] uppercase">
+            {${constPrefix}_PANEL.manufacturer}
+          </span>
+          <span className="text-[9px] font-medium text-neutral-600 tracking-[0.2em] uppercase">
+            {${constPrefix}_PANEL.deviceName}
+          </span>
+        </div>
+
 ${sectionRenderings}
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -1071,7 +1125,8 @@ function main() {
 
   // Generate section files
   const sectionFiles: Array<{ path: string; content: string }> = [];
-  for (const section of manifest.sections) {
+  for (let si = 0; si < manifest.sections.length; si++) {
+    const section = manifest.sections[si];
     const template = templateMap.get(section.id);
     if (!template) {
       console.error(`No template found for section "${section.id}". Check templates.json.`);
@@ -1080,7 +1135,7 @@ function main() {
 
     const sectionControls = manifest.controls.filter(c => c.section === section.id);
     const sectionPascal = sectionIdToPascal(section.id);
-    const content = generateSectionFile(template, section, sectionControls, controlMap, manifest.groupLabels);
+    const content = generateSectionFile(template, section, sectionControls, controlMap, manifest.groupLabels, si);
     const filePath = path.join(sectionsDir, `${sectionPascal}Section.tsx`);
 
     sectionFiles.push({ path: filePath, content });

@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { PanelState } from '@/types/panel';
 import { CDJ3000_PANEL } from '@/lib/devices/cdj-3000-constants';
 import BrowseBarSection from './sections/BrowseBarSection';
@@ -31,15 +32,45 @@ export default function CDJ3000Panel({
 }: CDJ3000PanelProps) {
   return (
     <div className="w-full h-full overflow-x-auto">
-      <div
+      <motion.div
         className="relative rounded-2xl overflow-hidden select-none"
         style={{
           width: CDJ3000_PANEL.width,
           minWidth: CDJ3000_PANEL.width,
           height: CDJ3000_PANEL.height,
           backgroundColor: '#1a1a1a',
+          boxShadow: '0 0 0 1px rgba(80,80,80,0.3), 0 8px 32px rgba(0,0,0,0.6), 0 2px 0 0 rgba(255,255,255,0.04) inset, 0 -2px 0 0 rgba(0,0,0,0.4) inset',
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
+        {/* Panel texture overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            backgroundImage: 'radial-gradient(ellipse at 30% 20%, rgba(60,60,60,0.12) 0%, transparent 60%)',
+          }}
+        />
+
+        {/* Top bezel accent */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none z-30"
+          style={{
+            background: 'linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 70%, transparent 95%)',
+          }}
+        />
+
+        {/* Branding bar */}
+        <div className="absolute top-1 left-4 z-30 pointer-events-none flex items-center gap-2">
+          <span className="text-[10px] font-bold text-neutral-500 tracking-[0.35em] uppercase">
+            {CDJ3000_PANEL.manufacturer}
+          </span>
+          <span className="text-[9px] font-medium text-neutral-600 tracking-[0.2em] uppercase">
+            {CDJ3000_PANEL.deviceName}
+          </span>
+        </div>
+
         <div
           className="absolute"
           style={{
@@ -49,11 +80,20 @@ export default function CDJ3000Panel({
             height: '4%',
           }}
         >
-          <BrowseBarSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <BrowseBarSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -64,11 +104,20 @@ export default function CDJ3000Panel({
             height: '20%',
           }}
         >
-          <MediaSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <MediaSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -79,11 +128,20 @@ export default function CDJ3000Panel({
             height: '29%',
           }}
         >
-          <DisplaySection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <DisplaySection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -94,11 +152,20 @@ export default function CDJ3000Panel({
             height: '31%',
           }}
         >
-          <NavigationSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <NavigationSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -109,11 +176,20 @@ export default function CDJ3000Panel({
             height: '12%',
           }}
         >
-          <PerformanceModesSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <PerformanceModesSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -124,11 +200,20 @@ export default function CDJ3000Panel({
             height: '5%',
           }}
         >
-          <HotCueSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <HotCueSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -139,11 +224,20 @@ export default function CDJ3000Panel({
             height: '9%',
           }}
         >
-          <LoopSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <LoopSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -154,11 +248,20 @@ export default function CDJ3000Panel({
             height: '12%',
           }}
         >
-          <CueLoopMemorySection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <CueLoopMemorySection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -169,11 +272,20 @@ export default function CDJ3000Panel({
             height: '48%',
           }}
         >
-          <LeftTransportSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <LeftTransportSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -184,11 +296,20 @@ export default function CDJ3000Panel({
             height: '50%',
           }}
         >
-          <JogSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <JogSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -199,11 +320,20 @@ export default function CDJ3000Panel({
             height: '11%',
           }}
         >
-          <JogModeControlsSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <JogModeControlsSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -214,11 +344,20 @@ export default function CDJ3000Panel({
             height: '12%',
           }}
         >
-          <BeatSyncSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <BeatSyncSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
         <div
           className="absolute"
@@ -229,13 +368,22 @@ export default function CDJ3000Panel({
             height: '34%',
           }}
         >
-          <TempoSection
-            panelState={panelState}
-            highlightedControls={highlightedControls}
-            onButtonClick={onButtonClick}
-          />
+          <div
+            className="w-full h-full rounded-lg"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.12)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+              padding: '6px',
+            }}
+          >
+            <TempoSection
+              panelState={panelState}
+              highlightedControls={highlightedControls}
+              onButtonClick={onButtonClick}
+            />
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

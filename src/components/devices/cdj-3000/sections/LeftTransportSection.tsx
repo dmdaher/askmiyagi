@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import DirectionSwitch from '@/components/controls/DirectionSwitch';
 import PanelButton from '@/components/controls/PanelButton';
 import { PanelState } from '@/types/panel';
@@ -21,8 +22,13 @@ export default function LeftTransportSection({
   // Group labels are rendered inline within the section body
 
   return (
-      <div data-section-id="left-transport" className="flex flex-col gap-1">
-        <div className="flex flex-row gap-1 justify-center">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 0.40 }}
+    >
+      <div data-section-id="left-transport" className="grid" style={{ gridTemplateColumns: 'repeat(undefined, 1fr)', gap: '4px' }}>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="beat-jump-left-btn"
             label="BEAT JUMP ◄"
@@ -32,6 +38,8 @@ export default function LeftTransportSection({
             highlighted={isHighlighted('beat-jump-left-btn')}
             onClick={() => onButtonClick?.('beat-jump-left-btn')}
           />
+        </motion.div>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="beat-jump-right-btn"
             label="BEAT JUMP ►"
@@ -41,16 +49,14 @@ export default function LeftTransportSection({
             highlighted={isHighlighted('beat-jump-right-btn')}
             onClick={() => onButtonClick?.('beat-jump-right-btn')}
           />
-        </div>
-        <div className="flex flex-row gap-1 justify-center">
-          <DirectionSwitch
-            id="direction-lever"
-            label="DIRECTION FWD, REV, SLIP REV"
-            positions={["FWD","REV","SLIP REV"]}
-            highlighted={isHighlighted('direction-lever')}
-          />
-        </div>
-        <div className="flex flex-row gap-1 justify-center">
+        </motion.div>
+        <DirectionSwitch
+          id="direction-lever"
+          label="DIRECTION FWD, REV, SLIP REV"
+          positions={["FWD","REV","SLIP REV"]}
+          highlighted={isHighlighted('direction-lever')}
+        />
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="track-search-bwd-btn"
             label="TRACK SEARCH I◄◄"
@@ -60,6 +66,8 @@ export default function LeftTransportSection({
             highlighted={isHighlighted('track-search-bwd-btn')}
             onClick={() => onButtonClick?.('track-search-bwd-btn')}
           />
+        </motion.div>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="track-search-fwd-btn"
             label="TRACK SEARCH ►►I"
@@ -69,8 +77,8 @@ export default function LeftTransportSection({
             highlighted={isHighlighted('track-search-fwd-btn')}
             onClick={() => onButtonClick?.('track-search-fwd-btn')}
           />
-        </div>
-        <div className="flex flex-row gap-1 justify-center">
+        </motion.div>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="search-bwd-btn"
             label="SEARCH ◄◄"
@@ -80,6 +88,8 @@ export default function LeftTransportSection({
             highlighted={isHighlighted('search-bwd-btn')}
             onClick={() => onButtonClick?.('search-bwd-btn')}
           />
+        </motion.div>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="search-fwd-btn"
             label="SEARCH ►►"
@@ -89,8 +99,8 @@ export default function LeftTransportSection({
             highlighted={isHighlighted('search-fwd-btn')}
             onClick={() => onButtonClick?.('search-fwd-btn')}
           />
-        </div>
-        <div className="flex flex-row gap-1 justify-center">
+        </motion.div>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="cue-btn"
             label="CUE"
@@ -102,8 +112,8 @@ export default function LeftTransportSection({
             highlighted={isHighlighted('cue-btn')}
             onClick={() => onButtonClick?.('cue-btn')}
           />
-        </div>
-        <div className="flex flex-row gap-1 justify-center">
+        </motion.div>
+        <motion.div whileTap={{ scale: 0.95, y: 2 }}>
           <PanelButton
             id="play-pause-btn"
             label="PLAY/PAUSE ►/II"
@@ -116,7 +126,8 @@ export default function LeftTransportSection({
             highlighted={isHighlighted('play-pause-btn')}
             onClick={() => onButtonClick?.('play-pause-btn')}
           />
-        </div>
+        </motion.div>
       </div>
+    </motion.div>
   );
 }

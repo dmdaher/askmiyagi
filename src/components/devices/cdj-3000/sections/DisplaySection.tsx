@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import TouchDisplay from '@/components/controls/TouchDisplay';
 import { PanelState } from '@/types/panel';
 
@@ -18,7 +19,12 @@ export default function DisplaySection({
   const getState = (id: string) => panelState[id] ?? { active: false };
 
   return (
-      <div data-section-id="display" className="flex flex-col items-center gap-1">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 0.10 }}
+    >
+      <div data-section-id="display" className="flex flex-row items-center gap-1">
         <TouchDisplay
           id="touch-display"
           label="Touch display"
@@ -29,5 +35,6 @@ export default function DisplaySection({
           highlighted={isHighlighted('touch-display')}
         />
       </div>
+    </motion.div>
   );
 }
