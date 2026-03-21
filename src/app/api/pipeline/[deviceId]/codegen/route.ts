@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { cleanupGeometry } from '@/lib/layout-inference';
 import type { SectionDef, ControlDef } from '@/components/panel-editor/store/manifestSlice';
 
 /**
  * POST /api/pipeline/{deviceId}/codegen
  *
  * Before running codegen:
- * 1. Read manifest-editor.json (the contractor's pixel positions)
- * 2. Run cleanupGeometry() on the positions (snap alignment, normalize sizes)
- * 3. Write cleaned positions as editorPosition percentages on each control in manifest.json
- * 4. Write cleaned geometry to .pipeline/{deviceId}/cleaned-geometry.json for reference
- * 5. Run codegen
+ * 1. Read manifest-editor.json (contractor's positions, already cleaned by editor on Approve)
+ * 2. Update section bounding boxes in manifest.json from editor positions
+ * 3. Merge editor overrides (shape, color, label, etc.) into manifest controls
+ * 4. Write editorPosition percentages on each control
+ * 5. Backup manifest.json, then write updated version
+ * 6. Run codegen
  */
 export async function POST(
   _request: NextRequest,
@@ -44,43 +44,24 @@ export async function POST(
           }
         }
 
-        // ── Step 1: Run geometry cleanup on the editor's pixel positions ──
-        const cleanupResult = cleanupGeometry(
-          editorSections,
-          editorControls,
-          canvasW,
-          canvasH,
-        );
+        // ── Step 1: Use editor positions directly (cleanup already ran in the editor) ──
+        // The editor applies geometry cleanup on Approve & Build, then auto-saves
+        // the cleaned positions to manifest-editor.json. No need to run cleanup again.
 
-        // Write cleaned geometry for reference (NEVER overwrite manifest-editor.json)
-        const cleanedGeometryPath = path.join(pipelineDir, 'cleaned-geometry.json');
-        fs.writeFileSync(cleanedGeometryPath, JSON.stringify(cleanupResult, null, 2));
-        console.log(`Wrote cleaned geometry to ${cleanedGeometryPath}`);
-
-        // Build lookup from cleaned sections/controls
-        const cleanedSectionMap = new Map<string, typeof cleanupResult.sections[number]>();
-        const cleanedControlMap = new Map<string, { x: number; y: number; w: number; h: number }>();
-        for (const cs of cleanupResult.sections) {
-          cleanedSectionMap.set(cs.id, cs);
-          for (const cc of cs.controls) {
-            cleanedControlMap.set(cc.id, { x: cc.x, y: cc.y, w: cc.w, h: cc.h });
-          }
-        }
-
-        // ── Step 2: Update section bounding boxes from cleaned positions ──
+        // Update section bounding boxes from editor section positions
         for (const section of manifest.sections) {
-          const cleaned = cleanedSectionMap.get(section.id);
-          if (cleaned) {
+          const editorSection = editorSections[section.id];
+          if (editorSection) {
             section.panelBoundingBox = {
-              x: Math.round((cleaned.x / canvasW) * 100 * 10) / 10,
-              y: Math.round((cleaned.y / canvasH) * 100 * 10) / 10,
-              w: Math.round((cleaned.w / canvasW) * 100 * 10) / 10,
-              h: Math.round((cleaned.h / canvasH) * 100 * 10) / 10,
+              x: Math.round((editorSection.x / canvasW) * 100 * 10) / 10,
+              y: Math.round((editorSection.y / canvasH) * 100 * 10) / 10,
+              w: Math.round((editorSection.w / canvasW) * 100 * 10) / 10,
+              h: Math.round((editorSection.h / canvasH) * 100 * 10) / 10,
             };
           }
         }
 
-        // ── Step 3: Merge editor overrides + cleaned positions into controls ──
+        // ── Step 2: Merge editor overrides + positions into controls ──
         for (const control of manifest.controls) {
           const editorControl = editorControls[control.id];
           if (editorControl) {
@@ -98,14 +79,13 @@ export async function POST(
             if (editorControl.type) control.type = editorControl.type;
           }
 
-          // Use CLEANED positions (snapped/normalized) instead of raw editor positions
-          const cleanedPos = cleanedControlMap.get(control.id);
-          if (cleanedPos) {
+          // Use editor positions directly (already cleaned by the editor on Approve)
+          if (editorControl) {
             (control as any).editorPosition = {
-              x: Math.round((cleanedPos.x / canvasW) * 1000) / 10,
-              y: Math.round((cleanedPos.y / canvasH) * 1000) / 10,
-              w: Math.round((cleanedPos.w / canvasW) * 1000) / 10,
-              h: Math.round((cleanedPos.h / canvasH) * 1000) / 10,
+              x: Math.round((editorControl.x / canvasW) * 1000) / 10,
+              y: Math.round((editorControl.y / canvasH) * 1000) / 10,
+              w: Math.round((editorControl.w / canvasW) * 1000) / 10,
+              h: Math.round((editorControl.h / canvasH) * 1000) / 10,
             };
           }
         }
