@@ -112,8 +112,10 @@ function renderControl(
   switch (control.type) {
     case 'button': {
       // Determine variant: explicit buttonStyle takes priority, then shape-based inference
-      const variant = control.buttonStyle
-        ?? (control.shape === 'circle' ? 'transport' : undefined);
+      // Map 'raised' → 'standard' since PanelButton doesn't have a 'raised' variant
+      const rawStyle = control.buttonStyle;
+      const variant = rawStyle === 'raised' ? 'standard'
+        : rawStyle ?? (control.shape === 'circle' ? 'transport' : undefined);
       const useIcon = resolvedIcon && control.labelDisplay === 'icon-only';
       const lines: string[] = [
         `${indent}<PanelButton`,
@@ -156,11 +158,7 @@ function renderControl(
       } else {
         lines.push(`${indent}  color={getState('${controlId}').ledColor}`);
       }
-      // Dual-label variant: label contains '/' separator
-      if (control.ledVariant === 'dual-label' && label.includes('/')) {
-        lines.push(`${indent}  variant="dual-label"`);
-        lines.push(`${indent}  label="${escapeJsx(label)}"`);
-      }
+      // Note: dual-label LED variant is handled by the editor/runtime, not codegen
       lines.push(
         `${indent}  highlighted={isHighlighted('${controlId}')}`,
         `${indent}/>`,

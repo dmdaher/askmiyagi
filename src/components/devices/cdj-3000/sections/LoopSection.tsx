@@ -22,6 +22,9 @@ export default function LoopSection({
         <PanelButton
           id="loop-in-cue-btn"
           label="LOOP IN/CUE (IN ADJUST)"
+          variant="standard"
+          hasLed
+          ledColor="#22c55e"
           active={getState('loop-in-cue-btn').active}
           highlighted={isHighlighted('loop-in-cue-btn')}
           onClick={() => onButtonClick?.('loop-in-cue-btn')}
@@ -29,6 +32,9 @@ export default function LoopSection({
         <PanelButton
           id="loop-out-btn"
           label="LOOP OUT (OUT ADJUST)"
+          variant="standard"
+          hasLed
+          ledColor="#22c55e"
           active={getState('loop-out-btn').active}
           highlighted={isHighlighted('loop-out-btn')}
           onClick={() => onButtonClick?.('loop-out-btn')}
@@ -36,6 +42,9 @@ export default function LoopSection({
         <PanelButton
           id="loop-reloop-exit-btn"
           label="LOOP RELOOP/EXIT"
+          variant="standard"
+          hasLed
+          ledColor="#22c55e"
           active={getState('loop-reloop-exit-btn').active}
           highlighted={isHighlighted('loop-reloop-exit-btn')}
           onClick={() => onButtonClick?.('loop-reloop-exit-btn')}
@@ -43,6 +52,9 @@ export default function LoopSection({
         <PanelButton
           id="4-beat-loop-btn"
           label="4 BEAT LOOP (1/2X)"
+          variant="standard"
+          hasLed
+          ledColor="#22c55e"
           active={getState('4-beat-loop-btn').active}
           highlighted={isHighlighted('4-beat-loop-btn')}
           onClick={() => onButtonClick?.('4-beat-loop-btn')}
@@ -50,6 +62,9 @@ export default function LoopSection({
         <PanelButton
           id="8-beat-loop-btn"
           label="8 BEAT LOOP (2X)"
+          variant="standard"
+          hasLed
+          ledColor="#22c55e"
           active={getState('8-beat-loop-btn').active}
           highlighted={isHighlighted('8-beat-loop-btn')}
           onClick={() => onButtonClick?.('8-beat-loop-btn')}

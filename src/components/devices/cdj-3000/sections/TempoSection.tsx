@@ -25,6 +25,7 @@ export default function TempoSection({
           <PanelButton
             id="tempo-range-btn"
             label="TEMPO ±6/±10/±16/WIDE"
+            variant="standard"
             active={getState('tempo-range-btn').active}
             highlighted={isHighlighted('tempo-range-btn')}
             onClick={() => onButtonClick?.('tempo-range-btn')}
@@ -32,6 +33,9 @@ export default function TempoSection({
           <PanelButton
             id="master-tempo-btn"
             label="MASTER TEMPO"
+            variant="standard"
+            hasLed
+            ledColor="#f59e0b"
             active={getState('master-tempo-btn').active}
             highlighted={isHighlighted('master-tempo-btn')}
             onClick={() => onButtonClick?.('master-tempo-btn')}
@@ -51,6 +55,7 @@ export default function TempoSection({
               <PanelButton
                 id="tempo-reset-btn"
                 label="TEMPO RESET"
+                variant="standard"
                 active={getState('tempo-reset-btn').active}
                 highlighted={isHighlighted('tempo-reset-btn')}
                 onClick={() => onButtonClick?.('tempo-reset-btn')}
@@ -58,7 +63,7 @@ export default function TempoSection({
               <LEDIndicator
                 id="tempo-reset-indicator"
                 on={getState('tempo-reset-indicator').ledOn ?? false}
-                color={getState('tempo-reset-indicator').ledColor}
+                color="#22c55e"
                 highlighted={isHighlighted('tempo-reset-indicator')}
               />
             </div>

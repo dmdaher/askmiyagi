@@ -17,6 +17,8 @@ export default function HotCueSection({
   const isHighlighted = (id: string) => highlightedControls.includes(id);
   const getState = (id: string) => panelState[id] ?? { active: false };
 
+  // Group labels are rendered inline within the section body
+
   return (
       <div data-section-id="hot-cue" className="flex flex-row items-center gap-1">
         <PadButton

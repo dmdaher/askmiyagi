@@ -1,5 +1,7 @@
 'use client';
 
+import JogWheelAssembly from '@/components/controls/JogWheelAssembly';
+import TouchDisplay from '@/components/controls/TouchDisplay';
 import Wheel from '@/components/controls/Wheel';
 import { PanelState } from '@/types/panel';
 
@@ -19,18 +21,14 @@ export default function JogSection({
 
   return (
       <div data-section-id="jog" className="flex flex-col items-center gap-1">
-        <Wheel
+        <JogWheelAssembly
           id="jog-wheel"
           label="Jog wheel (–REV/+FWD)"
+          wheelSize={160}
+          displaySize={60}
+          ringColor="#22c55e"
           highlighted={isHighlighted('jog-wheel')}
         />
-        <div
-          data-control-id="jog-display"
-          className="bg-gray-900 rounded border border-gray-700 flex items-center justify-center text-xs text-gray-500"
-          style={{ minHeight: 120, minWidth: 200 }}
-        >
-          Jog display
-        </div>
       </div>
   );
 }

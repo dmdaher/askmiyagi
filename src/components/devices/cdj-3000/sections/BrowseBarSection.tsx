@@ -23,6 +23,7 @@ export default function BrowseBarSection({
         <PanelButton
           id="source-btn"
           label="SOURCE"
+          variant="flat-key"
           active={getState('source-btn').active}
           highlighted={isHighlighted('source-btn')}
           onClick={() => onButtonClick?.('source-btn')}
@@ -30,6 +31,7 @@ export default function BrowseBarSection({
         <PanelButton
           id="browse-btn"
           label="BROWSE"
+          variant="flat-key"
           active={getState('browse-btn').active}
           highlighted={isHighlighted('browse-btn')}
           onClick={() => onButtonClick?.('browse-btn')}
@@ -37,6 +39,7 @@ export default function BrowseBarSection({
         <PanelButton
           id="tag-list-btn"
           label="TAG LIST"
+          variant="flat-key"
           active={getState('tag-list-btn').active}
           highlighted={isHighlighted('tag-list-btn')}
           onClick={() => onButtonClick?.('tag-list-btn')}
@@ -44,12 +47,13 @@ export default function BrowseBarSection({
         <LEDIndicator
           id="source-indicator"
           on={getState('source-indicator').ledOn ?? false}
-          color={getState('source-indicator').ledColor}
+          color="#22c55e"
           highlighted={isHighlighted('source-indicator')}
         />
         <PanelButton
           id="playlist-btn"
           label="PLAYLIST"
+          variant="flat-key"
           active={getState('playlist-btn').active}
           highlighted={isHighlighted('playlist-btn')}
           onClick={() => onButtonClick?.('playlist-btn')}
@@ -57,6 +61,7 @@ export default function BrowseBarSection({
         <PanelButton
           id="search-btn"
           label="SEARCH"
+          variant="flat-key"
           active={getState('search-btn').active}
           highlighted={isHighlighted('search-btn')}
           onClick={() => onButtonClick?.('search-btn')}
@@ -64,6 +69,7 @@ export default function BrowseBarSection({
         <PanelButton
           id="menu-utility-btn"
           label="MENU/UTILITY"
+          variant="flat-key"
           active={getState('menu-utility-btn').active}
           highlighted={isHighlighted('menu-utility-btn')}
           onClick={() => onButtonClick?.('menu-utility-btn')}

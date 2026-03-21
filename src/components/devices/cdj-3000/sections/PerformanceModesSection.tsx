@@ -22,6 +22,9 @@ export default function PerformanceModesSection({
         <PanelButton
           id="time-mode-btn"
           label="TIME MODE/AUTO CUE"
+          variant="rubber"
+          hasLed
+          ledColor="#22c55e"
           active={getState('time-mode-btn').active}
           highlighted={isHighlighted('time-mode-btn')}
           onClick={() => onButtonClick?.('time-mode-btn')}
@@ -29,6 +32,9 @@ export default function PerformanceModesSection({
         <PanelButton
           id="quantize-btn"
           label="QUANTIZE"
+          variant="rubber"
+          hasLed
+          ledColor="#ef4444"
           active={getState('quantize-btn').active}
           highlighted={isHighlighted('quantize-btn')}
           onClick={() => onButtonClick?.('quantize-btn')}
@@ -36,6 +42,9 @@ export default function PerformanceModesSection({
         <PanelButton
           id="slip-btn"
           label="SLIP"
+          variant="rubber"
+          hasLed
+          ledColor="#3b82f6"
           active={getState('slip-btn').active}
           highlighted={isHighlighted('slip-btn')}
           onClick={() => onButtonClick?.('slip-btn')}

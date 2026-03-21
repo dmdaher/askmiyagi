@@ -24,6 +24,7 @@ export default function JogModeControlsSection({
         <PanelButton
           id="jog-mode-btn"
           label="JOG MODE"
+          variant="standard"
           active={getState('jog-mode-btn').active}
           highlighted={isHighlighted('jog-mode-btn')}
           onClick={() => onButtonClick?.('jog-mode-btn')}
@@ -31,7 +32,7 @@ export default function JogModeControlsSection({
         <LEDIndicator
           id="vinyl-cdj-indicator"
           on={getState('vinyl-cdj-indicator').ledOn ?? false}
-          color={getState('vinyl-cdj-indicator').ledColor}
+          color="#22c55e"
           highlighted={isHighlighted('vinyl-cdj-indicator')}
         />
         <Knob

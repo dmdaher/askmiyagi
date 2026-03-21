@@ -1,5 +1,6 @@
 'use client';
 
+import TouchDisplay from '@/components/controls/TouchDisplay';
 import { PanelState } from '@/types/panel';
 
 interface DisplaySectionProps {
@@ -18,13 +19,15 @@ export default function DisplaySection({
 
   return (
       <div data-section-id="display" className="flex flex-col items-center gap-1">
-        <div
-          data-control-id="touch-display"
-          className="bg-gray-900 rounded border border-gray-700 flex items-center justify-center text-xs text-gray-500"
-          style={{ minHeight: 120, minWidth: 200 }}
-        >
-          Touch display
-        </div>
+        <TouchDisplay
+          id="touch-display"
+          label="Touch display"
+          variant="main"
+          showMockContent
+          width={200}
+          height={120}
+          highlighted={isHighlighted('touch-display')}
+        />
       </div>
   );
 }

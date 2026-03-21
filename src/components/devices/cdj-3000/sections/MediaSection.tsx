@@ -2,6 +2,7 @@
 
 import LEDIndicator from '@/components/controls/LEDIndicator';
 import PanelButton from '@/components/controls/PanelButton';
+import Port from '@/components/controls/Port';
 import { PanelState } from '@/types/panel';
 
 interface MediaSectionProps {
@@ -21,17 +22,16 @@ export default function MediaSection({
   return (
       <div data-section-id="media" className="flex flex-col gap-1">
         <div className="flex flex-row gap-1 justify-center">
-          <PanelButton
+          <Port
             id="usb-port"
             label="USB port"
-            active={getState('usb-port').active}
+            variant="usb-a"
             highlighted={isHighlighted('usb-port')}
-            onClick={() => onButtonClick?.('usb-port')}
           />
           <LEDIndicator
             id="usb-indicator"
             on={getState('usb-indicator').ledOn ?? false}
-            color={getState('usb-indicator').ledColor}
+            color="#22c55e"
             highlighted={isHighlighted('usb-indicator')}
           />
         </div>
@@ -39,25 +39,25 @@ export default function MediaSection({
           <PanelButton
             id="usb-stop-btn"
             label="USB STOP"
+            variant="standard"
             active={getState('usb-stop-btn').active}
             highlighted={isHighlighted('usb-stop-btn')}
             onClick={() => onButtonClick?.('usb-stop-btn')}
           />
         </div>
         <div className="flex flex-row gap-1 justify-center">
-          <PanelButton
+          <Port
             id="sd-card-slot"
             label="SD memory card slot"
-            active={getState('sd-card-slot').active}
+            variant="sd-card"
             highlighted={isHighlighted('sd-card-slot')}
-            onClick={() => onButtonClick?.('sd-card-slot')}
           />
         </div>
         <div className="flex flex-row gap-1 justify-center">
           <LEDIndicator
             id="sd-indicator"
             on={getState('sd-indicator').ledOn ?? false}
-            color={getState('sd-indicator').ledColor}
+            color="#f59e0b"
             highlighted={isHighlighted('sd-indicator')}
           />
         </div>
