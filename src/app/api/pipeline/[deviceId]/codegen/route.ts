@@ -60,7 +60,7 @@ export async function POST(
           }
         }
 
-        // Update control enriched fields from editor (in case contractor changed type, shape, etc.)
+        // Update control enriched fields AND positions from editor
         for (const control of manifest.controls) {
           const editorControl = editorControls[control.id];
           if (editorControl) {
@@ -76,6 +76,15 @@ export async function POST(
             if (editorControl.ledColor !== undefined) control.ledColor = editorControl.ledColor;
             if (editorControl.hasLed !== undefined) control.hasLed = editorControl.hasLed;
             if (editorControl.type) control.type = editorControl.type;
+
+            // Save the contractor's exact pixel positions as percentages relative to the panel
+            // This allows codegen to place controls at exact positions
+            (control as any).editorPosition = {
+              x: Math.round((editorControl.x / canvasW) * 1000) / 10,
+              y: Math.round((editorControl.y / canvasH) * 1000) / 10,
+              w: Math.round((editorControl.w / canvasW) * 1000) / 10,
+              h: Math.round((editorControl.h / canvasH) * 1000) / 10,
+            };
           }
         }
 

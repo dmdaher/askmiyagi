@@ -628,11 +628,69 @@ function renderTransportPair(
   ].join('\n');
 }
 
+/**
+ * If controls have editorPosition (set by the codegen API merge from editor data),
+ * render them with absolute positioning to exactly match the contractor's layout.
+ * This bypasses archetype-based flex/grid layout entirely.
+ */
+function renderAbsolutePositioned(
+  section: ManifestSection,
+  controlMap: Map<string, ManifestControl>,
+): string | null {
+  const sectionControls = section.controls
+    .map(id => ({ id, ctrl: controlMap.get(id) }))
+    .filter(({ ctrl }) => ctrl && !ctrl.nestedIn && (ctrl as any).editorPosition);
+
+  // Only use absolute positioning if ALL controls have editor positions
+  if (sectionControls.length === 0) return null;
+  const allHavePositions = section.controls.every(id => {
+    const ctrl = controlMap.get(id);
+    return !ctrl || ctrl.nestedIn || (ctrl as any).editorPosition;
+  });
+  if (!allHavePositions) return null;
+
+  const bb = section.panelBoundingBox ?? { x: 0, y: 0, w: 100, h: 100 };
+
+  const controlJsx = sectionControls.map(({ id, ctrl }) => {
+    const ep = (ctrl as any).editorPosition;
+    // Convert control position from panel-% to section-relative-%
+    const relX = ((ep.x - bb.x) / bb.w) * 100;
+    const relY = ((ep.y - bb.y) / bb.h) * 100;
+    const relW = (ep.w / bb.w) * 100;
+    const relH = (ep.h / bb.h) * 100;
+
+    const controlJsxStr = renderControl(id, ctrl!, '            ', controlMap);
+    return [
+      `          <div`,
+      `            className="absolute"`,
+      `            style={{`,
+      `              left: '${relX.toFixed(1)}%',`,
+      `              top: '${relY.toFixed(1)}%',`,
+      `              width: '${relW.toFixed(1)}%',`,
+      `              height: '${relH.toFixed(1)}%',`,
+      `            }}`,
+      `          >`,
+      controlJsxStr,
+      `          </div>`,
+    ].join('\n');
+  }).join('\n');
+
+  return [
+    `      <div data-section-id="${section.id}" className="relative w-full h-full">`,
+    controlJsx,
+    `      </div>`,
+  ].join('\n');
+}
+
 function renderSectionBody(
   template: TemplateSpec,
   section: ManifestSection,
   controlMap: Map<string, ManifestControl>,
 ): string {
+  // If editor positions are available, use absolute positioning for exact match
+  const absoluteLayout = renderAbsolutePositioned(section, controlMap);
+  if (absoluteLayout) return absoluteLayout;
+
   switch (template.archetype) {
     case 'single-row':
       return renderSingleRow(template.controlSlots, controlMap, section.id);
