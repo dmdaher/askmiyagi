@@ -37,7 +37,7 @@ export default function PerformanceModesSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="time-mode-btn"
-                label="TIME MODE/AUTO CUE"
+                label=""
                 variant="rubber"
                 hasLed
                 ledColor="#22c55e"
@@ -59,7 +59,7 @@ export default function PerformanceModesSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="quantize-btn"
-                label="QUANTIZE"
+                label=""
                 variant="rubber"
                 hasLed
                 ledColor="#ef4444"
@@ -81,7 +81,7 @@ export default function PerformanceModesSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="slip-btn"
-                label="SLIP"
+                label=""
                 variant="rubber"
                 hasLed
                 ledColor="#3b82f6"

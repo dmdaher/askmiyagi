@@ -38,7 +38,7 @@ export default function JogSection({
           >
             <JogWheelAssembly
               id="jog-wheel"
-              label="Jog wheel (–REV/+FWD)"
+              label=""
               wheelSize={160}
               displaySize={60}
               ringColor="#22c55e"

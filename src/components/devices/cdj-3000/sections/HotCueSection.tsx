@@ -39,7 +39,7 @@ export default function HotCueSection({
             <motion.div whileTap={{ scale: 0.93, y: 2 }}>
               <PadButton
                 id="hot-cue-a"
-                label="HOT CUE A"
+                label=""
                 active={getState('hot-cue-a').active}
                 highlighted={isHighlighted('hot-cue-a')}
                 onClick={() => onButtonClick?.('hot-cue-a')}
@@ -58,7 +58,7 @@ export default function HotCueSection({
             <motion.div whileTap={{ scale: 0.93, y: 2 }}>
               <PadButton
                 id="hot-cue-b"
-                label="HOT CUE B"
+                label=""
                 active={getState('hot-cue-b').active}
                 highlighted={isHighlighted('hot-cue-b')}
                 onClick={() => onButtonClick?.('hot-cue-b')}
@@ -77,7 +77,7 @@ export default function HotCueSection({
             <motion.div whileTap={{ scale: 0.93, y: 2 }}>
               <PadButton
                 id="hot-cue-c"
-                label="HOT CUE C"
+                label=""
                 active={getState('hot-cue-c').active}
                 highlighted={isHighlighted('hot-cue-c')}
                 onClick={() => onButtonClick?.('hot-cue-c')}
@@ -96,7 +96,7 @@ export default function HotCueSection({
             <motion.div whileTap={{ scale: 0.93, y: 2 }}>
               <PadButton
                 id="hot-cue-d"
-                label="HOT CUE D"
+                label=""
                 active={getState('hot-cue-d').active}
                 highlighted={isHighlighted('hot-cue-d')}
                 onClick={() => onButtonClick?.('hot-cue-d')}
@@ -115,7 +115,7 @@ export default function HotCueSection({
             <motion.div whileTap={{ scale: 0.93, y: 2 }}>
               <PadButton
                 id="hot-cue-e"
-                label="HOT CUE E"
+                label=""
                 active={getState('hot-cue-e').active}
                 highlighted={isHighlighted('hot-cue-e')}
                 onClick={() => onButtonClick?.('hot-cue-e')}
@@ -134,7 +134,7 @@ export default function HotCueSection({
             <motion.div whileTap={{ scale: 0.93, y: 2 }}>
               <PadButton
                 id="hot-cue-f"
-                label="HOT CUE F"
+                label=""
                 active={getState('hot-cue-f').active}
                 highlighted={isHighlighted('hot-cue-f')}
                 onClick={() => onButtonClick?.('hot-cue-f')}
@@ -153,7 +153,7 @@ export default function HotCueSection({
             <motion.div whileTap={{ scale: 0.93, y: 2 }}>
               <PadButton
                 id="hot-cue-g"
-                label="HOT CUE G"
+                label=""
                 active={getState('hot-cue-g').active}
                 highlighted={isHighlighted('hot-cue-g')}
                 onClick={() => onButtonClick?.('hot-cue-g')}
@@ -172,7 +172,7 @@ export default function HotCueSection({
             <motion.div whileTap={{ scale: 0.93, y: 2 }}>
               <PadButton
                 id="hot-cue-h"
-                label="HOT CUE H"
+                label=""
                 active={getState('hot-cue-h').active}
                 highlighted={isHighlighted('hot-cue-h')}
                 onClick={() => onButtonClick?.('hot-cue-h')}

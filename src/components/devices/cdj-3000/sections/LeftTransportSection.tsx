@@ -81,7 +81,7 @@ export default function LeftTransportSection({
           >
             <DirectionSwitch
               id="direction-lever"
-              label="DIRECTION FWD, REV, SLIP REV"
+              label=""
               positions={["FWD","REV","SLIP REV"]}
               highlighted={isHighlighted('direction-lever')}
             />
@@ -197,7 +197,7 @@ export default function LeftTransportSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '1.80%',
-              top: '89.20%',
+              top: '90.30%',
               width: '13.30%',
               height: '7.30%',
             }}

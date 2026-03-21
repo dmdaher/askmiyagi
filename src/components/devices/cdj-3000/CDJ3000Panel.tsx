@@ -184,7 +184,7 @@ export default function CDJ3000Panel({
             left: '0.6%',
             top: '50.4%',
             width: '15.6%',
-            height: '46.6%',
+            height: '47.7%',
             backgroundColor: 'rgba(0,0,0,0.12)',
             boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
           }}
@@ -236,7 +236,7 @@ export default function CDJ3000Panel({
             left: '79.2%',
             top: '58%',
             width: '21.3%',
-            height: '36.9%',
+            height: '37.6%',
             backgroundColor: 'rgba(0,0,0,0.12)',
             boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
           }}
@@ -245,12 +245,15 @@ export default function CDJ3000Panel({
         {/* All controls — panel-level percentage positioning */}
         {/* source-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '11.2%',
             top: '2.0%',
-            width: '21.3%',
-            height: '3.9%',
+            width: 256,
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -267,12 +270,15 @@ export default function CDJ3000Panel({
 
         {/* browse-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '22.3%',
             top: '2.0%',
-            width: '21.3%',
-            height: '3.9%',
+            width: 256,
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -289,12 +295,15 @@ export default function CDJ3000Panel({
 
         {/* tag-list-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '44.6%',
             top: '2.0%',
-            width: '21.3%',
-            height: '3.9%',
+            width: 256,
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -311,12 +320,15 @@ export default function CDJ3000Panel({
 
         {/* source-indicator */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '48.5%',
             top: '2.0%',
-            width: '2.5%',
-            height: '1.7%',
+            width: 30,
+            height: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <LEDIndicator
@@ -329,12 +341,15 @@ export default function CDJ3000Panel({
 
         {/* playlist-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '34.7%',
             top: '2.0%',
-            width: '21.3%',
-            height: '3.9%',
+            width: 256,
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -351,12 +366,15 @@ export default function CDJ3000Panel({
 
         {/* search-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '55.6%',
             top: '2.0%',
-            width: '21.3%',
-            height: '3.9%',
+            width: 256,
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -373,12 +391,15 @@ export default function CDJ3000Panel({
 
         {/* menu-utility-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '67.0%',
             top: '2.0%',
-            width: '21.3%',
-            height: '3.9%',
+            width: 256,
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -395,17 +416,20 @@ export default function CDJ3000Panel({
 
         {/* usb-port */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '2.9%',
             top: '8.0%',
-            width: '6.1%',
-            height: '3.4%',
+            width: 73,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <Port
             id="usb-port"
-            label="USB port"
+            label=""
             variant="usb-a"
             highlighted={isHighlighted('usb-port')}
           />
@@ -413,12 +437,15 @@ export default function CDJ3000Panel({
 
         {/* usb-indicator */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '10.2%',
             top: '8.0%',
-            width: '2.3%',
-            height: '3.4%',
+            width: 28,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <LEDIndicator
@@ -431,18 +458,21 @@ export default function CDJ3000Panel({
 
         {/* usb-stop-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '8.4%',
             top: '11.8%',
-            width: '6.0%',
-            height: '2.4%',
+            width: 72,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="usb-stop-btn"
-              label="USB STOP"
+              label=""
               variant="standard"
               active={getState('usb-stop-btn').active}
               highlighted={isHighlighted('usb-stop-btn')}
@@ -453,17 +483,20 @@ export default function CDJ3000Panel({
 
         {/* sd-card-slot */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '4.5%',
             top: '16.0%',
-            width: '8.3%',
-            height: '3.4%',
+            width: 100,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <Port
             id="sd-card-slot"
-            label="SD memory card slot"
+            label=""
             variant="sd-card"
             highlighted={isHighlighted('sd-card-slot')}
           />
@@ -471,12 +504,15 @@ export default function CDJ3000Panel({
 
         {/* sd-indicator */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '4.5%',
             top: '18.7%',
-            width: '8.3%',
-            height: '3.4%',
+            width: 100,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <LEDIndicator
@@ -489,17 +525,20 @@ export default function CDJ3000Panel({
 
         {/* touch-display */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '19.7%',
             top: '7.6%',
-            width: '60.0%',
-            height: '25.2%',
+            width: 720,
+            height: 416,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <TouchDisplay
             id="touch-display"
-            label="Touch display"
+            label=""
             variant="main"
             showMockContent
             width={200}
@@ -510,12 +549,15 @@ export default function CDJ3000Panel({
 
         {/* back-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '78.9%',
             top: '11.0%',
-            width: '12.7%',
-            height: '4.4%',
+            width: 152,
+            height: 73,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -532,12 +574,15 @@ export default function CDJ3000Panel({
 
         {/* tag-track-remove-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '87.7%',
             top: '11.0%',
-            width: '12.7%',
-            height: '4.4%',
+            width: 152,
+            height: 73,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -554,17 +599,20 @@ export default function CDJ3000Panel({
 
         {/* rotary-selector */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '83.7%',
             top: '13.8%',
-            width: '12.0%',
-            height: '9.7%',
+            width: 144,
+            height: 160,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <ValueDial
             id="rotary-selector"
-            label="Rotary selector"
+            label=""
             hasPush
             highlighted={isHighlighted('rotary-selector')}
           />
@@ -572,12 +620,15 @@ export default function CDJ3000Panel({
 
         {/* track-filter-edit-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '80.4%',
             top: '24.3%',
-            width: '12.7%',
-            height: '4.4%',
+            width: 152,
+            height: 73,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -594,12 +645,15 @@ export default function CDJ3000Panel({
 
         {/* shortcut-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '87.7%',
             top: '24.3%',
-            width: '12.7%',
-            height: '4.4%',
+            width: 152,
+            height: 73,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -616,18 +670,21 @@ export default function CDJ3000Panel({
 
         {/* time-mode-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '4.2%',
             top: '24.3%',
-            width: '8.3%',
-            height: '2.9%',
+            width: 100,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="time-mode-btn"
-              label="TIME MODE/AUTO CUE"
+              label=""
               variant="rubber"
               hasLed
               ledColor="#22c55e"
@@ -640,18 +697,21 @@ export default function CDJ3000Panel({
 
         {/* quantize-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '6.5%',
             top: '28.3%',
-            width: '8.3%',
-            height: '2.9%',
+            width: 100,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="quantize-btn"
-              label="QUANTIZE"
+              label=""
               variant="rubber"
               hasLed
               ledColor="#ef4444"
@@ -664,18 +724,21 @@ export default function CDJ3000Panel({
 
         {/* slip-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '1.9%',
             top: '28.3%',
-            width: '8.3%',
-            height: '2.9%',
+            width: 100,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="slip-btn"
-              label="SLIP"
+              label=""
               variant="rubber"
               hasLed
               ledColor="#3b82f6"
@@ -688,18 +751,21 @@ export default function CDJ3000Panel({
 
         {/* hot-cue-a */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '15.1%',
             top: '34.9%',
-            width: '7.3%',
-            height: '2.9%',
+            width: 88,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.93, y: 2 }}>
             <PadButton
               id="hot-cue-a"
-              label="HOT CUE A"
+              label=""
               active={getState('hot-cue-a').active}
               highlighted={isHighlighted('hot-cue-a')}
               onClick={() => onButtonClick?.('hot-cue-a')}
@@ -709,18 +775,21 @@ export default function CDJ3000Panel({
 
         {/* hot-cue-b */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '23.8%',
             top: '34.9%',
-            width: '7.3%',
-            height: '2.9%',
+            width: 88,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.93, y: 2 }}>
             <PadButton
               id="hot-cue-b"
-              label="HOT CUE B"
+              label=""
               active={getState('hot-cue-b').active}
               highlighted={isHighlighted('hot-cue-b')}
               onClick={() => onButtonClick?.('hot-cue-b')}
@@ -730,18 +799,21 @@ export default function CDJ3000Panel({
 
         {/* hot-cue-c */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '32.5%',
             top: '34.9%',
-            width: '7.3%',
-            height: '2.9%',
+            width: 88,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.93, y: 2 }}>
             <PadButton
               id="hot-cue-c"
-              label="HOT CUE C"
+              label=""
               active={getState('hot-cue-c').active}
               highlighted={isHighlighted('hot-cue-c')}
               onClick={() => onButtonClick?.('hot-cue-c')}
@@ -751,18 +823,21 @@ export default function CDJ3000Panel({
 
         {/* hot-cue-d */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '41.1%',
             top: '34.9%',
-            width: '7.3%',
-            height: '2.9%',
+            width: 88,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.93, y: 2 }}>
             <PadButton
               id="hot-cue-d"
-              label="HOT CUE D"
+              label=""
               active={getState('hot-cue-d').active}
               highlighted={isHighlighted('hot-cue-d')}
               onClick={() => onButtonClick?.('hot-cue-d')}
@@ -772,18 +847,21 @@ export default function CDJ3000Panel({
 
         {/* hot-cue-e */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '50.9%',
             top: '34.9%',
-            width: '7.3%',
-            height: '2.9%',
+            width: 88,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.93, y: 2 }}>
             <PadButton
               id="hot-cue-e"
-              label="HOT CUE E"
+              label=""
               active={getState('hot-cue-e').active}
               highlighted={isHighlighted('hot-cue-e')}
               onClick={() => onButtonClick?.('hot-cue-e')}
@@ -793,18 +871,21 @@ export default function CDJ3000Panel({
 
         {/* hot-cue-f */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '59.6%',
             top: '34.9%',
-            width: '7.3%',
-            height: '2.9%',
+            width: 88,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.93, y: 2 }}>
             <PadButton
               id="hot-cue-f"
-              label="HOT CUE F"
+              label=""
               active={getState('hot-cue-f').active}
               highlighted={isHighlighted('hot-cue-f')}
               onClick={() => onButtonClick?.('hot-cue-f')}
@@ -814,18 +895,21 @@ export default function CDJ3000Panel({
 
         {/* hot-cue-g */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '68.6%',
             top: '34.9%',
-            width: '7.3%',
-            height: '2.9%',
+            width: 88,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.93, y: 2 }}>
             <PadButton
               id="hot-cue-g"
-              label="HOT CUE G"
+              label=""
               active={getState('hot-cue-g').active}
               highlighted={isHighlighted('hot-cue-g')}
               onClick={() => onButtonClick?.('hot-cue-g')}
@@ -835,18 +919,21 @@ export default function CDJ3000Panel({
 
         {/* hot-cue-h */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '77.1%',
             top: '34.9%',
-            width: '7.3%',
-            height: '2.9%',
+            width: 88,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.93, y: 2 }}>
             <PadButton
               id="hot-cue-h"
-              label="HOT CUE H"
+              label=""
               active={getState('hot-cue-h').active}
               highlighted={isHighlighted('hot-cue-h')}
               onClick={() => onButtonClick?.('hot-cue-h')}
@@ -856,18 +943,21 @@ export default function CDJ3000Panel({
 
         {/* loop-in-cue-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '-0.1%',
             top: '40.7%',
-            width: '12.0%',
-            height: '2.9%',
+            width: 144,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="loop-in-cue-btn"
-              label="IN/CUE"
+              label=""
               variant="standard"
               hasLed
               ledColor="#22c55e"
@@ -880,18 +970,21 @@ export default function CDJ3000Panel({
 
         {/* loop-out-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '7.8%',
             top: '40.7%',
-            width: '12.0%',
-            height: '2.9%',
+            width: 144,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="loop-out-btn"
-              label="OUT"
+              label=""
               variant="standard"
               hasLed
               ledColor="#22c55e"
@@ -904,18 +997,21 @@ export default function CDJ3000Panel({
 
         {/* loop-reloop-exit-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '15.8%',
             top: '40.7%',
-            width: '12.0%',
-            height: '2.9%',
+            width: 144,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="loop-reloop-exit-btn"
-              label="LOOP RELOOP/EXIT"
+              label=""
               variant="standard"
               hasLed
               ledColor="#22c55e"
@@ -928,18 +1024,21 @@ export default function CDJ3000Panel({
 
         {/* 4-beat-loop-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '-0.1%',
             top: '46.8%',
-            width: '12.0%',
-            height: '2.9%',
+            width: 144,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="4-beat-loop-btn"
-              label="4 BEAT LOOP (1/2X)"
+              label=""
               variant="standard"
               hasLed
               ledColor="#22c55e"
@@ -952,18 +1051,21 @@ export default function CDJ3000Panel({
 
         {/* 8-beat-loop-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '7.8%',
             top: '46.8%',
-            width: '12.0%',
-            height: '2.9%',
+            width: 144,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="8-beat-loop-btn"
-              label="8 BEAT LOOP (2X)"
+              label=""
               variant="standard"
               hasLed
               ledColor="#22c55e"
@@ -976,17 +1078,20 @@ export default function CDJ3000Panel({
 
         {/* vinyl-speed-adj-knob */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '89.5%',
             top: '35.0%',
-            width: '5.3%',
-            height: '3.9%',
+            width: 64,
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <Knob
             id="vinyl-speed-adj-knob"
-            label="VINYL SPEED ADJ. TOUCH/BRAKE"
+            label=""
             value={getState('vinyl-speed-adj-knob').value ?? 64}
             highlighted={isHighlighted('vinyl-speed-adj-knob')}
           />
@@ -994,12 +1099,15 @@ export default function CDJ3000Panel({
 
         {/* cue-loop-call-left-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '60.1%',
             top: '41.2%',
-            width: '8.8%',
-            height: '2.4%',
+            width: 106,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1017,12 +1125,15 @@ export default function CDJ3000Panel({
 
         {/* cue-loop-call-right-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '64.8%',
             top: '41.2%',
-            width: '8.8%',
-            height: '2.4%',
+            width: 106,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1040,18 +1151,21 @@ export default function CDJ3000Panel({
 
         {/* delete-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '71.3%',
             top: '41.2%',
-            width: '8.8%',
-            height: '2.4%',
+            width: 106,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="delete-btn"
-              label="DELETE"
+              label=""
               variant="standard"
               active={getState('delete-btn').active}
               highlighted={isHighlighted('delete-btn')}
@@ -1062,18 +1176,21 @@ export default function CDJ3000Panel({
 
         {/* memory-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '77.1%',
             top: '41.2%',
-            width: '8.8%',
-            height: '2.4%',
+            width: 106,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="memory-btn"
-              label="MEMORY"
+              label=""
               variant="standard"
               active={getState('memory-btn').active}
               highlighted={isHighlighted('memory-btn')}
@@ -1084,12 +1201,15 @@ export default function CDJ3000Panel({
 
         {/* beat-jump-left-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '1.3%',
             top: '50.8%',
-            width: '6.4%',
-            height: '5.9%',
+            width: 77,
+            height: 97,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1107,12 +1227,15 @@ export default function CDJ3000Panel({
 
         {/* beat-jump-right-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '9.2%',
             top: '50.8%',
-            width: '6.4%',
-            height: '5.9%',
+            width: 77,
+            height: 97,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1130,17 +1253,20 @@ export default function CDJ3000Panel({
 
         {/* direction-lever */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '3.1%',
             top: '57.3%',
-            width: '10.7%',
-            height: '5.8%',
+            width: 128,
+            height: 96,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <DirectionSwitch
             id="direction-lever"
-            label="DIRECTION FWD, REV, SLIP REV"
+            label=""
             positions={["FWD","REV","SLIP REV"]}
             highlighted={isHighlighted('direction-lever')}
           />
@@ -1148,12 +1274,15 @@ export default function CDJ3000Panel({
 
         {/* track-search-bwd-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '1.5%',
             top: '67.1%',
-            width: '6.0%',
-            height: '5.3%',
+            width: 72,
+            height: 87,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1171,12 +1300,15 @@ export default function CDJ3000Panel({
 
         {/* track-search-fwd-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '9.4%',
             top: '67.1%',
-            width: '6.0%',
-            height: '5.3%',
+            width: 72,
+            height: 87,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1194,12 +1326,15 @@ export default function CDJ3000Panel({
 
         {/* search-bwd-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '1.3%',
             top: '72.5%',
-            width: '6.4%',
-            height: '5.9%',
+            width: 77,
+            height: 97,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1217,12 +1352,15 @@ export default function CDJ3000Panel({
 
         {/* search-fwd-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '9.2%',
             top: '72.5%',
-            width: '6.4%',
-            height: '5.9%',
+            width: 77,
+            height: 97,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1240,12 +1378,15 @@ export default function CDJ3000Panel({
 
         {/* cue-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '1.8%',
             top: '80.2%',
-            width: '13.3%',
-            height: '7.3%',
+            width: 160,
+            height: 120,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1265,12 +1406,15 @@ export default function CDJ3000Panel({
 
         {/* play-pause-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '1.8%',
-            top: '89.2%',
-            width: '13.3%',
-            height: '7.3%',
+            top: '90.3%',
+            width: 160,
+            height: 120,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1291,17 +1435,20 @@ export default function CDJ3000Panel({
 
         {/* jog-wheel */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '14.3%',
             top: '44.9%',
-            width: '74.0%',
-            height: '47.9%',
+            width: 888,
+            height: 790,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <JogWheelAssembly
             id="jog-wheel"
-            label="Jog wheel (–REV/+FWD)"
+            label=""
             wheelSize={160}
             displaySize={60}
             ringColor="#22c55e"
@@ -1311,18 +1458,21 @@ export default function CDJ3000Panel({
 
         {/* jog-mode-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '91.7%',
             top: '41.0%',
-            width: '6.7%',
-            height: '2.9%',
+            width: 80,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="jog-mode-btn"
-              label="JOG MODE"
+              label=""
               variant="standard"
               active={getState('jog-mode-btn').active}
               highlighted={isHighlighted('jog-mode-btn')}
@@ -1333,12 +1483,15 @@ export default function CDJ3000Panel({
 
         {/* vinyl-cdj-indicator */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '84.8%',
             top: '41.0%',
-            width: '6.7%',
-            height: '2.9%',
+            width: 80,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <LEDIndicator
@@ -1351,17 +1504,20 @@ export default function CDJ3000Panel({
 
         {/* jog-adjust-knob */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '70.4%',
             top: '47.3%',
-            width: '14.7%',
-            height: '2.9%',
+            width: 176,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <Knob
             id="jog-adjust-knob"
-            label="JOG ADJUST"
+            label=""
             value={getState('jog-adjust-knob').value ?? 64}
             highlighted={isHighlighted('jog-adjust-knob')}
           />
@@ -1369,12 +1525,15 @@ export default function CDJ3000Panel({
 
         {/* beat-sync-inst-doubles-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '87.1%',
             top: '47.5%',
-            width: '5.3%',
-            height: '3.4%',
+            width: 64,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1393,12 +1552,15 @@ export default function CDJ3000Panel({
 
         {/* master-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '92.3%',
             top: '47.5%',
-            width: '5.3%',
-            height: '3.4%',
+            width: 64,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1417,12 +1579,15 @@ export default function CDJ3000Panel({
 
         {/* key-sync-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '89.7%',
             top: '50.9%',
-            width: '5.3%',
-            height: '3.4%',
+            width: 64,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
@@ -1442,18 +1607,21 @@ export default function CDJ3000Panel({
 
         {/* tempo-range-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '83.5%',
             top: '58.5%',
-            width: '16.3%',
-            height: '2.4%',
+            width: 196,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="tempo-range-btn"
-              label="TEMPO ±6/±10/±16/WIDE"
+              label=""
               variant="standard"
               active={getState('tempo-range-btn').active}
               highlighted={isHighlighted('tempo-range-btn')}
@@ -1464,18 +1632,21 @@ export default function CDJ3000Panel({
 
         {/* master-tempo-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '83.5%',
             top: '63.0%',
-            width: '16.3%',
-            height: '2.4%',
+            width: 196,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="master-tempo-btn"
-              label="MASTER TEMPO"
+              label=""
               variant="standard"
               hasLed
               ledColor="#f59e0b"
@@ -1488,17 +1659,20 @@ export default function CDJ3000Panel({
 
         {/* tempo-slider */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '87.6%',
-            top: '69.3%',
-            width: '8.0%',
-            height: '25.2%',
+            top: '69.0%',
+            width: 96,
+            height: 432,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <Slider
             id="tempo-slider"
-            label="TEMPO slider"
+            label=""
             value={getState('tempo-slider').value ?? 64}
             highlighted={isHighlighted('tempo-slider')}
           />
@@ -1506,18 +1680,21 @@ export default function CDJ3000Panel({
 
         {/* tempo-reset-btn */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '79.8%',
-            top: '78.7%',
-            width: '4.7%',
-            height: '6.3%',
+            top: '78.9%',
+            width: 56,
+            height: 104,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <motion.div whileTap={{ scale: 0.95, y: 2 }}>
             <PanelButton
               id="tempo-reset-btn"
-              label="TEMPO RESET"
+              label=""
               variant="standard"
               active={getState('tempo-reset-btn').active}
               highlighted={isHighlighted('tempo-reset-btn')}
@@ -1528,12 +1705,15 @@ export default function CDJ3000Panel({
 
         {/* tempo-reset-indicator */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute"
           style={{
             left: '81.5%',
-            top: '78.8%',
-            width: '8.0%',
-            height: '6.2%',
+            top: '79.0%',
+            width: 96,
+            height: 102,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <LEDIndicator

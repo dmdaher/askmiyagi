@@ -39,7 +39,7 @@ export default function JogModeControlsSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="jog-mode-btn"
-                label="JOG MODE"
+                label=""
                 variant="standard"
                 active={getState('jog-mode-btn').active}
                 highlighted={isHighlighted('jog-mode-btn')}
@@ -74,7 +74,7 @@ export default function JogModeControlsSection({
           >
             <Knob
               id="jog-adjust-knob"
-              label="JOG ADJUST"
+              label=""
               value={getState('jog-adjust-knob').value ?? 64}
               highlighted={isHighlighted('jog-adjust-knob')}
             />

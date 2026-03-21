@@ -36,7 +36,7 @@ export default function DisplaySection({
           >
             <TouchDisplay
               id="touch-display"
-              label="Touch display"
+              label=""
               variant="main"
               showMockContent
               width={200}

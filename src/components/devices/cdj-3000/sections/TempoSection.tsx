@@ -39,7 +39,7 @@ export default function TempoSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="tempo-range-btn"
-                label="TEMPO ±6/±10/±16/WIDE"
+                label=""
                 variant="standard"
                 active={getState('tempo-range-btn').active}
                 highlighted={isHighlighted('tempo-range-btn')}
@@ -59,7 +59,7 @@ export default function TempoSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="master-tempo-btn"
-                label="MASTER TEMPO"
+                label=""
                 variant="standard"
                 hasLed
                 ledColor="#f59e0b"
@@ -73,14 +73,14 @@ export default function TempoSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '87.60%',
-              top: '69.30%',
+              top: '69.00%',
               width: '8.00%',
-              height: '25.20%',
+              height: '26.20%',
             }}
           >
             <Slider
               id="tempo-slider"
-              label="TEMPO slider"
+              label=""
               value={getState('tempo-slider').value ?? 64}
               highlighted={isHighlighted('tempo-slider')}
             />
@@ -89,7 +89,7 @@ export default function TempoSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '79.80%',
-              top: '78.70%',
+              top: '78.90%',
               width: '4.70%',
               height: '6.30%',
             }}
@@ -97,7 +97,7 @@ export default function TempoSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="tempo-reset-btn"
-                label="TEMPO RESET"
+                label=""
                 variant="standard"
                 active={getState('tempo-reset-btn').active}
                 highlighted={isHighlighted('tempo-reset-btn')}
@@ -109,7 +109,7 @@ export default function TempoSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '81.50%',
-              top: '78.80%',
+              top: '79.00%',
               width: '8.00%',
               height: '6.20%',
             }}

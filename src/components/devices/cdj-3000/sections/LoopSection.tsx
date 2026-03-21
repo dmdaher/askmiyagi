@@ -37,7 +37,7 @@ export default function LoopSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="loop-in-cue-btn"
-                label="IN/CUE"
+                label=""
                 variant="standard"
                 hasLed
                 ledColor="#22c55e"
@@ -59,7 +59,7 @@ export default function LoopSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="loop-out-btn"
-                label="OUT"
+                label=""
                 variant="standard"
                 hasLed
                 ledColor="#22c55e"
@@ -81,7 +81,7 @@ export default function LoopSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="loop-reloop-exit-btn"
-                label="LOOP RELOOP/EXIT"
+                label=""
                 variant="standard"
                 hasLed
                 ledColor="#22c55e"
@@ -103,7 +103,7 @@ export default function LoopSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="4-beat-loop-btn"
-                label="4 BEAT LOOP (1/2X)"
+                label=""
                 variant="standard"
                 hasLed
                 ledColor="#22c55e"
@@ -125,7 +125,7 @@ export default function LoopSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="8-beat-loop-btn"
-                label="8 BEAT LOOP (2X)"
+                label=""
                 variant="standard"
                 hasLed
                 ledColor="#22c55e"

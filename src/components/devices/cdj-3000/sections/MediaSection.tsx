@@ -38,7 +38,7 @@ export default function MediaSection({
           >
             <Port
               id="usb-port"
-              label="USB port"
+              label=""
               variant="usb-a"
               highlighted={isHighlighted('usb-port')}
             />
@@ -71,7 +71,7 @@ export default function MediaSection({
             <motion.div whileTap={{ scale: 0.95, y: 2 }}>
               <PanelButton
                 id="usb-stop-btn"
-                label="USB STOP"
+                label=""
                 variant="standard"
                 active={getState('usb-stop-btn').active}
                 highlighted={isHighlighted('usb-stop-btn')}
@@ -90,7 +90,7 @@ export default function MediaSection({
           >
             <Port
               id="sd-card-slot"
-              label="SD memory card slot"
+              label=""
               variant="sd-card"
               highlighted={isHighlighted('sd-card-slot')}
             />

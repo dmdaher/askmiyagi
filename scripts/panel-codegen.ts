@@ -102,7 +102,12 @@ function renderControl(
     );
   }
 
-  const label = control.verbatimLabel;
+  const rawLabel = control.verbatimLabel;
+  // In flat panel mode, labels float outside containers (like the editor).
+  // Only pass label to the component when it's 'on-button'.
+  const labelDisplay = control.labelDisplay ?? 'above'; // default to above
+  const isOnButton = labelDisplay === 'on-button' || labelDisplay === 'icon-only';
+  const label = isOnButton ? rawLabel : '';
 
   // Resolve icon content from HARDWARE_ICONS library or use raw string
   const resolvedIcon = control.icon
@@ -880,15 +885,22 @@ function generateFlatPanel(
       if (!ep) return null; // Should not happen in flat mode, but guard
 
       const controlJsx = renderControl(ctrl.id, ctrl, '          ', controlMap);
+      // Compute pixel dimensions for inline sizing (panel is panelWidth x panelHeight)
+      const pxW = Math.round((ep.w / 100) * panelWidth);
+      const pxH = Math.round((ep.h / 100) * panelHeight);
+
       return [
         `        {/* ${ctrl.id} */}`,
         `        <div`,
-        `          className="absolute flex items-center justify-center"`,
+        `          className="absolute"`,
         `          style={{`,
         `            left: '${ep.x.toFixed(1)}%',`,
         `            top: '${ep.y.toFixed(1)}%',`,
-        `            width: '${ep.w.toFixed(1)}%',`,
-        `            height: '${ep.h.toFixed(1)}%',`,
+        `            width: ${pxW},`,
+        `            height: ${pxH},`,
+        `            display: 'flex',`,
+        `            alignItems: 'center',`,
+        `            justifyContent: 'center',`,
         `          }}`,
         `        >`,
         controlJsx,

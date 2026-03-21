@@ -77,7 +77,7 @@ export default function NavigationSection({
           >
             <ValueDial
               id="rotary-selector"
-              label="Rotary selector"
+              label=""
               hasPush
               highlighted={isHighlighted('rotary-selector')}
             />
