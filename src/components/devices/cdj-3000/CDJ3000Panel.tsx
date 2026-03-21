@@ -496,6 +496,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '8.4%',
+            top: '10.6%',
+            width: '6.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            USB STOP
+          </span>
+        </div>
 
         {/* sd-card-slot */}
         <div
@@ -723,6 +736,22 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '4.2%',
+            top: '23.1%',
+            width: '8.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            TIME MODE/AUTO CUE
+          </span>
+          <span className="text-gray-500 uppercase block" style={{ fontSize: 7 }}>
+            AUTO CUE
+          </span>
+        </div>
 
         {/* quantize-btn */}
         <div
@@ -750,6 +779,19 @@ export default function CDJ3000Panel({
               onClick={() => onButtonClick?.('quantize-btn')}
             />
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '6.5%',
+            top: '27.1%',
+            width: '8.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            QUANTIZE
+          </span>
         </div>
 
         {/* slip-btn */}
@@ -779,6 +821,19 @@ export default function CDJ3000Panel({
             />
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '1.9%',
+            top: '27.1%',
+            width: '8.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            SLIP
+          </span>
+        </div>
 
         {/* hot-cue-a */}
         <div
@@ -804,6 +859,19 @@ export default function CDJ3000Panel({
               height={48}
             />
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '15.1%',
+            top: '38.0%',
+            width: '7.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            HOT CUE A
+          </span>
         </div>
 
         {/* hot-cue-b */}
@@ -831,6 +899,19 @@ export default function CDJ3000Panel({
             />
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '23.8%',
+            top: '38.0%',
+            width: '7.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            HOT CUE B
+          </span>
+        </div>
 
         {/* hot-cue-c */}
         <div
@@ -856,6 +937,19 @@ export default function CDJ3000Panel({
               height={48}
             />
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '32.5%',
+            top: '38.0%',
+            width: '7.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            HOT CUE C
+          </span>
         </div>
 
         {/* hot-cue-d */}
@@ -883,6 +977,19 @@ export default function CDJ3000Panel({
             />
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '41.1%',
+            top: '38.0%',
+            width: '7.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            HOT CUE D
+          </span>
+        </div>
 
         {/* hot-cue-e */}
         <div
@@ -908,6 +1015,19 @@ export default function CDJ3000Panel({
               height={48}
             />
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '50.9%',
+            top: '38.0%',
+            width: '7.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            HOT CUE E
+          </span>
         </div>
 
         {/* hot-cue-f */}
@@ -935,6 +1055,19 @@ export default function CDJ3000Panel({
             />
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '59.6%',
+            top: '38.0%',
+            width: '7.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            HOT CUE F
+          </span>
+        </div>
 
         {/* hot-cue-g */}
         <div
@@ -961,6 +1094,19 @@ export default function CDJ3000Panel({
             />
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '68.6%',
+            top: '38.0%',
+            width: '7.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            HOT CUE G
+          </span>
+        </div>
 
         {/* hot-cue-h */}
         <div
@@ -986,6 +1132,19 @@ export default function CDJ3000Panel({
               height={48}
             />
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '77.1%',
+            top: '38.0%',
+            width: '7.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            HOT CUE H
+          </span>
         </div>
 
         {/* loop-in-cue-btn */}
@@ -1020,6 +1179,22 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '-0.1%',
+            top: '39.5%',
+            width: '12.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            IN/CUE
+          </span>
+          <span className="text-gray-500 uppercase block" style={{ fontSize: 7 }}>
+            IN ADJUST
+          </span>
+        </div>
 
         {/* loop-out-btn */}
         <div
@@ -1053,6 +1228,22 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '7.8%',
+            top: '39.5%',
+            width: '12.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            OUT
+          </span>
+          <span className="text-gray-500 uppercase block" style={{ fontSize: 7 }}>
+            OUT ADJUST
+          </span>
+        </div>
 
         {/* loop-reloop-exit-btn */}
         <div
@@ -1080,6 +1271,19 @@ export default function CDJ3000Panel({
               onClick={() => onButtonClick?.('loop-reloop-exit-btn')}
             />
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '15.8%',
+            top: '39.5%',
+            width: '12.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            LOOP RELOOP/EXIT
+          </span>
         </div>
 
         {/* 4-beat-loop-btn */}
@@ -1114,6 +1318,22 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '-0.1%',
+            top: '45.6%',
+            width: '12.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            4 BEAT LOOP (1/2X)
+          </span>
+          <span className="text-gray-500 uppercase block" style={{ fontSize: 7 }}>
+            1/2X
+          </span>
+        </div>
 
         {/* 8-beat-loop-btn */}
         <div
@@ -1147,6 +1367,22 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '7.8%',
+            top: '45.6%',
+            width: '12.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            8 BEAT LOOP (2X)
+          </span>
+          <span className="text-gray-500 uppercase block" style={{ fontSize: 7 }}>
+            2X
+          </span>
+        </div>
 
         {/* vinyl-speed-adj-knob */}
         <div
@@ -1169,6 +1405,22 @@ export default function CDJ3000Panel({
             outerSize={64}
             innerSize={45}
           />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '89.5%',
+            top: '33.8%',
+            width: '5.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 10 }}>
+            VINYL SPEED ADJ. TOUCH/BRAKE
+          </span>
+          <span className="text-gray-500 uppercase block" style={{ fontSize: 9 }}>
+            TOUCH/BRAKE
+          </span>
         </div>
 
         {/* cue-loop-call-left-btn */}
@@ -1203,6 +1455,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '60.1%',
+            top: '40.0%',
+            width: '8.8%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            CUE/LOOP CALL ◄
+          </span>
+        </div>
 
         {/* cue-loop-call-right-btn */}
         <div
@@ -1235,6 +1500,19 @@ export default function CDJ3000Panel({
               </span>
             </div>
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '64.8%',
+            top: '40.0%',
+            width: '8.8%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            CUE/LOOP CALL ►
+          </span>
         </div>
 
         {/* delete-btn */}
@@ -1269,6 +1547,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '71.3%',
+            top: '40.0%',
+            width: '8.8%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            DELETE
+          </span>
+        </div>
 
         {/* memory-btn */}
         <div
@@ -1302,6 +1593,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '77.1%',
+            top: '40.0%',
+            width: '8.8%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            MEMORY
+          </span>
+        </div>
 
         {/* beat-jump-left-btn */}
         <div
@@ -1328,6 +1632,19 @@ export default function CDJ3000Panel({
               onClick={() => onButtonClick?.('beat-jump-left-btn')}
             />
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '1.3%',
+            top: '49.6%',
+            width: '6.4%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            BEAT JUMP ◄
+          </span>
         </div>
 
         {/* beat-jump-right-btn */}
@@ -1356,6 +1673,19 @@ export default function CDJ3000Panel({
             />
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '9.2%',
+            top: '49.6%',
+            width: '6.4%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            BEAT JUMP ►
+          </span>
+        </div>
 
         {/* direction-lever */}
         <div
@@ -1378,6 +1708,19 @@ export default function CDJ3000Panel({
             width={128}
             height={96}
           />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '3.1%',
+            top: '56.1%',
+            width: '10.7%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            DIRECTION FWD, REV, SLIP REV
+          </span>
         </div>
 
         {/* track-search-bwd-btn */}
@@ -1412,6 +1755,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '1.5%',
+            top: '65.9%',
+            width: '6.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            Track/Search
+          </span>
+        </div>
 
         {/* track-search-fwd-btn */}
         <div
@@ -1445,6 +1801,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '9.4%',
+            top: '65.9%',
+            width: '6.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            Track/Search
+          </span>
+        </div>
 
         {/* search-bwd-btn */}
         <div
@@ -1472,6 +1841,19 @@ export default function CDJ3000Panel({
             />
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '1.3%',
+            top: '71.3%',
+            width: '6.4%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            Search
+          </span>
+        </div>
 
         {/* search-fwd-btn */}
         <div
@@ -1498,6 +1880,19 @@ export default function CDJ3000Panel({
               onClick={() => onButtonClick?.('search-fwd-btn')}
             />
           </motion.div>
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '9.2%',
+            top: '71.3%',
+            width: '6.4%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            Search
+          </span>
         </div>
 
         {/* cue-btn */}
@@ -1565,6 +1960,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '1.8%',
+            top: '89.1%',
+            width: '13.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 11 }}>
+            PLAY/PAUSE ►/II
+          </span>
+        </div>
 
         {/* jog-wheel */}
         <div
@@ -1614,6 +2022,19 @@ export default function CDJ3000Panel({
             />
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '91.7%',
+            top: '39.8%',
+            width: '6.7%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
+            JOG MODE
+          </span>
+        </div>
 
         {/* vinyl-cdj-indicator */}
         <div
@@ -1657,6 +2078,19 @@ export default function CDJ3000Panel({
             outerSize={48}
             innerSize={34}
           />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '70.4%',
+            top: '46.1%',
+            width: '14.7%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 10 }}>
+            JOG ADJUST
+          </span>
         </div>
 
         {/* beat-sync-inst-doubles-btn */}
@@ -1776,6 +2210,22 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '83.5%',
+            top: '57.3%',
+            width: '16.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            TEMPO ±6/±10/±16/WIDE
+          </span>
+          <span className="text-gray-500 uppercase block" style={{ fontSize: 6 }}>
+            ±6/±10/±16/WIDE
+          </span>
+        </div>
 
         {/* master-tempo-btn */}
         <div
@@ -1809,6 +2259,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '83.5%',
+            top: '61.8%',
+            width: '16.3%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            MASTER TEMPO
+          </span>
+        </div>
 
         {/* tempo-slider */}
         <div
@@ -1831,6 +2294,19 @@ export default function CDJ3000Panel({
             trackHeight={412}
             trackWidth={86}
           />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '87.6%',
+            top: '67.8%',
+            width: '8.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 11 }}>
+            TEMPO slider
+          </span>
         </div>
 
         {/* tempo-reset-btn */}
@@ -1865,6 +2341,19 @@ export default function CDJ3000Panel({
             </div>
           </motion.div>
         </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '79.8%',
+            top: '77.7%',
+            width: '4.7%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 7 }}>
+            TEMPO RESET
+          </span>
+        </div>
 
         {/* tempo-reset-indicator */}
         <div
@@ -1885,6 +2374,91 @@ export default function CDJ3000Panel({
             color="#22c55e"
             highlighted={isHighlighted('tempo-reset-indicator')}
           />
+        </div>
+
+        {/* Group labels */}
+        {/* Group: SEARCH */}
+        <div
+          className="absolute pointer-events-none text-center"
+          style={{
+            left: '1.3%',
+            top: '71.3%',
+            width: '14.3%',
+          }}
+        >
+          <span className="font-semibold text-gray-400 uppercase tracking-widest" style={{ fontSize: 9 }}>
+            SEARCH
+          </span>
+        </div>
+
+        {/* Group: TRACK SEARCH */}
+        <div
+          className="absolute pointer-events-none text-center"
+          style={{
+            left: '1.5%',
+            top: '65.9%',
+            width: '13.9%',
+          }}
+        >
+          <span className="font-semibold text-gray-400 uppercase tracking-widest" style={{ fontSize: 9 }}>
+            TRACK SEARCH
+          </span>
+        </div>
+
+        {/* Group: BEAT JUMP */}
+        <div
+          className="absolute pointer-events-none text-center"
+          style={{
+            left: '1.3%',
+            top: '49.6%',
+            width: '14.3%',
+          }}
+        >
+          <span className="font-semibold text-gray-400 uppercase tracking-widest" style={{ fontSize: 9 }}>
+            BEAT JUMP
+          </span>
+        </div>
+
+        {/* Group: HOT CUE */}
+        <div
+          className="absolute pointer-events-none text-center"
+          style={{
+            left: '15.1%',
+            top: '33.7%',
+            width: '69.3%',
+          }}
+        >
+          <span className="font-semibold text-gray-400 uppercase tracking-widest" style={{ fontSize: 9 }}>
+            HOT CUE
+          </span>
+        </div>
+
+        {/* Group: CUE/LOOP CALL */}
+        <div
+          className="absolute pointer-events-none text-center"
+          style={{
+            left: '60.1%',
+            top: '40.0%',
+            width: '13.5%',
+          }}
+        >
+          <span className="font-semibold text-gray-400 uppercase tracking-widest" style={{ fontSize: 9 }}>
+            CUE/LOOP CALL
+          </span>
+        </div>
+
+        {/* Group: DELETE/MEMORY */}
+        <div
+          className="absolute pointer-events-none text-center"
+          style={{
+            left: '71.3%',
+            top: '40.0%',
+            width: '14.6%',
+          }}
+        >
+          <span className="font-semibold text-gray-400 uppercase tracking-widest" style={{ fontSize: 9 }}>
+            DELETE/MEMORY
+          </span>
         </div>
       </motion.div>
     </div>

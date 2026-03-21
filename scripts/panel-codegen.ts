@@ -27,6 +27,7 @@ import {
   subZoneDirection,
   LayoutEngineOutput,
 } from './layout-engine';
+import type { LabelDisplay } from '../src/types/manifest';
 import { HARDWARE_ICONS } from '../src/lib/hardware-icons';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -366,6 +367,192 @@ function escapeJsx(text: string): string {
     .replace(/>/g, '&gt;')
     .replace(/\{/g, '&#123;')
     .replace(/\}/g, '&#125;');
+}
+
+// ─── Floating Label Helpers ──────────────────────────────────────────────────
+
+/**
+ * Get label font size in px based on the control's sizeClass.
+ */
+function labelFontSize(sizeClass?: string): number {
+  switch (sizeClass) {
+    case 'xl': return 11;
+    case 'lg': return 10;
+    case 'sm': return 7;
+    default:   return 8;
+  }
+}
+
+/**
+ * Get secondary label font size — 1px smaller than primary.
+ */
+function secondaryLabelFontSize(sizeClass?: string): number {
+  return Math.max(labelFontSize(sizeClass) - 1, 6);
+}
+
+/**
+ * Determine whether a control needs a floating label (rendered outside the control).
+ * Returns the resolved labelDisplay, or null if no floating label is needed.
+ */
+function resolveFloatingLabel(ctrl: ManifestControl): LabelDisplay | null {
+  const ld = ctrl.labelDisplay ?? defaultLabelDisplay(ctrl.type);
+  if (ld === 'on-button' || ld === 'hidden') return null;
+  return ld;
+}
+
+/**
+ * Default labelDisplay for a control type when not specified.
+ */
+function defaultLabelDisplay(type: string): LabelDisplay {
+  if (type === 'knob' || type === 'fader' || type === 'slider' || type === 'encoder') {
+    return 'below';
+  }
+  return 'above';
+}
+
+/**
+ * Generate the JSX for a floating label div positioned adjacent to a control.
+ * The label is positioned using absolute panel-level percentages.
+ */
+function renderFloatingLabel(
+  ctrl: ManifestControl,
+  ep: { x: number; y: number; w: number; h: number },
+  panelWidth: number,
+  panelHeight: number,
+): string | null {
+  const floatingPos = resolveFloatingLabel(ctrl);
+  if (!floatingPos) return null;
+
+  // For icon-only, we still show the verbatimLabel as a floating label
+  const labelText = ctrl.verbatimLabel;
+  if (!labelText) return null;
+
+  const fontSize = labelFontSize(ctrl.sizeClass);
+  const secFontSize = secondaryLabelFontSize(ctrl.sizeClass);
+  const hasSecondary = ctrl.secondaryLabel && ctrl.secondaryLabel.length > 0;
+
+  // Compute label position based on labelDisplay direction.
+  // Heights are in panel-% units. A label line is approximately 1.0-1.2% of panel height.
+  const labelHeightPct = 1.2;
+
+  let labelLeft = ep.x;
+  let labelTop: number;
+  let labelWidth = ep.w;
+
+  switch (floatingPos) {
+    case 'above':
+      labelTop = ep.y - labelHeightPct;
+      break;
+    case 'below':
+      labelTop = ep.y + ep.h + 0.2;
+      break;
+    case 'left':
+      // Position to the left of the control, vertically centered
+      labelWidth = ep.w * 1.5; // wider for side labels
+      labelLeft = ep.x - labelWidth - 0.3;
+      labelTop = ep.y + ep.h / 2 - labelHeightPct / 2;
+      break;
+    case 'right':
+      // Position to the right of the control, vertically centered
+      labelWidth = ep.w * 1.5;
+      labelLeft = ep.x + ep.w + 0.3;
+      labelTop = ep.y + ep.h / 2 - labelHeightPct / 2;
+      break;
+    case 'icon-only':
+      // icon-only controls still get a floating label — default to above
+      labelTop = ep.y - labelHeightPct;
+      break;
+    default:
+      labelTop = ep.y - labelHeightPct;
+      break;
+  }
+
+  const textAlign = (floatingPos === 'left') ? 'right'
+    : (floatingPos === 'right') ? 'left'
+    : 'center';
+
+  const lines: string[] = [
+    `        <div`,
+    `          className="absolute pointer-events-none"`,
+    `          style={{`,
+    `            left: '${labelLeft.toFixed(1)}%',`,
+    `            top: '${labelTop.toFixed(1)}%',`,
+    `            width: '${labelWidth.toFixed(1)}%',`,
+    `            textAlign: '${textAlign}',`,
+    `          }}`,
+    `        >`,
+    `          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: ${fontSize} }}>`,
+    `            ${escapeJsx(labelText)}`,
+    `          </span>`,
+  ];
+
+  if (hasSecondary) {
+    lines.push(
+      `          <span className="text-gray-500 uppercase block" style={{ fontSize: ${secFontSize} }}>`,
+      `            ${escapeJsx(ctrl.secondaryLabel!)}`,
+      `          </span>`,
+    );
+  }
+
+  lines.push(`        </div>`);
+
+  return lines.join('\n');
+}
+
+/**
+ * Generate JSX for group labels from manifest.groupLabels.
+ * Each group label spans the bounding box of its member controls.
+ */
+function renderGroupLabels(
+  groupLabels: Array<{ id: string; text: string; controlIds: string[]; position: string }>,
+  controlMap: Map<string, ManifestControl>,
+): string {
+  return groupLabels
+    .map(gl => {
+      // Find bounding box of all member controls
+      const memberPositions = gl.controlIds
+        .map(id => {
+          const ctrl = controlMap.get(id);
+          return ctrl ? (ctrl as any).editorPosition as { x: number; y: number; w: number; h: number } | undefined : undefined;
+        })
+        .filter((ep): ep is { x: number; y: number; w: number; h: number } => ep != null);
+
+      if (memberPositions.length === 0) return null;
+
+      const minX = Math.min(...memberPositions.map(ep => ep.x));
+      const maxXW = Math.max(...memberPositions.map(ep => ep.x + ep.w));
+      const minY = Math.min(...memberPositions.map(ep => ep.y));
+      const maxYH = Math.max(...memberPositions.map(ep => ep.y + ep.h));
+
+      const spanWidth = maxXW - minX;
+      const labelHeightPct = 1.2;
+
+      let labelTop: number;
+      if (gl.position === 'below') {
+        labelTop = maxYH + 0.2;
+      } else {
+        // 'above' or default
+        labelTop = minY - labelHeightPct;
+      }
+
+      return [
+        `        {/* Group: ${gl.text} */}`,
+        `        <div`,
+        `          className="absolute pointer-events-none text-center"`,
+        `          style={{`,
+        `            left: '${minX.toFixed(1)}%',`,
+        `            top: '${labelTop.toFixed(1)}%',`,
+        `            width: '${spanWidth.toFixed(1)}%',`,
+        `          }}`,
+        `        >`,
+        `          <span className="font-semibold text-gray-400 uppercase tracking-widest" style={{ fontSize: 9 }}>`,
+        `            ${escapeJsx(gl.text)}`,
+        `          </span>`,
+        `        </div>`,
+      ].join('\n');
+    })
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 // ─── Section Body Renderers ─────────────────────────────────────────────────
@@ -933,6 +1120,7 @@ function generateFlatPanel(
     .join('\n\n');
 
   // All controls positioned directly on the panel using editorPosition percentages
+  // Each control is followed by its floating label (if applicable)
   const controlRenderings = allControls
     .map(ctrl => {
       const ep = (ctrl as any).editorPosition as { x: number; y: number; w: number; h: number } | undefined;
@@ -943,7 +1131,7 @@ function generateFlatPanel(
       const pxH = Math.round((ep.h / 100) * panelHeight);
       const controlJsx = renderControl(ctrl.id, ctrl, '          ', controlMap, pxW, pxH);
 
-      return [
+      const parts = [
         `        {/* ${ctrl.id} */}`,
         `        <div`,
         `          className="absolute"`,
@@ -959,10 +1147,47 @@ function generateFlatPanel(
         `        >`,
         controlJsx,
         `        </div>`,
-      ].join('\n');
+      ];
+
+      // Floating label for this control
+      const labelJsx = renderFloatingLabel(ctrl, ep, panelWidth, panelHeight);
+      if (labelJsx) {
+        parts.push(labelJsx);
+      }
+
+      // On-button controls with a secondary label: render secondary as floating text below
+      if (
+        (ctrl.labelDisplay === 'on-button' || ctrl.labelDisplay === 'icon-only') &&
+        ctrl.secondaryLabel &&
+        ctrl.secondaryLabel.length > 0
+      ) {
+        const secFontSize = secondaryLabelFontSize(ctrl.sizeClass);
+        const secTop = ep.y + ep.h + 0.2;
+        parts.push([
+          `        <div`,
+          `          className="absolute pointer-events-none text-center"`,
+          `          style={{`,
+          `            left: '${ep.x.toFixed(1)}%',`,
+          `            top: '${secTop.toFixed(1)}%',`,
+          `            width: '${ep.w.toFixed(1)}%',`,
+          `          }}`,
+          `        >`,
+          `          <span className="text-gray-500 uppercase" style={{ fontSize: ${secFontSize} }}>`,
+          `            ${escapeJsx(ctrl.secondaryLabel)}`,
+          `          </span>`,
+          `        </div>`,
+        ].join('\n'));
+      }
+
+      return parts.join('\n');
     })
     .filter(Boolean)
     .join('\n\n');
+
+  // Group labels — span bounding boxes of their member controls
+  const groupLabelRenderings = manifest.groupLabels && manifest.groupLabels.length > 0
+    ? renderGroupLabels(manifest.groupLabels, controlMap)
+    : '';
 
   return `'use client';
 
@@ -1033,6 +1258,9 @@ ${sectionBackgrounds}
 
         {/* All controls — panel-level percentage positioning */}
 ${controlRenderings}
+
+        {/* Group labels */}
+${groupLabelRenderings}
       </motion.div>
     </div>
   );
