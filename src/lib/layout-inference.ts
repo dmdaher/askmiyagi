@@ -532,9 +532,6 @@ export function cleanupGeometry(
       normalizeSizes(group);
     }
 
-    // ── Overlap resolution: fix overlapping controls ───────────────
-    resolveOverlaps(sectionControls);
-
     // ── Equal spacing: normalize gaps in rows/columns ──────────────
     equalizeSpacing(sectionControls, 'x');
     equalizeSpacing(sectionControls, 'y');
