@@ -54,6 +54,15 @@ const SIZE_CLASS_DIMS: Record<string, { w: number; h: number }> = {
   xl: { w: 160, h: 120 },
 };
 
+/** Weight multiplier for proportional space allocation */
+const SIZE_CLASS_WEIGHT: Record<string, number> = {
+  xs: 0.5,
+  sm: 1,
+  md: 1.5,
+  lg: 2.5,
+  xl: 4,
+};
+
 // ─── Editor data model (flat maps) ──────────────────────────────────────────
 
 export interface ControlDef {
@@ -365,16 +374,32 @@ export const createManifestSlice: StateCreator<
       };
 
       const placeRow = (ids: string[], rowX: number, rowY: number, rowW: number, rowH: number) => {
-        const cellW = rowW / ids.length;
+        // Allocate width proportionally by sizeClass weight
+        const weights = ids.map(id => {
+          const mc = mcById.get(id);
+          return SIZE_CLASS_WEIGHT[mc?.sizeClass ?? 'md'] ?? 1.5;
+        });
+        const totalWeight = weights.reduce((a, b) => a + b, 0);
+        let currentX = rowX;
         ids.forEach((id, i) => {
-          placeControl(id, rowX + i * cellW, rowY, cellW, rowH);
+          const cellW = (weights[i] / totalWeight) * rowW;
+          placeControl(id, currentX, rowY, cellW, rowH);
+          currentX += cellW;
         });
       };
 
       const placeColumn = (ids: string[], colX: number, colY: number, colW: number, colH: number) => {
-        const cellH = colH / ids.length;
+        // Allocate height proportionally by sizeClass weight
+        const weights = ids.map(id => {
+          const mc = mcById.get(id);
+          return SIZE_CLASS_WEIGHT[mc?.sizeClass ?? 'md'] ?? 1.5;
+        });
+        const totalWeight = weights.reduce((a, b) => a + b, 0);
+        let currentY = colY;
         ids.forEach((id, i) => {
-          placeControl(id, colX, colY + i * cellH, colW, cellH);
+          const cellH = (weights[i] / totalWeight) * colH;
+          placeControl(id, colX, currentY, colW, cellH);
+          currentY += cellH;
         });
       };
 

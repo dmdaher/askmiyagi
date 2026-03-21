@@ -21,6 +21,7 @@ export default function EditorToolbar({
   const snapGrid = useEditorStore((s) => s.snapGrid);
   const showGrid = useEditorStore((s) => s.showGrid);
   const showPhoto = useEditorStore((s) => s.showPhoto);
+  const photoMode = useEditorStore((s) => s.photoMode);
   const photoOpacity = useEditorStore((s) => s.photoOpacity);
   const past = useEditorStore((s) => s.past);
   const future = useEditorStore((s) => s.future);
@@ -29,6 +30,7 @@ export default function EditorToolbar({
   const setSnapGrid = useEditorStore((s) => s.setSnapGrid);
   const toggleGrid = useEditorStore((s) => s.toggleGrid);
   const togglePhoto = useEditorStore((s) => s.togglePhoto);
+  const setPhotoMode = useEditorStore((s) => s.setPhotoMode);
   const setPhotoOpacity = useEditorStore((s) => s.setPhotoOpacity);
   const undo = useEditorStore((s) => s.undo);
   const redo = useEditorStore((s) => s.redo);
@@ -142,15 +144,43 @@ export default function EditorToolbar({
           <span className="text-[10px]">Photo</span>
         </button>
         {showPhoto && (
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={Math.round(photoOpacity * 100)}
-            onChange={(e) => setPhotoOpacity(Number(e.target.value) / 100)}
-            className="h-1 w-16 cursor-pointer accent-blue-500"
-            title={`Photo Opacity: ${Math.round(photoOpacity * 100)}%`}
-          />
+          <>
+            <div className="flex rounded overflow-hidden border border-gray-700">
+              <button
+                onClick={() => setPhotoMode('side-by-side')}
+                className={`px-1.5 py-0.5 text-[9px] ${
+                  photoMode === 'side-by-side'
+                    ? 'bg-blue-500/20 text-blue-400'
+                    : 'bg-gray-900 text-gray-500 hover:text-gray-300'
+                }`}
+                title="Side-by-side view"
+              >
+                Side
+              </button>
+              <button
+                onClick={() => setPhotoMode('overlay')}
+                className={`px-1.5 py-0.5 text-[9px] ${
+                  photoMode === 'overlay'
+                    ? 'bg-blue-500/20 text-blue-400'
+                    : 'bg-gray-900 text-gray-500 hover:text-gray-300'
+                }`}
+                title="Overlay on canvas"
+              >
+                Over
+              </button>
+            </div>
+            {photoMode === 'overlay' && (
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Math.round(photoOpacity * 100)}
+                onChange={(e) => setPhotoOpacity(Number(e.target.value) / 100)}
+                className="h-1 w-16 cursor-pointer accent-blue-500"
+                title={`Photo Opacity: ${Math.round(photoOpacity * 100)}%`}
+              />
+            )}
+          </>
         )}
       </div>
 

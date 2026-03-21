@@ -52,7 +52,10 @@ export default function PhotoOverlay() {
     };
   }, [deviceId]);
 
-  if (!showPhoto || !photoUrl) return null;
+  const photoMode = useEditorStore((s) => s.photoMode);
+
+  // Only render in overlay mode — side-by-side is handled by EditorWorkspace
+  if (!showPhoto || !photoUrl || photoMode !== 'overlay') return null;
 
   return (
     <div
