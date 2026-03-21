@@ -8,8 +8,10 @@ import EditorWorkspace from './EditorWorkspace';
 import PropertiesPanel from './PropertiesPanel';
 import LayersPanel from './LayersPanel';
 import ContextMenu from './ContextMenu';
+import InferenceReview from './InferenceReview';
 import { useEditorKeyboard } from './hooks/useEditorKeyboard';
 import { useAutoSave } from './hooks/useAutoSave';
+import { inferLayout, type InferredSection } from '@/lib/layout-inference';
 
 interface PanelEditorProps {
   deviceId: string;
@@ -24,11 +26,15 @@ function EditorShell({ deviceId }: { deviceId: string }) {
   const [buildStatus, setBuildStatus] = useState<
     'idle' | 'building' | 'approved'
   >('idle');
+  const [showInferenceReview, setShowInferenceReview] = useState(false);
+  const [inferenceResults, setInferenceResults] = useState<InferredSection[]>([]);
+  const [codegenError, setCodegenError] = useState<string | null>(null);
 
   const handleApproveAndBuild = useCallback(async () => {
     // Force-save current manifest (bypass debounce)
     const { sections, controls } = useEditorStore.getState();
     setBuildStatus('building');
+    setCodegenError(null);
     try {
       await fetch(`/api/pipeline/${deviceId}/manifest`, {
         method: 'PUT',
@@ -38,13 +44,64 @@ function EditorShell({ deviceId }: { deviceId: string }) {
     } catch {
       // Best-effort save
     }
-    setPreviewMode(true);
+
+    // Run layout inference
+    const result = inferLayout(sections, controls);
+    setInferenceResults(result.sections);
+    setShowInferenceReview(true);
     setBuildStatus('idle');
+  }, [deviceId]);
+
+  const handleInferenceBack = useCallback(() => {
+    setShowInferenceReview(false);
+    setInferenceResults([]);
+  }, []);
+
+  const handleInferenceGenerate = useCallback(async (sections: InferredSection[]) => {
+    setShowInferenceReview(false);
+    setBuildStatus('building');
+    setCodegenError(null);
+
+    try {
+      // Save inferred layout
+      const saveRes = await fetch(`/api/pipeline/${deviceId}/inferred-layout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sections }),
+      });
+
+      if (!saveRes.ok) {
+        const body = await saveRes.json().catch(() => ({}));
+        throw new Error(body.error ?? 'Failed to save inferred layout');
+      }
+
+      // Trigger codegen
+      const codegenRes = await fetch(`/api/pipeline/${deviceId}/codegen`, {
+        method: 'POST',
+      });
+
+      if (!codegenRes.ok) {
+        const body = await codegenRes.json().catch(() => ({}));
+        throw new Error(
+          body.error
+            ? `${body.error}: ${body.stderr || body.details || ''}`
+            : 'Codegen failed'
+        );
+      }
+
+      setPreviewMode(true);
+      setBuildStatus('idle');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setCodegenError(message);
+      setBuildStatus('idle');
+    }
   }, [deviceId]);
 
   const handleBackToEditor = useCallback(() => {
     setPreviewMode(false);
     setBuildStatus('idle');
+    setCodegenError(null);
   }, []);
 
   const handleLooksGood = useCallback(() => {
@@ -59,28 +116,62 @@ function EditorShell({ deviceId }: { deviceId: string }) {
         onApproveAndBuild={handleApproveAndBuild}
       />
 
+      {/* Codegen error banner */}
+      {codegenError && (
+        <div className="flex h-10 items-center justify-between border-b border-red-700/40 bg-red-900/20 px-4">
+          <span className="text-sm text-red-300 truncate flex-1 mr-4">
+            Codegen error: {codegenError}
+          </span>
+          <button
+            onClick={() => setCodegenError(null)}
+            className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700 flex-shrink-0"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Preview mode banner */}
       {previewMode && (
         <div className="flex h-10 items-center justify-between border-b border-amber-700/40 bg-amber-900/20 px-4">
           <span className="text-sm text-amber-300">
             {buildStatus === 'approved'
-              ? 'Panel approved — ready for codegen.'
+              ? '✓ Panel generated and registered! It\'s live.'
               : 'Preview Mode — Reviewing generated panel'}
           </span>
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleBackToEditor}
-              className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
-            >
-              Back to Editor
-            </button>
-            {buildStatus !== 'approved' && (
-              <button
-                onClick={handleLooksGood}
-                className="rounded border border-green-600 bg-green-700/30 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-700/50"
-              >
-                Looks Good
-              </button>
+            {buildStatus === 'approved' ? (
+              <>
+                <button
+                  onClick={handleBackToEditor}
+                  className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
+                >
+                  Continue Editing
+                </button>
+                <a
+                  href={`/dev/panel?device=${deviceId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded border border-green-600 bg-green-700/30 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-700/50"
+                >
+                  View Live Panel →
+                </a>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleBackToEditor}
+                  className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
+                >
+                  Back to Editor
+                </button>
+                <button
+                  onClick={handleLooksGood}
+                  className="rounded border border-green-600 bg-green-700/30 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-700/50"
+                >
+                  Looks Good
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -94,6 +185,15 @@ function EditorShell({ deviceId }: { deviceId: string }) {
         </div>
       </div>
       {!previewMode && <ContextMenu />}
+
+      {/* Inference Review Modal */}
+      {showInferenceReview && (
+        <InferenceReview
+          sections={inferenceResults}
+          onBack={handleInferenceBack}
+          onGenerate={handleInferenceGenerate}
+        />
+      )}
     </div>
   );
 }
