@@ -149,9 +149,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
                   Continue Editing
                 </button>
                 <a
-                  href={`/dev/panel?device=${deviceId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`/admin/${deviceId}/preview`}
                   className="rounded border border-green-600 bg-green-700/30 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-700/50"
                 >
                   View Live Panel →
