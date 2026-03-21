@@ -986,6 +986,54 @@ function main() {
   const templatesOutput: LayoutEngineOutput = JSON.parse(fs.readFileSync(templatesPath, 'utf-8'));
   const templates = templatesOutput.templates;
 
+  // Read inferred layout (from editor's Approve & Build) — overrides template archetypes
+  const inferredPath = path.join(PROJECT_ROOT, `.pipeline/${deviceId}/inferred-layout.json`);
+  if (fs.existsSync(inferredPath)) {
+    try {
+      const inferred = JSON.parse(fs.readFileSync(inferredPath, 'utf-8'));
+      const inferredSections: Array<{ sectionId: string; archetype: string; parameters: { gap?: number; gridCols?: number; gridRows?: number } }> = inferred.sections ?? [];
+      for (const inf of inferredSections) {
+        const tmpl = templates.find(t => t.sectionId === inf.sectionId);
+        if (tmpl && inf.archetype !== 'absolute') {
+          console.log(`  Inference override: ${inf.sectionId} ${tmpl.archetype} → ${inf.archetype} (gap=${inf.parameters.gap ?? 'auto'})`);
+          (tmpl as any).archetype = inf.archetype;
+          // Update CSS architecture based on inferred archetype
+          if (inf.archetype === 'single-row') {
+            tmpl.cssArchitecture = {
+              display: 'flex',
+              properties: {
+                'flex-direction': 'row',
+                'align-items': 'center',
+                'gap': `${inf.parameters.gap ?? 4}px`,
+              },
+            };
+          } else if (inf.archetype === 'single-column') {
+            tmpl.cssArchitecture = {
+              display: 'flex',
+              properties: {
+                'flex-direction': 'column',
+                'align-items': 'center',
+                'gap': `${inf.parameters.gap ?? 4}px`,
+              },
+            };
+          } else if (inf.archetype.startsWith('grid')) {
+            const cols = inf.parameters.gridCols ?? 2;
+            tmpl.cssArchitecture = {
+              display: 'grid',
+              properties: {
+                'grid-template-columns': `repeat(${cols}, 1fr)`,
+                'gap': `${inf.parameters.gap ?? 4}px`,
+              },
+            };
+          }
+        }
+      }
+      console.log(`  Applied ${inferredSections.length} inference overrides from inferred-layout.json`);
+    } catch (e) {
+      console.warn(`  Warning: Could not read inferred-layout.json: ${e}`);
+    }
+  }
+
   // Build lookup maps
   const controlMap = new Map<string, ManifestControl>();
   for (const ctrl of manifest.controls) {
