@@ -543,6 +543,33 @@ export const createManifestSlice: StateCreator<
       }
     }
 
+    // ── Auto-shrink sections to tightly wrap their controls ───────────
+    const sectionPadding = 8;
+    for (const [sId, sec] of Object.entries(sections)) {
+      const childControls = sec.childIds
+        .map(cid => controls[cid])
+        .filter(Boolean);
+      if (childControls.length === 0) continue;
+
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const c of childControls) {
+        if (c.x < minX) minX = c.x;
+        if (c.y < minY) minY = c.y;
+        if (c.x + c.w > maxX) maxX = c.x + c.w;
+        if (c.y + c.h > maxY) maxY = c.y + c.h;
+      }
+
+      // Shrink section to fit controls with padding
+      const headerH = sec.headerLabel ? 16 : 0;
+      sections[sId] = {
+        ...sec,
+        x: minX - sectionPadding,
+        y: minY - sectionPadding - headerH,
+        w: (maxX - minX) + sectionPadding * 2,
+        h: (maxY - minY) + sectionPadding * 2 + headerH,
+      };
+    }
+
     set({
       deviceId: manifest.deviceId,
       deviceName: manifest.deviceName,

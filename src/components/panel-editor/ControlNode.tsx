@@ -722,19 +722,15 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
       style={{
-        outline: isOutOfBounds
-          ? '2px solid rgba(239,68,68,0.8)'
-          : isSelected
-            ? '2px solid rgba(59,130,246,0.8)'
-            : 'none',
+        outline: isSelected
+          ? '2px solid rgba(59,130,246,0.8)'
+          : 'none',
         outlineOffset: 1,
         borderRadius: 2,
         zIndex: isSelected ? 50 : 1,
-        boxShadow: isOutOfBounds
-          ? '0 0 8px 2px rgba(239,68,68,0.3)'
-          : isSelected
-            ? '0 0 8px 2px rgba(59,130,246,0.3)'
-            : 'none',
+        boxShadow: isSelected
+          ? '0 0 8px 2px rgba(59,130,246,0.3)'
+          : 'none',
         opacity: isLocked ? 0.7 : 1,
         cursor: isLocked ? 'not-allowed' : 'move',
       }}
