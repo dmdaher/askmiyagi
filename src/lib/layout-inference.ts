@@ -657,6 +657,17 @@ function resolveOverlaps(controls: CleanedControl[]): void {
       const a = controls[i];
       const b = controls[j];
 
+      // Skip if controls are in the same row (similar Y centers)
+      // They may share X space but that's fine for side-by-side controls
+      const aCenterY = a.y + a.h / 2;
+      const bCenterY = b.y + b.h / 2;
+      if (Math.abs(aCenterY - bCenterY) <= SNAP_TOLERANCE) continue;
+
+      // Skip if controls are in the same column (similar X centers)
+      const aCenterX = a.x + a.w / 2;
+      const bCenterX = b.x + b.w / 2;
+      if (Math.abs(aCenterX - bCenterX) <= SNAP_TOLERANCE) continue;
+
       // Check if they share horizontal space
       const xOverlap = a.x < b.x + b.w && a.x + a.w > b.x;
       if (!xOverlap) continue;
@@ -665,12 +676,12 @@ function resolveOverlaps(controls: CleanedControl[]): void {
       const yOverlap = a.y < b.y + b.h && a.y + a.h > b.y;
       if (!yOverlap) continue;
 
-      // They truly overlap — push the lower one down
+      // They truly overlap and aren't in the same row/column — push the lower one down
       const upper = a.y <= b.y ? a : b;
       const lower = a.y <= b.y ? b : a;
       const lowerCtrl = controls.find(c => c.id === lower.id);
       if (lowerCtrl) {
-        lowerCtrl.y = upper.y + upper.h + 4; // 4px minimum gap
+        lowerCtrl.y = upper.y + upper.h + 4;
       }
     }
   }

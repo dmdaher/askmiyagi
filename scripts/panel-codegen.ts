@@ -652,23 +652,20 @@ function renderAbsolutePositioned(
 
   const bb = section.panelBoundingBox ?? { x: 0, y: 0, w: 100, h: 100 };
 
+  // Use PANEL-LEVEL percentages directly — no section-relative conversion.
+  // This eliminates coordinate drift from section bounding box recomputation.
   const controlJsx = sectionControls.map(({ id, ctrl }) => {
     const ep = (ctrl as any).editorPosition as { x: number; y: number; w: number; h: number };
-    // Convert control position from panel-% to section-relative-%
-    const relX = ((ep.x - bb.x) / bb.w) * 100;
-    const relY = ((ep.y - bb.y) / bb.h) * 100;
-    const relW = (ep.w / bb.w) * 100;
-    const relH = (ep.h / bb.h) * 100;
 
     const controlJsxStr = renderControl(id, ctrl!, '            ', controlMap);
     return [
       `          <div`,
       `            className="absolute flex items-center justify-center"`,
       `            style={{`,
-      `              left: '${relX.toFixed(2)}%',`,
-      `              top: '${relY.toFixed(2)}%',`,
-      `              width: '${relW.toFixed(2)}%',`,
-      `              height: '${relH.toFixed(2)}%',`,
+      `              left: '${ep.x.toFixed(2)}%',`,
+      `              top: '${ep.y.toFixed(2)}%',`,
+      `              width: '${ep.w.toFixed(2)}%',`,
+      `              height: '${ep.h.toFixed(2)}%',`,
       `            }}`,
       `          >`,
       controlJsxStr,
@@ -676,8 +673,10 @@ function renderAbsolutePositioned(
     ].join('\n');
   }).join('\n');
 
+  // Controls use panel-level positioning — section has NO position:relative
+  // so controls position relative to the root panel's relative container
   return [
-    `      <div data-section-id="${section.id}" className="relative w-full h-full">`,
+    `      <div data-section-id="${section.id}">`,
     controlJsx,
     `      </div>`,
   ].join('\n');
