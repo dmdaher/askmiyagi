@@ -718,6 +718,12 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       resizeGrid={[snapGrid, snapGrid]}
       disableDragging={isLocked}
       enableResizing={!isLocked}
+      resizeHandleStyles={isSelected ? {
+        bottomRight: { width: 10, height: 10, right: -5, bottom: -5, background: '#3b82f6', borderRadius: '50%', cursor: 'nwse-resize' },
+        bottomLeft: { width: 10, height: 10, left: -5, bottom: -5, background: '#3b82f6', borderRadius: '50%', cursor: 'nesw-resize' },
+        topRight: { width: 10, height: 10, right: -5, top: -5, background: '#3b82f6', borderRadius: '50%', cursor: 'nesw-resize' },
+        topLeft: { width: 10, height: 10, left: -5, top: -5, background: '#3b82f6', borderRadius: '50%', cursor: 'nwse-resize' },
+      } : undefined}
       onDragStart={handleDragStart}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
