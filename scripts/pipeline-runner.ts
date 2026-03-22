@@ -467,8 +467,83 @@ If you cannot find or download the manual after trying all approaches, state cle
   if (downloadedPdfs.length > 0) {
     // Store paths relative to worktree for agent prompts
     state.manualPaths = downloadedPdfs.map((p) => path.relative(worktreeCwd, p));
-    completePhase(state, 'phase-preflight', null, true);
     appendLog(deviceId, { level: 'info', message: `Manual downloaded: ${state.manualPaths.join(', ')}` });
+
+    // ── Auto-download hardware photos ──────────────────────────────────
+    const photosDir = path.join(outputDir, 'photos');
+    if (!fs.existsSync(photosDir)) {
+      fs.mkdirSync(photosDir, { recursive: true });
+    }
+
+    // Copy photos from main repo if they exist there but not in worktree
+    const mainRepoPhotos = path.join('docs', state.manufacturer, deviceId, 'photos');
+    if (fs.existsSync(mainRepoPhotos) && mainRepoPhotos !== photosDir) {
+      const mainPhotos = fs.readdirSync(mainRepoPhotos).filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f));
+      for (const photo of mainPhotos) {
+        const dest = path.join(photosDir, photo);
+        if (!fs.existsSync(dest)) {
+          fs.copyFileSync(path.join(mainRepoPhotos, photo), dest);
+          appendLog(deviceId, { level: 'info', message: `Copied photo from main repo: ${photo}` });
+        }
+      }
+    }
+
+    const existingPhotos = fs.readdirSync(photosDir).filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f));
+    if (existingPhotos.length === 0) {
+      appendLog(deviceId, { level: 'info', message: 'No photos found — auto-downloading hardware photos...' });
+
+      const photoResult = await invokeAgent({
+        prompt: `Find and download top-down/overhead hardware photos for:
+- Manufacturer: ${state.manufacturer}
+- Device: ${state.deviceName}
+
+REQUIREMENTS:
+1. You MUST find at least ONE top-down/overhead view of the entire instrument
+2. Also download angled views and front views if available
+3. Check the manufacturer's official website FIRST:
+   - Roland: https://static.roland.com/assets/images/products/gallery/{device-slug}_top_gal.jpg
+   - Pioneer DJ: https://www.pioneerdj.com/en-us/product/{device-slug}/
+   - Behringer: https://www.behringer.com/product/{device-slug}
+4. If official site fails, use WebSearch: "${state.manufacturer} ${state.deviceName} top view overhead photo"
+5. Download images using Bash with curl: curl -sL -o "{filename}.jpg" "{url}"
+6. Save ALL photos to: ${photosDir}
+7. Name files: ${deviceId}-top-view.jpg, ${deviceId}-top-angle.jpg, ${deviceId}-hero.jpg, ${deviceId}-front.jpg
+8. Verify each download is a valid image (file size > 10KB)
+9. Delete any files that are HTML error pages (< 10KB or not JPEG/PNG)
+
+IMPORTANT: At minimum, you need a top-down view. The Diagram Parser CANNOT run without photos.`,
+        deviceId,
+        cwd: worktreeCwd,
+        phase: 'phase-preflight',
+        agent: 'photo-downloader',
+        allowedTools: ['WebSearch', 'WebFetch', 'Bash', 'Read', 'Write'],
+        remainingBudgetUsd: getRemainingBudget(state),
+        maxBudgetPerInvocation: 5,
+        onChildPid: (pid) => trackChildPid(state, pid),
+      });
+
+      if (photoResult.costEntry) {
+        accumulateCost(state, photoResult.costEntry);
+        recordCostEntry(deviceId, photoResult.costEntry);
+      }
+
+      // Verify photos were downloaded
+      const downloadedPhotos = fs.readdirSync(photosDir).filter(f => {
+        if (!/\.(jpg|jpeg|png|webp)$/i.test(f)) return false;
+        const stat = fs.statSync(path.join(photosDir, f));
+        return stat.size > 10000; // Must be > 10KB to be a real image
+      });
+
+      if (downloadedPhotos.length > 0) {
+        appendLog(deviceId, { level: 'info', message: `Photos downloaded: ${downloadedPhotos.join(', ')}` });
+      } else {
+        appendLog(deviceId, { level: 'warn', message: 'No valid photos downloaded — parser may fail' });
+      }
+    } else {
+      appendLog(deviceId, { level: 'info', message: `Photos already exist: ${existingPhotos.join(', ')}` });
+    }
+
+    completePhase(state, 'phase-preflight', null, true);
     advancePhase(state, worktreeCwd);
   } else {
     completePhase(state, 'phase-preflight', null, false);
