@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Knob from '@/components/controls/Knob';
 import PanelButton from '@/components/controls/PanelButton';
+import ValueDial from '@/components/controls/ValueDial';
 import { PanelState } from '@/types/panel';
 
 interface SelectorSectionProps {
@@ -25,23 +25,64 @@ export default function SelectorSection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.15 }}
     >
-      <div data-section-id="SELECTOR" className="flex flex-col gap-1 items-center">
-          <Knob
-            id="ROTARY_SELECTOR"
-            label=""
-            value={getState('ROTARY_SELECTOR').value ?? 64}
-            highlighted={isHighlighted('ROTARY_SELECTOR')}
-          />
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="BACK"
+      <div data-section-id="SELECTOR">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '78.90%',
+              top: '11.00%',
+              width: '12.70%',
+              height: '4.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="BACK"
+                label="BACK"
+                variant="standard"
+                size="md"
+                active={getState('BACK').active}
+                highlighted={isHighlighted('BACK')}
+                onClick={() => onButtonClick?.('BACK')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '87.70%',
+              top: '11.00%',
+              width: '12.70%',
+              height: '4.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="TAG_TRACK_REMOVE"
+                label="TAG TRACK/REMOVE"
+                variant="standard"
+                size="md"
+                active={getState('TAG_TRACK_REMOVE').active}
+                highlighted={isHighlighted('TAG_TRACK_REMOVE')}
+                onClick={() => onButtonClick?.('TAG_TRACK_REMOVE')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '83.70%',
+              top: '13.90%',
+              width: '12.00%',
+              height: '9.70%',
+            }}
+          >
+            <ValueDial
+              id="ROTARY_SELECTOR"
               label=""
-              size="md"
-              active={getState('BACK').active}
-              highlighted={isHighlighted('BACK')}
-              onClick={() => onButtonClick?.('BACK')}
+              highlighted={isHighlighted('ROTARY_SELECTOR')}
             />
-          </motion.div>
+          </div>
       </div>
     </motion.div>
   );

@@ -24,47 +24,93 @@ export default function CueMemorySection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.35 }}
     >
-      <div data-section-id="CUE_MEMORY" className="grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px' }}>
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="CUE_LOOP_CALL_BACK"
-              label=""
-              size="md"
-              active={getState('CUE_LOOP_CALL_BACK').active}
-              highlighted={isHighlighted('CUE_LOOP_CALL_BACK')}
-              onClick={() => onButtonClick?.('CUE_LOOP_CALL_BACK')}
-            />
-          </motion.div>
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="CUE_LOOP_CALL_FWD"
-              label=""
-              size="md"
-              active={getState('CUE_LOOP_CALL_FWD').active}
-              highlighted={isHighlighted('CUE_LOOP_CALL_FWD')}
-              onClick={() => onButtonClick?.('CUE_LOOP_CALL_FWD')}
-            />
-          </motion.div>
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="DELETE"
-              label=""
-              size="md"
-              active={getState('DELETE').active}
-              highlighted={isHighlighted('DELETE')}
-              onClick={() => onButtonClick?.('DELETE')}
-            />
-          </motion.div>
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="MEMORY"
-              label=""
-              size="md"
-              active={getState('MEMORY').active}
-              highlighted={isHighlighted('MEMORY')}
-              onClick={() => onButtonClick?.('MEMORY')}
-            />
-          </motion.div>
+      <div data-section-id="CUE_MEMORY">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '59.60%',
+              top: '41.20%',
+              width: '8.80%',
+              height: '2.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="CUE_LOOP_CALL_BACK"
+                label="CUE/LOOP CALL ◄"
+                variant="standard"
+                size="md"
+                iconContent="◀"
+                active={getState('CUE_LOOP_CALL_BACK').active}
+                highlighted={isHighlighted('CUE_LOOP_CALL_BACK')}
+                onClick={() => onButtonClick?.('CUE_LOOP_CALL_BACK')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '64.80%',
+              top: '41.20%',
+              width: '8.80%',
+              height: '2.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="CUE_LOOP_CALL_FWD"
+                label="CUE/LOOP CALL ►"
+                variant="standard"
+                size="md"
+                iconContent="▶"
+                active={getState('CUE_LOOP_CALL_FWD').active}
+                highlighted={isHighlighted('CUE_LOOP_CALL_FWD')}
+                onClick={() => onButtonClick?.('CUE_LOOP_CALL_FWD')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '71.30%',
+              top: '41.20%',
+              width: '8.80%',
+              height: '2.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="DELETE"
+                label=""
+                variant="standard"
+                size="md"
+                active={getState('DELETE').active}
+                highlighted={isHighlighted('DELETE')}
+                onClick={() => onButtonClick?.('DELETE')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '77.10%',
+              top: '41.20%',
+              width: '8.80%',
+              height: '2.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="MEMORY"
+                label=""
+                variant="standard"
+                size="md"
+                active={getState('MEMORY').active}
+                highlighted={isHighlighted('MEMORY')}
+                onClick={() => onButtonClick?.('MEMORY')}
+              />
+            </motion.div>
+          </div>
       </div>
     </motion.div>
   );

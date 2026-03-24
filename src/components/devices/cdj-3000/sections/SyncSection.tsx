@@ -24,27 +24,77 @@ export default function SyncSection({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.40 }}
     >
-      <div data-section-id="SYNC" className="flex flex-col gap-1 items-center">
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="SYNC_BTN"
-              label=""
-              size="md"
-              active={getState('SYNC_BTN').active}
-              highlighted={isHighlighted('SYNC_BTN')}
-              onClick={() => onButtonClick?.('SYNC_BTN')}
-            />
-          </motion.div>
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
-            <PanelButton
-              id="MASTER"
-              label=""
-              size="md"
-              active={getState('MASTER').active}
-              highlighted={isHighlighted('MASTER')}
-              onClick={() => onButtonClick?.('MASTER')}
-            />
-          </motion.div>
+      <div data-section-id="SYNC">
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '92.30%',
+              top: '47.60%',
+              width: '5.30%',
+              height: '3.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="MASTER"
+                label="MASTER"
+                variant="standard"
+                size="md"
+                hasLed
+                ledColor="#22c55e"
+                active={getState('MASTER').active}
+                highlighted={isHighlighted('MASTER')}
+                onClick={() => onButtonClick?.('MASTER')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '89.70%',
+              top: '51.10%',
+              width: '5.30%',
+              height: '3.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="KEY_SYNC"
+                label="KEY SYNC"
+                variant="standard"
+                size="md"
+                surfaceColor="#ec4899"
+                hasLed
+                ledColor="#ec4899"
+                active={getState('KEY_SYNC').active}
+                highlighted={isHighlighted('KEY_SYNC')}
+                onClick={() => onButtonClick?.('KEY_SYNC')}
+              />
+            </motion.div>
+          </div>
+          <div
+            className="absolute flex items-center justify-center"
+            style={{
+              left: '87.10%',
+              top: '47.60%',
+              width: '5.30%',
+              height: '3.40%',
+            }}
+          >
+            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+              <PanelButton
+                id="BEAT_SYNC_INST_DOUBLES"
+                label="Beat Sync"
+                variant="standard"
+                size="md"
+                hasLed
+                ledColor="#3b82f6"
+                active={getState('BEAT_SYNC_INST_DOUBLES').active}
+                highlighted={isHighlighted('BEAT_SYNC_INST_DOUBLES')}
+                onClick={() => onButtonClick?.('BEAT_SYNC_INST_DOUBLES')}
+              />
+            </motion.div>
+          </div>
       </div>
     </motion.div>
   );
