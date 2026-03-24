@@ -144,30 +144,46 @@
 
 ---
 
-## High Priority — Visual Extractor Enablement
+## High Priority — Reliable Visual Enrichment from Gatekeeper
 
-### Task 11: Wire visual extractor into pipeline runner
+### Task 11: Make gatekeeper reliably produce visual enrichment
 
-The visual extractor agent SOUL exists (`.claude/agents/visual-extractor.md`) but was never integrated into the pipeline runner. It enriches the gatekeeper's structural manifest with visual properties (shape, surfaceColor, buttonStyle, LED data, interaction types, groupLabels, deviceDimensions) by reading the manual and hardware photos.
+The gatekeeper already produces visual enrichment (shape, surfaceColor, buttonStyle, LED data, deviceDimensions, keyboard) — the CDJ-3000 manifest came out with circle shapes, green/orange colors, LED data. But it does this **inconsistently**. Some runs include full visual data, some don't.
 
-Currently the gatekeeper sometimes includes visual data and sometimes doesn't — it's outside its role boundary (judge-only). The visual extractor is the proper agent for this job.
+**Decision:** Keep visual enrichment IN the gatekeeper rather than adding a separate visual extractor phase. Rationale:
+- The gatekeeper already reads the manual and photos — it has all the info needed
+- Adding a separate agent adds another handoff point (which is exactly the kind of bug we spent this session fixing)
+- One agent, one pass = cheaper, faster, fewer failure modes
+- The visual extractor SOUL (`.claude/agents/visual-extractor.md`) stays as a reference for what fields to extract, and as a fallback if the gatekeeper approach fails
 
 **Files:**
-- Modify: `src/lib/pipeline/state-machine.ts` — add `'phase-0-visual-extractor'` to PHASE_ORDER between `'phase-0-gatekeeper'` and `'phase-0-layout-engine'`
-- Modify: `scripts/pipeline-runner.ts` — add `doPhase0VisualExtractor` handler function
+- Modify: `.claude/agents/gatekeeper.md` — add REQUIRED visual enrichment section
+- Modify: `src/lib/pipeline/checkpoint-validators.ts` — validator rejects manifests missing visual fields
 
-**Phase handler should:**
-1. Check that gatekeeper manifest exists (pre-condition)
-2. Build prompt telling the agent to read the manifest, manual PDFs, and photos
-3. Invoke agent with PIPELINE_TOOLS (Read, Write, Edit, Glob, Grep, Bash)
-4. `copyAgentOutput('visual-extractor')` BEFORE validation (per the pattern we established)
-5. Validate: enriched manifest has shape/sizeClass/labelDisplay on all controls
-6. Promote enriched manifest to pipeline root (overwrite gatekeeper's structural-only version)
-7. This is where `deviceDimensions` and `keyboard` get reliably added — the visual extractor reads the manual specs page
+**Gatekeeper SOUL changes:**
+1. Add a "VISUAL ENRICHMENT (REQUIRED)" section with all fields from the visual extractor SOUL:
+   - `shape` (circle/rectangle/square) — check hardware photo for transport buttons, pads, knobs
+   - `sizeClass` (xs/sm/md/lg/xl) — relative to section median
+   - `surfaceColor` — from manual color references + hardware photo (CUE=amber, PLAY=green, etc.)
+   - `buttonStyle` (flat-key/transport/rubber/raised) — from physical button type
+   - `labelDisplay` (on-button/above/below/icon-only/hidden) — from Part Names diagram
+   - `icon` — standard icon keys for transport buttons (play, pause, etc.)
+   - `hasLed`, `ledColor`, `ledBehavior`, `ledPosition` — from manual "lights up" descriptions
+   - `interactionType` (momentary/toggle/hold/rotary/slide) — from manual functional descriptions
+   - `pairedWith` (symmetric) — for paired controls (search ◀◀/▶▶, beat jump ◀/▶)
+   - `groupLabels` — standalone labels spanning multiple controls
+   - `deviceDimensions` — from manual specs page (REQUIRED, already in SOUL)
+   - `keyboard` — from manual specs page (REQUIRED, already in SOUL)
+2. Mark these fields as REQUIRED in the manifest schema example
+3. Add: "The manifest completeness validator will REJECT manifests where >20% of controls are missing shape, sizeClass, or labelDisplay. Extract these from the manual Part Names pages and hardware photos."
 
-**Key benefit:** Every instrument gets consistent visual enrichment regardless of how thorough the gatekeeper was. The gatekeeper focuses on structure (controls, sections, archetypes), the visual extractor focuses on appearance (shapes, colors, LEDs, labels). Clean separation of concerns.
-
-**Also update gatekeeper SOUL:** Remove visual property instructions from gatekeeper (it shouldn't be setting shape, surfaceColor, buttonStyle, etc.). Let it focus purely on structural decisions.
+**Validator changes:**
+- In `validateManifestCompleteness` or `validateGatekeeperManifest`:
+  - Count controls missing `shape` — if >20% missing, deduct 2.0
+  - Count controls missing `sizeClass` — if >20% missing, deduct 1.0
+  - Count controls missing `labelDisplay` — if >20% missing, deduct 1.0
+  - Count controls missing `surfaceColor` on transport/performance buttons — deduct 0.5 per missing
+  - This ensures the gatekeeper can't pass validation without visual enrichment
 
 ---
 
