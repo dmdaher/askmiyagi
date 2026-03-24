@@ -47,7 +47,7 @@ export default function TouchDisplay({
           height,
           borderRadius: 6,
           background: '#222',
-          border: `${bezelWidth}px solid #333`,
+          border: `${bezelWidth}px solid #2a4a6a`,
           boxShadow:
             '0 4px 12px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.04)',
         }}
@@ -59,7 +59,7 @@ export default function TouchDisplay({
           style={{
             inset: 0,
             borderRadius: 2,
-            background: '#0a0a14',
+            background: '#0a1a2a',
             overflow: 'hidden',
           }}
         >
@@ -100,6 +100,35 @@ export default function TouchDisplay({
               <text x="150" y="20" fill="#666" fontSize="10" fontFamily="monospace">-02:15.8</text>
             </svg>
           )}
+
+          {/* LCD bezel inset shadow */}
+          <div
+            data-layer="bezel"
+            className="absolute inset-0 rounded-sm pointer-events-none"
+            style={{
+              boxShadow: 'inset 0 0 8px 2px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.4)',
+            }}
+          />
+
+          {/* Scanline overlay — CRT horizontal lines */}
+          <div
+            data-layer="scanlines"
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)',
+            }}
+          />
+
+          {/* Screen glow — subtle blue vignette */}
+          <div
+            data-layer="glow"
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage:
+                'radial-gradient(ellipse at center, rgba(40, 80, 140, 0.08) 0%, transparent 70%)',
+            }}
+          />
         </div>
       </motion.div>
 
