@@ -1,167 +1,123 @@
 # Stabilization Fixes Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **CRITICAL WORKFLOW RULE:** After each task, run a Playwright end-to-end smoke test (editor loads → controls render → approve button visible → preview loads). Do NOT proceed to the next task if any page errors.
 
-**Goal:** Fix the two root causes that make the editor unreliable: gatekeeper dropping fields and auto-save clobbering fresh data.
+**Goal:** Fix the root causes that make the editor and pipeline unreliable, then improve contractor UX.
 
-**Architecture:** Defensive persistence — protect required fields from being dropped, and prevent stale browser state from overwriting pipeline data.
+**Architecture:** Defensive persistence — protect required fields from being dropped, prevent stale browser state from overwriting pipeline data, and ensure consistent visual enrichment.
 
----
-
-## Problem 1: Gatekeeper Drops deviceDimensions + keyboard
-
-**What happens:** The gatekeeper re-runs and writes a new manifest.json. But it doesn't include `deviceDimensions` or `keyboard` because:
-1. The gatekeeper SOUL tells it to add these fields, but the agent doesn't always follow through
-2. When the pipeline runner promotes the gatekeeper's manifest to `.pipeline/{id}/manifest.json`, it overwrites the previous manifest that had these fields
-
-**Impact:** Editor loads without device dimensions → wrong canvas size → controls in wrong positions. Keyboard disappears.
-
-**Fix approach:** Defensive merge in the pipeline runner. When promoting the gatekeeper manifest, carry forward `deviceDimensions` and `keyboard` from the previous manifest if the gatekeeper didn't include them. These fields are physical facts about the hardware — they never change between gatekeeper runs.
-
-### Task 1: Pipeline runner preserves deviceDimensions + keyboard on manifest promotion
-
-**Files:**
-- Modify: `scripts/pipeline-runner.ts` — find where gatekeeper manifest is promoted to pipeline root
-
-**Changes:**
-- Before overwriting `manifest.json`, read the existing one
-- If the new manifest is missing `deviceDimensions` but the old one has it, carry it forward
-- Same for `keyboard`
-- Log a warning when carrying forward (so we know the gatekeeper missed it)
-
-### Task 2: Add deviceDimensions to manifest completeness validator
-
-**Files:**
-- Modify: `src/lib/pipeline/checkpoint-validators.ts`
-
-**Changes:**
-- In `validateManifestCompleteness` or `validateGatekeeperManifest`, add a warning (not failure) when `deviceDimensions` is missing
-- The validator already has a -1.0 deduction for missing deviceDimensions — keep it but also log explicitly
+**Priority order:** Tasks 3+4 (auto-save clobber) → Task 1 (field preservation) → Task 11 (visual enrichment) → Task 2 (validator) → Everything else
 
 ---
 
-## Problem 2: Auto-Save Clobbers Fresh Pipeline Data
+## CRITICAL — Fix First (Auto-Save Clobber)
 
-**What happens:**
-1. Pipeline produces a fresh manifest with correct data
-2. User opens the editor — it loads the fresh manifest via API
-3. But the editor still has the OLD Zustand state in memory from a previous session
-4. The auto-save hook fires within 500ms and writes the stale state to `manifest-editor.json`
-5. Next API call returns the stale `manifest-editor.json` (which has `_source: editor`), overriding the fresh pipeline data
-
-**Impact:** Every fix we make to the manifest gets overwritten by the browser's stale state. We had to delete `manifest-editor.json` repeatedly this session and race against the auto-save.
-
-**Fix approach:** The auto-save should only save AFTER the editor has loaded fresh data. Not on mount, not on the initial state hydration — only after the user makes an actual edit.
+These must be fixed BEFORE any other work. The auto-save clobber caused 4-5 cascading failures in the previous session.
 
 ### Task 3: Auto-save only after user interaction
+
+The auto-save hook in `useAutoSave.ts` fires on any state change, including the initial manifest load. This overwrites fresh pipeline data with stale browser state.
 
 **Files:**
 - Modify: `src/components/panel-editor/hooks/useAutoSave.ts`
 
+**Current state (from audit):** The hook already has an `isFirstChange` guard (lines 50-53) and debounces at 800ms (line 6). But the guard only skips the very first change — if `loadFromManifest` triggers multiple state updates (e.g., setting sections then controls), the second update passes the guard.
+
 **Changes:**
-- Add a `hasUserEdited` flag (starts false)
-- Set it to true on the first actual user action (move, resize, select, property change)
-- Auto-save only fires when `hasUserEdited` is true
-- This prevents the initial load from triggering a save of stale state
+- Add `hasUserEdited` flag to the editor store (initial: false)
+- Set it to true ONLY on explicit user actions: `moveControl`, `resizeControl`, `moveSection`, `resizeSection`, `updateControl` (the mutation actions in `manifestSlice.ts`)
+- In `useAutoSave.ts`, check `hasUserEdited` before saving — if false, skip
+- Reset `hasUserEdited` to false in `loadFromManifest` (so a fresh load resets the flag)
+
+**Verify:** Open editor, check that `manifest-editor.json` is NOT created until you actually drag a control.
 
 ### Task 4: Manifest API detects stale editor manifest
+
+The manifest GET endpoint serves `manifest-editor.json` if it exists, regardless of whether the pipeline manifest is newer.
 
 **Files:**
 - Modify: `src/app/api/pipeline/[deviceId]/manifest/route.ts`
 
+**Current state (from audit):** Lines 12-57 check for editor manifest first. Lines 59-76 fall back to pipeline manifest. No timestamp comparison exists.
+
 **Changes:**
-- When serving `manifest-editor.json`, compare its timestamp to `manifest.json`
-- If `manifest.json` is NEWER than `manifest-editor.json`, the editor state is stale
-- In that case, delete `manifest-editor.json` and serve `manifest.json` instead
+- After reading `manifest-editor.json`, check `fs.statSync()` mtime of both files
+- If `manifest.json` mtime > `manifest-editor.json` mtime, the editor state is stale
+- In that case: rename `manifest-editor.json` to `manifest-editor.json.stale` (don't delete — keep for debugging) and serve `manifest.json` instead
 - Log: "Editor manifest is stale (pipeline manifest is newer), serving fresh pipeline data"
 
-### Task 5: Editor saves a version/timestamp to detect staleness
+**Verify:** Re-run gatekeeper for any device, then load the editor — it should show the fresh pipeline data, not old editor state.
+
+### Task 5: Editor saves a version marker to detect staleness
+
+Provides a secondary staleness check in the editor itself.
 
 **Files:**
 - Modify: `src/components/panel-editor/hooks/useAutoSave.ts`
 - Modify: `src/components/panel-editor/PanelEditor.tsx`
 
+**Current state (from audit):** No version or hash field exists in the manifest or editor state.
+
 **Changes:**
-- When loading manifest from API, store the pipeline manifest's `updatedAt` or a hash
-- When auto-saving, include this version marker
-- On next load, if the version marker doesn't match the current pipeline manifest, discard the editor state
+- When loading manifest from API, compute a hash of the pipeline manifest's control IDs (e.g., `JSON.stringify(controlIds).hashCode()` or just the count + first/last ID)
+- Store as `_manifestVersion` in the editor state
+- When auto-saving, include `_manifestVersion` in the saved JSON
+- On next load: if `manifest-editor.json` has a `_manifestVersion` that doesn't match the current pipeline manifest, discard it
+
+**Depends on:** Task 3 + 4
 
 ---
 
----
+## HIGH — Pipeline Field Preservation
 
-## Medium Priority — Pipeline File Architecture Cleanup
+### Task 1: Pipeline runner preserves deviceDimensions + keyboard on manifest promotion
 
-### Task 6: Layout Engine uses paths() helper instead of hardcoded paths
-
-**Files:**
-- Modify: `scripts/pipeline-runner.ts` — `doPhase0LayoutEngine` function
-
-**Changes:**
-- Replace `path.join('.pipeline', deviceId, 'templates.json')` with `paths().templates`
-- Replace `path.join('.pipeline', deviceId, 'manifest.json')` with `paths().manifest`
-- Replace worktree variants with `paths().wtManifest`, `paths().wtTemplates`
-
-### Task 7: Gatekeeper manifest search includes main repo fallback
+When the gatekeeper manifest is promoted to `.pipeline/{id}/manifest.json`, it overwrites any previous manifest — including one that had `deviceDimensions` and `keyboard` added manually.
 
 **Files:**
-- Modify: `scripts/pipeline-runner.ts` — gatekeeper post-inspection
+- Modify: `scripts/pipeline-runner.ts` — lines 1092-1102 (gatekeeper manifest promotion via `fs.copyFileSync`)
+
+**Current state (from audit):** Promotion is a direct file copy. Fields are preserved IF the gatekeeper wrote them. The issue is when the gatekeeper omits them.
 
 **Changes:**
-- Add `gkPaths.manifest` (main repo `.pipeline/{id}/manifest.json`) as fourth fallback in `gkManifestSources` array
+- Before the `fs.copyFileSync` on line 1099, read the existing `manifest.json` (if it exists)
+- After copying the new manifest, read it back and check for `deviceDimensions` and `keyboard`
+- If missing in the new manifest but present in the old one, merge them in (JSON read → add fields → write back)
+- Log a warning: "Carried forward deviceDimensions/keyboard from previous manifest — gatekeeper did not include them"
 
-### Task 8: Manual Extractor resume uses merge strategy
+**Depends on:** Task 11 (gatekeeper should include these fields, but this is the safety net)
+
+### Task 2: Validator enforces deviceDimensions presence
 
 **Files:**
-- Modify: `scripts/pipeline-runner.ts` — `copyAgentOutput` function
+- Modify: `src/lib/pipeline/checkpoint-validators.ts`
+
+**Current state (from audit):** `validateManifestCompleteness()` (line 691) exists. There is a -1.0 deduction for missing `deviceDimensions` already in the validator (added this session). Confirm this is working and also add `keyboard` field validation.
 
 **Changes:**
-- When copying agent output directory, only overwrite files that were modified in the current run
-- Check file modification times: if worktree file is older than main repo file, skip it
-- Prevents completed sieve buckets from being overwritten on resume
-
-### Task 9: Move extractorSealed path to pipeline root
-
-**Files:**
-- Modify: `src/lib/pipeline/paths.ts`
-- Modify: `scripts/pipeline-runner.ts` — coverage auditor phase
-
-**Changes:**
-- Change `extractorSealed` from `.pipeline/{id}/agents/.extractor-sealed` to `.pipeline/{id}/.extractor-sealed`
-- Avoids confusion with agent directory scans
-
-### Task 10: renderDualColumn handles nested container structures
-
-**Files:**
-- Modify: `scripts/panel-codegen.ts` — `renderDualColumn` function
-
-**Changes:**
-- When `containerAssignment['left-column']` or `['right-column']` is an Object (not Array), recursively extract control IDs from nested subzones
-- Each subzone has `{ controls: string[], direction: 'row'|'column' }` structure
-- Render nested controls with appropriate flex direction
-
-**Impact:** Fixes 12 missing controls in CDJ-3000 section-based mode (HOT_CUE pads + TEMPO controls)
+- Verify the existing -1.0 deduction for missing `deviceDimensions` is in `validateGatekeeperManifest` (not just `validateManifestCompleteness`)
+- Add: if `keyboard` field is completely absent (not even `null`), log a warning — the gatekeeper should explicitly set it to `null` for non-keyboard instruments or populate it for keyboard instruments
+- This is a validator-level warning, not a hard failure
 
 ---
 
-## High Priority — Reliable Visual Enrichment from Gatekeeper
+## HIGH — Reliable Visual Enrichment from Gatekeeper
 
 ### Task 11: Make gatekeeper reliably produce visual enrichment
 
-The gatekeeper already produces visual enrichment (shape, surfaceColor, buttonStyle, LED data, deviceDimensions, keyboard) — the CDJ-3000 manifest came out with circle shapes, green/orange colors, LED data. But it does this **inconsistently**. Some runs include full visual data, some don't.
+The gatekeeper produces visual enrichment inconsistently. The CDJ-3000 got circle shapes, green/orange colors, LED data — but other instruments may not.
 
-**Decision:** Keep visual enrichment IN the gatekeeper rather than adding a separate visual extractor phase. Rationale:
-- The gatekeeper already reads the manual and photos — it has all the info needed
-- Adding a separate agent adds another handoff point (which is exactly the kind of bug we spent this session fixing)
-- One agent, one pass = cheaper, faster, fewer failure modes
-- The visual extractor SOUL (`.claude/agents/visual-extractor.md`) stays as a reference for what fields to extract, and as a fallback if the gatekeeper approach fails
+**Decision:** Keep visual enrichment IN the gatekeeper. One agent, one pass, fewer handoff points. The visual extractor SOUL (`.claude/agents/visual-extractor.md`) stays as a reference.
 
 **Files:**
 - Modify: `.claude/agents/gatekeeper.md` — add REQUIRED visual enrichment section
 - Modify: `src/lib/pipeline/checkpoint-validators.ts` — validator rejects manifests missing visual fields
 
+**Current state (from audit):** The gatekeeper SOUL does NOT explicitly mention `shape`, `surfaceColor`, or `buttonStyle`. It focuses on structural/spatial correctness. Visual enrichment happened by accident on CDJ-3000 because the gatekeeper was thorough on that run.
+
 **Gatekeeper SOUL changes:**
-1. Add a "VISUAL ENRICHMENT (REQUIRED)" section with all fields from the visual extractor SOUL:
+1. Add a "VISUAL ENRICHMENT (REQUIRED)" section referencing the visual extractor SOUL fields:
    - `shape` (circle/rectangle/square) — check hardware photo for transport buttons, pads, knobs
    - `sizeClass` (xs/sm/md/lg/xl) — relative to section median
    - `surfaceColor` — from manual color references + hardware photo (CUE=amber, PLAY=green, etc.)
@@ -170,40 +126,84 @@ The gatekeeper already produces visual enrichment (shape, surfaceColor, buttonSt
    - `icon` — standard icon keys for transport buttons (play, pause, etc.)
    - `hasLed`, `ledColor`, `ledBehavior`, `ledPosition` — from manual "lights up" descriptions
    - `interactionType` (momentary/toggle/hold/rotary/slide) — from manual functional descriptions
-   - `pairedWith` (symmetric) — for paired controls (search ◀◀/▶▶, beat jump ◀/▶)
+   - `pairedWith` (symmetric) — for paired controls
    - `groupLabels` — standalone labels spanning multiple controls
-   - `deviceDimensions` — from manual specs page (REQUIRED, already in SOUL)
-   - `keyboard` — from manual specs page (REQUIRED, already in SOUL)
+   - `deviceDimensions` — from manual specs page (REQUIRED)
+   - `keyboard` — from manual specs page, or `null` for non-keyboard instruments (REQUIRED)
 2. Mark these fields as REQUIRED in the manifest schema example
-3. Add: "The manifest completeness validator will REJECT manifests where >20% of controls are missing shape, sizeClass, or labelDisplay. Extract these from the manual Part Names pages and hardware photos."
+3. Add: "The manifest completeness validator will REJECT manifests where >20% of controls are missing shape, sizeClass, or labelDisplay."
 
-**Validator changes:**
-- In `validateManifestCompleteness` or `validateGatekeeperManifest`:
-  - Count controls missing `shape` — if >20% missing, deduct 2.0
-  - Count controls missing `sizeClass` — if >20% missing, deduct 1.0
-  - Count controls missing `labelDisplay` — if >20% missing, deduct 1.0
-  - Count controls missing `surfaceColor` on transport/performance buttons — deduct 0.5 per missing
-  - This ensures the gatekeeper can't pass validation without visual enrichment
+**Validator changes in `validateManifestCompleteness` (line 691):**
+- Count controls missing `shape` — if >20% missing, deduct 2.0
+- Count controls missing `sizeClass` — if >20% missing, deduct 1.0
+- Count controls missing `labelDisplay` — if >20% missing, deduct 1.0
+- Count controls missing `surfaceColor` on buttons with type `button` — deduct 0.5 per missing (capped at 3.0)
+
+**Note:** The validator at line 691 already has auto-fix logic for some fields (shape defaults, sizeClass defaults). Extend this to also auto-fix missing `labelDisplay` to `"below"` and missing `sizeClass` to `"md"` — so the gatekeeper doesn't fail catastrophically, but still gets a score deduction.
 
 ---
 
-## Dependency Order
+## MEDIUM — Pipeline File Architecture Cleanup
 
-```
-Task 1 (Pipeline runner preserves fields) — independent
-Task 2 (Validator warning) — independent
-Task 3 (Auto-save after interaction) — independent
-Task 4 (API staleness detection) — independent
-Task 5 (Version marker) — depends on Task 3 + 4
-Task 6 (Layout Engine paths) — independent
-Task 7 (Gatekeeper manifest fallback) — independent
-Task 8 (Extractor resume merge) — independent
-Task 9 (extractorSealed path) — independent
-Task 10 (renderDualColumn) — independent
-Task 11 (Visual extractor enablement) — independent but HIGH PRIORITY
-```
+### Task 6: Layout Engine uses paths() helper instead of hardcoded paths
 
-Tasks 1-4, 6-11 are all independent. Task 5 builds on 3+4. Task 11 is high priority — it ensures every instrument gets consistent visual enrichment. Tasks 12-14 are UX improvements for the contractor experience.
+**Files:**
+- Modify: `scripts/pipeline-runner.ts` — `doPhase0LayoutEngine` function (lines 1122-1280)
+
+**Current state (from audit):** Hardcoded paths match `pipelinePaths()` behavior. Helpers exist at `src/lib/pipeline/paths.ts` lines 187-189. This is optional cleanup — current code works.
+
+**Changes:**
+- Replace `path.join('.pipeline', deviceId, 'templates.json')` with `paths().templates`
+- Replace `path.join('.pipeline', deviceId, 'manifest.json')` with `paths().manifest`
+- Replace worktree variants similarly
+
+### Task 7: Gatekeeper manifest search adds main repo legacy fallback
+
+**Files:**
+- Modify: `scripts/pipeline-runner.ts` — lines 1092-1097
+
+**Current state (from audit):** `gkManifestSources` already has 3 entries covering worktree agent dir, main repo agent dir, and worktree legacy. Missing: main repo legacy `.pipeline/{id}/manifest.json`.
+
+**Changes:**
+- Add `paths().manifest` as fourth entry in `gkManifestSources`
+
+### Task 8: Manual Extractor resume uses merge strategy for copyAgentOutput
+
+**Files:**
+- Modify: `scripts/pipeline-runner.ts` — `copyAgentOutput` function (line 176)
+
+**Current state (from audit):** `copyAgentOutput` uses `fs.cpSync` with recursive flag. On resume, it copies the entire worktree agent dir to main repo, potentially overwriting completed sieve buckets with empty/stale versions.
+
+**Changes:**
+- For each file in the source directory, check `mtime` before copying
+- Only copy if source file is newer than destination file (or destination doesn't exist)
+- Log skipped files for debugging
+
+### Task 9: Move extractorSealed path to pipeline root
+
+**Files:**
+- Modify: `src/lib/pipeline/paths.ts` — line 183
+- Modify: `scripts/pipeline-runner.ts` — coverage auditor phase
+
+**Current state (from audit):** `extractorSealed` is `.pipeline/{id}/agents/.extractor-sealed` (inside agents dir). Should be `.pipeline/{id}/.extractor-sealed` to avoid confusing directory scans.
+
+**Changes:**
+- Update path in `paths.ts`
+- Update references in pipeline-runner.ts
+
+### Task 10: renderDualColumn handles nested container structures
+
+**Files:**
+- Modify: `scripts/panel-codegen.ts` — `renderDualColumn` function (lines 826-852)
+
+**Current state (from audit):** Function reads `containerAssignment['left-column']` and `['right-column']`, calls `renderControlsById()` only when the value is an Array. Nested objects (subzones with `{ controls, direction }`) are silently skipped.
+
+**Changes:**
+- Add recursive extraction: when a column value is an Object, traverse its keys and collect all `controls` arrays from nested subzones
+- Render each subzone in a flex container with the specified `direction` (row/column)
+- Test with CDJ-3000's HOT_CUE (8 pads in nested right-column) and TEMPO (mode-buttons + reset-controls in nested left-column)
+
+**Impact:** Fixes 12 missing controls in section-based mode. Only matters as a fallback (flat mode doesn't use this), but should be correct.
 
 ---
 
@@ -211,39 +211,41 @@ Tasks 1-4, 6-11 are all independent. Task 5 builds on 3+4. Task 11 is high prior
 
 ### Task 12: Full-screen editor canvas
 
-The editor currently splits the screen between layers panel (left), canvas (center ~60%), and properties panel (right). The contractor needs a full-screen canvas to see the entire instrument at once — especially for wide synths like the Fantom-06.
+**Files:**
+- Modify: `src/components/panel-editor/PanelEditor.tsx` — lines 170-242 (current layout: `flex flex-col h-screen` → `flex flex-1` with LayersPanel, EditorWorkspace, PropertiesPanel as flex siblings)
+- Modify: `src/components/panel-editor/LayersPanel.tsx` — currently always visible, no collapse mechanism (section expand/collapse exists at line 68 but not panel-level)
+- Modify: `src/components/panel-editor/PropertiesPanel/index.tsx` — auto-hide when nothing selected
+- Modify: `src/components/panel-editor/EditorToolbar.tsx` — add collapse toggle buttons
 
 **Changes:**
-- Layers panel: collapsible overlay, hidden by default. Toggle via button or keyboard shortcut (L)
-- Properties panel: collapsible overlay on right, only appears when a control is selected
-- Toolbar: compact floating bar at top
-- Canvas: takes 100% of viewport when panels are collapsed
-- Panels float over the canvas (absolute/fixed positioning) instead of being flex siblings
-
-**Files:**
-- Modify: `src/components/panel-editor/PanelEditor.tsx` — layout restructure
-- Modify: `src/components/panel-editor/LayersPanel.tsx` — add collapse state
-- Modify: `src/components/panel-editor/PropertiesPanel/index.tsx` — auto-hide when nothing selected
-- Modify: `src/components/panel-editor/EditorToolbar.tsx` — compact mode
+- Add `showLayers` and `showProperties` boolean flags to the editor store (default: false for layers, true for properties)
+- LayersPanel: render as `position: absolute` overlay on left, `z-50`, with slide-in animation. Toggle via "L" key or toolbar button.
+- PropertiesPanel: render as `position: absolute` overlay on right. Auto-show when control selected, auto-hide when deselected.
+- Canvas takes full viewport width when panels hidden
+- Toolbar gets layer toggle button (icon: layers) and properties toggle button (icon: sliders)
 
 ### Task 13: Section boundaries are non-constraining
 
-Document and reinforce that section bounding boxes are decorative only in flat mode. The contractor can move any control anywhere — sections don't constrain positioning.
+**Files:**
+- Modify: `src/components/panel-editor/SectionFrame.tsx` — uses react-rnd `Rnd` component (line 74). Verify no `bounds` prop constrains child controls.
+- Modify: `src/components/panel-editor/ControlNode.tsx` — uses react-rnd. Verify no `bounds` prop.
+
+**Current state (from audit):** Both components use `Rnd` with `dragGrid` and `resizeGrid` but the full props were not fully visible. Need to verify no `bounds="parent"` or similar constraint exists.
 
 **Changes:**
-- Remove any drag constraints that keep controls inside their section boundaries
-- Section frames in the editor should be semi-transparent backgrounds, not opaque containers
-- Controls can be dragged freely across section boundaries
-- Sections auto-resize to fit their children (already partially implemented)
-- Add a tooltip: "Sections are visual groups only — drag controls anywhere"
-
-**Files:**
-- Modify: `src/components/panel-editor/SectionFrame.tsx` — ensure no containment constraints
-- Modify: `src/components/panel-editor/ControlNode.tsx` — verify free drag across sections
+- Verify and remove any `bounds` prop on ControlNode's `Rnd`
+- Make SectionFrame backgrounds semi-transparent (already `rgba(0,0,0,0.12)` from SectionContainer)
+- Add tooltip on section header: "Visual group only — controls can be dragged anywhere"
 
 ### Task 14: Contractor onboarding tutorial with tooltips
 
-First-time walkthrough that guides the contractor through the editor. Runs once on first visit, can be re-triggered from a help button.
+**Files:**
+- Create: `src/components/panel-editor/OnboardingTour.tsx`
+- Modify: `src/components/panel-editor/PanelEditor.tsx` — render tour on first load
+- Modify: `src/components/panel-editor/EditorToolbar.tsx` — add help (?) button
+- Modify: `package.json` — add `react-joyride` dependency
+
+**Current state (from audit):** `react-joyride` is NOT in dependencies. Must be added first.
 
 **Steps in the tour:**
 1. "This is your instrument canvas. Controls are pre-loaded from the pipeline."
@@ -256,22 +258,73 @@ First-time walkthrough that guides the contractor through the editor. Runs once 
 8. "Review the preview, then click Looks Good to finalize."
 
 **Implementation:**
-- Use `react-joyride` or a lightweight custom tooltip stepper
-- Store "tutorial completed" in localStorage per device or globally
-- Help button (?) in toolbar to replay the tutorial
-
-**Files:**
-- Create: `src/components/panel-editor/OnboardingTour.tsx`
-- Modify: `src/components/panel-editor/PanelEditor.tsx` — render tour on first load
-- Modify: `src/components/panel-editor/EditorToolbar.tsx` — add help button
+- `npm install react-joyride`
+- Store "tutorial completed" in localStorage per device
+- Help button (?) in toolbar to replay
 
 ### Task 15: Show instrument name in editor
 
-The editor doesn't indicate which instrument is being edited. The contractor opens the page and sees "Miyagi Pipeline Control" with no device context.
+**Files:**
+- Modify: `src/components/panel-editor/EditorToolbar.tsx`
+
+**Current state (from audit):** Toolbar uses `useEditorStore()` but does NOT have access to `deviceId`, `manufacturer`, or `deviceName`. These come from the manifest but aren't stored in the editor store as top-level fields.
 
 **Changes:**
-- Display manufacturer + device name in the editor toolbar (e.g., "Pioneer DJ — CDJ-3000")
-- Read from editor store (manufacturer, deviceName — already populated from manifest)
+- Add `manufacturer` and `deviceName` to the editor store (set during `loadFromManifest` or during the API response restore path in `PanelEditor.tsx`)
+- In EditorToolbar, read from store and render: `"Pioneer DJ — CDJ-3000"` in the toolbar left side
 
-**Files:**
-- Modify: `src/components/panel-editor/EditorToolbar.tsx` — add device name display
+---
+
+## Execution Order
+
+```
+PHASE 1 — Auto-save clobber (MUST fix first, blocks all editor work):
+  Task 3 (auto-save gating) → Task 4 (API staleness) → Task 5 (version marker)
+
+PHASE 2 — Pipeline reliability:
+  Task 1 (field preservation) + Task 11 (visual enrichment) + Task 2 (validator)
+  All independent, can run in parallel.
+
+PHASE 3 — Architecture cleanup:
+  Tasks 6, 7, 8, 9, 10 — all independent, can run in parallel.
+
+PHASE 4 — Editor UX:
+  Task 15 (instrument name — quick win, do first)
+  Task 12 (full-screen canvas)
+  Task 13 (section non-constraining)
+  Task 14 (onboarding tutorial — do last, depends on final UX)
+```
+
+## E2E Smoke Test (run after EVERY task)
+
+```bash
+npx tsx -e "
+import { chromium } from 'playwright';
+async function smoke() {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const errors: string[] = [];
+  page.on('pageerror', err => errors.push(err.message));
+
+  // 1. Admin loads
+  await page.goto('http://localhost:3000/admin', { waitUntil: 'networkidle', timeout: 15000 });
+
+  // 2. Editor loads with controls
+  await page.goto('http://localhost:3000/admin/cdj-3000/editor', { waitUntil: 'networkidle', timeout: 15000 });
+  await page.waitForTimeout(2000);
+  const controls = await page.$$('.control-node');
+
+  // 3. Preview loads
+  await page.goto('http://localhost:3000/admin/cdj-3000/preview', { waitUntil: 'networkidle', timeout: 15000 });
+  await page.waitForTimeout(2000);
+
+  console.log('Errors:', errors.length);
+  console.log('Controls in editor:', controls.length);
+  if (errors.length > 0) { console.log('FAIL:', errors); process.exit(1); }
+  if (controls.length === 0) { console.log('FAIL: no controls'); process.exit(1); }
+  console.log('PASS');
+  await browser.close();
+}
+smoke();
+"
+```
