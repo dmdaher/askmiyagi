@@ -742,6 +742,9 @@ Read photos from: ${inputPath(deviceId).photos}/${resumeCtx}`;
   const dpCheckpointPath = paths().agent('diagram-parser').wtCheckpoint;
   const checkpointFileExists = fs.existsSync(dpCheckpointPath);
 
+  // Copy agent output BEFORE validation (so main repo has the files regardless of score)
+  copyAgentOutput('diagram-parser');
+
   // --- POST-INSPECTION (mechanical validation) ---
   if (checkpointFileExists) {
     const content = fs.readFileSync(dpCheckpointPath, 'utf-8');
@@ -791,7 +794,7 @@ Read photos from: ${inputPath(deviceId).photos}/${resumeCtx}`;
     });
 
     if (effectiveScore >= 9.0 && validation.valid) {
-      copyAgentOutput('diagram-parser');
+      // Agent output already copied above (before validation)
       completePhase(state, 'phase-0-diagram-parser', effectiveScore, true);
       advancePhase(state, worktreeCwd);
     } else {
@@ -868,6 +871,9 @@ Write checkpoint to ${agentPath(deviceId, 'control-extractor')}/checkpoint.md${r
   updateBurnRate(state, deviceId);
   updateSubscription(state, result.rateLimitEvents);
 
+  // Copy agent output BEFORE validation
+  copyAgentOutput('control-extractor');
+
   // Validate output
   if (fs.existsSync(inventoryPath)) {
     try {
@@ -878,7 +884,7 @@ Write checkpoint to ${agentPath(deviceId, 'control-extractor')}/checkpoint.md${r
         message: `POST-INSPECT: ${controlCount} controls extracted` });
 
       if (controlCount > 0) {
-        copyAgentOutput('control-extractor');
+        // Agent output already copied above (before validation)
         completePhase(state, 'phase-0-control-extractor', 10, true);
         advancePhase(state, worktreeCwd);
       } else {
