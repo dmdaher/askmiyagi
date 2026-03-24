@@ -26,9 +26,10 @@ The auto-save hook in `useAutoSave.ts` fires on any state change, including the 
 
 **Changes:**
 - Add `hasUserEdited` flag to the editor store (initial: false)
-- Set it to true ONLY on explicit user actions: `moveControl`, `resizeControl`, `moveSection`, `resizeSection`, `updateControl` (the mutation actions in `manifestSlice.ts`)
+- Set it to true ONLY on explicit user mutations: `moveControl`, `resizeControl`, `moveSection`, `resizeSection`, `updateControlProp`, `duplicateSelected`, `deleteSelected` (in `manifestSlice.ts`)
+- Do NOT set it in: `loadFromManifest`, `setSelectedIds`, `toggleSelected`, `setFocusedSection` — these are not user edits
 - In `useAutoSave.ts`, check `hasUserEdited` before saving — if false, skip
-- Reset `hasUserEdited` to false in `loadFromManifest` (so a fresh load resets the flag)
+- Reset `hasUserEdited` to false in BOTH: `loadFromManifest` AND the direct `useEditorStore.setState()` call in `PanelEditor.tsx` (editor restore path, lines ~297-304). Both paths load data without user interaction.
 
 **Verify:** Open editor, check that `manifest-editor.json` is NOT created until you actually drag a control.
 
@@ -42,10 +43,12 @@ The manifest GET endpoint serves `manifest-editor.json` if it exists, regardless
 **Current state (from audit):** Lines 12-57 check for editor manifest first. Lines 59-76 fall back to pipeline manifest. No timestamp comparison exists.
 
 **Changes:**
-- After reading `manifest-editor.json`, check `fs.statSync()` mtime of both files
+- After reading `manifest-editor.json`, check if `manifest.json` ALSO exists
+- If both exist, compare `fs.statSync()` mtime of both files
 - If `manifest.json` mtime > `manifest-editor.json` mtime, the editor state is stale
 - In that case: rename `manifest-editor.json` to `manifest-editor.json.stale` (don't delete — keep for debugging) and serve `manifest.json` instead
 - Log: "Editor manifest is stale (pipeline manifest is newer), serving fresh pipeline data"
+- Edge case: if `manifest.json` doesn't exist (new device, pre-gatekeeper), always serve editor manifest — no staleness possible
 
 **Verify:** Re-run gatekeeper for any device, then load the editor — it should show the fresh pipeline data, not old editor state.
 
@@ -64,6 +67,7 @@ Provides a secondary staleness check in the editor itself.
 - Store as `_manifestVersion` in the editor state
 - When auto-saving, include `_manifestVersion` in the saved JSON
 - On next load: if `manifest-editor.json` has a `_manifestVersion` that doesn't match the current pipeline manifest, discard it
+- Also invalidate localStorage undo history when version mismatches — replaying undo from an old manifest on a new one can crash (different control IDs, different counts)
 
 **Depends on:** Task 3 + 4
 
@@ -267,11 +271,13 @@ The gatekeeper produces visual enrichment inconsistently. The CDJ-3000 got circl
 **Files:**
 - Modify: `src/components/panel-editor/EditorToolbar.tsx`
 
-**Current state (from audit):** Toolbar uses `useEditorStore()` but does NOT have access to `deviceId`, `manufacturer`, or `deviceName`. These come from the manifest but aren't stored in the editor store as top-level fields.
+**Current state (from audit):** `manufacturer` and `deviceName` ARE already in the editor store — set by `loadFromManifest` (lines 596-598 in manifestSlice.ts). The toolbar just doesn't read them. However, the editor restore path (`PanelEditor.tsx` lines 297-304, direct `setState`) does NOT set these fields — only `loadFromManifest` does.
 
 **Changes:**
-- Add `manufacturer` and `deviceName` to the editor store (set during `loadFromManifest` or during the API response restore path in `PanelEditor.tsx`)
-- In EditorToolbar, read from store and render: `"Pioneer DJ — CDJ-3000"` in the toolbar left side
+- In the editor restore path (`PanelEditor.tsx`), also set `manufacturer` and `deviceName` from the API response (they're available in `data.manufacturer` and `data.deviceName`)
+- In EditorToolbar, read `manufacturer` and `deviceName` from the store via `useEditorStore`
+- Render: `"{manufacturer} — {deviceName}"` in the toolbar left side (e.g., "Pioneer DJ — CDJ-3000")
+- Handle case where fields are not yet loaded (render empty string until manifest loads)
 
 ---
 
