@@ -50,7 +50,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
       await fetch(`/api/pipeline/${deviceId}/manifest`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections, controls }),
+        body: JSON.stringify({ sections, controls, canvasWidth, canvasHeight }),
       });
     } catch {
       // Best-effort save
@@ -283,15 +283,13 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
               ? Object.fromEntries(data.controls.map((c: any) => [c.id, c]))
               : data.controls;
 
-            // Compute canvas dimensions from deviceDimensions if available
-            const CANVAS_BASE_W = 1200;
+            // Use saved canvas dimensions if available (positions were created for that size).
+            // If not saved, DON'T recompute from deviceDimensions — the positions were created
+            // for the old default canvas. Let the store defaults (1200x1650) handle it.
             const canvasUpdate: Record<string, number> = {};
-            if (data.deviceDimensions) {
-              const { widthMm, depthMm } = data.deviceDimensions;
-              if (widthMm > 0 && depthMm > 0) {
-                canvasUpdate.canvasWidth = CANVAS_BASE_W;
-                canvasUpdate.canvasHeight = Math.round(CANVAS_BASE_W / (widthMm / depthMm));
-              }
+            if (data.canvasWidth && data.canvasHeight) {
+              canvasUpdate.canvasWidth = data.canvasWidth;
+              canvasUpdate.canvasHeight = data.canvasHeight;
             }
 
             useEditorStore.setState({
