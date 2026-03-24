@@ -36,18 +36,19 @@ export async function GET(
       if (parsed.controls && !Array.isArray(parsed.controls)) {
         parsed.controls = Object.values(parsed.controls);
       }
-      // Carry over deviceDimensions from pipeline manifest if editor manifest lacks them.
-      // The editor store needs these to compute the correct canvas aspect ratio.
-      if (!parsed.deviceDimensions) {
-        const mainManifestPath = path.join('.pipeline', deviceId, 'manifest.json');
-        if (fs.existsSync(mainManifestPath)) {
-          try {
-            const mainData = JSON.parse(fs.readFileSync(mainManifestPath, 'utf-8'));
-            if (mainData.deviceDimensions) {
-              parsed.deviceDimensions = mainData.deviceDimensions;
-            }
-          } catch { /* ignore parse errors */ }
-        }
+      // Carry over fields from pipeline manifest that the editor manifest may lack.
+      // The editor store needs these for correct canvas aspect ratio and keyboard rendering.
+      const mainManifestPath = path.join('.pipeline', deviceId, 'manifest.json');
+      if (fs.existsSync(mainManifestPath)) {
+        try {
+          const mainData = JSON.parse(fs.readFileSync(mainManifestPath, 'utf-8'));
+          if (!parsed.deviceDimensions && mainData.deviceDimensions) {
+            parsed.deviceDimensions = mainData.deviceDimensions;
+          }
+          if (!parsed.keyboard && mainData.keyboard) {
+            parsed.keyboard = mainData.keyboard;
+          }
+        } catch { /* ignore parse errors */ }
       }
       return NextResponse.json({ ...parsed, _source: 'editor' });
     } catch {
