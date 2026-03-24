@@ -187,4 +187,64 @@ Task 10 (renderDualColumn) — independent
 Task 11 (Visual extractor enablement) — independent but HIGH PRIORITY
 ```
 
-Tasks 1-4, 6-11 are all independent. Task 5 builds on 3+4. Task 11 is high priority — it ensures every instrument gets consistent visual enrichment.
+Tasks 1-4, 6-11 are all independent. Task 5 builds on 3+4. Task 11 is high priority — it ensures every instrument gets consistent visual enrichment. Tasks 12-14 are UX improvements for the contractor experience.
+
+---
+
+## Editor UX Improvements
+
+### Task 12: Full-screen editor canvas
+
+The editor currently splits the screen between layers panel (left), canvas (center ~60%), and properties panel (right). The contractor needs a full-screen canvas to see the entire instrument at once — especially for wide synths like the Fantom-06.
+
+**Changes:**
+- Layers panel: collapsible overlay, hidden by default. Toggle via button or keyboard shortcut (L)
+- Properties panel: collapsible overlay on right, only appears when a control is selected
+- Toolbar: compact floating bar at top
+- Canvas: takes 100% of viewport when panels are collapsed
+- Panels float over the canvas (absolute/fixed positioning) instead of being flex siblings
+
+**Files:**
+- Modify: `src/components/panel-editor/PanelEditor.tsx` — layout restructure
+- Modify: `src/components/panel-editor/LayersPanel.tsx` — add collapse state
+- Modify: `src/components/panel-editor/PropertiesPanel/index.tsx` — auto-hide when nothing selected
+- Modify: `src/components/panel-editor/EditorToolbar.tsx` — compact mode
+
+### Task 13: Section boundaries are non-constraining
+
+Document and reinforce that section bounding boxes are decorative only in flat mode. The contractor can move any control anywhere — sections don't constrain positioning.
+
+**Changes:**
+- Remove any drag constraints that keep controls inside their section boundaries
+- Section frames in the editor should be semi-transparent backgrounds, not opaque containers
+- Controls can be dragged freely across section boundaries
+- Sections auto-resize to fit their children (already partially implemented)
+- Add a tooltip: "Sections are visual groups only — drag controls anywhere"
+
+**Files:**
+- Modify: `src/components/panel-editor/SectionFrame.tsx` — ensure no containment constraints
+- Modify: `src/components/panel-editor/ControlNode.tsx` — verify free drag across sections
+
+### Task 14: Contractor onboarding tutorial with tooltips
+
+First-time walkthrough that guides the contractor through the editor. Runs once on first visit, can be re-triggered from a help button.
+
+**Steps in the tour:**
+1. "This is your instrument canvas. Controls are pre-loaded from the pipeline."
+2. "Toggle the Photo overlay to see the real hardware underneath — align controls to match."
+3. "Drag controls freely anywhere on the canvas. Section boundaries are just visual groups."
+4. "Click a control to edit its properties: shape, color, LED, label position."
+5. "Use the Layers panel (press L) to find controls organized by section."
+6. "Adjust the keyboard position using the properties panel when nothing is selected."
+7. "When everything looks right, click Approve & Build to generate the production panel."
+8. "Review the preview, then click Looks Good to finalize."
+
+**Implementation:**
+- Use `react-joyride` or a lightweight custom tooltip stepper
+- Store "tutorial completed" in localStorage per device or globally
+- Help button (?) in toolbar to replay the tutorial
+
+**Files:**
+- Create: `src/components/panel-editor/OnboardingTour.tsx`
+- Modify: `src/components/panel-editor/PanelEditor.tsx` — render tour on first load
+- Modify: `src/components/panel-editor/EditorToolbar.tsx` — add help button
