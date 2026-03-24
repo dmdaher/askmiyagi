@@ -34,15 +34,12 @@ export async function POST(
         const editorSections = editorData.sections as Record<string, SectionDef>;
         const editorControls = editorData.controls as Record<string, ControlDef>;
 
-        // Determine canvas dimensions
-        let canvasW = 1200; // CANVAS_BASE_W
-        let canvasH = 1650; // CANVAS_BASE_H
-        if (manifest.deviceDimensions) {
-          const { widthMm, depthMm } = manifest.deviceDimensions;
-          if (widthMm > 0 && depthMm > 0) {
-            canvasH = Math.round(canvasW / (widthMm / depthMm));
-          }
-        }
+        // Determine canvas dimensions — use editor's saved canvas size if available.
+        // The editor saves canvasWidth/canvasHeight alongside positions; positions were
+        // created for THAT canvas size. Recomputing from deviceDimensions would mismatch
+        // (e.g., CDJ-3000 editor used 1650 but deviceDimensions gives 1470).
+        let canvasW = (editorData.canvasWidth as number) || 1200;
+        let canvasH = (editorData.canvasHeight as number) || 1650;
 
         // ── Step 1: Use editor positions directly (cleanup already ran in the editor) ──
         // The editor applies geometry cleanup on Approve & Build, then auto-saves
