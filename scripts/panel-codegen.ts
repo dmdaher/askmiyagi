@@ -1100,6 +1100,12 @@ function generateFlatPanel(
     .map(([component, importPath]) => `import ${component} from '${importPath}';`)
     .join('\n');
 
+  // Keyboard prop for PanelShell
+  const kb = (manifest as any).keyboard;
+  const keyboardProp = kb
+    ? `{{ keys: ${kb.keys}, startNote: '${kb.startNote}', panelHeightPercent: ${kb.panelHeightPercent} }}`
+    : 'null';
+
   // Section backgrounds — using SectionContainer component
   const sectionBackgrounds = sections
     .filter(s => s.panelBoundingBox)
@@ -1211,6 +1217,7 @@ export default function ${pascalName}Panel({
       deviceName={${constPrefix}_PANEL.deviceName}
       width={${constPrefix}_PANEL.width}
       height={${constPrefix}_PANEL.height}
+      keyboard={${keyboardProp}}
     >
         {/* Section backgrounds — decorative only */}
 ${sectionBackgrounds}
@@ -1238,6 +1245,12 @@ function generateSectionBasedPanel(
 ): string {
   const pascalName = deviceIdToPascal(manifest.deviceId);
   const constPrefix = deviceIdToConstPrefix(manifest.deviceId);
+
+  // Keyboard prop for PanelShell
+  const kb2 = (manifest as any).keyboard;
+  const keyboardProp2 = kb2
+    ? `{{ keys: ${kb2.keys}, startNote: '${kb2.startNote}', panelHeightPercent: ${kb2.panelHeightPercent} }}`
+    : 'null';
 
   const sectionImports = sections
     .map(s => {
@@ -1300,6 +1313,7 @@ export default function ${pascalName}Panel({
       deviceName={${constPrefix}_PANEL.deviceName}
       width={${constPrefix}_PANEL.width}
       height={${constPrefix}_PANEL.height}
+      keyboard={${keyboardProp2}}
     >
 ${sectionRenderings}
     </PanelShell>
