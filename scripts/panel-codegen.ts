@@ -69,11 +69,11 @@ function deviceIdToPascal(deviceId: string): string {
     .join('');
 }
 
-/** Convert "browse-bar" -> "BrowseBar" */
+/** Convert section ID to PascalCase: "browse-bar" -> "BrowseBar", "HOT_CUE" -> "HotCue" */
 function sectionIdToPascal(sectionId: string): string {
   return sectionId
-    .split('-')
-    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .split(/[-_]/)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
     .join('');
 }
 
