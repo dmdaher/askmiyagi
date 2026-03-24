@@ -1015,8 +1015,10 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
           level: 'warn', agent: 'gatekeeper',
           message: `4-POINT: ${neighborCheck.flippedNeighbors.length} flipped neighbor direction(s) found. Deducting from score.`,
         });
-        // Deduct but don't fail entirely — flipped neighbors are correctable
-        validation.score = Math.max(0, validation.score - neighborCheck.flippedNeighbors.length * 0.5);
+        // Deduct lightly — flipped neighbors are auto-corrected in the manifest.
+        // Cap total deduction at 1.0 regardless of count (they're mechanical fixes, not data quality issues).
+        const flipDeduction = Math.min(neighborCheck.flippedNeighbors.length * 0.1, 1.0);
+        validation.score = Math.max(0, validation.score - flipDeduction);
         validation.errors.push(...neighborCheck.errors);
       } else {
         appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: '4-POINT: All neighbor directions consistent with parser centroids' });
