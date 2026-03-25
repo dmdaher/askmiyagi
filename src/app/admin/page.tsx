@@ -38,7 +38,7 @@ export default function AdminPage() {
   const hasRuns = Object.keys(runs).length > 0;
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl px-6 py-8">
       {/* Page header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
