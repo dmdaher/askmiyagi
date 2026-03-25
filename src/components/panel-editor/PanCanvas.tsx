@@ -6,7 +6,7 @@ import GroupLabelNode from './GroupLabelNode';
 import GridOverlay from './GridOverlay';
 import PhotoOverlay from './PhotoOverlay';
 import DragSelectRect from './DragSelectRect';
-import Keyboard from '@/components/controls/Keyboard';
+import KeyboardSection from './KeyboardSection';
 
 export default function PanCanvas() {
   const zoom = useEditorStore((s) => s.zoom);
@@ -17,8 +17,6 @@ export default function PanCanvas() {
   const sections = useEditorStore((s) => s.sections);
   const groupLabels = useEditorStore((s) => s.groupLabels);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
-  const keyboard = useEditorStore((s) => s.keyboard);
-
   // Sort sections by area: largest first (rendered at bottom), smallest last (on top).
   // This ensures smaller sections in overlapping areas are always clickable.
   const sectionEntries = Object.values(sections).sort(
@@ -61,20 +59,8 @@ export default function PanCanvas() {
         <GroupLabelNode key={gl.id} groupLabel={gl} />
       ))}
 
-      {/* Keyboard at bottom of canvas */}
-      {keyboard && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: `${keyboard.panelHeightPercent}%`,
-            height: `${100 - keyboard.panelHeightPercent}%`,
-            left: `${keyboard.leftPercent ?? 0}%`,
-            width: `${keyboard.widthPercent ?? 100}%`,
-          }}
-        >
-          <Keyboard keys={keyboard.keys} startNote={keyboard.startNote} />
-        </div>
-      )}
+      {/* Keyboard section — draggable/resizable */}
+      <KeyboardSection />
     </div>
   );
 }
