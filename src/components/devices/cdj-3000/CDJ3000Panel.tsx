@@ -43,7 +43,7 @@ export default function CDJ3000Panel({
     >
         {/* Section backgrounds — decorative only */}
         {/* Navigation Bar background */}
-        <SectionContainer id="BROWSE" x={10.6} y={1.5} w={78.3} h={4.8} headerLabel="Navigation Bar" />
+        <SectionContainer id="BROWSE" x={10.6} y={1.5} w={78.4} h={4.8} headerLabel="Navigation Bar" />
 
         {/* USB/SD Media Ports background */}
         <SectionContainer id="MEDIA" x={2.3} y={7.5} w={12.8} h={15} headerLabel="USB/SD Media Ports" />
@@ -92,7 +92,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="SOURCE"
               label="SOURCE"
@@ -102,7 +102,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('SOURCE')}
               onClick={() => onButtonClick?.('SOURCE')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* BROWSE_BTN */}
@@ -118,7 +118,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="BROWSE_BTN"
               label="BROWSE"
@@ -128,7 +128,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('BROWSE_BTN')}
               onClick={() => onButtonClick?.('BROWSE_BTN')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* TAG_LIST */}
@@ -144,7 +144,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="TAG_LIST"
               label="TAG LIST"
@@ -154,7 +154,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('TAG_LIST')}
               onClick={() => onButtonClick?.('TAG_LIST')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* SOURCE_INDICATOR */}
@@ -191,7 +191,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="PLAYLIST"
               label="PLAYLIST"
@@ -201,7 +201,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('PLAYLIST')}
               onClick={() => onButtonClick?.('PLAYLIST')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* SEARCH_BTN */}
@@ -217,7 +217,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="SEARCH_BTN"
               label="SEARCH"
@@ -227,7 +227,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('SEARCH_BTN')}
               onClick={() => onButtonClick?.('SEARCH_BTN')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* MENU_UTILITY */}
@@ -243,7 +243,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="MENU_UTILITY"
               label="MENU/UTILITY"
@@ -253,7 +253,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('MENU_UTILITY')}
               onClick={() => onButtonClick?.('MENU_UTILITY')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* USB_PORT */}
@@ -313,24 +313,17 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="USB_STOP"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="USB_STOP"
+              label=""
+              variant="transport"
+              size="md"
+              active={getState('USB_STOP').active}
+              highlighted={isHighlighted('USB_STOP')}
               onClick={() => onButtonClick?.('USB_STOP')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -427,7 +420,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="BACK"
               label="BACK"
@@ -437,7 +430,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('BACK')}
               onClick={() => onButtonClick?.('BACK')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* TAG_TRACK_REMOVE */}
@@ -453,7 +446,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="TAG_TRACK_REMOVE"
               label="TAG TRACK/REMOVE"
@@ -463,7 +456,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('TAG_TRACK_REMOVE')}
               onClick={() => onButtonClick?.('TAG_TRACK_REMOVE')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* ROTARY_SELECTOR */}
@@ -500,7 +493,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="SLIP"
               label=""
@@ -512,7 +505,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('SLIP')}
               onClick={() => onButtonClick?.('SLIP')}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -541,7 +534,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="QUANTIZE"
               label=""
@@ -553,7 +546,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('QUANTIZE')}
               onClick={() => onButtonClick?.('QUANTIZE')}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -582,24 +575,20 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="TIME_MODE_AUTO_CUE"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 48,
-                height: 48,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="TIME_MODE_AUTO_CUE"
+              label=""
+              variant="transport"
+              size="md"
+              hasLed
+              ledColor="#22c55e"
+              ledOn={getState('TIME_MODE_AUTO_CUE').active}
+              active={getState('TIME_MODE_AUTO_CUE').active}
+              highlighted={isHighlighted('TIME_MODE_AUTO_CUE')}
               onClick={() => onButtonClick?.('TIME_MODE_AUTO_CUE')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -631,7 +620,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+          <div>
             <PadButton
               id="HOT_CUE_A"
               label=""
@@ -641,7 +630,7 @@ export default function CDJ3000Panel({
               width={88}
               height={48}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -670,7 +659,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+          <div>
             <PadButton
               id="HOT_CUE_B"
               label=""
@@ -680,7 +669,7 @@ export default function CDJ3000Panel({
               width={88}
               height={48}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -709,7 +698,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+          <div>
             <PadButton
               id="HOT_CUE_C"
               label=""
@@ -719,7 +708,7 @@ export default function CDJ3000Panel({
               width={88}
               height={48}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -748,7 +737,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+          <div>
             <PadButton
               id="HOT_CUE_D"
               label=""
@@ -758,7 +747,7 @@ export default function CDJ3000Panel({
               width={88}
               height={48}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -787,7 +776,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+          <div>
             <PadButton
               id="HOT_CUE_E"
               label=""
@@ -797,7 +786,7 @@ export default function CDJ3000Panel({
               width={88}
               height={48}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -826,7 +815,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+          <div>
             <PadButton
               id="HOT_CUE_F"
               label=""
@@ -836,7 +825,7 @@ export default function CDJ3000Panel({
               width={88}
               height={48}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -865,7 +854,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+          <div>
             <PadButton
               id="HOT_CUE_G"
               label=""
@@ -875,7 +864,7 @@ export default function CDJ3000Panel({
               width={88}
               height={48}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -904,7 +893,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+          <div>
             <PadButton
               id="HOT_CUE_H"
               label=""
@@ -914,7 +903,7 @@ export default function CDJ3000Panel({
               width={88}
               height={48}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -943,7 +932,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="TRACK_FILTER_EDIT"
               label="TRACK FILTER/EDIT"
@@ -953,7 +942,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('TRACK_FILTER_EDIT')}
               onClick={() => onButtonClick?.('TRACK_FILTER_EDIT')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* SHORTCUT */}
@@ -969,7 +958,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="SHORTCUT"
               label="SHORTCUT"
@@ -979,7 +968,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('SHORTCUT')}
               onClick={() => onButtonClick?.('SHORTCUT')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* VINYL_SPEED_ADJ */}
@@ -1034,7 +1023,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="JOG_MODE"
               label=""
@@ -1044,7 +1033,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('JOG_MODE')}
               onClick={() => onButtonClick?.('JOG_MODE')}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1130,24 +1119,20 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="LOOP_IN_CUE"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 48,
-                height: 48,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="LOOP_IN_CUE"
+              label=""
+              variant="transport"
+              size="md"
+              hasLed
+              ledColor="#22c55e"
+              ledOn={getState('LOOP_IN_CUE').active}
+              active={getState('LOOP_IN_CUE').active}
+              highlighted={isHighlighted('LOOP_IN_CUE')}
               onClick={() => onButtonClick?.('LOOP_IN_CUE')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1170,7 +1155,7 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '7.8%',
+            left: '8.2%',
             top: '40.8%',
             width: 144,
             height: 48,
@@ -1179,29 +1164,25 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="LOOP_OUT"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 48,
-                height: 48,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="LOOP_OUT"
+              label=""
+              variant="transport"
+              size="md"
+              hasLed
+              ledColor="#22c55e"
+              ledOn={getState('LOOP_OUT').active}
+              active={getState('LOOP_OUT').active}
+              highlighted={isHighlighted('LOOP_OUT')}
               onClick={() => onButtonClick?.('LOOP_OUT')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '7.8%',
+            left: '8.2%',
             top: '39.6%',
             width: '12.0%',
             textAlign: 'center',
@@ -1228,24 +1209,20 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="RELOOP_EXIT"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 48,
-                height: 48,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="RELOOP_EXIT"
+              label=""
+              variant="transport"
+              size="md"
+              hasLed
+              ledColor="#22c55e"
+              ledOn={getState('RELOOP_EXIT').active}
+              active={getState('RELOOP_EXIT').active}
+              highlighted={isHighlighted('RELOOP_EXIT')}
               onClick={() => onButtonClick?.('RELOOP_EXIT')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1274,24 +1251,20 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="FOUR_BEAT_LOOP"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 48,
-                height: 48,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="FOUR_BEAT_LOOP"
+              label=""
+              variant="transport"
+              size="md"
+              hasLed
+              ledColor="#22c55e"
+              ledOn={getState('FOUR_BEAT_LOOP').active}
+              active={getState('FOUR_BEAT_LOOP').active}
+              highlighted={isHighlighted('FOUR_BEAT_LOOP')}
               onClick={() => onButtonClick?.('FOUR_BEAT_LOOP')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1314,7 +1287,7 @@ export default function CDJ3000Panel({
         <div
           className="absolute"
           style={{
-            left: '7.8%',
+            left: '8.2%',
             top: '46.9%',
             width: 144,
             height: 48,
@@ -1323,29 +1296,25 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="EIGHT_BEAT_LOOP"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 48,
-                height: 48,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="EIGHT_BEAT_LOOP"
+              label=""
+              variant="transport"
+              size="md"
+              hasLed
+              ledColor="#22c55e"
+              ledOn={getState('EIGHT_BEAT_LOOP').active}
+              active={getState('EIGHT_BEAT_LOOP').active}
+              highlighted={isHighlighted('EIGHT_BEAT_LOOP')}
               onClick={() => onButtonClick?.('EIGHT_BEAT_LOOP')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '7.8%',
+            left: '8.2%',
             top: '45.7%',
             width: '12.0%',
             textAlign: 'center',
@@ -1372,24 +1341,18 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="CUE_LOOP_CALL_BACK"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="CUE_LOOP_CALL_BACK"
+              label="CUE/LOOP CALL ◄"
+              variant="transport"
+              size="md"
+              iconContent="◀"
+              active={getState('CUE_LOOP_CALL_BACK').active}
+              highlighted={isHighlighted('CUE_LOOP_CALL_BACK')}
               onClick={() => onButtonClick?.('CUE_LOOP_CALL_BACK')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 14 }}>
-                ◀
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1418,24 +1381,18 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="CUE_LOOP_CALL_FWD"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="CUE_LOOP_CALL_FWD"
+              label="CUE/LOOP CALL ►"
+              variant="transport"
+              size="md"
+              iconContent="▶"
+              active={getState('CUE_LOOP_CALL_FWD').active}
+              highlighted={isHighlighted('CUE_LOOP_CALL_FWD')}
               onClick={() => onButtonClick?.('CUE_LOOP_CALL_FWD')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 14 }}>
-                ▶
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1464,24 +1421,17 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="DELETE"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="DELETE"
+              label=""
+              variant="transport"
+              size="md"
+              active={getState('DELETE').active}
+              highlighted={isHighlighted('DELETE')}
               onClick={() => onButtonClick?.('DELETE')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1510,24 +1460,17 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="MEMORY"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="MEMORY"
+              label=""
+              variant="transport"
+              size="md"
+              active={getState('MEMORY').active}
+              highlighted={isHighlighted('MEMORY')}
               onClick={() => onButtonClick?.('MEMORY')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1556,7 +1499,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="MASTER"
               label="MASTER"
@@ -1568,7 +1511,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('MASTER')}
               onClick={() => onButtonClick?.('MASTER')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* KEY_SYNC */}
@@ -1584,7 +1527,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="KEY_SYNC"
               label="KEY SYNC"
@@ -1597,7 +1540,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('KEY_SYNC')}
               onClick={() => onButtonClick?.('KEY_SYNC')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* BEAT_SYNC_INST_DOUBLES */}
@@ -1613,7 +1556,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="BEAT_SYNC_INST_DOUBLES"
               label="Beat Sync"
@@ -1625,7 +1568,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('BEAT_SYNC_INST_DOUBLES')}
               onClick={() => onButtonClick?.('BEAT_SYNC_INST_DOUBLES')}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* BEAT_JUMP_BACK */}
@@ -1641,7 +1584,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="BEAT_JUMP_BACK"
               label="BEAT JUMP ◄"
@@ -1652,7 +1595,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('BEAT_JUMP_BACK')}
               onClick={() => onButtonClick?.('BEAT_JUMP_BACK')}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1681,7 +1624,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="BEAT_JUMP_FWD"
               label="BEAT JUMP ►"
@@ -1692,7 +1635,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('BEAT_JUMP_FWD')}
               onClick={() => onButtonClick?.('BEAT_JUMP_FWD')}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1757,24 +1700,18 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="TRACK_SEARCH_BACK"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 72,
-                height: 72,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="TRACK_SEARCH_BACK"
+              label="Track/Search"
+              variant="transport"
+              size="lg"
+              iconContent="|◀◀"
+              active={getState('TRACK_SEARCH_BACK').active}
+              highlighted={isHighlighted('TRACK_SEARCH_BACK')}
               onClick={() => onButtonClick?.('TRACK_SEARCH_BACK')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 14 }}>
-                |◀◀
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1803,24 +1740,18 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="TRACK_SEARCH_FWD"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 72,
-                height: 72,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="TRACK_SEARCH_FWD"
+              label="Track/Search"
+              variant="transport"
+              size="lg"
+              iconContent="▶▶|"
+              active={getState('TRACK_SEARCH_FWD').active}
+              highlighted={isHighlighted('TRACK_SEARCH_FWD')}
               onClick={() => onButtonClick?.('TRACK_SEARCH_FWD')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 14 }}>
-                ▶▶|
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1849,7 +1780,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="SEARCH_BACK"
               label="Search"
@@ -1860,7 +1791,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('SEARCH_BACK')}
               onClick={() => onButtonClick?.('SEARCH_BACK')}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1889,7 +1820,7 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+          <div>
             <PanelButton
               id="SEARCH_FWD"
               label="Search"
@@ -1900,7 +1831,7 @@ export default function CDJ3000Panel({
               highlighted={isHighlighted('SEARCH_FWD')}
               onClick={() => onButtonClick?.('SEARCH_FWD')}
             />
-          </motion.div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1929,24 +1860,21 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="CUE_BTN"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 120,
-                height: 120,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #f59e0b',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px #f59e0b40',
-              }}
+          <div>
+            <PanelButton
+              id="CUE_BTN"
+              label="CUE"
+              variant="transport"
+              size="lg"
+              surfaceColor="#f59e0b"
+              hasLed
+              ledColor="#f59e0b"
+              ledOn={getState('CUE_BTN').active}
+              active={getState('CUE_BTN').active}
+              highlighted={isHighlighted('CUE_BTN')}
               onClick={() => onButtonClick?.('CUE_BTN')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                CUE
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
 
         {/* PLAY_PAUSE */}
@@ -1962,24 +1890,22 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="PLAY_PAUSE"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 120,
-                height: 120,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #22c55e',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px #22c55e40',
-              }}
+          <div>
+            <PanelButton
+              id="PLAY_PAUSE"
+              label="PLAY/PAUSE ►/II"
+              variant="transport"
+              size="lg"
+              surfaceColor="#22c55e"
+              hasLed
+              ledColor="#22c55e"
+              ledOn={getState('PLAY_PAUSE').active}
+              iconContent="▶/❚❚"
+              active={getState('PLAY_PAUSE').active}
+              highlighted={isHighlighted('PLAY_PAUSE')}
               onClick={() => onButtonClick?.('PLAY_PAUSE')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 14 }}>
-                ▶/❚❚
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2050,24 +1976,17 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="TEMPO_RANGE"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="TEMPO_RANGE"
+              label=""
+              variant="transport"
+              size="md"
+              active={getState('TEMPO_RANGE').active}
+              highlighted={isHighlighted('TEMPO_RANGE')}
               onClick={() => onButtonClick?.('TEMPO_RANGE')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2099,24 +2018,20 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="MASTER_TEMPO"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="MASTER_TEMPO"
+              label=""
+              variant="transport"
+              size="md"
+              hasLed
+              ledColor="#f59e0b"
+              ledOn={getState('MASTER_TEMPO').active}
+              active={getState('MASTER_TEMPO').active}
+              highlighted={isHighlighted('MASTER_TEMPO')}
               onClick={() => onButtonClick?.('MASTER_TEMPO')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2181,24 +2096,17 @@ export default function CDJ3000Panel({
             justifyContent: 'center',
           }}
         >
-          <motion.div whileTap={{ scale: 0.92, y: 2 }}>
-            <div
-              data-control-id="TEMPO_RESET"
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: 56,
-                height: 56,
-                backgroundColor: '#2a2a2a',
-                border: '3px solid #444',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)',
-              }}
+          <div>
+            <PanelButton
+              id="TEMPO_RESET"
+              label=""
+              variant="transport"
+              size="lg"
+              active={getState('TEMPO_RESET').active}
+              highlighted={isHighlighted('TEMPO_RESET')}
               onClick={() => onButtonClick?.('TEMPO_RESET')}
-            >
-              <span className="font-medium text-gray-300 uppercase text-center" style={{ fontSize: 8 }}>
-                
-              </span>
-            </div>
-          </motion.div>
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"

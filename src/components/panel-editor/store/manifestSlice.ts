@@ -542,17 +542,45 @@ export const createManifestSlice: StateCreator<
         }
 
       } else if (archetype === 'anchor-layout' && ms.containerAssignment) {
-        // Secondary controls then anchor
+        // Anchor-layout may have many container keys (left-column, anchor, function-knobs, etc.)
+        // Extract ALL control IDs from all container values (flat arrays or nested subzones)
+        const allContainerIds: string[] = [];
+        for (const value of Object.values(ms.containerAssignment)) {
+          if (Array.isArray(value)) {
+            allContainerIds.push(...value);
+          } else if (value && typeof value === 'object') {
+            // Recursively extract from nested subzones
+            const extractIds = (obj: Record<string, unknown>): string[] => {
+              const ids: string[] = [];
+              for (const v of Object.values(obj)) {
+                if (Array.isArray(v)) {
+                  ids.push(...(v as string[]));
+                } else if (v && typeof v === 'object' && 'controls' in (v as Record<string, unknown>)) {
+                  ids.push(...((v as { controls: string[] }).controls));
+                } else if (v && typeof v === 'object') {
+                  ids.push(...extractIds(v as Record<string, unknown>));
+                }
+              }
+              return ids;
+            };
+            allContainerIds.push(...extractIds(value as Record<string, unknown>));
+          }
+        }
+
+        // Use all extracted IDs, or fall back to section controls list
+        const idsToPlace = allContainerIds.length > 0 ? allContainerIds : ms.controls;
+
+        // Place anchor (display) in top portion, everything else below in a grid
         const anchorIds = ms.containerAssignment.anchor;
-        const secondaryIds = ms.containerAssignment.secondary ?? ms.containerAssignment.cluster;
-        const secondaryH = availH * 0.4;
-        const anchorH = availH * 0.55;
-        if (Array.isArray(secondaryIds)) {
-          placeRow(secondaryIds, startX, startY, availW, secondaryH);
-        }
+        const nonAnchorIds = idsToPlace.filter(id => !Array.isArray(anchorIds) || !anchorIds.includes(id));
+        const anchorH = availH * 0.4;
+        const restH = availH * 0.55;
+
         if (Array.isArray(anchorIds)) {
-          placeColumn(anchorIds, startX, startY + secondaryH + availH * 0.05, availW, anchorH);
+          placeRow(anchorIds, startX, startY, availW, anchorH);
         }
+        const cols = Math.ceil(Math.sqrt(nonAnchorIds.length));
+        placeGrid(nonAnchorIds, startX, startY + anchorH + availH * 0.05, availW, restH, cols);
 
       } else {
         // Fallback: generic grid (for any unrecognized archetype)
