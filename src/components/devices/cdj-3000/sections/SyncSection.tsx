@@ -34,7 +34,7 @@ export default function SyncSection({
               height: '3.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="MASTER"
                 label="MASTER"
@@ -46,7 +46,7 @@ export default function SyncSection({
                 highlighted={isHighlighted('MASTER')}
                 onClick={() => onButtonClick?.('MASTER')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -57,7 +57,7 @@ export default function SyncSection({
               height: '3.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="KEY_SYNC"
                 label="KEY SYNC"
@@ -70,7 +70,7 @@ export default function SyncSection({
                 highlighted={isHighlighted('KEY_SYNC')}
                 onClick={() => onButtonClick?.('KEY_SYNC')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -81,7 +81,7 @@ export default function SyncSection({
               height: '3.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="BEAT_SYNC_INST_DOUBLES"
                 label="Beat Sync"
@@ -93,7 +93,7 @@ export default function SyncSection({
                 highlighted={isHighlighted('BEAT_SYNC_INST_DOUBLES')}
                 onClick={() => onButtonClick?.('BEAT_SYNC_INST_DOUBLES')}
               />
-            </motion.div>
+            </div>
           </div>
       </div>
     </motion.div>

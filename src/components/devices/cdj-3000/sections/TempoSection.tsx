@@ -36,17 +36,17 @@ export default function TempoSection({
               height: '2.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="TEMPO_RANGE"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 active={getState('TEMPO_RANGE').active}
                 highlighted={isHighlighted('TEMPO_RANGE')}
                 onClick={() => onButtonClick?.('TEMPO_RANGE')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -57,19 +57,20 @@ export default function TempoSection({
               height: '2.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="MASTER_TEMPO"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 hasLed
                 ledColor="#f59e0b"
+                ledOn={getState('MASTER_TEMPO').active}
                 active={getState('MASTER_TEMPO').active}
                 highlighted={isHighlighted('MASTER_TEMPO')}
                 onClick={() => onButtonClick?.('MASTER_TEMPO')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -96,17 +97,17 @@ export default function TempoSection({
               height: '6.30%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="TEMPO_RESET"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 active={getState('TEMPO_RESET').active}
                 highlighted={isHighlighted('TEMPO_RESET')}
                 onClick={() => onButtonClick?.('TEMPO_RESET')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"

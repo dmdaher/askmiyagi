@@ -35,7 +35,7 @@ export default function BrowseSection({
               height: '3.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="SOURCE"
                 label="SOURCE"
@@ -45,7 +45,7 @@ export default function BrowseSection({
                 highlighted={isHighlighted('SOURCE')}
                 onClick={() => onButtonClick?.('SOURCE')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -56,7 +56,7 @@ export default function BrowseSection({
               height: '3.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="BROWSE_BTN"
                 label="BROWSE"
@@ -66,7 +66,7 @@ export default function BrowseSection({
                 highlighted={isHighlighted('BROWSE_BTN')}
                 onClick={() => onButtonClick?.('BROWSE_BTN')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -77,7 +77,7 @@ export default function BrowseSection({
               height: '3.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="TAG_LIST"
                 label="TAG LIST"
@@ -87,7 +87,7 @@ export default function BrowseSection({
                 highlighted={isHighlighted('TAG_LIST')}
                 onClick={() => onButtonClick?.('TAG_LIST')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -114,7 +114,7 @@ export default function BrowseSection({
               height: '3.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="PLAYLIST"
                 label="PLAYLIST"
@@ -124,7 +124,7 @@ export default function BrowseSection({
                 highlighted={isHighlighted('PLAYLIST')}
                 onClick={() => onButtonClick?.('PLAYLIST')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -135,7 +135,7 @@ export default function BrowseSection({
               height: '3.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="SEARCH_BTN"
                 label="SEARCH"
@@ -145,7 +145,7 @@ export default function BrowseSection({
                 highlighted={isHighlighted('SEARCH_BTN')}
                 onClick={() => onButtonClick?.('SEARCH_BTN')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -156,7 +156,7 @@ export default function BrowseSection({
               height: '3.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="MENU_UTILITY"
                 label="MENU/UTILITY"
@@ -166,7 +166,7 @@ export default function BrowseSection({
                 highlighted={isHighlighted('MENU_UTILITY')}
                 onClick={() => onButtonClick?.('MENU_UTILITY')}
               />
-            </motion.div>
+            </div>
           </div>
       </div>
     </motion.div>

@@ -35,7 +35,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="SLIP"
                 label=""
@@ -47,7 +47,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('SLIP')}
                 onClick={() => onButtonClick?.('SLIP')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -58,7 +58,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="QUANTIZE"
                 label=""
@@ -70,7 +70,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('QUANTIZE')}
                 onClick={() => onButtonClick?.('QUANTIZE')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -81,19 +81,20 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="TIME_MODE_AUTO_CUE"
                 label=""
-                variant="rubber"
-                size="md"
+                variant="transport"
+                size="lg"
                 hasLed
                 ledColor="#22c55e"
+                ledOn={getState('TIME_MODE_AUTO_CUE').active}
                 active={getState('TIME_MODE_AUTO_CUE').active}
                 highlighted={isHighlighted('TIME_MODE_AUTO_CUE')}
                 onClick={() => onButtonClick?.('TIME_MODE_AUTO_CUE')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -104,7 +105,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+            <div>
               <PadButton
                 id="HOT_CUE_A"
                 label=""
@@ -112,7 +113,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('HOT_CUE_A')}
                 onClick={() => onButtonClick?.('HOT_CUE_A')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -123,7 +124,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+            <div>
               <PadButton
                 id="HOT_CUE_B"
                 label=""
@@ -131,7 +132,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('HOT_CUE_B')}
                 onClick={() => onButtonClick?.('HOT_CUE_B')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -142,7 +143,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+            <div>
               <PadButton
                 id="HOT_CUE_C"
                 label=""
@@ -150,7 +151,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('HOT_CUE_C')}
                 onClick={() => onButtonClick?.('HOT_CUE_C')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -161,7 +162,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+            <div>
               <PadButton
                 id="HOT_CUE_D"
                 label=""
@@ -169,7 +170,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('HOT_CUE_D')}
                 onClick={() => onButtonClick?.('HOT_CUE_D')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -180,7 +181,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+            <div>
               <PadButton
                 id="HOT_CUE_E"
                 label=""
@@ -188,7 +189,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('HOT_CUE_E')}
                 onClick={() => onButtonClick?.('HOT_CUE_E')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -199,7 +200,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+            <div>
               <PadButton
                 id="HOT_CUE_F"
                 label=""
@@ -207,7 +208,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('HOT_CUE_F')}
                 onClick={() => onButtonClick?.('HOT_CUE_F')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -218,7 +219,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+            <div>
               <PadButton
                 id="HOT_CUE_G"
                 label=""
@@ -226,7 +227,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('HOT_CUE_G')}
                 onClick={() => onButtonClick?.('HOT_CUE_G')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -237,7 +238,7 @@ export default function HotCueSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.93, y: 2 }}>
+            <div>
               <PadButton
                 id="HOT_CUE_H"
                 label=""
@@ -245,7 +246,7 @@ export default function HotCueSection({
                 highlighted={isHighlighted('HOT_CUE_H')}
                 onClick={() => onButtonClick?.('HOT_CUE_H')}
               />
-            </motion.div>
+            </div>
           </div>
       </div>
     </motion.div>

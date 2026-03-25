@@ -36,7 +36,7 @@ export default function JogControlsSection({
               height: '4.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="TRACK_FILTER_EDIT"
                 label="TRACK FILTER/EDIT"
@@ -46,7 +46,7 @@ export default function JogControlsSection({
                 highlighted={isHighlighted('TRACK_FILTER_EDIT')}
                 onClick={() => onButtonClick?.('TRACK_FILTER_EDIT')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -57,7 +57,7 @@ export default function JogControlsSection({
               height: '4.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="SHORTCUT"
                 label="SHORTCUT"
@@ -67,7 +67,7 @@ export default function JogControlsSection({
                 highlighted={isHighlighted('SHORTCUT')}
                 onClick={() => onButtonClick?.('SHORTCUT')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -94,7 +94,7 @@ export default function JogControlsSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="JOG_MODE"
                 label=""
@@ -104,7 +104,7 @@ export default function JogControlsSection({
                 highlighted={isHighlighted('JOG_MODE')}
                 onClick={() => onButtonClick?.('JOG_MODE')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"

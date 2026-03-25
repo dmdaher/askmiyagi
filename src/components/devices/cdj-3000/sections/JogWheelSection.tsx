@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import JogDisplay from '@/components/controls/JogDisplay';
 import TouchDisplay from '@/components/controls/TouchDisplay';
 import Wheel from '@/components/controls/Wheel';
 import { PanelState } from '@/types/panel';
@@ -52,14 +53,10 @@ export default function JogWheelSection({
               height: '14.90%',
             }}
           >
-            <TouchDisplay
+            <JogDisplay
               id="JOG_DISPLAY"
-              label=""
-              variant="main"
+              size={120}
               showMockContent
-              width={200}
-              height={120}
-              highlighted={isHighlighted('JOG_DISPLAY')}
             />
           </div>
       </div>

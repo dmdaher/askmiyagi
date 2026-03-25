@@ -35,7 +35,7 @@ export default function SelectorSection({
               height: '4.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="BACK"
                 label="BACK"
@@ -45,7 +45,7 @@ export default function SelectorSection({
                 highlighted={isHighlighted('BACK')}
                 onClick={() => onButtonClick?.('BACK')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -56,7 +56,7 @@ export default function SelectorSection({
               height: '4.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="TAG_TRACK_REMOVE"
                 label="TAG TRACK/REMOVE"
@@ -66,7 +66,7 @@ export default function SelectorSection({
                 highlighted={isHighlighted('TAG_TRACK_REMOVE')}
                 onClick={() => onButtonClick?.('TAG_TRACK_REMOVE')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"

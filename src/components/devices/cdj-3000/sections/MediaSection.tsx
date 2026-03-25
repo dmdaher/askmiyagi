@@ -68,17 +68,17 @@ export default function MediaSection({
               height: '2.40%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="USB_STOP"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 active={getState('USB_STOP').active}
                 highlighted={isHighlighted('USB_STOP')}
                 onClick={() => onButtonClick?.('USB_STOP')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"

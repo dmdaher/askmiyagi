@@ -34,42 +34,44 @@ export default function LoopSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="LOOP_IN_CUE"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 hasLed
                 ledColor="#22c55e"
+                ledOn={getState('LOOP_IN_CUE').active}
                 active={getState('LOOP_IN_CUE').active}
                 highlighted={isHighlighted('LOOP_IN_CUE')}
                 onClick={() => onButtonClick?.('LOOP_IN_CUE')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '7.80%',
+              left: '8.20%',
               top: '40.80%',
               width: '12.00%',
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="LOOP_OUT"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 hasLed
                 ledColor="#22c55e"
+                ledOn={getState('LOOP_OUT').active}
                 active={getState('LOOP_OUT').active}
                 highlighted={isHighlighted('LOOP_OUT')}
                 onClick={() => onButtonClick?.('LOOP_OUT')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -80,19 +82,20 @@ export default function LoopSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="RELOOP_EXIT"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 hasLed
                 ledColor="#22c55e"
+                ledOn={getState('RELOOP_EXIT').active}
                 active={getState('RELOOP_EXIT').active}
                 highlighted={isHighlighted('RELOOP_EXIT')}
                 onClick={() => onButtonClick?.('RELOOP_EXIT')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -103,42 +106,44 @@ export default function LoopSection({
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="FOUR_BEAT_LOOP"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 hasLed
                 ledColor="#22c55e"
+                ledOn={getState('FOUR_BEAT_LOOP').active}
                 active={getState('FOUR_BEAT_LOOP').active}
                 highlighted={isHighlighted('FOUR_BEAT_LOOP')}
                 onClick={() => onButtonClick?.('FOUR_BEAT_LOOP')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '7.80%',
+              left: '8.20%',
               top: '46.90%',
               width: '12.00%',
               height: '2.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="EIGHT_BEAT_LOOP"
                 label=""
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 hasLed
                 ledColor="#22c55e"
+                ledOn={getState('EIGHT_BEAT_LOOP').active}
                 active={getState('EIGHT_BEAT_LOOP').active}
                 highlighted={isHighlighted('EIGHT_BEAT_LOOP')}
                 onClick={() => onButtonClick?.('EIGHT_BEAT_LOOP')}
               />
-            </motion.div>
+            </div>
           </div>
       </div>
     </motion.div>

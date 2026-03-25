@@ -35,7 +35,7 @@ export default function TransportSection({
               height: '5.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="BEAT_JUMP_BACK"
                 label="BEAT JUMP ◄"
@@ -46,7 +46,7 @@ export default function TransportSection({
                 highlighted={isHighlighted('BEAT_JUMP_BACK')}
                 onClick={() => onButtonClick?.('BEAT_JUMP_BACK')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -57,7 +57,7 @@ export default function TransportSection({
               height: '5.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="BEAT_JUMP_FWD"
                 label="BEAT JUMP ►"
@@ -68,7 +68,7 @@ export default function TransportSection({
                 highlighted={isHighlighted('BEAT_JUMP_FWD')}
                 onClick={() => onButtonClick?.('BEAT_JUMP_FWD')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -95,18 +95,18 @@ export default function TransportSection({
               height: '5.30%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="TRACK_SEARCH_BACK"
                 label="Track/Search"
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 iconContent="|◀◀"
                 active={getState('TRACK_SEARCH_BACK').active}
                 highlighted={isHighlighted('TRACK_SEARCH_BACK')}
                 onClick={() => onButtonClick?.('TRACK_SEARCH_BACK')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -117,18 +117,18 @@ export default function TransportSection({
               height: '5.30%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="TRACK_SEARCH_FWD"
                 label="Track/Search"
-                variant="standard"
-                size="md"
+                variant="transport"
+                size="lg"
                 iconContent="▶▶|"
                 active={getState('TRACK_SEARCH_FWD').active}
                 highlighted={isHighlighted('TRACK_SEARCH_FWD')}
                 onClick={() => onButtonClick?.('TRACK_SEARCH_FWD')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -139,7 +139,7 @@ export default function TransportSection({
               height: '5.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="SEARCH_BACK"
                 label="Search"
@@ -150,7 +150,7 @@ export default function TransportSection({
                 highlighted={isHighlighted('SEARCH_BACK')}
                 onClick={() => onButtonClick?.('SEARCH_BACK')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -161,7 +161,7 @@ export default function TransportSection({
               height: '5.90%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="SEARCH_FWD"
                 label="Search"
@@ -172,7 +172,7 @@ export default function TransportSection({
                 highlighted={isHighlighted('SEARCH_FWD')}
                 onClick={() => onButtonClick?.('SEARCH_FWD')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -183,20 +183,21 @@ export default function TransportSection({
               height: '7.30%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="CUE_BTN"
                 label="CUE"
                 variant="transport"
-                size="md"
+                size="lg"
                 surfaceColor="#f59e0b"
                 hasLed
                 ledColor="#f59e0b"
+                ledOn={getState('CUE_BTN').active}
                 active={getState('CUE_BTN').active}
                 highlighted={isHighlighted('CUE_BTN')}
                 onClick={() => onButtonClick?.('CUE_BTN')}
               />
-            </motion.div>
+            </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
@@ -207,21 +208,22 @@ export default function TransportSection({
               height: '7.30%',
             }}
           >
-            <motion.div whileTap={{ scale: 0.95, y: 2 }}>
+            <div>
               <PanelButton
                 id="PLAY_PAUSE"
                 label="PLAY/PAUSE ►/II"
                 variant="transport"
-                size="md"
+                size="lg"
                 surfaceColor="#22c55e"
-                iconContent="▶/❚❚"
                 hasLed
                 ledColor="#22c55e"
+                ledOn={getState('PLAY_PAUSE').active}
+                iconContent="▶/❚❚"
                 active={getState('PLAY_PAUSE').active}
                 highlighted={isHighlighted('PLAY_PAUSE')}
                 onClick={() => onButtonClick?.('PLAY_PAUSE')}
               />
-            </motion.div>
+            </div>
           </div>
       </div>
     </motion.div>
