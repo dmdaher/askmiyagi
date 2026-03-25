@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEditorStore } from '../store';
 import type { ControlDef, SectionDef } from '../store';
 import ControlTypeSelector from './ControlTypeSelector';
@@ -607,11 +607,44 @@ export default function PropertiesPanel() {
   // Only show properties panel when something is selected or keyboard exists
   const keyboard = useEditorStore((s) => s.keyboard);
   const hasContent = selectedIds.length > 0 || keyboard;
+  const [collapsed, setCollapsed] = useState(false);
 
   if (!hasContent) return null;
 
+  if (collapsed) {
+    return (
+      <div className="flex flex-col border-l border-gray-800 bg-[#0d0d1a]">
+        <button
+          onClick={() => setCollapsed(false)}
+          className="flex h-10 w-8 items-center justify-center text-gray-400 hover:text-gray-200"
+          aria-label="Expand properties panel"
+          title="Show Properties"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M10 3l-5 5 5 5z" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="w-72 border-l border-gray-800 bg-[#0d0d1a] flex-shrink-0">
+      <div className="flex h-7 items-center justify-between border-b border-gray-800 px-3">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+          Properties
+        </span>
+        <button
+          onClick={() => setCollapsed(true)}
+          className="flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-white/10 hover:text-gray-300"
+          aria-label="Collapse properties panel"
+          title="Hide Properties"
+        >
+          <svg className="h-3 w-3" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M10 3l-5 5 5 5z" />
+          </svg>
+        </button>
+      </div>
       <div ref={panelRef} className="h-full overflow-y-auto p-3 text-gray-300">{content}</div>
     </div>
   );
