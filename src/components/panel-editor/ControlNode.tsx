@@ -634,11 +634,8 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       _delta: unknown,
       position: { x: number; y: number },
     ) => {
-      // Convert scaled dimensions back to unscaled for storage
-      const scaledW = parseInt(ref.style.width, 10);
-      const scaledH = parseInt(ref.style.height, 10);
-      const newW = Math.round(scaledW / controlScale);
-      const newH = Math.round(scaledH / controlScale);
+      const newW = parseInt(ref.style.width, 10);
+      const newH = parseInt(ref.style.height, 10);
       // Snapshot BEFORE mutation so undo restores the previous state
       pushSnapshot();
       // Handle position shift from top/left resize handles
@@ -733,11 +730,8 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   return (
     <>
       <Rnd
-        position={{
-          x: relX + (control.w * (1 - controlScale)) / 2,
-          y: relY + (control.h * (1 - controlScale)) / 2,
-        }}
-        size={{ width: control.w * controlScale, height: control.h * controlScale }}
+        position={{ x: relX, y: relY }}
+        size={{ width: control.w, height: control.h }}
         scale={zoom}
         dragGrid={[snapGrid, snapGrid]}
         resizeGrid={[snapGrid, snapGrid]}
@@ -782,7 +776,10 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         )}
 
         {/* Control rendering — component only, no label */}
-        <div className="flex h-full w-full items-center justify-center pointer-events-none">
+        <div
+          className="flex h-full w-full items-center justify-center pointer-events-none"
+          style={controlScale < 1 ? { transform: `scale(${controlScale})`, transformOrigin: 'center' } : undefined}
+        >
           {renderControl(control, isSelected, allControls)}
         </div>
       </Rnd>
