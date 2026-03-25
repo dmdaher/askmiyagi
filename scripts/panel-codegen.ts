@@ -1145,7 +1145,7 @@ function generateFlatPanel(
   // Keyboard prop for PanelShell
   const kb = (manifest as any).keyboard;
   const keyboardProp = kb
-    ? `{{ keys: ${kb.keys}, startNote: '${kb.startNote}', panelHeightPercent: ${kb.panelHeightPercent}${kb.leftPercent != null ? `, leftPercent: ${kb.leftPercent}` : ''}${kb.widthPercent != null ? `, widthPercent: ${kb.widthPercent}` : ''} }}`
+    ? `{ keys: ${kb.keys}, startNote: '${kb.startNote}', panelHeightPercent: ${kb.panelHeightPercent}${kb.leftPercent != null ? `, leftPercent: ${kb.leftPercent}` : ''}${kb.widthPercent != null ? `, widthPercent: ${kb.widthPercent}` : ''} }`
     : 'null';
 
   // Section backgrounds — using SectionContainer component
@@ -1292,7 +1292,7 @@ function generateSectionBasedPanel(
   // Keyboard prop for PanelShell
   const kb2 = (manifest as any).keyboard;
   const keyboardProp2 = kb2
-    ? `{{ keys: ${kb2.keys}, startNote: '${kb2.startNote}', panelHeightPercent: ${kb2.panelHeightPercent}${kb2.leftPercent != null ? `, leftPercent: ${kb2.leftPercent}` : ''}${kb2.widthPercent != null ? `, widthPercent: ${kb2.widthPercent}` : ''} }}`
+    ? `{ keys: ${kb2.keys}, startNote: '${kb2.startNote}', panelHeightPercent: ${kb2.panelHeightPercent}${kb2.leftPercent != null ? `, leftPercent: ${kb2.leftPercent}` : ''}${kb2.widthPercent != null ? `, widthPercent: ${kb2.widthPercent}` : ''} }`
     : 'null';
 
   const sectionImports = sections
