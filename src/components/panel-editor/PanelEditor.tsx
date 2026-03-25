@@ -168,7 +168,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-[#0d0d1a]">
+    <div className="flex flex-col h-full bg-[#0d0d1a]">
       <EditorToolbar
         previewMode={previewMode}
         buildStatus={buildStatus}
@@ -326,7 +326,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0d0d1a]">
+      <div className="flex h-full items-center justify-center bg-[#0d0d1a]">
         <div className="text-gray-500">Loading manifest...</div>
       </div>
     );
@@ -334,7 +334,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0d0d1a]">
+      <div className="flex h-full items-center justify-center bg-[#0d0d1a]">
         <div className="text-red-400">{error}</div>
       </div>
     );

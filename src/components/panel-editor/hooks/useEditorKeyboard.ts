@@ -11,12 +11,14 @@ import { useEditorStore } from '../store';
 export function useEditorKeyboard() {
   useEffect(() => {
     function handler(e: KeyboardEvent) {
-      // Suppress shortcuts when focus is in an input, textarea, or contenteditable
+      // Suppress shortcuts when focus is in an interactive element
       const tag = (document.activeElement?.tagName ?? '').toLowerCase();
       if (
         tag === 'input' ||
         tag === 'textarea' ||
         tag === 'select' ||
+        tag === 'a' ||
+        tag === 'button' ||
         (document.activeElement as HTMLElement)?.isContentEditable
       ) {
         return;
