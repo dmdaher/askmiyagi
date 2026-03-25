@@ -1096,9 +1096,35 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
       ];
       const gkManifestSource = gkManifestSources.find(p => fs.existsSync(p));
       if (gkManifestSource) {
+        // Read existing manifest BEFORE overwriting — preserve sticky fields
+        let previousManifest: Record<string, unknown> | null = null;
+        if (fs.existsSync(gkPaths.manifest)) {
+          try { previousManifest = JSON.parse(fs.readFileSync(gkPaths.manifest, 'utf-8')); } catch { /* ignore */ }
+        }
+
         fs.mkdirSync(path.dirname(gkPaths.manifest), { recursive: true });
         fs.copyFileSync(gkManifestSource, gkPaths.manifest);
         appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: `Promoted manifest.json from ${path.basename(path.dirname(gkManifestSource))} to pipeline root` });
+
+        // Carry forward deviceDimensions and keyboard if gatekeeper didn't include them.
+        // These are physical facts about the hardware — they never change between runs.
+        // Priority: gatekeeper output > editor manifest corrections > previous pipeline manifest.
+        if (previousManifest) {
+          const promoted = JSON.parse(fs.readFileSync(gkPaths.manifest, 'utf-8'));
+          let carried = false;
+          if (!promoted.deviceDimensions && previousManifest.deviceDimensions) {
+            promoted.deviceDimensions = previousManifest.deviceDimensions;
+            carried = true;
+          }
+          if (!promoted.keyboard && previousManifest.keyboard) {
+            promoted.keyboard = previousManifest.keyboard;
+            carried = true;
+          }
+          if (carried) {
+            fs.writeFileSync(gkPaths.manifest, JSON.stringify(promoted, null, 2));
+            appendLog(deviceId, { level: 'warn', agent: 'gatekeeper', message: 'Carried forward deviceDimensions/keyboard from previous manifest — gatekeeper did not include them' });
+          }
+        }
       }
       completePhase(state, 'phase-0-gatekeeper', effectiveGkScore, true);
       const sections = parseSectionsFromGatekeeper();

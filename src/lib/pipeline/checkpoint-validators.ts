@@ -438,6 +438,30 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
     }
   }
 
+  // 11. Visual enrichment soft enforcement — deductions, not hard rejection
+  const totalControls = controls.length;
+  if (totalControls > 0) {
+    const missingShape = controls.filter(c => !c.shape).length;
+    const missingSizeClass = controls.filter(c => !c.sizeClass).length;
+    const missingLabelDisplay = controls.filter(c => !c.labelDisplay).length;
+    const pctMissingShape = missingShape / totalControls;
+    const pctMissingSizeClass = missingSizeClass / totalControls;
+    const pctMissingLabelDisplay = missingLabelDisplay / totalControls;
+
+    if (pctMissingShape > 0.2) {
+      errors.push(`${missingShape}/${totalControls} controls missing shape (${(pctMissingShape * 100).toFixed(0)}%)`);
+      score -= 1.0;
+    }
+    if (pctMissingSizeClass > 0.2) {
+      errors.push(`${missingSizeClass}/${totalControls} controls missing sizeClass (${(pctMissingSizeClass * 100).toFixed(0)}%)`);
+      score -= 0.5;
+    }
+    if (pctMissingLabelDisplay > 0.2) {
+      errors.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (${(pctMissingLabelDisplay * 100).toFixed(0)}%)`);
+      score -= 0.5;
+    }
+  }
+
   score = Math.max(0, score);
   return { valid: errors.length === 0, errors, score };
 }

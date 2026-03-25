@@ -201,6 +201,25 @@ Maintain a list of all cross-section elements with expected DOM instance counts.
 
 5. **Section separation:** Leave at least 1% gap between adjacent sections to prevent visual overlap in the editor. Sections should be clearly separated, not touching or overlapping.
 
+### VISUAL ENRICHMENT (REQUIRED)
+
+For EVERY control in the manifest, populate these visual properties by reading the manual's Part Names pages and hardware photos. If you cannot determine a property from the evidence, leave it null — the validator will apply safe defaults. **Hallucinating a visual property is WORSE than leaving it null.**
+
+**Per-control visual fields:**
+- `shape`: `"circle"` (transport buttons, knobs, encoders), `"square"` (pads), `"rectangle"` (default for standard buttons). Check the hardware photo.
+- `sizeClass`: `"xs"` (LEDs), `"sm"`, `"md"` (default), `"lg"`, `"xl"` (jog wheels, displays). Relative to section median.
+- `surfaceColor`: Accent color from manual/photo. CUE=`"#f59e0b"`, PLAY=`"#22c55e"`, SYNC=`"#3b82f6"`, KEY SYNC=`"#ec4899"`. Most buttons=`null` (default grey). Only set if you have evidence.
+- `buttonStyle`: `"flat-key"` (browse bar), `"transport"` (CUE, PLAY), `"rubber"` (performance), `"raised"` (default). Only for buttons.
+- `labelDisplay`: `"on-button"` (text on face), `"above"` (silkscreen above), `"below"` (below), `"icon-only"` (transport symbols), `"hidden"` (ports/slots). Read the Part Names diagram carefully.
+- `icon`: Standard keys: `"play"`, `"pause"`, `"play-pause"`, `"stop"`, `"record"`, `"fast-forward"`, `"rewind"`, `"skip-forward"`, `"skip-backward"`, `"arrow-left"`, `"arrow-right"`, `"eject"`. Only set if `labelDisplay` is `"icon-only"`.
+- `hasLed`: `true` if manual says "lights up", "blinks", "indicator". Transport/performance buttons usually have LEDs.
+- `ledColor`: Color from manual. CUE LED=orange, PLAY LED=green, SYNC LED=blue. `null` if unknown.
+- `interactionType`: `"momentary"` (press), `"toggle"` (press to switch), `"hold"` (press and hold), `"rotary"` (knobs), `"slide"` (faders). From manual functional descriptions.
+- `pairedWith`: For paired controls (SEARCH ◀◀/▶▶, BEAT JUMP ◀/▶). **Must be symmetric** — if A.pairedWith=B, then B.pairedWith=A.
+- `groupLabels`: Top-level array of labels spanning multiple controls (e.g., "HOT CUE" spanning pads A-H).
+
+The manifest completeness validator will flag controls missing shape, sizeClass, or labelDisplay with score deductions. Complete coverage is expected but missing fields won't cause hard rejection — the contractor can fix remaining properties in the editor.
+
 ### CHECKPOINTING
 
 When writing your checkpoint, include YAML frontmatter at the very top:
