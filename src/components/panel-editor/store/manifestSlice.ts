@@ -1,4 +1,5 @@
 import { StateCreator } from 'zustand';
+import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import type {
   ManifestControl,
   ManifestSection,
@@ -159,6 +160,7 @@ export interface ManifestSlice {
   selectedIds: string[];
   lockedIds: string[];
   keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
+  _manifestVersion: string | null;
   focusedSectionId: string | null;
 
   // Actions
@@ -236,6 +238,7 @@ export const createManifestSlice: StateCreator<
   selectedIds: [],
   lockedIds: [],
   keyboard: null,
+  _manifestVersion: null,
   focusedSectionId: null,
 
   // ── Actions ─────────────────────────────────────────────────────────────
@@ -606,6 +609,7 @@ export const createManifestSlice: StateCreator<
       selectedIds: [],
       lockedIds: [],
       keyboard: manifestAny.keyboard ?? null,
+      _manifestVersion: computeManifestVersion(manifest),
       focusedSectionId: null,
       ...canvasSizeUpdate,
     });

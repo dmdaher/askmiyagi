@@ -55,11 +55,11 @@ export function useAutoSave(deviceId: string) {
         // Debounce the save
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
-          const { sections, controls, canvasWidth, canvasHeight } = useEditorStore.getState();
+          const { sections, controls, canvasWidth, canvasHeight, _manifestVersion } = useEditorStore.getState();
           fetch(`/api/pipeline/${deviceId}/manifest`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sections, controls, canvasWidth, canvasHeight }),
+            body: JSON.stringify({ sections, controls, canvasWidth, canvasHeight, _manifestVersion }),
           }).catch(() => {
             // Silent fail — auto-save is best-effort
           });

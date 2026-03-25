@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 
 export async function GET(
   _request: NextRequest,
@@ -36,12 +37,25 @@ export async function GET(
       if (parsed.controls && !Array.isArray(parsed.controls)) {
         parsed.controls = Object.values(parsed.controls);
       }
-      // Carry over fields from pipeline manifest that the editor manifest may lack.
-      // The editor store needs these for correct canvas aspect ratio and keyboard rendering.
+      // Check staleness: compare structural version of editor manifest vs pipeline manifest.
+      // If the pipeline manifest has changed (new gatekeeper run, new controls/properties),
+      // the editor state is stale and should be discarded.
       const mainManifestPath = path.join('.pipeline', deviceId, 'manifest.json');
       if (fs.existsSync(mainManifestPath)) {
         try {
           const mainData = JSON.parse(fs.readFileSync(mainManifestPath, 'utf-8'));
+          const pipelineVersion = computeManifestVersion(mainData);
+          const editorVersion = parsed._manifestVersion;
+
+          if (editorVersion && editorVersion !== pipelineVersion) {
+            // Editor manifest is stale — pipeline has new structural data.
+            // Archive stale editor manifest and serve fresh pipeline data.
+            const stalePath = editorPath + '.stale';
+            fs.renameSync(editorPath, stalePath);
+            return NextResponse.json(mainData);
+          }
+
+          // Carry over fields the editor manifest may lack.
           if (!parsed.deviceDimensions && mainData.deviceDimensions) {
             parsed.deviceDimensions = mainData.deviceDimensions;
           }

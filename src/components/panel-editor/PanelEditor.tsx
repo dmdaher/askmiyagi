@@ -11,6 +11,7 @@ import ContextMenu from './ContextMenu';
 import InferenceReview from './InferenceReview';
 import { useEditorKeyboard } from './hooks/useEditorKeyboard';
 import { useAutoSave } from './hooks/useAutoSave';
+import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import {
   cleanupGeometry,
   type GeometryCleanupResult,
@@ -298,6 +299,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
               controls,
               selectedIds: [],
               lockedIds: [],
+              _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
               ...canvasUpdate,
             });
           } else {
