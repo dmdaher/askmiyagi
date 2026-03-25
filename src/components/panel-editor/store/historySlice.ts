@@ -46,6 +46,7 @@ function cloneSnapshot(snapshot: ManifestSnapshot): ManifestSnapshot {
 interface ManifestFields {
   sections: Record<string, SectionDef>;
   controls: Record<string, ControlDef>;
+  hasUserEdited: boolean;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────
@@ -60,6 +61,11 @@ export const createHistorySlice: StateCreator<
   future: [],
 
   pushSnapshot: () => {
+    // Mark as user-edited — pushSnapshot is called exclusively before user mutations.
+    // This enables auto-save (prevents programmatic changes from triggering saves).
+    if (!get().hasUserEdited) {
+      set({ hasUserEdited: true });
+    }
     const { sections, controls, past } = get();
     const snapshot = cloneSnapshot({ sections, controls });
     const newPast = [...past, snapshot];

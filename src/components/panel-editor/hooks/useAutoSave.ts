@@ -52,6 +52,13 @@ export function useAutoSave(deviceId: string) {
           return;
         }
 
+        // Only save if the user has actually interacted (pointer/keyboard events).
+        // This prevents programmatic state changes (loadFromManifest, restore) from
+        // triggering auto-save and clobbering fresh pipeline data.
+        if (!useEditorStore.getState().hasUserEdited) {
+          return;
+        }
+
         // Debounce the save
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {

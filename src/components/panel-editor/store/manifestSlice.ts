@@ -161,6 +161,9 @@ export interface ManifestSlice {
   lockedIds: string[];
   keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
   _manifestVersion: string | null;
+  // hasUserEdited is set ONLY by UI event handlers (pointer/keyboard),
+  // never by store mutations. Prevents programmatic state changes from triggering auto-save.
+  hasUserEdited: boolean;
   focusedSectionId: string | null;
 
   // Actions
@@ -239,6 +242,7 @@ export const createManifestSlice: StateCreator<
   lockedIds: [],
   keyboard: null,
   _manifestVersion: null,
+  hasUserEdited: false,
   focusedSectionId: null,
 
   // ── Actions ─────────────────────────────────────────────────────────────
@@ -610,6 +614,7 @@ export const createManifestSlice: StateCreator<
       lockedIds: [],
       keyboard: manifestAny.keyboard ?? null,
       _manifestVersion: computeManifestVersion(manifest),
+      hasUserEdited: false,
       focusedSectionId: null,
       ...canvasSizeUpdate,
     });

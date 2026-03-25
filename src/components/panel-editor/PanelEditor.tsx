@@ -300,6 +300,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
               selectedIds: [],
               lockedIds: [],
               _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
+              hasUserEdited: false,
               ...canvasUpdate,
             });
           } else {
