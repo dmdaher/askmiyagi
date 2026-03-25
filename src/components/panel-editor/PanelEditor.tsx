@@ -299,6 +299,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
               controls,
               selectedIds: [],
               lockedIds: [],
+              keyboard: data.keyboard ?? null,
               _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
               hasUserEdited: false,
               ...canvasUpdate,
