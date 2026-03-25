@@ -823,6 +823,27 @@ function renderAnchorLayout(
   ].join('\n');
 }
 
+/**
+ * Extract control IDs from a container assignment value.
+ * Handles both flat arrays ["id1", "id2"] and nested subzone objects
+ * { "pads": { "controls": ["id1", ...], "direction": "row" } }
+ */
+function extractControlIds(value: unknown): string[] {
+  if (Array.isArray(value)) return value as string[];
+  if (value && typeof value === 'object') {
+    const ids: string[] = [];
+    for (const sub of Object.values(value as Record<string, unknown>)) {
+      if (Array.isArray(sub)) {
+        ids.push(...(sub as string[]));
+      } else if (sub && typeof sub === 'object' && 'controls' in (sub as Record<string, unknown>)) {
+        ids.push(...((sub as { controls: string[] }).controls));
+      }
+    }
+    return ids;
+  }
+  return [];
+}
+
 function renderDualColumn(
   template: TemplateSpec,
   controlMap: Map<string, ManifestControl>,
@@ -830,13 +851,13 @@ function renderDualColumn(
 ): string {
   const assignment = template.containerAssignment;
 
-  const leftIds = assignment?.['left-column'];
-  const rightIds = assignment?.['right-column'];
+  const leftIds = extractControlIds(assignment?.['left-column']);
+  const rightIds = extractControlIds(assignment?.['right-column']);
 
-  const leftControls = Array.isArray(leftIds)
+  const leftControls = leftIds.length > 0
     ? renderControlsById(leftIds, controlMap, '          ')
     : '';
-  const rightControls = Array.isArray(rightIds)
+  const rightControls = rightIds.length > 0
     ? renderControlsById(rightIds, controlMap, '          ')
     : '';
 

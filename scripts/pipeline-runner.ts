@@ -1093,6 +1093,7 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
         gkPaths.wtGatekeeperManifest,          // worktree agents/gatekeeper/manifest.json
         gkPaths.gatekeeperManifest,             // main repo agents/gatekeeper/manifest.json
         worktreeManifest,                        // worktree .pipeline/{id}/manifest.json (legacy)
+        gkPaths.manifest,                        // main repo .pipeline/{id}/manifest.json (legacy fallback)
       ];
       const gkManifestSource = gkManifestSources.find(p => fs.existsSync(p));
       if (gkManifestSource) {
@@ -1146,7 +1147,8 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
 }
 
 async function doPhase0LayoutEngine(state: PipelineState) {
-  const outputPath = path.join('.pipeline', deviceId, 'templates.json');
+  const lePaths = paths();
+  const outputPath = lePaths.templates;
   const phaseResult = state.phases.find(p => p.phase === 'phase-0-layout-engine');
 
   // If templates already exist and phase was completed, check editor-ready gate
@@ -1181,13 +1183,10 @@ async function doPhase0LayoutEngine(state: PipelineState) {
   startPhase(state, 'phase-0-layout-engine');
   appendLog(deviceId, { level: 'info', message: 'Starting Phase 0e: Layout Engine (deterministic template generation)' });
 
-  const manifestPath = path.join('.pipeline', deviceId, 'manifest.json');
+  const manifestPath = lePaths.manifest;
 
-  // Find the manifest JSON — check multiple locations:
-  // 1. Worktree's .pipeline/<deviceId>/manifest.json (gatekeeper may have written it there via Bash)
-  // 2. Main .pipeline/<deviceId>/manifest.json (if already copied)
-  // 3. Embedded in gatekeeper checkpoint as a ```json code block (original approach)
-  const worktreeManifestPath = path.join(worktreeCwd, '.pipeline', deviceId, 'manifest.json');
+  // Find the manifest JSON — check multiple locations
+  const worktreeManifestPath = lePaths.wtManifest;
 
   if (fs.existsSync(worktreeManifestPath) && !fs.existsSync(manifestPath)) {
     // Copy from worktree to main pipeline dir
