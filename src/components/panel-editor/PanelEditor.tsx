@@ -295,6 +295,8 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
 
             useEditorStore.setState({
               deviceId,
+              deviceName: data.deviceName ?? '',
+              manufacturer: data.manufacturer ?? '',
               sections,
               controls,
               selectedIds: [],

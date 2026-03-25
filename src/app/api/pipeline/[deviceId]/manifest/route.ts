@@ -62,6 +62,12 @@ export async function GET(
           if (!parsed.keyboard && mainData.keyboard) {
             parsed.keyboard = mainData.keyboard;
           }
+          if (!parsed.deviceName && mainData.deviceName) {
+            parsed.deviceName = mainData.deviceName;
+          }
+          if (!parsed.manufacturer && mainData.manufacturer) {
+            parsed.manufacturer = mainData.manufacturer;
+          }
         } catch { /* ignore parse errors */ }
       }
       return NextResponse.json({ ...parsed, _source: 'editor' });

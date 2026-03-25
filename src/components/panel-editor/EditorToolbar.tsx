@@ -17,6 +17,8 @@ export default function EditorToolbar({
   buildStatus,
   onApproveAndBuild,
 }: EditorToolbarProps) {
+  const manufacturer = useEditorStore((s) => s.manufacturer);
+  const deviceName = useEditorStore((s) => s.deviceName);
   const zoom = useEditorStore((s) => s.zoom);
   const snapGrid = useEditorStore((s) => s.snapGrid);
   const showGrid = useEditorStore((s) => s.showGrid);
@@ -39,6 +41,17 @@ export default function EditorToolbar({
 
   return (
     <div className="flex h-10 items-center gap-3 border-b border-gray-800 bg-[#0d0d1a] px-3">
+      {/* Device name */}
+      {deviceName && (
+        <div className="flex items-center gap-1.5 border-r border-gray-700 pr-3 mr-1">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            {manufacturer}
+          </span>
+          <span className="text-[11px] font-semibold text-gray-200">
+            {deviceName}
+          </span>
+        </div>
+      )}
       {/* Snap Grid Selector */}
       <div className="flex items-center gap-1.5">
         <label className="text-[10px] uppercase tracking-wider text-gray-500">
