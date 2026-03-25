@@ -126,7 +126,7 @@ function renderControl(
         const displayText = useIcon ? escapeJsx(resolvedIcon!) : escapeJsx(label);
         const fontSize = useIcon ? 14 : 8;
         return [
-          `${indent}<motion.div whileTap={{ scale: 0.92, y: 2 }}>`,
+          `${indent}<div>`,
           `${indent}  <div`,
           `${indent}    data-control-id="${controlId}"`,
           `${indent}    className="rounded-full flex items-center justify-center cursor-pointer"`,
@@ -143,7 +143,7 @@ function renderControl(
           `${indent}      ${displayText}`,
           `${indent}    </span>`,
           `${indent}  </div>`,
-          `${indent}</motion.div>`,
+          `${indent}</div>`,
         ].join('\n');
       }
 
@@ -154,7 +154,7 @@ function renderControl(
       const useIcon = resolvedIcon && control.labelDisplay === 'icon-only';
       const btnSize: string = pxH ? (pxH <= 32 ? 'sm' : pxH <= 48 ? 'md' : 'lg') : 'md';
       const lines: string[] = [
-        `${indent}<motion.div whileTap={{ scale: 0.95, y: 2 }}>`,
+        `${indent}<div>`,
         `${indent}  <PanelButton`,
         `${indent}    id="${controlId}"`,
         `${indent}    label="${escapeJsx(label)}"`,
@@ -170,7 +170,7 @@ function renderControl(
         `${indent}    highlighted={isHighlighted('${controlId}')}`,
         `${indent}    onClick={() => onButtonClick?.('${controlId}')}`,
         `${indent}  />`,
-        `${indent}</motion.div>`,
+        `${indent}</div>`,
       );
       return lines.join('\n');
     }
@@ -267,7 +267,7 @@ function renderControl(
 
     case 'pad':
       return [
-        `${indent}<motion.div whileTap={{ scale: 0.93, y: 2 }}>`,
+        `${indent}<div>`,
         `${indent}  <PadButton`,
         `${indent}    id="${controlId}"`,
         `${indent}    label="${escapeJsx(label)}"`,
@@ -277,7 +277,7 @@ function renderControl(
         pxW ? `${indent}    width={${pxW}}` : '',
         pxH ? `${indent}    height={${pxH}}` : '',
         `${indent}  />`,
-        `${indent}</motion.div>`,
+        `${indent}</div>`,
       ].filter(Boolean).join('\n');
 
     case 'encoder': {
