@@ -2,278 +2,227 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Clean up pipeline controls, navigation buttons, and state transitions so the admin UI is intuitive and nothing is clickable when it shouldn't be.
+**Goal:** Clean up pipeline controls, navigation, and state transitions. Make it intuitive. Eliminate dead-end navigation. Add restart capability.
+
+**Architecture decision (from frontend audit):** Use a shared `layout.tsx` with persistent device header + route-based nav links — NOT single-page tabs. Each view (overview, editor, preview) keeps its own route and height model. The layout provides the shared chrome (device name, status, action buttons, nav links).
 
 ---
 
 ## Current Problems
 
-1. **No way to restart a pipeline from scratch** — only Resume (continue from pause), Cancel (kill), and recovery actions (fix-stale, reset-failed, kill-restart). If the user wants to wipe everything and start over, they can't.
-
-2. **"Visual Editor" and "Preview Panel" buttons always visible** — even when no manifest exists (pre-gatekeeper). Clicking Editor shows empty canvas or errors. Clicking Preview shows "Panel Not Generated Yet" message. These should be hidden or disabled until relevant.
-
-3. **"Preview Panel" feels like a duplicate of "Editor"** — but they're different: Editor is for positioning controls, Preview is for seeing the generated panel. The distinction isn't clear to the user.
-
-4. **"Submit for Review" button is dead** — shows alert("coming soon"). Either implement it or remove it.
-
-5. **No "Pause" button** — pipeline can only be paused via escalation. No way to manually pause a running pipeline without cancelling it.
-
-6. **Cancel = destroy** — cancelling sets status to "failed" and removes the worktree. There's no soft stop. The user might want to pause temporarily without losing state.
+1. **No restart** — can't reset a pipeline from scratch. Old pipelines run with outdated code/SOULs. Only Resume/Cancel/Recovery exist.
+2. **Dead-end navigation** — Editor says "manifest not found", user clicks back, lands on wrong page. Preview says "not generated yet", no clear path forward.
+3. **Buttons always visible** — Editor and Preview buttons show even when they can't work. User clicks, gets errors.
+4. **No persistent context** — navigating from overview to editor loses the status badge, action buttons, and pipeline context. Each page is disconnected.
+5. **Pause vs Cancel confusion** — Cancel destroys everything. No soft pause.
+6. **Dead "Submit for Review" button** on preview page.
 
 ---
 
-## Task 1: Add "Restart Pipeline" action
+## PHASE 1: Restart Pipeline (CRITICAL — do first)
 
-A restart wipes the pipeline state back to the beginning (preflight) while preserving the editor manifest (contractor's positioning work is sacred).
+### Task 1: Add "Restart Pipeline" API + UI
 
-**Implementation:**
-- Add "Restart" button to the pipeline detail page header (visible when status is paused, completed, or failed)
-- API: `POST /api/pipeline/[deviceId]/restart`
-  - Preserves: `manifest-editor.json`, `manifest.json`, device metadata
-  - Wipes: `state.json` (reset to pending), all phase results, all escalations, agent outputs
-  - Re-creates initial state with existing manualPaths and manufacturer
-  - Auto-starts the runner
-- UI confirmation: "This will re-run the entire pipeline from scratch. Your editor positions will be preserved. Continue?"
+Outdated pipelines need to be re-run with the latest SOUL updates, codegen fixes, and validator improvements. This is the most important missing feature.
+
+**What restart does:**
+- Kills running process (if any)
+- Preserves: `manifest-editor.json` (contractor positions are SACRED), device metadata (manufacturer, deviceName, manualPaths)
+- Wipes: `state.json` (reset all phases), agent outputs, templates, cost tracking
+- Re-creates initial state from device metadata
+- Auto-starts the runner from preflight
+
+**API:** `POST /api/pipeline/[deviceId]/restart`
+
+```typescript
+// 1. Kill runner if alive
+// 2. Read existing state for device metadata
+// 3. Backup manifest-editor.json to .pipeline/saved/{id}/
+// 4. Delete state.json, agents/, templates.json, cost.json, runner.log
+// 5. Create fresh state with existing manualPaths, manufacturer, deviceName, budgetCapUsd
+// 6. Spawn runner
+// 7. Return { status: 'running', pid }
+```
+
+**UI:** "Restart" button in the pipeline detail header.
+- Visible when: `status === 'paused' || 'completed' || 'failed'`
+- Confirmation dialog: "This will re-run the entire pipeline with the latest improvements. Your editor positions will be preserved."
+- Not visible when running (must pause first)
 
 **Files:**
 - Create: `src/app/api/pipeline/[deviceId]/restart/route.ts`
 - Modify: `src/app/admin/[deviceId]/page.tsx` — add Restart button
-- Modify: `src/lib/pipeline/state-machine.ts` — add `createRestartState()` that preserves device metadata
+- Modify: `src/lib/pipeline/state-machine.ts` — add helper to create restart state from existing metadata
 
 ---
 
-## Task 2: Add "Reset to Phase" action
+### Task 2: Add "Reset to Phase" in diagnostics
 
-Sometimes you want to re-run just the gatekeeper without restarting the whole pipeline.
+Sometimes you just want to re-run the gatekeeper, not the whole pipeline.
 
-**Implementation:**
-- Add dropdown in diagnostics panel: "Reset to Phase: [Preflight | Parser | Gatekeeper | Layout Engine]"
-- API: extend `POST /api/pipeline/[deviceId]/recover` with action `reset-to-phase` and a `targetPhase` parameter
-- Clears all phase results AFTER the target phase
-- Sets `currentPhase` to the target
-- Preserves everything before it
+**API:** Extend `POST /api/pipeline/[deviceId]/recover` with `action: 'reset-to-phase'` and `targetPhase` parameter.
+
+**UI:** Dropdown in diagnostics panel: "Reset to: [Preflight | Parser | Gatekeeper | Layout Engine]"
 
 **Files:**
-- Modify: `src/app/api/pipeline/[deviceId]/recover/route.ts` — add `reset-to-phase` action
-- Modify: admin diagnostics component — add phase selector dropdown
+- Modify: `src/app/api/pipeline/[deviceId]/recover/route.ts`
+- Modify: diagnostics component in `PipelineDetail.tsx`
 
 ---
 
-## Task 3: Gate "Visual Editor" button on manifest existence
+## PHASE 2: Shared Layout + Navigation (eliminates dead ends)
 
-**Current:** Always visible, always clickable.
-**Fix:** Only show when gatekeeper has passed (manifest exists).
+### Task 3: Create shared device layout
 
-**Implementation:**
-- Check `pipeline.phases` for gatekeeper passed status
-- If not passed: show disabled button with tooltip "Manifest not ready — gatekeeper hasn't run yet"
-- If passed: show enabled button
+**The key change:** Create `src/app/admin/[deviceId]/layout.tsx` that renders:
+1. **Device header:** manufacturer, device name, status badge, action buttons (Pause/Resume/Restart/Cancel)
+2. **Nav bar:** route links styled as tabs — Overview, Editor, Preview, Manifest
+3. **`{children}`** — the route-specific content
 
-**Also:** Rename to just "Editor" — shorter, clearer.
+This layout persists across route navigation. The user always sees the device name, status, and all navigation options regardless of which page they're on.
+
+**SSE connection moves to layout** — currently in `page.tsx`, dies when navigating to editor. In the layout, it persists across all routes.
+
+**Nav link states (gated on pipeline phase):**
+- **Overview** (`/admin/{id}`) — always enabled, always linked
+- **Editor** (`/admin/{id}/editor`) — enabled after gatekeeper passed. Disabled tooltip: "Waiting for gatekeeper..."
+- **Preview** (`/admin/{id}/preview`) — enabled after codegen ran (device in registry). Disabled tooltip: "Run Approve & Build in Editor first"
+- **Manifest** — keep as tab within Overview (already works), not a separate route
 
 **Files:**
-- Modify: `src/app/admin/[deviceId]/page.tsx` — conditional button rendering
+- Create: `src/app/admin/[deviceId]/layout.tsx`
+- Create: `src/components/admin/DeviceHeader.tsx` — extracted from page.tsx header
+- Create: `src/components/admin/DeviceNav.tsx` — tab-style nav links with disabled states
+- Modify: `src/app/admin/[deviceId]/page.tsx` — remove header (now in layout), keep content
+- Modify: `src/app/admin/[deviceId]/editor/page.tsx` — remove any duplicate header
+- Modify: `src/app/admin/[deviceId]/preview/page.tsx` — remove header, remove "Back" button (layout provides nav)
 
 ---
 
-## Task 4: Gate "Preview Panel" button on codegen completion
+### Task 4: Editor page — change `h-screen` to `h-full`
 
-**Current:** Always visible. Shows empty state if panel not generated.
-**Fix:** Only show when codegen has been run (generated panel component exists).
+The editor currently uses `h-screen` which claims the full viewport. Inside the layout (which has a header + nav bar), this overflows by ~80px.
 
-**Implementation:**
-- Check if device exists in `DEVICE_REGISTRY` (codegen registers it there)
-- If not registered: show disabled button with tooltip "Run codegen first — open the Editor and click Approve & Build"
-- If registered: show enabled button labeled "Preview"
-
-**Also:** Rename to just "Preview" — shorter, clearer.
+**Fix:** Change `h-screen` to `h-full` in `EditorShell` and ensure the layout's content area uses `flex-1 overflow-hidden`.
 
 **Files:**
-- Modify: `src/app/admin/[deviceId]/page.tsx` — check device registry
-- Modify: `src/lib/deviceRegistry.ts` — export a `hasDevice(id)` helper
+- Modify: `src/components/panel-editor/PanelEditor.tsx` — `h-screen` → `h-full`
+- Modify: `src/app/admin/[deviceId]/layout.tsx` — content wrapper uses `flex-1 overflow-hidden`
 
 ---
 
-## Task 5: Clarify Editor vs Preview distinction
+### Task 5: Preview page — remove duplicate navigation
 
-**Problem:** Both buttons are in the header, look similar, contractor doesn't know which to use.
+Preview currently has its own "Back" and "Back to Editor" buttons. With the shared layout nav, these are redundant.
 
-**Fix:** Visual separation + labels that explain:
-- **Editor** button: blue outline, subtitle "Position controls"
-- **Preview** button: green outline, subtitle "View generated panel"
-
-The Editor appears first (left) since it's the primary action. Preview appears second.
+**Fix:** Remove Back/Back to Editor buttons. Remove dead "Submit for Review" button. The preview page just renders the panel.
 
 **Files:**
-- Modify: `src/app/admin/[deviceId]/page.tsx` — button styling
+- Modify: `src/app/admin/[deviceId]/preview/page.tsx` — simplify to just panel rendering
 
 ---
 
-## Task 6: Replace "Cancel" with "Pause" + "Cancel"
+## PHASE 3: Status-Aware Controls
 
-**Current:** Cancel kills the pipeline and sets status to failed.
-**Fix:** Two actions:
-- **Pause** (soft stop): Sets status to paused, kills the runner process, but preserves all state. Pipeline can be resumed.
-- **Cancel** (hard stop): Sets status to failed, cleans up worktree. Pipeline must be restarted.
+### Task 6: Action button visibility map
 
-**Implementation:**
-- Pause: `POST /api/pipeline/[deviceId]/recover` with action `pause` — sends SIGTERM to runner, sets status to paused
-- Cancel: keep existing DELETE behavior but add confirmation dialog: "This will permanently stop the pipeline. Use Pause if you want to resume later."
+Implement a single source of truth for which buttons are visible/enabled:
+
+```
+pending:    [Cancel]
+running:    [Pause]
+paused:     [Resume, Cancel, Restart]
+completed:  [Restart]
+failed:     [Restart]
+```
+
+**Pause** (new): Sends SIGTERM to runner, sets status to paused. Preserves all state. Pipeline can be resumed.
+**Cancel**: Sets status to failed, cleans up. Confirmation required.
+**Restart**: Wipes and re-runs from scratch. Confirmation required. Preserves editor positions.
 
 **Files:**
+- Modify: `src/components/admin/DeviceHeader.tsx` — implement status map
 - Modify: `src/app/api/pipeline/[deviceId]/recover/route.ts` — add `pause` action
-- Modify: `src/app/admin/[deviceId]/page.tsx` — split Cancel into Pause + Cancel with confirmation
 
 ---
 
-## Task 7: Remove or implement "Submit for Review"
+### Task 7: Nav link gating logic
 
-The preview page has a dead "Submit for Review" button.
+The DeviceNav component checks pipeline state to enable/disable route links:
 
-**Options:**
-- **Remove it** if the workflow doesn't need a review step
-- **Implement it** as: creates a PR to `test` branch with the generated panel + tutorials
+```typescript
+const gatekeeperPassed = pipeline.phases.some(p => p.phase === 'phase-0-gatekeeper' && p.status === 'passed');
+const codegenRan = DEVICE_REGISTRY[deviceId] !== undefined;
 
-**Recommendation:** Remove for now. The pipeline already creates panel-pr and tutorial-pr. Adding another review step adds confusion. The user reviews by looking at the preview and either going back to editor or approving.
+// Editor: enabled if gatekeeperPassed
+// Preview: enabled if codegenRan
+```
+
+Disabled links show a tooltip on hover explaining what needs to happen. They don't navigate — they show the tooltip.
 
 **Files:**
-- Modify: `src/app/admin/[deviceId]/preview/page.tsx` — remove Submit for Review button
+- Modify: `src/components/admin/DeviceNav.tsx` — gating logic + tooltips
+- Modify: `src/lib/deviceRegistry.ts` — export `hasDevice(id: string): boolean`
 
 ---
 
-## Task 8: Pipeline status-aware navigation
+## PHASE 4: Cleanup
 
-Consolidate all the button visibility/enabling logic into a single status map:
+### Task 8: Keep old routes as redirects
 
-```
-Status: pending
-  - Editor: disabled (no manifest)
-  - Preview: disabled (no panel)
-  - Resume: hidden (not yet started, auto-starts)
-  - Pause: hidden
-  - Cancel: visible
-  - Restart: hidden
+Contractor may have bookmarks to `/admin/{id}/editor`. Keep the routes but have the layout handle them. Since we're using Next.js App Router layout, these routes naturally work — the layout wraps all child routes.
 
-Status: running
-  - Editor: enabled if gatekeeper passed, disabled otherwise
-  - Preview: enabled if codegen ran, disabled otherwise
-  - Resume: hidden
-  - Pause: visible
-  - Cancel: hidden (use Pause first)
-  - Restart: hidden (can't restart while running)
+No code change needed — the layout automatically wraps `/admin/{id}`, `/admin/{id}/editor`, `/admin/{id}/preview`.
 
-Status: paused
-  - Editor: enabled if gatekeeper passed
-  - Preview: enabled if codegen ran
-  - Resume: visible
-  - Pause: hidden
-  - Cancel: visible (with confirmation)
-  - Restart: visible (with confirmation)
+### Task 9: Mobile — disable editor on narrow viewports
 
-Status: completed
-  - Editor: enabled
-  - Preview: enabled
-  - Resume: hidden
-  - Pause: hidden
-  - Cancel: hidden
-  - Restart: visible (with confirmation)
-
-Status: failed
-  - Editor: enabled if gatekeeper passed before failure
-  - Preview: enabled if codegen ran before failure
-  - Resume: hidden
-  - Pause: hidden
-  - Cancel: hidden
-  - Restart: visible
-```
+On screens < 768px, the Editor nav link is disabled with tooltip "Editor requires a desktop browser." Overview and Preview still work.
 
 **Files:**
-- Modify: `src/app/admin/[deviceId]/page.tsx` — implement the status map
+- Modify: `src/components/admin/DeviceNav.tsx` — media query check
 
 ---
 
 ## Execution Order
 
 ```
-Task 8 (status map) — do FIRST, defines the rules
-Task 3 (gate Editor) — uses status map
-Task 4 (gate Preview) — uses status map
-Task 5 (clarify distinction) — visual only
-Task 6 (Pause + Cancel split) — new API action
-Task 1 (Restart) — new API route
-Task 2 (Reset to Phase) — extends recovery API
-Task 7 (Remove Submit for Review) — cleanup
+PHASE 1 (restart — critical, do first):
+  Task 1 (Restart API + UI)
+  Task 2 (Reset to Phase)
+
+PHASE 2 (shared layout — eliminates dead ends):
+  Task 3 (Create layout + DeviceHeader + DeviceNav)
+  Task 4 (Editor h-screen → h-full)
+  Task 5 (Preview cleanup)
+
+PHASE 3 (status-aware controls):
+  Task 6 (Action button visibility map + Pause)
+  Task 7 (Nav link gating)
+
+PHASE 4 (cleanup):
+  Task 8 (Route redirects — no code needed)
+  Task 9 (Mobile disable editor)
 ```
-
----
-
-## Task 9: Eliminate dead-end navigation loops
-
-**Problem:** User clicks "Visual Editor" → gets "Manifest not found, gatekeeper hasn't finished" → clicks "Back" or "Review" → lands on a different page than where they started → confusing loop. Multiple pages that feel disconnected.
-
-**Root cause:** The Editor, Preview, and Pipeline Detail are three separate pages (`/admin/{id}/editor`, `/admin/{id}/preview`, `/admin/{id}`). Navigating between them loses context. The "Back" button on the preview page goes to the pipeline detail, not back to where you came from.
-
-**Fix: Single-page instrument view with tabs**
-
-Instead of three separate pages, make the pipeline detail page (`/admin/{id}`) the ONE page for everything. The editor and preview become tabs within this page, alongside Logs, Manifest, and Layout.
-
-```
-/admin/{deviceId}
-├─ Header: device name, status badge, action buttons (Pause/Resume/Restart/Cancel)
-├─ Tab bar:
-│   ├─ Overview (logs, phase timeline, escalation, diagnostics) — always enabled
-│   ├─ Editor (canvas, positioning) — enabled after gatekeeper
-│   ├─ Preview (generated panel) — enabled after codegen
-│   ├─ Manifest (read-only viewer) — enabled after gatekeeper
-│   └─ (Layout tab merged into Editor)
-└─ Tab content area
-```
-
-**Benefits:**
-- No separate pages = no dead-end navigation
-- Tabs are disabled with tooltip explaining WHY (not just grayed out)
-- User never leaves the instrument context
-- "Back" always means "back to dashboard" (one level, not ambiguous)
-- Status badge and action buttons are always visible regardless of which tab is active
-
-**Implementation:**
-- Move `PanelEditor` component into a tab within the pipeline detail page
-- Move preview panel rendering into a tab
-- Remove `/admin/{id}/editor` and `/admin/{id}/preview` as separate pages (or redirect to the tabbed view)
-- Layout tab merges into Editor tab (it's part of the same editing workflow)
-
-**Tab enablement rules (from Task 8 status map):**
-- **Overview:** Always enabled
-- **Editor:** Enabled when gatekeeper has passed. Disabled tooltip: "Waiting for gatekeeper to produce manifest..."
-- **Preview:** Enabled when codegen has run. Disabled tooltip: "Open Editor and click Approve & Build first"
-- **Manifest:** Enabled when gatekeeper has passed
-
-**Files:**
-- Modify: `src/app/admin/[deviceId]/page.tsx` — restructure as tabbed single-page view
-- Move: `src/components/panel-editor/PanelEditor.tsx` usage into a tab
-- Move: `src/app/admin/[deviceId]/preview/page.tsx` content into a tab
-- Remove or redirect: `/admin/{id}/editor` and `/admin/{id}/preview` routes
-
----
-
-## Task 10: Disabled tab tooltips explain what to do
-
-When a tab is disabled, it shouldn't just be grayed out — it should tell the user what needs to happen.
-
-**Implementation:**
-- Hover over disabled "Editor" tab → tooltip: "Waiting for gatekeeper to identify controls. Check the Overview tab for progress."
-- Hover over disabled "Preview" tab → tooltip: "No generated panel yet. Open the Editor tab and click Approve & Build."
-- Hover over disabled "Manifest" tab → tooltip: "Manifest not available until gatekeeper completes."
-
-**Files:**
-- Modify: `src/components/admin/PipelineDetail.tsx` — add tooltip on disabled tabs
 
 ---
 
 ## What This Does NOT Change
 
-- Pipeline runner state machine — phases, transitions, escalations stay the same
-- Editor functionality — positioning, auto-save, codegen all unchanged
-- Agent SOULs — no changes
-- Manifest format — no changes
-- Generated panels — no changes
+- Pipeline runner state machine — phases, transitions, escalations unchanged
+- Editor functionality — positioning, auto-save, codegen unchanged
+- Agent SOULs — unchanged
+- Manifest format — unchanged
+- Generated panels — unchanged
+- Dashboard (`/admin`) — unchanged
+
+---
+
+## Frontend Architecture Decision (from component architect review)
+
+**Shared layout + route links** over single-page tabs because:
+- Editor, Overview, and Preview have incompatible height models (full-viewport canvas vs scrollable document vs static render)
+- Forcing all three into one tab content area requires conditional CSS that breaks when a new tab is added
+- Route-level layouts give each view its own height contract while sharing the chrome
+- SSE connection moves to the layout so it persists across route switches
+- Next.js App Router code-splits per route — editor bundle only loads when navigating to `/editor`
+- Deep-linking works naturally — contractor bookmark `/admin/cdj-3000/editor` just works
