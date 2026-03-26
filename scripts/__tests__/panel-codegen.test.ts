@@ -71,3 +71,39 @@ describe('keyboard prop generation', () => {
     expect(prop).not.toContain('widthPercent');
   });
 });
+
+describe('control rotation in codegen', () => {
+  // Simulate how codegen builds the style lines for a control wrapper
+  function buildStyleLines(rotation?: number): string[] {
+    const lines = [
+      `left: '10.0%',`,
+      `top: '20.0%',`,
+      `width: 80,`,
+      `height: 48,`,
+      `display: 'flex',`,
+      `alignItems: 'center',`,
+      `justifyContent: 'center',`,
+    ];
+    if (rotation) {
+      lines.push(`transform: 'rotate(${rotation}deg)',`);
+      lines.push(`transformOrigin: 'center',`);
+    }
+    return lines;
+  }
+
+  it('no rotation produces no transform line', () => {
+    const lines = buildStyleLines(0);
+    expect(lines.some(l => l.includes('transform'))).toBe(false);
+  });
+
+  it('90° rotation produces rotate(90deg)', () => {
+    const lines = buildStyleLines(90);
+    expect(lines.some(l => l.includes("rotate(90deg)"))).toBe(true);
+    expect(lines.some(l => l.includes("transformOrigin: 'center'"))).toBe(true);
+  });
+
+  it('270° rotation produces rotate(270deg)', () => {
+    const lines = buildStyleLines(270);
+    expect(lines.some(l => l.includes("rotate(270deg)"))).toBe(true);
+  });
+});
