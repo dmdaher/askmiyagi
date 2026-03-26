@@ -9,6 +9,7 @@ import PropertiesPanel from './PropertiesPanel';
 import LayersPanel from './LayersPanel';
 import ContextMenu from './ContextMenu';
 import InferenceReview from './InferenceReview';
+import IssueReportModal from './IssueReportModal';
 import { useEditorKeyboard } from './hooks/useEditorKeyboard';
 import { useAutoSave } from './hooks/useAutoSave';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
@@ -36,6 +37,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
   const [inferenceResults, setInferenceResults] = useState<InferredSection[]>([]);
   const [cleanupResult, setCleanupResult] = useState<GeometryCleanupResult | null>(null);
   const [codegenError, setCodegenError] = useState<string | null>(null);
+  const [showIssueModal, setShowIssueModal] = useState(false);
   const [preCleanupSnapshot, setPreCleanupSnapshot] = useState<{
     sections: Record<string, any>;
     controls: Record<string, any>;
@@ -173,6 +175,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
         previewMode={previewMode}
         buildStatus={buildStatus}
         onApproveAndBuild={handleApproveAndBuild}
+        onReportIssue={() => setShowIssueModal(true)}
       />
 
       {/* Codegen error banner */}
@@ -248,6 +251,13 @@ function EditorShell({ deviceId }: { deviceId: string }) {
           cleanupResult={cleanupResult}
           onBack={handleInferenceBack}
           onGenerate={handleInferenceGenerate}
+        />
+      )}
+
+      {showIssueModal && (
+        <IssueReportModal
+          deviceId={deviceId}
+          onClose={() => setShowIssueModal(false)}
         />
       )}
     </div>

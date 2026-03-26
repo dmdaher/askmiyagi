@@ -10,12 +10,14 @@ interface EditorToolbarProps {
   previewMode: boolean;
   buildStatus: 'idle' | 'building' | 'approved';
   onApproveAndBuild: () => void;
+  onReportIssue?: () => void;
 }
 
 export default function EditorToolbar({
   previewMode,
   buildStatus,
   onApproveAndBuild,
+  onReportIssue,
 }: EditorToolbarProps) {
   const manufacturer = useEditorStore((s) => s.manufacturer);
   const deviceName = useEditorStore((s) => s.deviceName);
@@ -222,8 +224,20 @@ export default function EditorToolbar({
         )}
       </div>
 
-      {/* Spacer to push Approve button to the right */}
+      {/* Spacer to push right-side buttons */}
       <div className="flex-1" />
+
+      {/* Report Issue */}
+      {onReportIssue && (
+        <button
+          onClick={onReportIssue}
+          className="flex h-7 items-center gap-1 rounded px-2 text-xs text-gray-400 transition-colors hover:bg-gray-800 hover:text-gray-200"
+          title="Report an issue (missing control, wrong type, etc.)"
+        >
+          <span>⚑</span>
+          <span>Report Issue</span>
+        </button>
+      )}
 
       {/* Approve & Build */}
       <button
