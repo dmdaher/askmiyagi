@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import os from 'os';
 
 function getIssuesPath(deviceId: string): string {
   return path.join('.pipeline', deviceId, 'issues.json');
