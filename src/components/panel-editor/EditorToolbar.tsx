@@ -135,7 +135,7 @@ export default function EditorToolbar({
       <div className="h-5 w-px bg-gray-800" />
 
       {/* Control Scale Slider */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5" data-tutorial="scale">
         <label className="text-[10px] uppercase tracking-wider text-gray-500">
           Scale
         </label>
@@ -159,6 +159,7 @@ export default function EditorToolbar({
 
       {/* Grid Toggle */}
       <button
+        data-tutorial="grid"
         onClick={toggleGrid}
         className={`flex h-6 items-center gap-1 rounded px-2 text-xs transition-colors ${
           showGrid
@@ -171,7 +172,7 @@ export default function EditorToolbar({
       </button>
 
       {/* Photo Overlay Toggle + Opacity */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5" data-tutorial="photo">
         <button
           onClick={togglePhoto}
           className={`flex h-6 items-center gap-1 rounded px-2 text-xs transition-colors ${
@@ -230,6 +231,7 @@ export default function EditorToolbar({
       {/* Report Issue */}
       {onReportIssue && (
         <button
+          data-tutorial="report"
           onClick={onReportIssue}
           className="flex h-7 items-center gap-1 rounded px-2 text-xs text-gray-400 transition-colors hover:bg-gray-800 hover:text-gray-200"
           title="Report an issue (missing control, wrong type, etc.)"
@@ -239,8 +241,18 @@ export default function EditorToolbar({
         </button>
       )}
 
+      {/* Help — replay tutorial */}
+      <button
+        onClick={() => window.dispatchEvent(new Event('editor-tutorial-replay'))}
+        className="flex h-7 w-7 items-center justify-center rounded text-xs text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-200"
+        title="Replay editor tutorial"
+      >
+        ?
+      </button>
+
       {/* Approve & Build */}
       <button
+        data-tutorial="approve"
         onClick={onApproveAndBuild}
         disabled={previewMode || buildStatus === 'building'}
         className={`flex h-7 items-center rounded px-3 text-xs font-medium transition-colors ${

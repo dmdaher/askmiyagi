@@ -10,6 +10,7 @@ import LayersPanel from './LayersPanel';
 import ContextMenu from './ContextMenu';
 import InferenceReview from './InferenceReview';
 import IssueReportModal from './IssueReportModal';
+import EditorTutorial from './EditorTutorial';
 import { useEditorKeyboard } from './hooks/useEditorKeyboard';
 import { useAutoSave } from './hooks/useAutoSave';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
@@ -170,7 +171,8 @@ function EditorShell({ deviceId }: { deviceId: string }) {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-[#0d0d1a]">
+    <div className="flex flex-col h-full bg-[#0d0d1a]" data-tutorial="canvas">
+      <EditorTutorial deviceId={deviceId} />
       <EditorToolbar
         previewMode={previewMode}
         buildStatus={buildStatus}

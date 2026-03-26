@@ -195,7 +195,7 @@ export default function LayersPanel() {
   }
 
   return (
-    <div className="flex w-56 flex-col border-r border-gray-800 bg-[#0d0d1a]">
+    <div className="flex w-56 flex-col border-r border-gray-800 bg-[#0d0d1a]" data-tutorial="layers">
       {/* Header */}
       <div className="flex h-10 items-center justify-between border-b border-gray-800 px-3">
         <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
