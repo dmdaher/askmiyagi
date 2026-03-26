@@ -288,7 +288,11 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
             // Restore previously saved editor state (flat sections/controls)
             // API normalizes to arrays — convert back to Record<id, Def> if needed
             const sections = Array.isArray(data.sections)
-              ? Object.fromEntries(data.sections.map((s: any) => [s.id, s]))
+              ? Object.fromEntries(data.sections.map((s: any) => [s.id, {
+                  ...s,
+                  // Normalize: manifest uses 'controls', editor uses 'childIds'
+                  childIds: s.childIds ?? s.controls ?? [],
+                }]))
               : data.sections;
             const controls = Array.isArray(data.controls)
               ? Object.fromEntries(data.controls.map((c: any) => [c.id, c]))

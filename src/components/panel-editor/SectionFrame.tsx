@@ -109,11 +109,11 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
         <span className="text-[11px] font-semibold text-gray-300 uppercase tracking-wider truncate">
           {section.headerLabel ?? sectionId}
         </span>
-        <span className="text-[10px] text-gray-500 ml-auto">{section.childIds.length}</span>
+        <span className="text-[10px] text-gray-500 ml-auto">{(section.childIds ?? []).length}</span>
       </div>
 
       {/* Child controls */}
-      {section.childIds.map((id) => (
+      {(section.childIds ?? []).map((id) => (
         <ControlNode key={id} controlId={id} sectionId={sectionId} />
       ))}
     </Rnd>

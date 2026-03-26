@@ -106,7 +106,7 @@ function SectionItem({ sectionId }: { sectionId: string }) {
   if (!section) return null;
 
   const displayName = section.headerLabel || section.id;
-  const controlCount = section.childIds.length;
+  const controlCount = (section.childIds ?? []).length;
 
   return (
     <div ref={itemRef}>
@@ -154,7 +154,7 @@ function SectionItem({ sectionId }: { sectionId: string }) {
       {/* Expanded child controls */}
       {expanded && (
         <div className="ml-4 border-l border-gray-800 pl-0.5 py-0.5">
-          {section.childIds.map((id) => (
+          {(section.childIds ?? []).map((id) => (
             <ControlItem key={id} controlId={id} />
           ))}
         </div>
