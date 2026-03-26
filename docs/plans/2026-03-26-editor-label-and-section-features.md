@@ -288,3 +288,54 @@ Store as `controlGroups: ControlGroup[]` in the editor store. Groups are nested 
 - **Group border:** Render as canvas-level overlay in PanCanvas (Option B), not inside SectionFrame. Simpler, avoids coupling.
 - **Y_TOLERANCE already 8px:** No threshold change needed. The clustering anchor fix (already committed) addresses the drift.
 - **Inference Fix A (sectionId preservation):** The current `handleApproveAndBuild` does NOT reassign sectionIds — `cleanupGeometry` only changes positions. Fix A may be future-proofing, not solving a current bug.
+
+---
+
+## Feature 7: Editor Version History (CRITICAL — prevents data loss)
+
+**Why:** Contractor's positioning work was lost after Approve & Build. There's no way to go back to a previous state. Auto-save overwrites the single manifest-editor.json file. This is unacceptable — contractor confidence depends on knowing their work is never lost.
+
+**Design:**
+
+Every save creates a NEW version, never overwrites:
+```
+.pipeline/{id}/versions/
+  v001.json  (initial load)
+  v002.json  (first edit)
+  v003.json  (auto-save after drag)
+  ...
+  v047.json  (pre-approval snapshot)
+  v048.json  (post-approval with inference changes)
+  v049.json  (current)
+```
+
+Named snapshots at key moments:
+- **"pre-approval"** — saved automatically before Approve & Build runs cleanup/inference
+- **"post-codegen"** — saved after codegen generates the panel
+- **Auto-save versions** — numbered sequentially, capped at last 50
+
+**UI in editor:**
+- Version dropdown in toolbar: "v49 (now) | v48 post-codegen | v47 pre-approval | v46 (2 min ago) | ..."
+- Click any version → editor loads that version's positions
+- "Restore This Version" button makes it the current version
+- Current working state is always the latest version
+
+**Implementation:**
+- `manifest-editor.json` is still the "current" file (backward compatible)
+- Each save ALSO writes to `.pipeline/{id}/versions/vNNN.json`
+- Version counter stored in `manifest-editor.json` as `_version: number`
+- Pre-approval and post-codegen get special names in a versions index
+- Auto-save writes new version (not overwrite) — debounced to avoid flooding
+- Keep last 50 versions, delete oldest on overflow
+
+**RULE: manifest-editor.json is NEVER deleted by any code path.** Not by pipeline restart, not by Playwright tests, not by codegen, not by anything. The only thing that writes to it is the auto-save hook and version restore. Backups in versions/ are append-only.
+
+**Files:**
+- Modify: `src/components/panel-editor/hooks/useAutoSave.ts` — write versions on save
+- Create: `src/app/api/pipeline/[deviceId]/versions/route.ts` — GET (list versions), POST (restore version)
+- Create: `src/components/panel-editor/VersionDropdown.tsx` — version selector in toolbar
+- Modify: `src/components/panel-editor/EditorToolbar.tsx` — add version dropdown
+- Modify: `src/components/panel-editor/PanelEditor.tsx` — pre-approval version snapshot
+
+**Complexity:** ~400 LOC
+**Priority:** HIGH — implement before giving contractor access
