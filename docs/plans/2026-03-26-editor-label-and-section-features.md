@@ -207,3 +207,55 @@ for (const [id, originalSection] of Object.entries(sectionSnapshot)) {
 - Manifest format — extended with optional fields, backward compatible
 - Existing auto-save behavior — extended to include new data
 - Codegen flat mode — still uses contractor positions as source of truth
+
+---
+
+## Feature 5 REVISED: Sub-Section Grouping (within existing sections)
+
+**Why:** Contractor wants to select a set of controls within a section, group them, apply layout (row/column/grid + spacing), and then move the whole group as one unit. Not a new section — a nested group within the existing section.
+
+**Example workflow:**
+1. In the common section, select WRITE, MASTER FX, MOTIONAL PAD, DAW CTRL, MENU
+2. Right-click → "Group Selected" or toolbar button
+3. Choose: Row layout, 4px gap
+4. Controls snap into a horizontal row with 4px spacing
+5. Drag any control in the group → entire group moves together
+6. Hide/shrink labels for the group
+7. Position the group on the photo
+8. Move to next group (e.g., cursor buttons, E1-E6 knobs)
+
+**Data model:**
+```typescript
+interface ControlGroup {
+  id: string;
+  name: string;            // "Nav Buttons", "Function Knobs"
+  controlIds: string[];    // controls in this group
+  layout: 'row' | 'column' | 'grid';
+  gap: number;             // spacing in px
+  gridCols?: number;       // for grid layout
+}
+```
+
+Store as `controlGroups: ControlGroup[]` in the editor store. Groups are nested within their parent section (all controlIds must belong to the same section).
+
+**Behavior:**
+- **Group move:** Drag any control in a group → all group members move together (same delta). Similar to multi-select move but persistent — you don't have to re-select every time.
+- **Group layout:** When group is created or layout changed, controls auto-arrange with the specified spacing.
+- **Ungroup:** Right-click → "Ungroup" dissolves the group. Controls keep their positions.
+- **Visual indicator:** Thin colored border around grouped controls so contractor can see the grouping.
+
+**Interaction with sections:**
+- Groups live inside sections. A group cannot span multiple sections.
+- Moving a section moves all its groups.
+- Groups don't affect codegen — codegen uses flat positions regardless of grouping.
+
+**Files:**
+- Modify: `src/components/panel-editor/store/manifestSlice.ts` — add `controlGroups`, `createGroup`, `ungroupControls`, group-aware `moveControl`
+- Create: `src/components/panel-editor/GroupControlsModal.tsx` — layout picker (row/column/grid + gap)
+- Modify: `src/components/panel-editor/ControlNode.tsx` — group move behavior, visual indicator
+- Modify: `src/components/panel-editor/ContextMenu.tsx` — "Group Selected" + "Ungroup"
+- Modify: `src/components/panel-editor/hooks/useAutoSave.ts` — include controlGroups in save
+
+**Complexity:** ~400 LOC
+
+**Section creation (full) deferred** — comes after sub-section grouping is working. Would let contractor create entirely new sections from scratch, not just groups within existing sections.
