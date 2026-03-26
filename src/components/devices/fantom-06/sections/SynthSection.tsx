@@ -29,10 +29,10 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '63.10%',
-              top: '9.10%',
-              width: '4.30%',
-              height: '10.80%',
+              left: '62.40%',
+              top: '106.90%',
+              width: '3.30%',
+              height: '11.10%',
             }}
           >
             <Knob
@@ -45,10 +45,10 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '68.90%',
-              top: '9.10%',
-              width: '4.30%',
-              height: '10.80%',
+              left: '67.60%',
+              top: '106.90%',
+              width: '4.70%',
+              height: '11.10%',
             }}
           >
             <Knob
@@ -61,9 +61,9 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '63.90%',
-              top: '22.40%',
-              width: '2.80%',
+              left: '62.40%',
+              top: '116.80%',
+              width: '3.00%',
               height: '7.80%',
             }}
           >
@@ -81,9 +81,9 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '66.80%',
-              top: '22.40%',
-              width: '2.80%',
+              left: '65.80%',
+              top: '116.80%',
+              width: '3.00%',
               height: '7.80%',
             }}
           >
@@ -101,9 +101,9 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '69.60%',
-              top: '22.40%',
-              width: '2.80%',
+              left: '68.40%',
+              top: '116.80%',
+              width: '3.00%',
               height: '7.80%',
             }}
           >
@@ -121,9 +121,9 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '63.90%',
-              top: '29.00%',
-              width: '2.80%',
+              left: '62.40%',
+              top: '126.80%',
+              width: '3.00%',
               height: '7.80%',
             }}
           >
@@ -141,9 +141,9 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '66.80%',
-              top: '29.00%',
-              width: '2.80%',
+              left: '65.80%',
+              top: '126.80%',
+              width: '3.00%',
               height: '7.80%',
             }}
           >
@@ -161,9 +161,9 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '69.60%',
-              top: '29.00%',
-              width: '2.80%',
+              left: '68.40%',
+              top: '126.80%',
+              width: '3.00%',
               height: '7.80%',
             }}
           >

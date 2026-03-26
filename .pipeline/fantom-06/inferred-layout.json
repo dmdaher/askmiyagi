@@ -4,34 +4,33 @@
       "sectionId": "common",
       "archetype": "stacked-rows",
       "parameters": {
-        "gap": 1
+        "gap": 0
       },
       "confidence": 0.8
     },
     {
       "sectionId": "controller",
-      "archetype": "single-column",
+      "archetype": "grid-NxM",
       "parameters": {
-        "gap": 4,
-        "alignment": "center"
+        "gridCols": 4,
+        "gridRows": 2,
+        "gap": 0
       },
-      "confidence": 0.95
+      "confidence": 0.85
     },
     {
       "sectionId": "pad",
-      "archetype": "grid-NxM",
+      "archetype": "stacked-rows",
       "parameters": {
-        "gridCols": 5,
-        "gridRows": 5,
-        "gap": 0
+        "gap": 1
       },
-      "confidence": 0.9
+      "confidence": 0.8
     },
     {
       "sectionId": "scene",
       "archetype": "stacked-rows",
       "parameters": {
-        "gap": 5
+        "gap": 7
       },
       "confidence": 0.8
     },
@@ -47,17 +46,17 @@
       "sectionId": "synth",
       "archetype": "grid-NxM",
       "parameters": {
-        "gridCols": 5,
+        "gridCols": 4,
         "gridRows": 3,
-        "gap": 0
+        "gap": 1
       },
-      "confidence": 0.85
+      "confidence": 0.9
     },
     {
       "sectionId": "zone",
       "archetype": "stacked-rows",
       "parameters": {
-        "gap": 1
+        "gap": 12
       },
       "confidence": 0.8
     }

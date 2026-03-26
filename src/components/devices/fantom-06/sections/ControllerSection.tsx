@@ -29,10 +29,10 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '0.60%',
+              left: '0.50%',
               top: '2.20%',
-              width: '4.50%',
-              height: '8.30%',
+              width: '4.20%',
+              height: '7.80%',
             }}
           >
             <Wheel
@@ -46,10 +46,10 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '0.60%',
-              top: '11.60%',
-              width: '4.50%',
-              height: '8.30%',
+              left: '4.80%',
+              top: '3.70%',
+              width: '3.30%',
+              height: '49.90%',
             }}
           >
             <Wheel
@@ -63,10 +63,10 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '0.60%',
-              top: '21.20%',
-              width: '4.50%',
-              height: '8.30%',
+              left: '4.40%',
+              top: '63.60%',
+              width: '4.00%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -83,10 +83,10 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '0.60%',
-              top: '30.50%',
-              width: '4.50%',
-              height: '8.30%',
+              left: '7.20%',
+              top: '63.60%',
+              width: '4.00%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -103,10 +103,10 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '0.60%',
-              top: '39.90%',
-              width: '4.50%',
-              height: '8.30%',
+              left: '9.00%',
+              top: '3.70%',
+              width: '3.30%',
+              height: '49.90%',
             }}
           >
             <Wheel

@@ -31,8 +31,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.50%',
-              top: '21.90%',
+              left: '34.10%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -51,8 +51,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '43.10%',
-              top: '21.90%',
+              left: '38.70%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -71,8 +71,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '47.90%',
-              top: '21.90%',
+              left: '43.30%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -91,8 +91,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '52.50%',
-              top: '21.90%',
+              left: '47.90%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -111,8 +111,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '57.10%',
-              top: '21.90%',
+              left: '52.40%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -131,9 +131,9 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.50%',
-              top: '2.20%',
-              width: '18.50%',
+              left: '36.40%',
+              top: '114.70%',
+              width: '18.10%',
               height: '16.60%',
             }}
           >
@@ -150,8 +150,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.50%',
-              top: '27.00%',
+              left: '34.10%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -166,8 +166,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '43.10%',
-              top: '27.00%',
+              left: '38.70%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -182,8 +182,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '47.90%',
-              top: '27.00%',
+              left: '43.30%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -198,8 +198,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '52.50%',
-              top: '27.00%',
+              left: '47.90%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -214,8 +214,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '57.10%',
-              top: '27.00%',
+              left: '52.40%',
+              top: '131.90%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -230,8 +230,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.50%',
-              top: '31.90%',
+              left: '34.10%',
+              top: '139.40%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -246,8 +246,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '43.10%',
-              top: '31.90%',
+              left: '38.70%',
+              top: '139.40%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -266,9 +266,9 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '47.90%',
-              top: '31.90%',
-              width: '4.40%',
+              left: '43.30%',
+              top: '139.40%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -281,8 +281,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '52.50%',
-              top: '31.90%',
+              left: '47.90%',
+              top: '139.40%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -301,8 +301,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '57.10%',
-              top: '31.90%',
+              left: '52.40%',
+              top: '139.40%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -321,8 +321,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.50%',
-              top: '36.80%',
+              left: '34.10%',
+              top: '144.30%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -341,8 +341,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '52.50%',
-              top: '36.80%',
+              left: '47.90%',
+              top: '144.30%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -361,8 +361,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '43.10%',
-              top: '36.80%',
+              left: '38.70%',
+              top: '144.30%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -381,8 +381,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '47.90%',
-              top: '36.80%',
+              left: '43.30%',
+              top: '144.30%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -401,8 +401,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '57.10%',
-              top: '36.80%',
+              left: '52.40%',
+              top: '144.30%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -421,8 +421,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.50%',
-              top: '41.70%',
+              left: '34.10%',
+              top: '149.10%',
               width: '4.30%',
               height: '7.80%',
             }}
@@ -441,8 +441,8 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '43.10%',
-              top: '41.70%',
+              left: '38.70%',
+              top: '149.10%',
               width: '4.30%',
               height: '7.80%',
             }}

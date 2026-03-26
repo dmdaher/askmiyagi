@@ -9,7 +9,7 @@
   "status": "failed",
   "branch": "feature/dj-djs-1000",
   "createdAt": "2026-03-24T06:02:08.986Z",
-  "updatedAt": "2026-03-24T07:11:01.435Z",
+  "updatedAt": "2026-03-25T07:27:52.504Z",
   "phases": [
     {
       "phase": "phase-preflight",
@@ -27,10 +27,10 @@
     },
     {
       "phase": "phase-0-diagram-parser",
-      "startedAt": "2026-03-24T06:22:09.344Z",
-      "completedAt": "2026-03-24T06:22:09.351Z",
-      "score": 10,
-      "status": "passed",
+      "startedAt": "2026-03-25T07:27:33.051Z",
+      "completedAt": "2026-03-25T07:27:33.051Z",
+      "score": null,
+      "status": "failed",
       "costUsd": 6.1278577499999995,
       "tokens": {
         "input": 21,
@@ -65,6 +65,24 @@
       "createdAt": "2026-03-24T06:37:14.700Z",
       "resolvedAt": "2026-03-24T07:08:10.816Z",
       "resolution": "retry"
+    },
+    {
+      "id": "esc-1774423636941-f775dy",
+      "phase": "phase-0-diagram-parser",
+      "type": "agent-failure",
+      "message": "No hardware photos found at docs/Pioneer/dj-djs-1000/photos/. The Diagram Parser requires photos as PRIMARY input. Upload photos before running.",
+      "createdAt": "2026-03-25T07:27:16.941Z",
+      "resolvedAt": "2026-03-25T07:27:31.838Z",
+      "resolution": "cancel"
+    },
+    {
+      "id": "esc-1774423653051-bpzod1",
+      "phase": "phase-0-diagram-parser",
+      "type": "agent-failure",
+      "message": "No hardware photos found at docs/Pioneer/dj-djs-1000/photos/. The Diagram Parser requires photos as PRIMARY input. Upload photos before running.",
+      "createdAt": "2026-03-25T07:27:33.051Z",
+      "resolvedAt": "2026-03-25T07:27:51.300Z",
+      "resolution": "cancel"
     }
   ],
   "activeEscalation": null,
@@ -169,12 +187,12 @@
     ]
   },
   "runnerPid": null,
-  "childPid": 27196,
+  "childPid": null,
   "worktreePath": null,
   "extractionProgress": null,
   "strikeTracker": {},
   "lastCheckpoint": {
-    "phase": "phase-0-gatekeeper",
+    "phase": "phase-0-diagram-parser",
     "subStep": "start"
   }
 }

@@ -7,11 +7,11 @@
     ".pipeline/fantom-06/input/manuals/FANTOM-06_07_08_Reference_eng01_W.pdf",
     ".pipeline/fantom-06/input/manuals/FANTOM-06_07_08_Parameter_eng01_W.pdf"
   ],
-  "currentPhase": "phase-0-layout-engine",
+  "currentPhase": "panel-pr",
   "status": "paused",
   "branch": "feature/fantom-06",
   "createdAt": "2026-03-22T23:02:13.897Z",
-  "updatedAt": "2026-03-24T06:32:36.711Z",
+  "updatedAt": "2026-03-26T20:43:40.979Z",
   "phases": [
     {
       "phase": "phase-preflight",
@@ -61,6 +61,20 @@
       "completedAt": "2026-03-24T06:32:36.708Z",
       "score": 10,
       "status": "passed",
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "phase": "panel-pr",
+      "startedAt": "2026-03-26T19:59:41.963Z",
+      "completedAt": null,
+      "score": null,
+      "status": "running",
       "costUsd": 0,
       "tokens": {
         "input": 0,
@@ -257,11 +271,20 @@
       "type": "agent-failure",
       "message": "Pipeline ready for editor. Open the visual editor to position controls, then run codegen. Resume the pipeline after codegen to start QA.\nManifest: .pipeline/fantom-06/manifest.json\nTemplates: .pipeline/fantom-06/templates.json",
       "createdAt": "2026-03-24T06:32:36.708Z",
+      "resolvedAt": "2026-03-26T19:59:36.319Z",
+      "resolution": "auto-resolved: pipeline advanced to next phase"
+    },
+    {
+      "id": "esc-1774555184056-acdqa4",
+      "phase": "panel-pr",
+      "type": "agent-failure",
+      "message": "Failed to create panel PR: Command failed: gh pr create --base test --title \"feat: Fantom 06 digital twin panel\" --body \"Automated panel build for Fantom 06 by Miyagi Pipeline\"\naborted: you must first push the current branch to a remote, or use the --head flag\n",
+      "createdAt": "2026-03-26T19:59:44.056Z",
       "resolvedAt": null,
       "resolution": null
     }
   ],
-  "activeEscalation": "esc-1774333956708-hmuwvu",
+  "activeEscalation": "esc-1774555184056-acdqa4",
   "totalCostUsd": 106.27406085000001,
   "totalActualCostUsd": 49.05983760000001,
   "totalTokens": {
@@ -592,7 +615,8 @@
   "extractionProgress": null,
   "strikeTracker": {},
   "lastCheckpoint": {
-    "phase": "phase-0-layout-engine",
+    "phase": "panel-pr",
     "subStep": "start"
-  }
+  },
+  "codegenCompleted": true
 }

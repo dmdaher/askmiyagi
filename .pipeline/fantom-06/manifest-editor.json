@@ -1,0 +1,2757 @@
+{
+  "sections": {
+    "controller": {
+      "id": "controller",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "x": -1.6000000000000085,
+      "y": 0,
+      "w": 157.75,
+      "h": 257.5,
+      "childIds": [
+        "wheel-1",
+        "wheel-2",
+        "s1",
+        "s2",
+        "pitch-bend-lever"
+      ]
+    },
+    "zone": {
+      "id": "zone",
+      "headerLabel": "ZONE",
+      "archetype": "stacked-rows",
+      "x": 50.32466125488281,
+      "y": 39.966795507812506,
+      "w": 440.67533531358504,
+      "h": 616.6336938334132,
+      "childIds": [
+        "master-volume",
+        "pan-level",
+        "ctrl",
+        "assign",
+        "zone-9-16",
+        "zone-select",
+        "knob-1",
+        "knob-2",
+        "knob-3",
+        "knob-4",
+        "knob-5",
+        "knob-6",
+        "knob-7",
+        "knob-8",
+        "zone-int-ext-1",
+        "zone-int-ext-2",
+        "zone-int-ext-3",
+        "zone-int-ext-4",
+        "zone-int-ext-5",
+        "zone-int-ext-6",
+        "zone-int-ext-7",
+        "zone-int-ext-8",
+        "slider-1",
+        "slider-2",
+        "slider-3",
+        "slider-4",
+        "slider-5",
+        "slider-6",
+        "slider-7",
+        "slider-8",
+        "split",
+        "chord-memory",
+        "arpeggio",
+        "transpose",
+        "octave-down",
+        "octave-up"
+      ],
+      "containerAssignment": {
+        "master-volume": [
+          "master-volume"
+        ],
+        "top-buttons": {
+          "row": {
+            "controls": [
+              "pan-level",
+              "ctrl",
+              "assign",
+              "zone-9-16",
+              "zone-select"
+            ],
+            "direction": "row"
+          }
+        },
+        "knobs-row": {
+          "row": {
+            "controls": [
+              "knob-1",
+              "knob-2",
+              "knob-3",
+              "knob-4",
+              "knob-5",
+              "knob-6",
+              "knob-7",
+              "knob-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "zone-buttons-row": {
+          "row": {
+            "controls": [
+              "zone-int-ext-1",
+              "zone-int-ext-2",
+              "zone-int-ext-3",
+              "zone-int-ext-4",
+              "zone-int-ext-5",
+              "zone-int-ext-6",
+              "zone-int-ext-7",
+              "zone-int-ext-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "sliders-row": {
+          "row": {
+            "controls": [
+              "slider-1",
+              "slider-2",
+              "slider-3",
+              "slider-4",
+              "slider-5",
+              "slider-6",
+              "slider-7",
+              "slider-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "bottom-buttons": {
+          "row": {
+            "controls": [
+              "split",
+              "chord-memory",
+              "arpeggio",
+              "transpose",
+              "octave-down",
+              "octave-up"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    "common": {
+      "id": "common",
+      "headerLabel": null,
+      "archetype": "anchor-layout",
+      "x": 401.5999999999999,
+      "y": 406,
+      "w": 286.6,
+      "h": 168.39999999999998,
+      "childIds": [
+        "write",
+        "master-fx",
+        "motional-pad",
+        "daw-ctrl",
+        "menu",
+        "display",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "tempo",
+        "value-dial",
+        "dec",
+        "inc",
+        "cursor-up",
+        "cursor-down",
+        "cursor-left",
+        "cursor-right",
+        "shift",
+        "exit",
+        "enter"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "write",
+          "master-fx",
+          "motional-pad",
+          "daw-ctrl",
+          "menu"
+        ],
+        "anchor": [
+          "display"
+        ],
+        "function-knobs": {
+          "row": {
+            "controls": [
+              "e1",
+              "e2",
+              "e3",
+              "e4",
+              "e5",
+              "e6"
+            ],
+            "direction": "row"
+          }
+        },
+        "bottom-left": [
+          "tempo"
+        ],
+        "nav-right": {
+          "value-dial": [
+            "value-dial"
+          ],
+          "inc-dec": {
+            "controls": [
+              "dec",
+              "inc"
+            ],
+            "direction": "row"
+          },
+          "cursor-cross": [
+            "cursor-up",
+            "cursor-left",
+            "cursor-right",
+            "cursor-down"
+          ],
+          "bottom-nav": {
+            "controls": [
+              "shift",
+              "exit",
+              "enter"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    "scene": {
+      "id": "scene",
+      "headerLabel": "SCENE CTRL",
+      "archetype": "single-column",
+      "x": 160.60000610351562,
+      "y": 335.92498779296875,
+      "w": 72,
+      "h": 139,
+      "childIds": [
+        "scene-select",
+        "scene-chain",
+        "zone-view",
+        "single-tone"
+      ]
+    },
+    "synth": {
+      "id": "synth",
+      "headerLabel": "SYNTH CTRL",
+      "archetype": "cluster-below-anchor",
+      "x": 741.0000254313151,
+      "y": 377.73101806640625,
+      "w": 133.66666666666674,
+      "h": 116,
+      "childIds": [
+        "cutoff",
+        "resonance",
+        "osc",
+        "filter-type",
+        "param",
+        "amp",
+        "fx",
+        "lfo"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "knob-row": {
+            "controls": [
+              "cutoff",
+              "resonance"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "osc",
+          "filter-type",
+          "param",
+          "amp",
+          "fx",
+          "lfo"
+        ]
+      },
+      "gridCols": 3,
+      "gridRows": 2
+    },
+    "sequencer": {
+      "id": "sequencer",
+      "headerLabel": "SEQUENCER",
+      "archetype": "cluster-below-anchor",
+      "x": 881,
+      "y": 402.30600000000004,
+      "w": 200.24432508680547,
+      "h": 183.42499999999995,
+      "childIds": [
+        "pattern",
+        "group",
+        "song",
+        "tr-rec",
+        "rhythm-ptn",
+        "stop",
+        "play",
+        "rec",
+        "tone-cat-1",
+        "tone-cat-2",
+        "tone-cat-3",
+        "tone-cat-4",
+        "tone-cat-5",
+        "tone-cat-6",
+        "tone-cat-7",
+        "tone-cat-8",
+        "tone-cat-9",
+        "tone-cat-10",
+        "tone-cat-11",
+        "tone-cat-12",
+        "tone-cat-13",
+        "tone-cat-14",
+        "tone-cat-15",
+        "tone-cat-16"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "nav-row": {
+            "controls": [
+              "pattern",
+              "group",
+              "song"
+            ],
+            "direction": "row"
+          },
+          "mode-row": {
+            "controls": [
+              "tr-rec",
+              "rhythm-ptn"
+            ],
+            "direction": "row"
+          },
+          "transport-row": {
+            "controls": [
+              "stop",
+              "play",
+              "rec"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "tone-cat-1",
+          "tone-cat-2",
+          "tone-cat-3",
+          "tone-cat-4",
+          "tone-cat-5",
+          "tone-cat-6",
+          "tone-cat-7",
+          "tone-cat-8",
+          "tone-cat-9",
+          "tone-cat-10",
+          "tone-cat-11",
+          "tone-cat-12",
+          "tone-cat-13",
+          "tone-cat-14",
+          "tone-cat-15",
+          "tone-cat-16"
+        ]
+      },
+      "gridCols": 4,
+      "gridRows": 4
+    },
+    "pad": {
+      "id": "pad",
+      "headerLabel": "PAD",
+      "archetype": "cluster-below-anchor",
+      "x": 1089.999984741211,
+      "y": 393.8509826660156,
+      "w": 140,
+      "h": 174,
+      "childIds": [
+        "sampling",
+        "pad-mode",
+        "clip-board",
+        "bank",
+        "hold",
+        "pad-1",
+        "pad-2",
+        "pad-3",
+        "pad-4",
+        "pad-5",
+        "pad-6",
+        "pad-7",
+        "pad-8",
+        "pad-9",
+        "pad-10",
+        "pad-11",
+        "pad-12",
+        "pad-13",
+        "pad-14",
+        "pad-15",
+        "pad-16"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "buttons-row-1": {
+            "controls": [
+              "sampling",
+              "pad-mode",
+              "clip-board"
+            ],
+            "direction": "row"
+          },
+          "buttons-row-2": {
+            "controls": [
+              "bank",
+              "hold"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "pad-1",
+          "pad-2",
+          "pad-3",
+          "pad-4",
+          "pad-5",
+          "pad-6",
+          "pad-7",
+          "pad-8",
+          "pad-9",
+          "pad-10",
+          "pad-11",
+          "pad-12",
+          "pad-13",
+          "pad-14",
+          "pad-15",
+          "pad-16"
+        ]
+      },
+      "gridCols": 4,
+      "gridRows": 4
+    }
+  },
+  "controls": {
+    "wheel-1": {
+      "id": "wheel-1",
+      "label": "WHEEL1",
+      "type": "wheel",
+      "x": 6.3999999999999915,
+      "y": 8,
+      "w": 50,
+      "h": 28,
+      "sectionId": "controller",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "wheel-2",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "wheels"
+    },
+    "wheel-2": {
+      "id": "wheel-2",
+      "label": "WHEEL2",
+      "type": "wheel",
+      "x": 57.27499999999999,
+      "y": 13.5,
+      "w": 40,
+      "h": 180,
+      "sectionId": "controller",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "wheel-1",
+        "below": "pitch-bend-lever",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "wheels"
+    },
+    "s1": {
+      "id": "s1",
+      "label": "S1",
+      "type": "button",
+      "x": 53.27499999999999,
+      "y": 229.5,
+      "w": 48,
+      "h": 20,
+      "sectionId": "controller",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "s2"
+      },
+      "functionalGroup": "assignable-buttons",
+      "labelFontSize": 6
+    },
+    "s2": {
+      "id": "s2",
+      "label": "S2",
+      "type": "button",
+      "x": 86.39999999999999,
+      "y": 229.5,
+      "w": 48,
+      "h": 20,
+      "sectionId": "controller",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "s1",
+        "right": null
+      },
+      "functionalGroup": "assignable-buttons",
+      "labelFontSize": 6
+    },
+    "pitch-bend-lever": {
+      "id": "pitch-bend-lever",
+      "label": "PITCH BEND/MOD",
+      "type": "wheel",
+      "x": 108.14999999999999,
+      "y": 13.5,
+      "w": 40,
+      "h": 180,
+      "sectionId": "controller",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "wheel-2",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "pitch-bend"
+    },
+    "split": {
+      "id": "split",
+      "label": "SPLIT",
+      "type": "button",
+      "x": 58.32466125488281,
+      "y": 563.0618399627939,
+      "w": 64,
+      "h": 16,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "slider-1",
+        "below": null,
+        "left": null,
+        "right": "chord-memory"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 6
+    },
+    "chord-memory": {
+      "id": "chord-memory",
+      "label": "CHORD MEMORY",
+      "type": "button",
+      "x": 82.22616928778757,
+      "y": 574.6004893412256,
+      "w": 64,
+      "h": 24,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "split",
+        "right": "arpeggio"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 6
+    },
+    "arpeggio": {
+      "id": "arpeggio",
+      "label": "ARPEGGIO",
+      "type": "button",
+      "x": 109.89795108883328,
+      "y": 578.6004893412256,
+      "w": 64,
+      "h": 16,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "slider-4",
+        "below": null,
+        "left": "chord-memory",
+        "right": "transpose"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 6
+    },
+    "transpose": {
+      "id": "transpose",
+      "label": "TRANSPOSE",
+      "type": "button",
+      "x": 58.32466125488281,
+      "y": 607.0618399627939,
+      "w": 64,
+      "h": 16,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "slider-5",
+        "below": null,
+        "left": "arpeggio",
+        "right": "octave-down"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 6
+    },
+    "octave-down": {
+      "id": "octave-down",
+      "label": "DOWN",
+      "type": "button",
+      "x": 82.22616928778757,
+      "y": 605.2809367774972,
+      "w": 64,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "transpose",
+        "right": "octave-up"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 6
+    },
+    "octave-up": {
+      "id": "octave-up",
+      "label": "UP",
+      "type": "button",
+      "x": 109.89795108883328,
+      "y": 607.2809367774972,
+      "w": 64,
+      "h": 16,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "slider-8",
+        "below": null,
+        "left": "octave-down",
+        "right": null
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 6
+    },
+    "knob-1": {
+      "id": "knob-1",
+      "label": "1",
+      "type": "knob",
+      "x": 245.16232891167533,
+      "y": 47.966795507812506,
+      "w": 51,
+      "h": 28,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pan-level",
+        "below": "zone-int-ext-1",
+        "left": null,
+        "right": "knob-2"
+      },
+      "functionalGroup": "control-knobs"
+    },
+    "knob-2": {
+      "id": "knob-2",
+      "label": "2",
+      "type": "knob",
+      "x": 298.25410045934603,
+      "y": 47.966795507812506,
+      "w": 52,
+      "h": 28,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "ctrl",
+        "below": "zone-int-ext-2",
+        "left": "knob-1",
+        "right": "knob-3"
+      },
+      "functionalGroup": "control-knobs"
+    },
+    "knob-3": {
+      "id": "knob-3",
+      "label": "3",
+      "type": "knob",
+      "x": 266.0367404703776,
+      "y": 47.966795507812506,
+      "w": 52,
+      "h": 28,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "assign",
+        "below": "zone-int-ext-3",
+        "left": "knob-2",
+        "right": "knob-4"
+      },
+      "functionalGroup": "control-knobs"
+    },
+    "knob-4": {
+      "id": "knob-4",
+      "label": "4",
+      "type": "knob",
+      "x": 328.07261871530454,
+      "y": 47.966795507812506,
+      "w": 52,
+      "h": 28,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-9-16",
+        "below": "zone-int-ext-4",
+        "left": "knob-3",
+        "right": "knob-5"
+      },
+      "functionalGroup": "control-knobs"
+    },
+    "knob-5": {
+      "id": "knob-5",
+      "label": "5",
+      "type": "knob",
+      "x": 352.9666512858073,
+      "y": 47.966795507812506,
+      "w": 51,
+      "h": 28,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-select",
+        "below": "zone-int-ext-5",
+        "left": "knob-4",
+        "right": "knob-6"
+      },
+      "functionalGroup": "control-knobs"
+    },
+    "knob-6": {
+      "id": "knob-6",
+      "label": "6",
+      "type": "knob",
+      "x": 378.89411378309455,
+      "y": 47.966795507812506,
+      "w": 51.9,
+      "h": 28,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-6",
+        "left": "knob-5",
+        "right": "knob-7"
+      },
+      "functionalGroup": "control-knobs"
+    },
+    "knob-7": {
+      "id": "knob-7",
+      "label": "7",
+      "type": "knob",
+      "x": 406.0999561360676,
+      "y": 47.966795507812506,
+      "w": 51.9,
+      "h": 28,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-7",
+        "left": "knob-6",
+        "right": "knob-8"
+      },
+      "functionalGroup": "control-knobs"
+    },
+    "knob-8": {
+      "id": "knob-8",
+      "label": "8",
+      "type": "knob",
+      "x": 431.99999656846785,
+      "y": 47.966795507812506,
+      "w": 51,
+      "h": 28,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-8",
+        "left": "knob-7",
+        "right": null
+      },
+      "functionalGroup": "control-knobs"
+    },
+    "master-volume": {
+      "id": "master-volume",
+      "label": "MASTER VOLUME",
+      "type": "knob",
+      "x": 140.45640137532558,
+      "y": 70.99066043429912,
+      "w": 88,
+      "h": 40,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "master-volume",
+      "labelFontSize": 6
+    },
+    "slider-1": {
+      "id": "slider-1",
+      "label": "",
+      "type": "slider",
+      "x": 164.45640137532558,
+      "y": 524.6004893412257,
+      "w": 40,
+      "h": 124,
+      "sectionId": "zone",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-1",
+        "below": "split",
+        "left": null,
+        "right": "slider-2"
+      },
+      "functionalGroup": "zone-sliders"
+    },
+    "slider-2": {
+      "id": "slider-2",
+      "label": "",
+      "type": "slider",
+      "x": 164.45640137532558,
+      "y": 524.6004893412257,
+      "w": 40,
+      "h": 124,
+      "sectionId": "zone",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-2",
+        "below": null,
+        "left": "slider-1",
+        "right": "slider-3"
+      },
+      "functionalGroup": "zone-sliders"
+    },
+    "slider-3": {
+      "id": "slider-3",
+      "label": "",
+      "type": "slider",
+      "x": 194.3246612548828,
+      "y": 524.6004893412257,
+      "w": 40,
+      "h": 124,
+      "sectionId": "zone",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-3",
+        "below": null,
+        "left": "slider-2",
+        "right": "slider-4"
+      },
+      "functionalGroup": "zone-sliders"
+    },
+    "slider-4": {
+      "id": "slider-4",
+      "label": "",
+      "type": "slider",
+      "x": 250.66232891167533,
+      "y": 524.6004893412257,
+      "w": 40,
+      "h": 124,
+      "sectionId": "zone",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-4",
+        "below": "arpeggio",
+        "left": "slider-3",
+        "right": "slider-5"
+      },
+      "functionalGroup": "zone-sliders"
+    },
+    "slider-5": {
+      "id": "slider-5",
+      "label": "",
+      "type": "slider",
+      "x": 272.0367404703776,
+      "y": 524.6004893412257,
+      "w": 40,
+      "h": 124,
+      "sectionId": "zone",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-5",
+        "below": "transpose",
+        "left": "slider-4",
+        "right": "slider-6"
+      },
+      "functionalGroup": "zone-sliders"
+    },
+    "slider-6": {
+      "id": "slider-6",
+      "label": "",
+      "type": "slider",
+      "x": 272.0367404703776,
+      "y": 524.6004893412257,
+      "w": 40,
+      "h": 124,
+      "sectionId": "zone",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-6",
+        "below": null,
+        "left": "slider-5",
+        "right": "slider-7"
+      },
+      "functionalGroup": "zone-sliders"
+    },
+    "slider-7": {
+      "id": "slider-7",
+      "label": "",
+      "type": "slider",
+      "x": 304.25410045934603,
+      "y": 524.6004893412257,
+      "w": 40,
+      "h": 124,
+      "sectionId": "zone",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-7",
+        "below": null,
+        "left": "slider-6",
+        "right": "slider-8"
+      },
+      "functionalGroup": "zone-sliders"
+    },
+    "slider-8": {
+      "id": "slider-8",
+      "label": "",
+      "type": "slider",
+      "x": 334.07261871530454,
+      "y": 524.6004893412257,
+      "w": 40,
+      "h": 124,
+      "sectionId": "zone",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-8",
+        "below": "octave-up",
+        "left": "slider-7",
+        "right": null
+      },
+      "functionalGroup": "zone-sliders"
+    },
+    "pan-level": {
+      "id": "pan-level",
+      "label": "PAN/LEVEL",
+      "type": "button",
+      "x": 180.3246612548828,
+      "y": 52.186795507812505,
+      "w": 68,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-1",
+        "left": null,
+        "right": "ctrl"
+      },
+      "functionalGroup": "zone-mode-buttons",
+      "labelFontSize": 6
+    },
+    "ctrl": {
+      "id": "ctrl",
+      "label": "CTRL",
+      "type": "button",
+      "x": 201.89795699720594,
+      "y": 50.186795507812505,
+      "w": 72,
+      "h": 24,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-2",
+        "left": "pan-level",
+        "right": "assign"
+      },
+      "functionalGroup": "zone-mode-buttons",
+      "labelFontSize": 6
+    },
+    "assign": {
+      "id": "assign",
+      "label": "ASSIGN",
+      "type": "button",
+      "x": 107.89795108883328,
+      "y": 533.9906619177926,
+      "w": 68,
+      "h": 16,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-3",
+        "left": "ctrl",
+        "right": "zone-9-16"
+      },
+      "functionalGroup": "zone-mode-buttons",
+      "labelFontSize": 6
+    },
+    "zone-9-16": {
+      "id": "zone-9-16",
+      "label": "ZONE 9-16",
+      "type": "button",
+      "x": 80.22616928778757,
+      "y": 531.9906619177926,
+      "w": 68,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-4",
+        "left": "assign",
+        "right": "zone-select"
+      },
+      "functionalGroup": "zone-navigation",
+      "labelFontSize": 6
+    },
+    "zone-select": {
+      "id": "zone-select",
+      "label": "ZONE SELECT",
+      "type": "button",
+      "x": 107.89795108883328,
+      "y": 533.9906619177926,
+      "w": 68,
+      "h": 16,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-5",
+        "left": "zone-9-16",
+        "right": null
+      },
+      "functionalGroup": "zone-navigation",
+      "labelFontSize": 6
+    },
+    "zone-int-ext-1": {
+      "id": "zone-int-ext-1",
+      "label": "1",
+      "type": "button",
+      "x": 158.45640137532558,
+      "y": 531.9906619177926,
+      "w": 52,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-1",
+        "below": "slider-1",
+        "left": null,
+        "right": "zone-int-ext-2"
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 6
+    },
+    "zone-int-ext-2": {
+      "id": "zone-int-ext-2",
+      "label": "2",
+      "type": "button",
+      "x": 158.45640137532558,
+      "y": 531.9906619177926,
+      "w": 52,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-2",
+        "below": "slider-2",
+        "left": "zone-int-ext-1",
+        "right": "zone-int-ext-3"
+      },
+      "functionalGroup": "zone-int-ext"
+    },
+    "zone-int-ext-3": {
+      "id": "zone-int-ext-3",
+      "label": "3",
+      "type": "button",
+      "x": 188.3246612548828,
+      "y": 533.9906619177926,
+      "w": 52,
+      "h": 16,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-3",
+        "below": "slider-3",
+        "left": "zone-int-ext-2",
+        "right": "zone-int-ext-4"
+      },
+      "functionalGroup": "zone-int-ext"
+    },
+    "zone-int-ext-4": {
+      "id": "zone-int-ext-4",
+      "label": "4",
+      "type": "button",
+      "x": 244.66232891167533,
+      "y": 531.9906619177926,
+      "w": 52,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-4",
+        "below": "slider-4",
+        "left": "zone-int-ext-3",
+        "right": "zone-int-ext-5"
+      },
+      "functionalGroup": "zone-int-ext"
+    },
+    "zone-int-ext-5": {
+      "id": "zone-int-ext-5",
+      "label": "5",
+      "type": "button",
+      "x": 266.0367404703776,
+      "y": 531.9906619177926,
+      "w": 52,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-5",
+        "below": "slider-5",
+        "left": "zone-int-ext-4",
+        "right": "zone-int-ext-6"
+      },
+      "functionalGroup": "zone-int-ext"
+    },
+    "zone-int-ext-6": {
+      "id": "zone-int-ext-6",
+      "label": "6",
+      "type": "button",
+      "x": 266.0367404703776,
+      "y": 531.9906619177926,
+      "w": 52,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-6",
+        "below": "slider-6",
+        "left": "zone-int-ext-5",
+        "right": "zone-int-ext-7"
+      },
+      "functionalGroup": "zone-int-ext"
+    },
+    "zone-int-ext-7": {
+      "id": "zone-int-ext-7",
+      "label": "7",
+      "type": "button",
+      "x": 298.25410045934603,
+      "y": 531.9906619177926,
+      "w": 52,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-7",
+        "below": "slider-7",
+        "left": "zone-int-ext-6",
+        "right": "zone-int-ext-8"
+      },
+      "functionalGroup": "zone-int-ext"
+    },
+    "zone-int-ext-8": {
+      "id": "zone-int-ext-8",
+      "label": "8",
+      "type": "button",
+      "x": 328.07261871530454,
+      "y": 531.9906619177926,
+      "w": 52,
+      "h": 20,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-8",
+        "below": "slider-8",
+        "left": "zone-int-ext-7",
+        "right": null
+      },
+      "functionalGroup": "zone-int-ext"
+    },
+    "display": {
+      "id": "display",
+      "label": "Display",
+      "type": "screen",
+      "x": 436.2599999999999,
+      "y": 414,
+      "w": 217.27999999999997,
+      "h": 60,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "master-fx",
+        "right": "value-dial"
+      },
+      "functionalGroup": "display"
+    },
+    "write": {
+      "id": "write",
+      "label": "WRITE",
+      "type": "button",
+      "x": 409.5999999999999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "master-fx",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "mode-buttons"
+    },
+    "master-fx": {
+      "id": "master-fx",
+      "label": "MASTER FX",
+      "type": "button",
+      "x": 464.5999999999999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "write",
+        "below": "motional-pad",
+        "left": null,
+        "right": "display"
+      },
+      "functionalGroup": "mode-buttons"
+    },
+    "motional-pad": {
+      "id": "motional-pad",
+      "label": "MOTIONAL PAD",
+      "type": "button",
+      "x": 519.3999999999999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "master-fx",
+        "below": "daw-ctrl",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "mode-buttons"
+    },
+    "daw-ctrl": {
+      "id": "daw-ctrl",
+      "label": "DAW CTRL",
+      "type": "button",
+      "x": 574.6595312499999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "motional-pad",
+        "below": "menu",
+        "left": null,
+        "right": "cursor-up"
+      },
+      "functionalGroup": "mode-buttons"
+    },
+    "menu": {
+      "id": "menu",
+      "label": "MENU",
+      "type": "button",
+      "x": 629.1999999999999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "daw-ctrl",
+        "below": "tempo",
+        "left": null,
+        "right": "cursor-down"
+      },
+      "functionalGroup": "navigation"
+    },
+    "e1": {
+      "id": "e1",
+      "label": "E1",
+      "type": "knob",
+      "x": 409.5999999999999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "e2"
+      },
+      "functionalGroup": "function-knobs"
+    },
+    "e2": {
+      "id": "e2",
+      "label": "E2",
+      "type": "knob",
+      "x": 464.5999999999999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e1",
+        "right": "e3"
+      },
+      "functionalGroup": "function-knobs"
+    },
+    "e3": {
+      "id": "e3",
+      "label": "E3",
+      "type": "knob",
+      "x": 519.3999999999999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e2",
+        "right": "e4"
+      },
+      "functionalGroup": "function-knobs"
+    },
+    "e4": {
+      "id": "e4",
+      "label": "E4",
+      "type": "knob",
+      "x": 574.6595312499999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e3",
+        "right": "e5"
+      },
+      "functionalGroup": "function-knobs"
+    },
+    "e5": {
+      "id": "e5",
+      "label": "E5",
+      "type": "knob",
+      "x": 629.1999999999999,
+      "y": 476.2,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e4",
+        "right": "e6"
+      },
+      "functionalGroup": "function-knobs"
+    },
+    "e6": {
+      "id": "e6",
+      "label": "E6",
+      "type": "knob",
+      "x": 409.5999999999999,
+      "y": 503.20000000000005,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e5",
+        "right": null
+      },
+      "functionalGroup": "function-knobs"
+    },
+    "tempo": {
+      "id": "tempo",
+      "label": "TEMPO",
+      "type": "button",
+      "x": 464.5999999999999,
+      "y": 503.20000000000005,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "menu",
+        "below": null,
+        "left": null,
+        "right": "shift"
+      },
+      "functionalGroup": "tempo"
+    },
+    "value-dial": {
+      "id": "value-dial",
+      "label": "VALUE",
+      "type": "encoder",
+      "x": 519.3399999999999,
+      "y": 503.20000000000005,
+      "w": 51.11999999999999,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "cursor-up",
+        "left": "display",
+        "right": null
+      },
+      "functionalGroup": "navigation"
+    },
+    "dec": {
+      "id": "dec",
+      "label": "DEC",
+      "type": "button",
+      "x": 574.7199999999999,
+      "y": 503.20000000000005,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "cursor-left",
+        "left": null,
+        "right": "inc"
+      },
+      "functionalGroup": "navigation"
+    },
+    "inc": {
+      "id": "inc",
+      "label": "INC",
+      "type": "button",
+      "x": 629.1999999999999,
+      "y": 503.20000000000005,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "cursor-right",
+        "left": "dec",
+        "right": null
+      },
+      "functionalGroup": "navigation"
+    },
+    "cursor-up": {
+      "id": "cursor-up",
+      "label": "CURSOR UP",
+      "type": "button",
+      "x": 409.5999999999999,
+      "y": 520.8,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "value-dial",
+        "below": "cursor-down",
+        "left": "daw-ctrl",
+        "right": null
+      },
+      "functionalGroup": "cursor"
+    },
+    "cursor-left": {
+      "id": "cursor-left",
+      "label": "CURSOR LEFT",
+      "type": "button",
+      "x": 464.5999999999999,
+      "y": 520.8,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "dec",
+        "below": "shift",
+        "left": null,
+        "right": "cursor-right"
+      },
+      "functionalGroup": "cursor"
+    },
+    "cursor-right": {
+      "id": "cursor-right",
+      "label": "CURSOR RIGHT",
+      "type": "button",
+      "x": 519.3999999999999,
+      "y": 520.8,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "inc",
+        "below": "enter",
+        "left": "cursor-left",
+        "right": null
+      },
+      "functionalGroup": "cursor"
+    },
+    "cursor-down": {
+      "id": "cursor-down",
+      "label": "CURSOR DOWN",
+      "type": "button",
+      "x": 574.5999999999999,
+      "y": 520.8,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "cursor-up",
+        "below": "exit",
+        "left": "menu",
+        "right": null
+      },
+      "functionalGroup": "cursor"
+    },
+    "shift": {
+      "id": "shift",
+      "label": "SHIFT",
+      "type": "button",
+      "x": 629.1999999999999,
+      "y": 520.8,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "cursor-left",
+        "below": null,
+        "left": "tempo",
+        "right": "exit"
+      },
+      "functionalGroup": "modal-buttons"
+    },
+    "exit": {
+      "id": "exit",
+      "label": "EXIT",
+      "type": "button",
+      "x": 409.5999999999999,
+      "y": 538.4,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "cursor-down",
+        "below": null,
+        "left": "shift",
+        "right": "enter"
+      },
+      "functionalGroup": "modal-buttons"
+    },
+    "enter": {
+      "id": "enter",
+      "label": "ENTER",
+      "type": "button",
+      "x": 464.5999999999999,
+      "y": 538.4,
+      "w": 51,
+      "h": 28,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "cursor-right",
+        "below": null,
+        "left": "exit",
+        "right": null
+      },
+      "functionalGroup": "modal-buttons"
+    },
+    "scene-select": {
+      "id": "scene-select",
+      "label": "SCENE SELECT",
+      "type": "button",
+      "x": 168.60000610351562,
+      "y": 343.92498779296875,
+      "w": 56,
+      "h": 28,
+      "sectionId": "scene",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "scene-chain",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "scene"
+    },
+    "scene-chain": {
+      "id": "scene-chain",
+      "label": "SCENE CHAIN",
+      "type": "button",
+      "x": 168.60000610351562,
+      "y": 391.42498779296875,
+      "w": 56,
+      "h": 28,
+      "sectionId": "scene",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "scene-select",
+        "below": "zone-view",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "scene"
+    },
+    "zone-view": {
+      "id": "zone-view",
+      "label": "ZONE VIEW",
+      "type": "button",
+      "x": 168.60000610351562,
+      "y": 410.92498779296875,
+      "w": 56,
+      "h": 28,
+      "sectionId": "scene",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "scene-chain",
+        "below": "single-tone",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "scene"
+    },
+    "single-tone": {
+      "id": "single-tone",
+      "label": "SINGLE TONE",
+      "type": "button",
+      "x": 168.60000610351562,
+      "y": 438.92498779296875,
+      "w": 56,
+      "h": 28,
+      "sectionId": "scene",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-view",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "scene"
+    },
+    "cutoff": {
+      "id": "cutoff",
+      "label": "CUTOFF",
+      "type": "knob",
+      "x": 749.0000254313151,
+      "y": 385.73101806640625,
+      "w": 40,
+      "h": 40,
+      "sectionId": "synth",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "resonance"
+      },
+      "functionalGroup": "synth-knobs"
+    },
+    "resonance": {
+      "id": "resonance",
+      "label": "RESONANCE",
+      "type": "knob",
+      "x": 810.6666920979818,
+      "y": 385.73101806640625,
+      "w": 56,
+      "h": 40,
+      "sectionId": "synth",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "cutoff",
+        "right": null
+      },
+      "functionalGroup": "synth-knobs"
+    },
+    "osc": {
+      "id": "osc",
+      "label": "OSC",
+      "type": "button",
+      "x": 749.0000254313151,
+      "y": 421.73101806640625,
+      "w": 36,
+      "h": 28,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "amp",
+        "left": null,
+        "right": "filter-type"
+      },
+      "functionalGroup": "synth-buttons"
+    },
+    "filter-type": {
+      "id": "filter-type",
+      "label": "FILTER TYPE",
+      "type": "button",
+      "x": 789.8333587646484,
+      "y": 421.73101806640625,
+      "w": 36,
+      "h": 28,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "fx",
+        "left": "osc",
+        "right": "param"
+      },
+      "functionalGroup": "synth-buttons"
+    },
+    "param": {
+      "id": "param",
+      "label": "PARAM",
+      "type": "button",
+      "x": 820.8889119089386,
+      "y": 421.73101806640625,
+      "w": 36,
+      "h": 28,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo",
+        "left": "filter-type",
+        "right": null
+      },
+      "functionalGroup": "synth-buttons"
+    },
+    "amp": {
+      "id": "amp",
+      "label": "AMP",
+      "type": "button",
+      "x": 749.0000254313151,
+      "y": 457.73101806640625,
+      "w": 36,
+      "h": 28,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "osc",
+        "below": null,
+        "left": null,
+        "right": "fx"
+      },
+      "functionalGroup": "synth-buttons"
+    },
+    "fx": {
+      "id": "fx",
+      "label": "FX",
+      "type": "button",
+      "x": 789.8333587646484,
+      "y": 457.73101806640625,
+      "w": 36,
+      "h": 28,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "filter-type",
+        "below": null,
+        "left": "amp",
+        "right": "lfo"
+      },
+      "functionalGroup": "synth-buttons"
+    },
+    "lfo": {
+      "id": "lfo",
+      "label": "LFO",
+      "type": "button",
+      "x": 820.8889119089386,
+      "y": 457.73101806640625,
+      "w": 36,
+      "h": 28,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "param",
+        "below": null,
+        "left": "fx",
+        "right": null
+      },
+      "functionalGroup": "synth-buttons"
+    },
+    "pattern": {
+      "id": "pattern",
+      "label": "PATTERN",
+      "type": "button",
+      "x": 894.5374997248,
+      "y": 410.30600000000004,
+      "w": 28,
+      "h": 54,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tr-rec",
+        "left": null,
+        "right": "group"
+      },
+      "functionalGroup": "sequencer-nav"
+    },
+    "group": {
+      "id": "group",
+      "label": "GROUP",
+      "type": "button",
+      "x": 910.1555786132812,
+      "y": 410.30600000000004,
+      "w": 28,
+      "h": 54,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "rhythm-ptn",
+        "left": "pattern",
+        "right": "song"
+      },
+      "functionalGroup": "sequencer-nav"
+    },
+    "song": {
+      "id": "song",
+      "label": "SONG",
+      "type": "button",
+      "x": 939.0431476508247,
+      "y": 410.30600000000004,
+      "w": 28,
+      "h": 54.400000000000006,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tone-cat-3",
+        "left": "group",
+        "right": null
+      },
+      "functionalGroup": "sequencer-nav"
+    },
+    "tr-rec": {
+      "id": "tr-rec",
+      "label": "TR-REC",
+      "type": "button",
+      "x": 939.0431476508247,
+      "y": 410.30600000000004,
+      "w": 28,
+      "h": 54.400000000000006,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pattern",
+        "below": "tone-cat-1",
+        "left": null,
+        "right": "rhythm-ptn"
+      },
+      "functionalGroup": "sequencer-mode"
+    },
+    "rhythm-ptn": {
+      "id": "rhythm-ptn",
+      "label": "RHYTHM PTN",
+      "type": "button",
+      "x": 967.1221625434027,
+      "y": 410.30600000000004,
+      "w": 28,
+      "h": 56,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "group",
+        "below": "tone-cat-2",
+        "left": "tr-rec",
+        "right": null
+      },
+      "functionalGroup": "sequencer-mode"
+    },
+    "stop": {
+      "id": "stop",
+      "label": "STOP",
+      "type": "button",
+      "x": 1004.933349609375,
+      "y": 410.30600000000004,
+      "w": 28,
+      "h": 56,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "play"
+      },
+      "functionalGroup": "transport"
+    },
+    "play": {
+      "id": "play",
+      "label": "PLAY",
+      "type": "button",
+      "x": 1024.0015526258683,
+      "y": 410.30600000000004,
+      "w": 28,
+      "h": 54.400000000000006,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "stop",
+        "right": "rec"
+      },
+      "functionalGroup": "transport"
+    },
+    "rec": {
+      "id": "rec",
+      "label": "REC",
+      "type": "button",
+      "x": 1045.2443250868055,
+      "y": 410.30600000000004,
+      "w": 28,
+      "h": 54,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "play",
+        "right": null
+      },
+      "functionalGroup": "transport"
+    },
+    "tone-cat-1": {
+      "id": "tone-cat-1",
+      "label": "A.PIANO",
+      "type": "button",
+      "x": 889,
+      "y": 480.0185,
+      "w": 39,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tr-rec",
+        "below": "tone-cat-5",
+        "left": null,
+        "right": "tone-cat-2"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-2": {
+      "id": "tone-cat-2",
+      "label": "E.PIANO",
+      "type": "button",
+      "x": 933.5431476508247,
+      "y": 480.0185,
+      "w": 39,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "rhythm-ptn",
+        "below": "tone-cat-6",
+        "left": "tone-cat-1",
+        "right": "tone-cat-3"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-3": {
+      "id": "tone-cat-3",
+      "label": "ORGAN",
+      "type": "button",
+      "x": 961.5721625434028,
+      "y": 480.0185,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "song",
+        "below": "tone-cat-7",
+        "left": "tone-cat-2",
+        "right": "tone-cat-4"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-4": {
+      "id": "tone-cat-4",
+      "label": "GUITAR/BASS",
+      "type": "button",
+      "x": 1018.4515526258683,
+      "y": 480.0185,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tone-cat-8",
+        "left": "tone-cat-3",
+        "right": null
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-5": {
+      "id": "tone-cat-5",
+      "label": "STRINGS",
+      "type": "button",
+      "x": 889,
+      "y": 509.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-1",
+        "below": "tone-cat-9",
+        "left": null,
+        "right": "tone-cat-6"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-6": {
+      "id": "tone-cat-6",
+      "label": "BRASS",
+      "type": "button",
+      "x": 933.4931476508248,
+      "y": 509.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-2",
+        "below": "tone-cat-10",
+        "left": "tone-cat-5",
+        "right": "tone-cat-7"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-7": {
+      "id": "tone-cat-7",
+      "label": "SYNTH LEAD",
+      "type": "button",
+      "x": 961.5721625434028,
+      "y": 509.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-3",
+        "below": "tone-cat-11",
+        "left": "tone-cat-6",
+        "right": "tone-cat-8"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-8": {
+      "id": "tone-cat-8",
+      "label": "SYNTH PAD",
+      "type": "button",
+      "x": 1018.0015526258683,
+      "y": 509.731,
+      "w": 40,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-4",
+        "below": "tone-cat-12",
+        "left": "tone-cat-7",
+        "right": null
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-9": {
+      "id": "tone-cat-9",
+      "label": "BELL/MALLET",
+      "type": "button",
+      "x": 889,
+      "y": 529.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-5",
+        "below": "tone-cat-13",
+        "left": null,
+        "right": "tone-cat-10"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-10": {
+      "id": "tone-cat-10",
+      "label": "HIT/OTHER",
+      "type": "button",
+      "x": 933.4931476508248,
+      "y": 529.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-6",
+        "below": "tone-cat-14",
+        "left": "tone-cat-9",
+        "right": "tone-cat-11"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-11": {
+      "id": "tone-cat-11",
+      "label": "RHYTHM",
+      "type": "button",
+      "x": 961.5721625434028,
+      "y": 529.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-7",
+        "below": "tone-cat-15",
+        "left": "tone-cat-10",
+        "right": "tone-cat-12"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-12": {
+      "id": "tone-cat-12",
+      "label": "S.N. ACOUSTIC",
+      "type": "button",
+      "x": 1018.4515526258683,
+      "y": 529.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-8",
+        "below": "tone-cat-16",
+        "left": "tone-cat-11",
+        "right": null
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-13": {
+      "id": "tone-cat-13",
+      "label": "S.N.S",
+      "type": "button",
+      "x": 889,
+      "y": 549.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-9",
+        "below": null,
+        "left": null,
+        "right": "tone-cat-14"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-14": {
+      "id": "tone-cat-14",
+      "label": "VTW",
+      "type": "button",
+      "x": 933.4931476508248,
+      "y": 549.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-10",
+        "below": null,
+        "left": "tone-cat-13",
+        "right": "tone-cat-15"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-15": {
+      "id": "tone-cat-15",
+      "label": "MODEL",
+      "type": "button",
+      "x": 961.5721625434028,
+      "y": 549.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-11",
+        "below": null,
+        "left": "tone-cat-14",
+        "right": "tone-cat-16"
+      },
+      "functionalGroup": "tone-category"
+    },
+    "tone-cat-16": {
+      "id": "tone-cat-16",
+      "label": "DRUM",
+      "type": "button",
+      "x": 1018.4515526258683,
+      "y": 549.731,
+      "w": 39.1,
+      "h": 28,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-12",
+        "below": null,
+        "left": "tone-cat-15",
+        "right": null
+      },
+      "functionalGroup": "tone-category"
+    },
+    "sampling": {
+      "id": "sampling",
+      "label": "SAMPLING",
+      "type": "button",
+      "x": 1097.999984741211,
+      "y": 401.8509826660156,
+      "w": 28,
+      "h": 55,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-1",
+        "left": null,
+        "right": "pad-mode"
+      },
+      "functionalGroup": "pad-controls"
+    },
+    "pad-mode": {
+      "id": "pad-mode",
+      "label": "PAD MODE",
+      "type": "button",
+      "x": 1129.9999586288359,
+      "y": 401.8509826660156,
+      "w": 28,
+      "h": 55,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-2",
+        "left": "sampling",
+        "right": "clip-board"
+      },
+      "functionalGroup": "pad-controls"
+    },
+    "clip-board": {
+      "id": "clip-board",
+      "label": "CLIP BOARD",
+      "type": "button",
+      "x": 1145.999984741211,
+      "y": 401.8509826660156,
+      "w": 28,
+      "h": 55,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-3",
+        "left": "pad-mode",
+        "right": null
+      },
+      "functionalGroup": "pad-controls"
+    },
+    "bank": {
+      "id": "bank",
+      "label": "BANK",
+      "type": "button",
+      "x": 1162.7199847412107,
+      "y": 401.8509826660156,
+      "w": 28,
+      "h": 55,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "hold"
+      },
+      "functionalGroup": "pad-controls"
+    },
+    "hold": {
+      "id": "hold",
+      "label": "HOLD",
+      "type": "button",
+      "x": 1193.999984741211,
+      "y": 401.8509826660156,
+      "w": 28,
+      "h": 55,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "bank",
+        "right": null
+      },
+      "functionalGroup": "pad-controls"
+    },
+    "pad-1": {
+      "id": "pad-1",
+      "label": "1",
+      "type": "pad",
+      "x": 1097.999984741211,
+      "y": 466.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "sampling",
+        "below": "pad-5",
+        "left": null,
+        "right": "pad-2"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-2": {
+      "id": "pad-2",
+      "label": "2",
+      "type": "pad",
+      "x": 1129.999984741211,
+      "y": 466.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-mode",
+        "below": "pad-6",
+        "left": "pad-1",
+        "right": "pad-3"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-3": {
+      "id": "pad-3",
+      "label": "3",
+      "type": "pad",
+      "x": 1161.999984741211,
+      "y": 466.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "clip-board",
+        "below": "pad-7",
+        "left": "pad-2",
+        "right": "pad-4"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-4": {
+      "id": "pad-4",
+      "label": "4",
+      "type": "pad",
+      "x": 1193.999984741211,
+      "y": 466.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-8",
+        "left": "pad-3",
+        "right": null
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-5": {
+      "id": "pad-5",
+      "label": "5",
+      "type": "pad",
+      "x": 1097.999984741211,
+      "y": 501.73098571777336,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-1",
+        "below": "pad-9",
+        "left": null,
+        "right": "pad-6"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-6": {
+      "id": "pad-6",
+      "label": "6",
+      "type": "pad",
+      "x": 1129.999984741211,
+      "y": 501.73098571777336,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-2",
+        "below": "pad-10",
+        "left": "pad-5",
+        "right": "pad-7"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-7": {
+      "id": "pad-7",
+      "label": "7",
+      "type": "pad",
+      "x": 1161.999984741211,
+      "y": 501.73098571777336,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-3",
+        "below": "pad-11",
+        "left": "pad-6",
+        "right": "pad-8"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-8": {
+      "id": "pad-8",
+      "label": "8",
+      "type": "pad",
+      "x": 1193.999984741211,
+      "y": 501.73098571777336,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-4",
+        "below": "pad-12",
+        "left": "pad-7",
+        "right": null
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-9": {
+      "id": "pad-9",
+      "label": "9",
+      "type": "pad",
+      "x": 1097.999984741211,
+      "y": 531.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-5",
+        "below": "pad-13",
+        "left": null,
+        "right": "pad-10"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-10": {
+      "id": "pad-10",
+      "label": "10",
+      "type": "pad",
+      "x": 1129.9999586288359,
+      "y": 531.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-6",
+        "below": "pad-14",
+        "left": "pad-9",
+        "right": "pad-11"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-11": {
+      "id": "pad-11",
+      "label": "11",
+      "type": "pad",
+      "x": 1162.7199847412107,
+      "y": 531.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-7",
+        "below": "pad-15",
+        "left": "pad-10",
+        "right": "pad-12"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-12": {
+      "id": "pad-12",
+      "label": "12",
+      "type": "pad",
+      "x": 1193.999984741211,
+      "y": 531.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-8",
+        "below": "pad-16",
+        "left": "pad-11",
+        "right": null
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-13": {
+      "id": "pad-13",
+      "label": "13",
+      "type": "pad",
+      "x": 1097.999984741211,
+      "y": 531.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-9",
+        "below": null,
+        "left": null,
+        "right": "pad-14"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-14": {
+      "id": "pad-14",
+      "label": "14",
+      "type": "pad",
+      "x": 1129.9999586288359,
+      "y": 531.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-10",
+        "below": null,
+        "left": "pad-13",
+        "right": "pad-15"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-15": {
+      "id": "pad-15",
+      "label": "15",
+      "type": "pad",
+      "x": 1162.7199847412107,
+      "y": 531.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-11",
+        "below": null,
+        "left": "pad-14",
+        "right": "pad-16"
+      },
+      "functionalGroup": "pads"
+    },
+    "pad-16": {
+      "id": "pad-16",
+      "label": "16",
+      "type": "pad",
+      "x": 1193.999984741211,
+      "y": 531.8509826660156,
+      "w": 28,
+      "h": 28,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-12",
+        "below": null,
+        "left": "pad-15",
+        "right": null
+      },
+      "functionalGroup": "pads"
+    }
+  },
+  "canvasWidth": 1200,
+  "canvasHeight": 361,
+  "_manifestVersion": "d076cc56"
+}

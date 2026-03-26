@@ -29,10 +29,10 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '88.20%',
-              top: '9.10%',
+              left: '91.50%',
+              top: '111.30%',
               width: '2.30%',
-              height: '15.00%',
+              height: '15.20%',
             }}
           >
             <div>
@@ -49,10 +49,10 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '90.80%',
-              top: '9.10%',
+              left: '94.20%',
+              top: '111.30%',
               width: '2.30%',
-              height: '15.00%',
+              height: '15.20%',
             }}
           >
             <div>
@@ -69,10 +69,10 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '92.30%',
-              top: '9.10%',
+              left: '95.50%',
+              top: '111.30%',
               width: '2.30%',
-              height: '15.00%',
+              height: '15.20%',
             }}
           >
             <div>
@@ -89,10 +89,10 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '93.70%',
-              top: '9.10%',
+              left: '96.90%',
+              top: '111.30%',
               width: '2.30%',
-              height: '15.00%',
+              height: '15.20%',
             }}
           >
             <div>
@@ -109,10 +109,10 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '96.50%',
-              top: '9.10%',
+              left: '99.50%',
+              top: '111.30%',
               width: '2.30%',
-              height: '15.00%',
+              height: '15.20%',
             }}
           >
             <div>
@@ -129,9 +129,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '88.20%',
-              top: '31.20%',
-              width: '2.40%',
+              left: '91.50%',
+              top: '129.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -148,9 +148,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '90.90%',
-              top: '31.20%',
-              width: '2.40%',
+              left: '94.20%',
+              top: '129.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -167,9 +167,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '93.70%',
-              top: '31.20%',
-              width: '2.40%',
+              left: '96.80%',
+              top: '129.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -186,9 +186,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '96.40%',
-              top: '31.20%',
-              width: '2.40%',
+              left: '99.50%',
+              top: '129.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -205,9 +205,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '88.20%',
-              top: '36.80%',
-              width: '2.40%',
+              left: '91.50%',
+              top: '139.00%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -224,9 +224,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '90.90%',
-              top: '36.80%',
-              width: '2.40%',
+              left: '94.20%',
+              top: '139.00%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -243,9 +243,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '93.70%',
-              top: '36.80%',
-              width: '2.40%',
+              left: '96.80%',
+              top: '139.00%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -262,9 +262,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '96.40%',
-              top: '36.80%',
-              width: '2.40%',
+              left: '99.50%',
+              top: '139.00%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -281,9 +281,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '88.20%',
-              top: '42.30%',
-              width: '2.40%',
+              left: '91.50%',
+              top: '147.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -300,9 +300,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '90.90%',
-              top: '42.30%',
-              width: '2.40%',
+              left: '94.20%',
+              top: '147.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -319,9 +319,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '93.70%',
-              top: '42.30%',
-              width: '2.40%',
+              left: '96.90%',
+              top: '147.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -338,9 +338,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '96.40%',
-              top: '42.30%',
-              width: '2.40%',
+              left: '99.50%',
+              top: '147.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -357,9 +357,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '88.20%',
-              top: '47.90%',
-              width: '2.40%',
+              left: '91.50%',
+              top: '147.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -376,9 +376,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '90.90%',
-              top: '47.90%',
-              width: '2.40%',
+              left: '94.20%',
+              top: '147.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -395,9 +395,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '93.70%',
-              top: '47.90%',
-              width: '2.40%',
+              left: '96.90%',
+              top: '147.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >
@@ -414,9 +414,9 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '96.40%',
-              top: '47.90%',
-              width: '2.40%',
+              left: '99.50%',
+              top: '147.30%',
+              width: '2.30%',
               height: '7.80%',
             }}
           >

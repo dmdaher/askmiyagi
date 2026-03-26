@@ -30,10 +30,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '6.00%',
-              top: '68.90%',
-              width: '29.70%',
-              height: '7.80%',
+              left: '11.70%',
+              top: '19.70%',
+              width: '7.30%',
+              height: '11.10%',
             }}
           >
             <Knob
@@ -46,10 +46,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '5.10%',
-              top: '68.90%',
+              left: '15.00%',
+              top: '14.50%',
               width: '5.70%',
-              height: '7.80%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -66,10 +66,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '13.80%',
-              top: '68.90%',
-              width: '5.70%',
-              height: '7.80%',
+              left: '16.80%',
+              top: '13.90%',
+              width: '6.00%',
+              height: '6.60%',
             }}
           >
             <div>
@@ -86,10 +86,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '21.20%',
-              top: '68.90%',
+              left: '9.00%',
+              top: '147.90%',
               width: '5.70%',
-              height: '7.80%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -106,10 +106,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '28.10%',
-              top: '68.90%',
+              left: '6.70%',
+              top: '147.40%',
               width: '5.70%',
-              height: '7.80%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -126,10 +126,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '36.00%',
-              top: '69.00%',
+              left: '9.00%',
+              top: '147.90%',
               width: '5.70%',
-              height: '7.80%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -146,9 +146,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '5.80%',
-              top: '42.30%',
-              width: '4.40%',
+              left: '20.40%',
+              top: '13.30%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -162,9 +162,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '10.40%',
-              top: '42.30%',
-              width: '4.40%',
+              left: '24.90%',
+              top: '13.30%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -178,9 +178,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '15.00%',
-              top: '42.30%',
-              width: '4.40%',
+              left: '22.20%',
+              top: '13.30%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -194,9 +194,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '19.60%',
-              top: '42.30%',
-              width: '4.40%',
+              left: '27.30%',
+              top: '13.30%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -210,9 +210,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '24.20%',
-              top: '42.30%',
-              width: '4.40%',
+              left: '29.40%',
+              top: '13.30%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -226,9 +226,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '28.80%',
-              top: '42.30%',
-              width: '4.40%',
+              left: '31.60%',
+              top: '13.30%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -242,9 +242,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '33.40%',
-              top: '42.30%',
-              width: '4.40%',
+              left: '33.80%',
+              top: '13.30%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -258,9 +258,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.00%',
-              top: '42.30%',
-              width: '4.40%',
+              left: '36.00%',
+              top: '13.30%',
+              width: '4.30%',
               height: '7.80%',
             }}
           >
@@ -274,10 +274,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '5.80%',
-              top: '77.80%',
-              width: '4.40%',
-              height: '7.80%',
+              left: '13.20%',
+              top: '147.40%',
+              width: '4.30%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -294,10 +294,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '10.40%',
-              top: '77.80%',
-              width: '4.40%',
-              height: '7.80%',
+              left: '13.20%',
+              top: '147.40%',
+              width: '4.30%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -314,10 +314,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '15.00%',
-              top: '77.80%',
-              width: '4.40%',
-              height: '7.80%',
+              left: '15.70%',
+              top: '147.90%',
+              width: '4.30%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -334,10 +334,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '19.60%',
-              top: '77.80%',
-              width: '4.40%',
-              height: '7.80%',
+              left: '20.40%',
+              top: '147.40%',
+              width: '4.30%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -354,10 +354,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '24.20%',
-              top: '77.80%',
-              width: '4.40%',
-              height: '7.80%',
+              left: '22.20%',
+              top: '147.40%',
+              width: '4.30%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -374,10 +374,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '28.80%',
-              top: '77.80%',
-              width: '4.40%',
-              height: '7.80%',
+              left: '22.20%',
+              top: '147.40%',
+              width: '4.30%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -394,10 +394,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '33.40%',
-              top: '77.80%',
-              width: '4.40%',
-              height: '7.80%',
+              left: '24.90%',
+              top: '147.40%',
+              width: '4.30%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -414,10 +414,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.00%',
-              top: '77.80%',
-              width: '4.40%',
-              height: '7.80%',
+              left: '27.30%',
+              top: '147.40%',
+              width: '4.30%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -434,10 +434,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '6.20%',
-              top: '60.00%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '13.70%',
+              top: '145.30%',
+              width: '3.30%',
+              height: '34.30%',
             }}
           >
             <Slider
@@ -450,10 +450,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '10.50%',
-              top: '60.00%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '13.70%',
+              top: '145.30%',
+              width: '3.30%',
+              height: '34.30%',
             }}
           >
             <Slider
@@ -466,10 +466,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '14.90%',
-              top: '60.00%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '16.20%',
+              top: '145.30%',
+              width: '3.30%',
+              height: '34.30%',
             }}
           >
             <Slider
@@ -482,10 +482,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '19.10%',
-              top: '60.00%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '20.90%',
+              top: '145.30%',
+              width: '3.30%',
+              height: '34.30%',
             }}
           >
             <Slider
@@ -498,10 +498,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '24.70%',
-              top: '60.00%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '22.70%',
+              top: '145.30%',
+              width: '3.30%',
+              height: '34.30%',
             }}
           >
             <Slider
@@ -514,10 +514,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '29.20%',
-              top: '60.00%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '22.70%',
+              top: '145.30%',
+              width: '3.30%',
+              height: '34.30%',
             }}
           >
             <Slider
@@ -530,10 +530,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '33.90%',
-              top: '60.00%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '25.40%',
+              top: '145.30%',
+              width: '3.30%',
+              height: '34.30%',
             }}
           >
             <Slider
@@ -546,10 +546,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.60%',
-              top: '60.00%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '27.80%',
+              top: '145.30%',
+              width: '3.30%',
+              height: '34.30%',
             }}
           >
             <Slider
@@ -562,10 +562,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '6.30%',
-              top: '33.80%',
-              width: '3.30%',
-              height: '6.60%',
+              left: '4.90%',
+              top: '156.00%',
+              width: '5.30%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -582,10 +582,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '11.80%',
-              top: '33.20%',
+              left: '6.90%',
+              top: '159.20%',
               width: '5.30%',
-              height: '7.80%',
+              height: '6.60%',
             }}
           >
             <div>
@@ -602,10 +602,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '18.20%',
-              top: '33.20%',
+              left: '9.20%',
+              top: '160.30%',
               width: '5.30%',
-              height: '7.80%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -622,10 +622,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '23.80%',
-              top: '33.20%',
+              left: '4.90%',
+              top: '168.20%',
               width: '5.30%',
-              height: '7.80%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -642,10 +642,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '30.50%',
-              top: '33.20%',
+              left: '6.90%',
+              top: '167.70%',
               width: '5.30%',
-              height: '7.80%',
+              height: '5.50%',
             }}
           >
             <div>
@@ -662,10 +662,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '36.20%',
-              top: '33.20%',
+              left: '9.20%',
+              top: '168.20%',
               width: '5.30%',
-              height: '7.80%',
+              height: '4.40%',
             }}
           >
             <div>
