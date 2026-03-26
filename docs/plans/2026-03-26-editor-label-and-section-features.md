@@ -259,3 +259,32 @@ Store as `controlGroups: ControlGroup[]` in the editor store. Groups are nested 
 **Complexity:** ~400 LOC
 
 **Section creation (full) deferred** — comes after sub-section grouping is working. Would let contractor create entirely new sections from scratch, not just groups within existing sections.
+
+---
+
+## AUDIT FINDINGS: Mandatory Prerequisites for Sub-Section Grouping
+
+**3 critical bugs that MUST be fixed when implementing Feature 5:**
+
+### Critical A: historySlice must capture controlGroups for undo/redo
+- `ManifestSnapshot` only has `{ sections, controls }` — no `controlGroups`
+- Creating a group then undoing leaves ghost group referencing old positions
+- **Fix:** Add `controlGroups: ControlGroup[]` to ManifestSnapshot, cloneSnapshot, ManifestFields, pushSnapshot, undo, redo
+
+### Critical B: useAutoSave must watch controlGroups changes
+- Change guard only checks `state.sections === prevState.sections && state.controls === prevState.controls`
+- Group changes (create/dissolve/rename) don't trigger auto-save → groups lost on reload
+- **Fix:** Add `state.controlGroups !== prevState.controlGroups` to the guard
+
+### Critical C: useAutoSave must include controlGroups in save payload
+- Fetch body sends `{ sections, controls, canvasWidth, canvasHeight, _manifestVersion }`
+- Even if guard fires, controlGroups not in the payload → not persisted
+- **Fix:** Add `controlGroups` to the fetch body
+- **Also:** PanelEditor restore path must include `controlGroups: data.controlGroups ?? []` in setState
+
+### Additional requirements:
+- **Drag priority:** Group move > multi-select move > individual move. If control is in a group AND multi-selected, group wins.
+- **ControlNode subscription:** Use derived selector `(s) => s.controlGroups.find(g => g.controlIds.includes(controlId))?.id ?? null` — returns stable primitive, prevents 60+ re-renders.
+- **Group border:** Render as canvas-level overlay in PanCanvas (Option B), not inside SectionFrame. Simpler, avoids coupling.
+- **Y_TOLERANCE already 8px:** No threshold change needed. The clustering anchor fix (already committed) addresses the drift.
+- **Inference Fix A (sectionId preservation):** The current `handleApproveAndBuild` does NOT reassign sectionIds — `cleanupGeometry` only changes positions. Fix A may be future-proofing, not solving a current bug.
