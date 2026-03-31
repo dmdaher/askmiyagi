@@ -188,19 +188,6 @@ export default function EditorToolbar({
         <span className="text-[10px]">Labels</span>
       </button>
 
-      {/* Divider */}
-      <div className="h-5 w-px bg-gray-800" />
-
-      {/* Clean Up — optional inference (snap rows, equalize spacing) */}
-      <button
-        onClick={onCleanUp}
-        disabled={previewMode || buildStatus === 'building'}
-        className="flex h-6 items-center gap-1 rounded px-2 text-xs text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300 disabled:opacity-30 disabled:hover:bg-transparent"
-        title="Clean Up — snap rows, equalize spacing (Cmd+Z to undo)"
-      >
-        <span className="text-[10px]">Clean Up</span>
-      </button>
-
       {/* Photo Overlay Toggle + Opacity */}
       <div className="flex items-center gap-1.5" data-tutorial="photo">
         <button
@@ -280,7 +267,15 @@ export default function EditorToolbar({
         ?
       </button>
 
-      {/* Approve & Build */}
+      {/* Clean Up + Approve & Build */}
+      <button
+        onClick={onCleanUp}
+        disabled={previewMode || buildStatus === 'building'}
+        className="flex h-7 items-center rounded px-3 text-xs font-medium transition-colors border border-blue-600 bg-blue-700/30 text-blue-300 hover:bg-blue-700/50 disabled:opacity-30 disabled:hover:bg-transparent"
+        title="Clean Up — snap rows, equalize spacing (Cmd+Z to undo)"
+      >
+        Clean Up
+      </button>
       <button
         data-tutorial="approve"
         onClick={onApproveAndBuild}
