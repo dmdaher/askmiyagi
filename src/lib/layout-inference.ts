@@ -457,6 +457,9 @@ const SNAP_TOLERANCE = 15;
 /** Size normalization tolerance: sizes within 10% are normalized to average */
 const SIZE_NORM_TOLERANCE = 0.10;
 
+/** Minimum gap between controls when redistributing overlaps */
+const MIN_GAP = 4;
+
 /** Gap normalization tolerance: gaps within this many pixels are normalized.
  *  Also used as a proportional fallback — if all gaps are within
  *  GAP_PROPORTIONAL_TOLERANCE of average, they're equalized. */
@@ -790,6 +793,30 @@ function equalizeSpacing(controls: CleanedControl[], axis: 'x' | 'y'): void {
       for (let i = 1; i < group.length; i++) {
         currentPos = group[i - 1][centerKey] + group[i - 1][sizeKey] + roundedGap;
         group[i][centerKey] = currentPos;
+      }
+    } else if (avgGap < 0) {
+      // Overlapping controls — redistribute with equal positive gaps.
+      // Calculate the total span and content to find room for even spacing.
+      const totalContent = group.reduce((sum, c) => sum + c[sizeKey], 0);
+      const spanStart = group[0][centerKey];
+      const spanEnd = group[group.length - 1][centerKey] + group[group.length - 1][sizeKey];
+      const availableSpace = spanEnd - spanStart;
+
+      if (availableSpace >= totalContent + (group.length - 1) * MIN_GAP) {
+        // Enough room in current span — distribute evenly within it
+        const gap = Math.round((availableSpace - totalContent) / (group.length - 1));
+        let pos = spanStart;
+        for (const ctrl of group) {
+          ctrl[centerKey] = pos;
+          pos += ctrl[sizeKey] + gap;
+        }
+      } else {
+        // Not enough room — expand rightward from first control with MIN_GAP
+        let pos = group[0][centerKey];
+        for (const ctrl of group) {
+          ctrl[centerKey] = pos;
+          pos += ctrl[sizeKey] + MIN_GAP;
+        }
       }
     }
   }

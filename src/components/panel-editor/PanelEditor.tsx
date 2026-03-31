@@ -8,18 +8,12 @@ import EditorWorkspace from './EditorWorkspace';
 import PropertiesPanel from './PropertiesPanel';
 import LayersPanel from './LayersPanel';
 import ContextMenu from './ContextMenu';
-import InferenceReview from './InferenceReview';
 import IssueReportModal from './IssueReportModal';
 import EditorTutorial from './EditorTutorial';
 import { useEditorKeyboard } from './hooks/useEditorKeyboard';
 import { useAutoSave } from './hooks/useAutoSave';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
-import {
-  cleanupGeometry,
-  type GeometryCleanupResult,
-  inferLayout,
-  type InferredSection,
-} from '@/lib/layout-inference';
+import { cleanupGeometry } from '@/lib/layout-inference';
 
 interface PanelEditorProps {
   deviceId: string;
@@ -34,114 +28,61 @@ function EditorShell({ deviceId }: { deviceId: string }) {
   const [buildStatus, setBuildStatus] = useState<
     'idle' | 'building' | 'approved'
   >('idle');
-  const [showInferenceReview, setShowInferenceReview] = useState(false);
-  const [inferenceResults, setInferenceResults] = useState<InferredSection[]>([]);
-  const [cleanupResult, setCleanupResult] = useState<GeometryCleanupResult | null>(null);
   const [codegenError, setCodegenError] = useState<string | null>(null);
   const [showIssueModal, setShowIssueModal] = useState(false);
-  const [preCleanupSnapshot, setPreCleanupSnapshot] = useState<{
-    sections: Record<string, any>;
-    controls: Record<string, any>;
-  } | null>(null);
 
-  const handleApproveAndBuild = useCallback(async () => {
-    // Force-save current manifest (bypass debounce)
+  // ── Clean Up: optional inference pass (snap rows, equalize spacing) ──────
+  const handleCleanUp = useCallback(() => {
     const state = useEditorStore.getState();
-    const { sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom } = state;
-    setBuildStatus('building');
-    setCodegenError(null);
-    try {
-      await fetch(`/api/pipeline/${deviceId}/manifest`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom }),
-      });
-    } catch {
-      // Best-effort save
-    }
+    const { sections, controls, canvasWidth, canvasHeight } = state;
 
-    // Save snapshot of current positions (so "Back" can restore them)
-    const snapshot = {
-      sections: JSON.parse(JSON.stringify(sections)),
-      controls: JSON.parse(JSON.stringify(controls)),
-    };
-    setPreCleanupSnapshot(snapshot);
+    // Push snapshot so Cmd+Z reverts the cleanup
+    state.pushSnapshot();
 
-    // Run geometry cleanup (snap alignment, normalize sizes)
+    // Run geometry cleanup (snap alignment, equalize spacing)
     const cleaned = cleanupGeometry(sections, controls, canvasWidth, canvasHeight);
-    setCleanupResult(cleaned);
 
-    // Apply cleaned positions to the editor canvas so the contractor sees the cleanup
+    // Apply cleaned positions — sizes are NOT modified (sacred)
     const updatedControls = { ...controls };
     const updatedSections = { ...sections };
     for (const cs of cleaned.sections) {
       if (updatedSections[cs.id]) {
         updatedSections[cs.id] = {
           ...updatedSections[cs.id],
-          x: cs.x,
-          y: cs.y,
-          w: cs.w,
-          h: cs.h,
+          x: cs.x, y: cs.y, w: cs.w, h: cs.h,
         };
       }
       for (const cc of cs.controls) {
         if (updatedControls[cc.id]) {
           updatedControls[cc.id] = {
             ...updatedControls[cc.id],
-            x: cc.x,
-            y: cc.y,
-            w: cc.w,
-            h: cc.h,
+            x: cc.x, y: cc.y,
+            // w/h intentionally NOT overwritten — contractor sizes are sacred
           };
         }
       }
     }
     useEditorStore.setState({ sections: updatedSections, controls: updatedControls });
+  }, []);
 
-    // Also run layout inference for the review modal (archetype overrides)
-    const result = inferLayout(updatedSections, updatedControls);
-    setInferenceResults(result.sections);
-    setShowInferenceReview(true);
-    setBuildStatus('idle');
-  }, [deviceId]);
-
-  const handleInferenceBack = useCallback(() => {
-    // Restore original positions if snapshot exists
-    if (preCleanupSnapshot) {
-      useEditorStore.setState({
-        sections: preCleanupSnapshot.sections,
-        controls: preCleanupSnapshot.controls,
-      });
-      setPreCleanupSnapshot(null);
-    }
-    setShowInferenceReview(false);
-    setInferenceResults([]);
-    setCleanupResult(null);
-  }, [preCleanupSnapshot]);
-
-  const handleInferenceGenerate = useCallback(async (sections: InferredSection[]) => {
-    setShowInferenceReview(false);
+  // ── Approve & Build: take positions as-is, run codegen for polish ──────
+  const handleApproveAndBuild = useCallback(async () => {
+    const state = useEditorStore.getState();
+    const { sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom } = state;
     setBuildStatus('building');
     setCodegenError(null);
 
     try {
-      // Save inferred layout
-      const saveRes = await fetch(`/api/pipeline/${deviceId}/inferred-layout`, {
-        method: 'POST',
+      // Force-save current manifest (bypass debounce)
+      await fetch(`/api/pipeline/${deviceId}/manifest`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections }),
+        body: JSON.stringify({ sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom }),
       });
 
-      if (!saveRes.ok) {
-        const body = await saveRes.json().catch(() => ({}));
-        throw new Error(body.error ?? 'Failed to save inferred layout');
-      }
-
-      // Trigger codegen
-      const codegenRes = await fetch(`/api/pipeline/${deviceId}/codegen`, {
-        method: 'POST',
-      });
-
+      // Trigger codegen directly — no cleanup, no inference.
+      // Contractor's positions and sizes are used as-is.
+      const codegenRes = await fetch(`/api/pipeline/${deviceId}/codegen`, { method: 'POST' });
       if (!codegenRes.ok) {
         const body = await codegenRes.json().catch(() => ({}));
         throw new Error(
@@ -177,6 +118,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
         previewMode={previewMode}
         buildStatus={buildStatus}
         onApproveAndBuild={handleApproveAndBuild}
+        onCleanUp={handleCleanUp}
         onReportIssue={() => setShowIssueModal(true)}
       />
 
@@ -245,16 +187,6 @@ function EditorShell({ deviceId }: { deviceId: string }) {
         <PropertiesPanel />
       </div>
       {!previewMode && <ContextMenu />}
-
-      {/* Inference Review Modal */}
-      {showInferenceReview && (
-        <InferenceReview
-          sections={inferenceResults}
-          cleanupResult={cleanupResult}
-          onBack={handleInferenceBack}
-          onGenerate={handleInferenceGenerate}
-        />
-      )}
 
       {showIssueModal && (
         <IssueReportModal

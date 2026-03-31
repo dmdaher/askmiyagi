@@ -920,6 +920,8 @@ function renderTransportPair(
 function renderAbsolutePositioned(
   section: ManifestSection,
   controlMap: Map<string, ManifestControl>,
+  panelWidth?: number,
+  panelHeight?: number,
 ): string | null {
   const sectionControls = section.controls
     .map(id => ({ id, ctrl: controlMap.get(id) }))
@@ -937,23 +939,48 @@ function renderAbsolutePositioned(
 
   // Use PANEL-LEVEL percentages directly — no section-relative conversion.
   // This eliminates coordinate drift from section bounding box recomputation.
+  const pw = panelWidth ?? 1200;
+  const ph = panelHeight ?? 1650;
+
   const controlJsx = sectionControls.map(({ id, ctrl }) => {
     const ep = (ctrl as any).editorPosition as { x: number; y: number; w: number; h: number };
 
-    const controlJsxStr = renderControl(id, ctrl!, '            ', controlMap);
-    return [
-      `          <div`,
-      `            className="absolute flex items-center justify-center"`,
-      `            style={{`,
+    // Compute pixel dimensions from editor percentages — same as generateFlatPanel.
+    // Without this, renderControl falls back to hardcoded sizes (size="lg" etc.).
+    const pxW = Math.round((ep.w / 100) * pw);
+    const pxH = Math.round((ep.h / 100) * ph);
+    const controlJsxStr = renderControl(id, ctrl!, '            ', controlMap, pxW, pxH);
+
+    const rotation = (ctrl as any).rotation as number | undefined;
+    const styleLines = [
       `              left: '${ep.x.toFixed(2)}%',`,
       `              top: '${ep.y.toFixed(2)}%',`,
       `              width: '${ep.w.toFixed(2)}%',`,
       `              height: '${ep.h.toFixed(2)}%',`,
+    ];
+    if (rotation) {
+      styleLines.push(`              transform: 'rotate(${rotation}deg)',`);
+      styleLines.push(`              transformOrigin: 'center',`);
+    }
+
+    const parts = [
+      `          <div`,
+      `            className="absolute flex items-center justify-center"`,
+      `            style={{`,
+      ...styleLines,
       `            }}`,
       `          >`,
       controlJsxStr,
       `          </div>`,
-    ].join('\n');
+    ];
+
+    // Add floating label if applicable
+    const labelJsx = renderFloatingLabel(ctrl!, ep, pw, ph);
+    if (labelJsx) {
+      parts.push(labelJsx);
+    }
+
+    return parts.join('\n');
   }).join('\n');
 
   // Controls use panel-level positioning — section has NO position:relative
@@ -969,10 +996,12 @@ function renderSectionBody(
   template: TemplateSpec,
   section: ManifestSection,
   controlMap: Map<string, ManifestControl>,
+  panelWidth?: number,
+  panelHeight?: number,
 ): string {
   // First: check if controls have editorPosition data (from geometry cleanup).
   // If they do, use percentage-based absolute positioning — bypasses archetypes.
-  const absoluteResult = renderAbsolutePositioned(section, controlMap);
+  const absoluteResult = renderAbsolutePositioned(section, controlMap, panelWidth, panelHeight);
   if (absoluteResult) {
     return absoluteResult;
   }
@@ -1048,6 +1077,8 @@ function generateSectionFile(
   allControlMap: Map<string, ManifestControl>,
   groupLabels?: Array<{ id: string; text: string; controlIds: string[]; position: string }>,
   sectionIndex?: number,
+  panelWidth?: number,
+  panelHeight?: number,
 ): string {
   const sectionPascal = sectionIdToPascal(section.id);
   const imports = collectImports(sectionControls, allControlMap);
@@ -1057,7 +1088,7 @@ function generateSectionFile(
     .map(([component, importPath]) => `import ${component} from '${importPath}';`)
     .join('\n');
 
-  const body = renderSectionBody(template, section, allControlMap);
+  const body = renderSectionBody(template, section, allControlMap, panelWidth, panelHeight);
 
   const importBlock = importLines ? `${importLines}\n` : '';
 
@@ -1642,7 +1673,7 @@ function main() {
 
     const sectionControls = manifest.controls.filter(c => c.section === section.id);
     const sectionPascal = sectionIdToPascal(section.id);
-    const content = generateSectionFile(template, section, sectionControls, controlMap, manifest.groupLabels, si);
+    const content = generateSectionFile(template, section, sectionControls, controlMap, manifest.groupLabels, si, panelWidth, panelHeight);
     const filePath = path.join(sectionsDir, `${sectionPascal}Section.tsx`);
 
     sectionFiles.push({ path: filePath, content });

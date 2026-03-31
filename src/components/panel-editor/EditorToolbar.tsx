@@ -10,6 +10,7 @@ interface EditorToolbarProps {
   previewMode: boolean;
   buildStatus: 'idle' | 'building' | 'approved';
   onApproveAndBuild: () => void;
+  onCleanUp: () => void;
   onReportIssue?: () => void;
 }
 
@@ -17,6 +18,7 @@ export default function EditorToolbar({
   previewMode,
   buildStatus,
   onApproveAndBuild,
+  onCleanUp,
   onReportIssue,
 }: EditorToolbarProps) {
   const manufacturer = useEditorStore((s) => s.manufacturer);
@@ -184,6 +186,19 @@ export default function EditorToolbar({
         title="Toggle Labels (T)"
       >
         <span className="text-[10px]">Labels</span>
+      </button>
+
+      {/* Divider */}
+      <div className="h-5 w-px bg-gray-800" />
+
+      {/* Clean Up — optional inference (snap rows, equalize spacing) */}
+      <button
+        onClick={onCleanUp}
+        disabled={previewMode || buildStatus === 'building'}
+        className="flex h-6 items-center gap-1 rounded px-2 text-xs text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300 disabled:opacity-30 disabled:hover:bg-transparent"
+        title="Clean Up — snap rows, equalize spacing (Cmd+Z to undo)"
+      >
+        <span className="text-[10px]">Clean Up</span>
       </button>
 
       {/* Photo Overlay Toggle + Opacity */}
