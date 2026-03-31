@@ -6,6 +6,9 @@ import type { ControlDef, SectionDef } from './manifestSlice';
 export interface ManifestSnapshot {
   sections: Record<string, SectionDef>;
   controls: Record<string, ControlDef>;
+  canvasWidth?: number;
+  canvasHeight?: number;
+  keyboard?: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
 }
 
 const MAX_HISTORY = 100;
@@ -35,7 +38,13 @@ function cloneSnapshot(snapshot: ManifestSnapshot): ManifestSnapshot {
     controls[k] = { ...v };
   }
 
-  return { sections, controls };
+  return {
+    sections,
+    controls,
+    canvasWidth: snapshot.canvasWidth,
+    canvasHeight: snapshot.canvasHeight,
+    keyboard: snapshot.keyboard ? { ...snapshot.keyboard } : snapshot.keyboard,
+  };
 }
 
 // ─── Combined state shape for get() access ──────────────────────────────────
@@ -47,6 +56,9 @@ interface ManifestFields {
   sections: Record<string, SectionDef>;
   controls: Record<string, ControlDef>;
   hasUserEdited: boolean;
+  canvasWidth: number;
+  canvasHeight: number;
+  keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────
@@ -66,8 +78,8 @@ export const createHistorySlice: StateCreator<
     if (!get().hasUserEdited) {
       set({ hasUserEdited: true });
     }
-    const { sections, controls, past } = get();
-    const snapshot = cloneSnapshot({ sections, controls });
+    const { sections, controls, past, canvasWidth, canvasHeight, keyboard } = get();
+    const snapshot = cloneSnapshot({ sections, controls, canvasWidth, canvasHeight, keyboard });
     const newPast = [...past, snapshot];
     // Cap at MAX_HISTORY entries
     if (newPast.length > MAX_HISTORY) {
@@ -77,34 +89,42 @@ export const createHistorySlice: StateCreator<
   },
 
   undo: () => {
-    const { past, future, sections, controls } = get();
+    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard } = get();
     if (past.length === 0) return;
 
-    const currentSnapshot = cloneSnapshot({ sections, controls });
+    const currentSnapshot = cloneSnapshot({ sections, controls, canvasWidth, canvasHeight, keyboard });
     const previous = past[past.length - 1];
     const restored = cloneSnapshot(previous);
 
-    set({
+    const update: Record<string, unknown> = {
       past: past.slice(0, -1),
       future: [...future, currentSnapshot],
       sections: restored.sections,
       controls: restored.controls,
-    });
+    };
+    if (restored.canvasWidth != null) update.canvasWidth = restored.canvasWidth;
+    if (restored.canvasHeight != null) update.canvasHeight = restored.canvasHeight;
+    if (restored.keyboard !== undefined) update.keyboard = restored.keyboard;
+    set(update as any);
   },
 
   redo: () => {
-    const { past, future, sections, controls } = get();
+    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard } = get();
     if (future.length === 0) return;
 
-    const currentSnapshot = cloneSnapshot({ sections, controls });
+    const currentSnapshot = cloneSnapshot({ sections, controls, canvasWidth, canvasHeight, keyboard });
     const next = future[future.length - 1];
     const restored = cloneSnapshot(next);
 
-    set({
+    const update: Record<string, unknown> = {
       past: [...past, currentSnapshot],
       future: future.slice(0, -1),
       sections: restored.sections,
       controls: restored.controls,
-    });
+    };
+    if (restored.canvasWidth != null) update.canvasWidth = restored.canvasWidth;
+    if (restored.canvasHeight != null) update.canvasHeight = restored.canvasHeight;
+    if (restored.keyboard !== undefined) update.keyboard = restored.keyboard;
+    set(update as any);
   },
 });

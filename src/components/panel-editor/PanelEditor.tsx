@@ -203,6 +203,15 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // If the Zustand store already has data for this device (e.g., we switched
+    // tabs and came back), skip the disk reload to preserve in-memory state
+    // and undo history. Only fetch from disk on first load or device change.
+    const currentStore = useEditorStore.getState();
+    if (currentStore.deviceId === deviceId && Object.keys(currentStore.controls).length > 0) {
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
 
     async function fetchManifest() {
