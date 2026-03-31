@@ -18,19 +18,23 @@ export function useAutoSave(deviceId: string) {
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // Restore undo history from localStorage on mount
-    try {
-      const stored = localStorage.getItem(`editor-undo-${deviceId}`);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          // We can't directly set the past array through public API,
-          // but we can use the store's setState escape hatch.
-          useEditorStore.setState({ past: parsed, future: [] });
+    // Restore undo history from localStorage on mount — but ONLY if the
+    // in-memory store has an empty undo stack. The Zustand store survives
+    // client-side route changes (tab switches), so the in-memory stack is
+    // more recent than localStorage (which has a 2s persistence debounce).
+    const currentPast = useEditorStore.getState().past;
+    if (currentPast.length === 0) {
+      try {
+        const stored = localStorage.getItem(`editor-undo-${deviceId}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            useEditorStore.setState({ past: parsed, future: [] });
+          }
         }
+      } catch {
+        // Ignore parse errors from corrupted localStorage
       }
-    } catch {
-      // Ignore parse errors from corrupted localStorage
     }
 
     // Subscribe to store changes for auto-save (sections + controls)
@@ -103,8 +107,18 @@ export function useAutoSave(deviceId: string) {
     return () => {
       unsubSave();
       unsubUndo();
+      // Cancel pending debounces
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+      // Flush undo stack to localStorage immediately on unmount so it
+      // survives route changes even if the 2s debounce hadn't fired yet.
+      try {
+        const { past } = useEditorStore.getState();
+        const toStore = past.slice(-MAX_PERSISTED_UNDO);
+        localStorage.setItem(`editor-undo-${deviceId}`, JSON.stringify(toStore));
+      } catch {
+        // Best-effort
+      }
     };
   }, [deviceId]);
 }
