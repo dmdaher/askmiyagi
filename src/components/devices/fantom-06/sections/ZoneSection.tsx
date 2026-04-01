@@ -41,8 +41,8 @@ export default function ZoneSection({
               label=""
               value={getState('master-volume').value ?? 64}
               highlighted={isHighlighted('master-volume')}
-              outerSize={43}
-              innerSize={30}
+              outerSize={48}
+              innerSize={34}
             />
           </div>
         <div
@@ -61,7 +61,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '15.60%',
+              left: '15.50%',
               top: '12.90%',
               width: '4.70%',
               height: '8.90%',
@@ -81,7 +81,7 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '15.6%',
+            left: '15.5%',
             top: '11.7%',
             width: '4.7%',
             textAlign: 'center',
@@ -94,7 +94,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '20.40%',
+              left: '18.50%',
               top: '13.20%',
               width: '2.00%',
               height: '7.80%',
@@ -114,7 +114,7 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '20.4%',
+            left: '18.5%',
             top: '12.0%',
             width: '2.0%',
             textAlign: 'center',
@@ -127,7 +127,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '21.80%',
+              left: '16.90%',
               top: '24.10%',
               width: '5.30%',
               height: '3.30%',
@@ -147,7 +147,7 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '21.8%',
+            left: '16.9%',
             top: '22.9%',
             width: '5.3%',
             textAlign: 'center',
@@ -160,7 +160,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '18.70%',
+              left: '16.10%',
               top: '29.40%',
               width: '3.00%',
               height: '3.30%',
@@ -180,7 +180,7 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '18.7%',
+            left: '16.1%',
             top: '28.2%',
             width: '3.0%',
             textAlign: 'center',
@@ -226,7 +226,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '22.60%',
+              left: '20.50%',
               top: '13.40%',
               width: '3.30%',
               height: '8.90%',
@@ -237,14 +237,14 @@ export default function ZoneSection({
               label=""
               value={getState('knob-1').value ?? 64}
               highlighted={isHighlighted('knob-1')}
-              outerSize={29}
-              innerSize={20}
+              outerSize={32}
+              innerSize={22}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '22.6%',
+            left: '20.5%',
             top: '22.5%',
             width: '3.3%',
             textAlign: 'center',
@@ -257,7 +257,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '26.10%',
+              left: '22.80%',
               top: '13.20%',
               width: '3.50%',
               height: '7.80%',
@@ -268,14 +268,14 @@ export default function ZoneSection({
               label=""
               value={getState('knob-2').value ?? 64}
               highlighted={isHighlighted('knob-2')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '26.1%',
+            left: '22.8%',
             top: '21.2%',
             width: '3.5%',
             textAlign: 'center',
@@ -288,7 +288,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '29.70%',
+              left: '24.80%',
               top: '13.40%',
               width: '3.70%',
               height: '7.80%',
@@ -299,14 +299,14 @@ export default function ZoneSection({
               label=""
               value={getState('knob-3').value ?? 64}
               highlighted={isHighlighted('knob-3')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '29.7%',
+            left: '24.8%',
             top: '21.4%',
             width: '3.7%',
             textAlign: 'center',
@@ -319,7 +319,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '33.60%',
+              left: '26.90%',
               top: '13.20%',
               width: '3.50%',
               height: '7.80%',
@@ -330,14 +330,14 @@ export default function ZoneSection({
               label=""
               value={getState('knob-4').value ?? 64}
               highlighted={isHighlighted('knob-4')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '33.6%',
+            left: '26.9%',
             top: '21.2%',
             width: '3.5%',
             textAlign: 'center',
@@ -350,7 +350,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '37.30%',
+              left: '29.20%',
               top: '13.20%',
               width: '3.50%',
               height: '7.80%',
@@ -361,14 +361,14 @@ export default function ZoneSection({
               label=""
               value={getState('knob-5').value ?? 64}
               highlighted={isHighlighted('knob-5')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '37.3%',
+            left: '29.2%',
             top: '21.2%',
             width: '3.5%',
             textAlign: 'center',
@@ -381,7 +381,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '40.90%',
+              left: '31.70%',
               top: '12.60%',
               width: '3.30%',
               height: '8.90%',
@@ -392,14 +392,14 @@ export default function ZoneSection({
               label=""
               value={getState('knob-6').value ?? 64}
               highlighted={isHighlighted('knob-6')}
-              outerSize={29}
-              innerSize={20}
+              outerSize={32}
+              innerSize={22}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '40.9%',
+            left: '31.7%',
             top: '21.7%',
             width: '3.3%',
             textAlign: 'center',
@@ -412,7 +412,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '44.40%',
+              left: '33.90%',
               top: '12.60%',
               width: '3.30%',
               height: '8.90%',
@@ -423,14 +423,14 @@ export default function ZoneSection({
               label=""
               value={getState('knob-7').value ?? 64}
               highlighted={isHighlighted('knob-7')}
-              outerSize={29}
-              innerSize={20}
+              outerSize={32}
+              innerSize={22}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '44.4%',
+            left: '33.9%',
             top: '21.7%',
             width: '3.3%',
             textAlign: 'center',
@@ -443,7 +443,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '47.90%',
+              left: '35.80%',
               top: '13.20%',
               width: '3.50%',
               height: '7.80%',
@@ -454,14 +454,14 @@ export default function ZoneSection({
               label=""
               value={getState('knob-8').value ?? 64}
               highlighted={isHighlighted('knob-8')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '47.9%',
+            left: '35.8%',
             top: '21.2%',
             width: '3.5%',
             textAlign: 'center',
@@ -474,8 +474,8 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '27.30%',
-              top: '23.50%',
+              left: '20.20%',
+              top: '25.20%',
               width: '3.70%',
               height: '4.40%',
             }}
@@ -494,8 +494,8 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '27.3%',
-            top: '22.3%',
+            left: '20.2%',
+            top: '24.0%',
             width: '3.7%',
             textAlign: 'center',
           }}
@@ -507,7 +507,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '31.20%',
+              left: '22.40%',
               top: '24.90%',
               width: '3.30%',
               height: '4.40%',
@@ -527,7 +527,7 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '31.2%',
+            left: '22.4%',
             top: '23.7%',
             width: '3.3%',
             textAlign: 'center',
@@ -540,7 +540,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '34.60%',
+              left: '24.60%',
               top: '24.90%',
               width: '3.30%',
               height: '4.40%',
@@ -560,7 +560,7 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '34.6%',
+            left: '24.6%',
             top: '23.7%',
             width: '3.3%',
             textAlign: 'center',
@@ -573,7 +573,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '38.10%',
+              left: '27.10%',
               top: '24.60%',
               width: '3.30%',
               height: '4.40%',
@@ -593,7 +593,7 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '38.1%',
+            left: '27.1%',
             top: '23.4%',
             width: '3.3%',
             textAlign: 'center',
@@ -606,10 +606,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '24.80%',
-              top: '48.70%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '29.10%',
+              top: '25.40%',
+              width: '3.70%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -626,9 +626,9 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '24.8%',
-            top: '47.5%',
-            width: '3.5%',
+            left: '29.1%',
+            top: '24.2%',
+            width: '3.7%',
             textAlign: 'center',
           }}
         >
@@ -639,10 +639,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '29.20%',
-              top: '48.70%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '31.50%',
+              top: '25.40%',
+              width: '3.30%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -659,9 +659,9 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '29.2%',
-            top: '47.5%',
-            width: '3.5%',
+            left: '31.5%',
+            top: '24.2%',
+            width: '3.3%',
             textAlign: 'center',
           }}
         >
@@ -672,10 +672,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '32.90%',
-              top: '48.80%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '33.70%',
+              top: '25.80%',
+              width: '3.30%',
+              height: '3.30%',
             }}
           >
             <div>
@@ -692,9 +692,9 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '32.9%',
-            top: '47.6%',
-            width: '3.5%',
+            left: '33.7%',
+            top: '24.6%',
+            width: '3.3%',
             textAlign: 'center',
           }}
         >
@@ -705,10 +705,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '36.50%',
-              top: '48.70%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '35.80%',
+              top: '25.40%',
+              width: '3.70%',
+              height: '3.30%',
             }}
           >
             <div>
@@ -725,9 +725,9 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '36.5%',
-            top: '47.5%',
-            width: '3.5%',
+            left: '35.8%',
+            top: '24.2%',
+            width: '3.7%',
             textAlign: 'center',
           }}
         >
@@ -738,8 +738,8 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '21.10%',
-              top: '23.50%',
+              left: '21.40%',
+              top: '24.70%',
               width: '2.00%',
               height: '35.50%',
             }}
@@ -749,15 +749,15 @@ export default function ZoneSection({
               label=""
               value={getState('slider-1').value ?? 64}
               highlighted={isHighlighted('slider-1')}
-              trackHeight={95}
-              trackWidth={12}
+              trackHeight={108}
+              trackWidth={14}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '21.1%',
-            top: '59.2%',
+            left: '21.4%',
+            top: '60.4%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -769,8 +769,8 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '23.60%',
-              top: '22.70%',
+              left: '23.80%',
+              top: '23.30%',
               width: '2.00%',
               height: '35.50%',
             }}
@@ -780,15 +780,15 @@ export default function ZoneSection({
               label=""
               value={getState('slider-2').value ?? 64}
               highlighted={isHighlighted('slider-2')}
-              trackHeight={95}
-              trackWidth={12}
+              trackHeight={108}
+              trackWidth={14}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '23.6%',
-            top: '58.4%',
+            left: '23.8%',
+            top: '59.0%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -801,7 +801,7 @@ export default function ZoneSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '25.80%',
-              top: '22.70%',
+              top: '23.30%',
               width: '2.00%',
               height: '35.50%',
             }}
@@ -811,15 +811,15 @@ export default function ZoneSection({
               label=""
               value={getState('slider-3').value ?? 64}
               highlighted={isHighlighted('slider-3')}
-              trackHeight={95}
-              trackWidth={12}
+              trackHeight={108}
+              trackWidth={14}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '25.8%',
-            top: '58.4%',
+            top: '59.0%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -831,7 +831,7 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '27.90%',
+              left: '27.80%',
               top: '22.40%',
               width: '2.00%',
               height: '35.50%',
@@ -842,14 +842,14 @@ export default function ZoneSection({
               label=""
               value={getState('slider-4').value ?? 64}
               highlighted={isHighlighted('slider-4')}
-              trackHeight={95}
-              trackWidth={12}
+              trackHeight={108}
+              trackWidth={14}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '27.9%',
+            left: '27.8%',
             top: '58.1%',
             width: '2.0%',
             textAlign: 'center',
@@ -862,8 +862,8 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '30.10%',
-              top: '21.90%',
+              left: '30.30%',
+              top: '22.40%',
               width: '2.00%',
               height: '35.50%',
             }}
@@ -873,15 +873,15 @@ export default function ZoneSection({
               label=""
               value={getState('slider-5').value ?? 64}
               highlighted={isHighlighted('slider-5')}
-              trackHeight={95}
-              trackWidth={12}
+              trackHeight={108}
+              trackWidth={14}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '30.1%',
-            top: '57.6%',
+            left: '30.3%',
+            top: '58.1%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -893,8 +893,8 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '32.30%',
-              top: '21.90%',
+              left: '32.40%',
+              top: '22.20%',
               width: '2.00%',
               height: '35.50%',
             }}
@@ -904,15 +904,15 @@ export default function ZoneSection({
               label=""
               value={getState('slider-6').value ?? 64}
               highlighted={isHighlighted('slider-6')}
-              trackHeight={95}
-              trackWidth={12}
+              trackHeight={108}
+              trackWidth={14}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '32.3%',
-            top: '57.6%',
+            left: '32.4%',
+            top: '57.9%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -924,8 +924,8 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '34.70%',
-              top: '22.70%',
+              left: '34.80%',
+              top: '23.00%',
               width: '2.00%',
               height: '35.50%',
             }}
@@ -935,15 +935,15 @@ export default function ZoneSection({
               label=""
               value={getState('slider-7').value ?? 64}
               highlighted={isHighlighted('slider-7')}
-              trackHeight={95}
-              trackWidth={12}
+              trackHeight={108}
+              trackWidth={14}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '34.7%',
-            top: '58.4%',
+            left: '34.8%',
+            top: '58.7%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -956,7 +956,7 @@ export default function ZoneSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '36.90%',
-              top: '22.40%',
+              top: '22.70%',
               width: '2.00%',
               height: '35.50%',
             }}
@@ -966,15 +966,15 @@ export default function ZoneSection({
               label=""
               value={getState('slider-8').value ?? 64}
               highlighted={isHighlighted('slider-8')}
-              trackHeight={95}
-              trackWidth={12}
+              trackHeight={108}
+              trackWidth={14}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '36.9%',
-            top: '58.1%',
+            top: '58.4%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -986,10 +986,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '10.70%',
-              top: '12.60%',
+              left: '13.30%',
+              top: '35.60%',
               width: '4.70%',
-              height: '8.90%',
+              height: '4.40%',
             }}
           >
             <div>
@@ -1006,8 +1006,8 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '10.7%',
-            top: '11.4%',
+            left: '13.3%',
+            top: '34.4%',
             width: '4.7%',
             textAlign: 'center',
           }}
@@ -1019,9 +1019,9 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '13.20%',
-              top: '4.40%',
-              width: '4.80%',
+              left: '15.20%',
+              top: '35.20%',
+              width: '4.70%',
               height: '7.80%',
             }}
           >
@@ -1039,9 +1039,9 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '13.2%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '15.2%',
+            top: '34.0%',
+            width: '4.7%',
             textAlign: 'center',
           }}
         >
@@ -1052,10 +1052,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '19.70%',
-              top: '4.40%',
-              width: '4.80%',
-              height: '7.80%',
+              left: '18.00%',
+              top: '36.30%',
+              width: '3.70%',
+              height: '3.30%',
             }}
           >
             <div>
@@ -1072,9 +1072,9 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '19.7%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '18.0%',
+            top: '35.1%',
+            width: '3.7%',
             textAlign: 'center',
           }}
         >
@@ -1085,10 +1085,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '24.70%',
-              top: '4.40%',
-              width: '4.80%',
-              height: '7.80%',
+              left: '12.60%',
+              top: '42.70%',
+              width: '5.00%',
+              height: '3.30%',
             }}
           >
             <div>
@@ -1105,9 +1105,9 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '24.7%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '12.6%',
+            top: '41.5%',
+            width: '5.0%',
             textAlign: 'center',
           }}
         >
@@ -1118,10 +1118,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '29.60%',
-              top: '4.40%',
-              width: '4.80%',
-              height: '7.80%',
+              left: '15.20%',
+              top: '42.90%',
+              width: '4.70%',
+              height: '3.30%',
             }}
           >
             <div>
@@ -1138,23 +1138,23 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '29.6%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '15.2%',
+            top: '41.7%',
+            width: '4.7%',
             textAlign: 'center',
           }}
         >
           <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
-            OCTAVE DOWN
+            DOWN
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '35.20%',
-              top: '4.40%',
-              width: '4.80%',
-              height: '7.80%',
+              left: '17.00%',
+              top: '42.70%',
+              width: '5.00%',
+              height: '3.30%',
             }}
           >
             <div>
@@ -1171,14 +1171,14 @@ export default function ZoneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '35.2%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '17.0%',
+            top: '41.5%',
+            width: '5.0%',
             textAlign: 'center',
           }}
         >
           <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
-            OCTAVE UP
+            UP
           </span>
         </div>
       </div>

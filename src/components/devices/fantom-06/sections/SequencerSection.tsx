@@ -61,7 +61,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '77.50%',
+              left: '75.00%',
               top: '6.70%',
               width: '2.30%',
               height: '15.10%',
@@ -81,7 +81,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '77.5%',
+            left: '75.0%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -94,7 +94,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '79.90%',
+              left: '77.90%',
               top: '6.70%',
               width: '2.30%',
               height: '15.10%',
@@ -114,7 +114,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '79.9%',
+            left: '77.9%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -127,7 +127,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '82.40%',
+              left: '77.90%',
               top: '6.70%',
               width: '2.30%',
               height: '15.10%',
@@ -147,7 +147,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '82.4%',
+            left: '77.9%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -160,7 +160,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '84.90%',
+              left: '79.80%',
               top: '6.70%',
               width: '2.30%',
               height: '15.10%',
@@ -180,7 +180,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '84.9%',
+            left: '79.8%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -193,7 +193,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '87.30%',
+              left: '82.60%',
               top: '6.70%',
               width: '2.30%',
               height: '15.10%',
@@ -213,7 +213,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '87.3%',
+            left: '82.6%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -226,7 +226,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '89.80%',
+              left: '83.90%',
               top: '6.70%',
               width: '2.30%',
               height: '15.10%',
@@ -246,7 +246,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '89.8%',
+            left: '83.9%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -259,7 +259,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '92.30%',
+              left: '85.40%',
               top: '6.70%',
               width: '2.30%',
               height: '15.10%',
@@ -279,7 +279,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '92.3%',
+            left: '85.4%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -358,7 +358,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '80.30%',
+              left: '79.50%',
               top: '28.80%',
               width: '2.80%',
               height: '7.80%',
@@ -378,7 +378,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '80.3%',
+            left: '79.5%',
             top: '27.6%',
             width: '2.8%',
             textAlign: 'center',
@@ -457,7 +457,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '80.10%',
+              left: '77.30%',
               top: '34.30%',
               width: '2.80%',
               height: '7.80%',
@@ -477,7 +477,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '80.1%',
+            left: '77.3%',
             top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
@@ -490,7 +490,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '86.10%',
+              left: '79.50%',
               top: '34.30%',
               width: '2.80%',
               height: '7.80%',
@@ -510,7 +510,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '86.1%',
+            left: '79.5%',
             top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
@@ -523,7 +523,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '92.00%',
+              left: '83.80%',
               top: '34.30%',
               width: '2.80%',
               height: '7.80%',
@@ -543,7 +543,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '92.0%',
+            left: '83.8%',
             top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
@@ -556,7 +556,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '77.20%',
+              left: '74.20%',
               top: '39.90%',
               width: '2.80%',
               height: '7.80%',
@@ -576,7 +576,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '77.2%',
+            left: '74.2%',
             top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
@@ -589,7 +589,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '83.10%',
+              left: '77.30%',
               top: '39.90%',
               width: '2.80%',
               height: '7.80%',
@@ -609,7 +609,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '83.1%',
+            left: '77.3%',
             top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
@@ -622,7 +622,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '89.00%',
+              left: '79.50%',
               top: '39.90%',
               width: '2.80%',
               height: '7.80%',
@@ -642,7 +642,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '89.0%',
+            left: '79.5%',
             top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
@@ -655,7 +655,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '95.00%',
+              left: '83.80%',
               top: '39.90%',
               width: '2.80%',
               height: '7.80%',
@@ -675,7 +675,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '95.0%',
+            left: '83.8%',
             top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
@@ -754,7 +754,7 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '80.30%',
+              left: '79.50%',
               top: '45.40%',
               width: '2.80%',
               height: '7.80%',
@@ -774,7 +774,7 @@ export default function SequencerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '80.3%',
+            left: '79.5%',
             top: '44.2%',
             width: '2.8%',
             textAlign: 'center',

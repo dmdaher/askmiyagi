@@ -196,7 +196,7 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '51.50%',
+              left: '39.20%',
               top: '4.70%',
               width: '18.70%',
               height: '23.30%',
@@ -207,15 +207,15 @@ export default function CommonSection({
               label=""
               variant="main"
               showMockContent
-              width={202}
-              height={76}
+              width={224}
+              height={84}
               highlighted={isHighlighted('display')}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '51.5%',
+            left: '39.2%',
             top: '3.5%',
             width: '18.7%',
             textAlign: 'center',
@@ -239,8 +239,8 @@ export default function CommonSection({
               label=""
               value={getState('e1').value ?? 64}
               highlighted={isHighlighted('e1')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
@@ -270,8 +270,8 @@ export default function CommonSection({
               label=""
               value={getState('e2').value ?? 64}
               highlighted={isHighlighted('e2')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
@@ -301,8 +301,8 @@ export default function CommonSection({
               label=""
               value={getState('e3').value ?? 64}
               highlighted={isHighlighted('e3')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
@@ -332,8 +332,8 @@ export default function CommonSection({
               label=""
               value={getState('e4').value ?? 64}
               highlighted={isHighlighted('e4')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
@@ -363,8 +363,8 @@ export default function CommonSection({
               label=""
               value={getState('e5').value ?? 64}
               highlighted={isHighlighted('e5')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
@@ -394,8 +394,8 @@ export default function CommonSection({
               label=""
               value={getState('e6').value ?? 64}
               highlighted={isHighlighted('e6')}
-              outerSize={25}
-              innerSize={18}
+              outerSize={28}
+              innerSize={20}
             />
           </div>
         <div
@@ -456,7 +456,7 @@ export default function CommonSection({
             <ValueDial
               id="value-dial"
               label=""
-              outerSize={25}
+              outerSize={28}
               highlighted={isHighlighted('value-dial')}
             />
           </div>

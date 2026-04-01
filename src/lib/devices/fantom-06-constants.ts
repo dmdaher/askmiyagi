@@ -2,8 +2,8 @@
 // Do not edit manually. Re-run: npx tsx scripts/panel-codegen.ts fantom-06
 
 export const FANTOM06_PANEL = {
-  width: 1080,
-  height: 325,
+  width: 1200,
+  height: 361,
   deviceId: 'fantom-06',
   deviceName: 'FANTOM-06',
   manufacturer: 'Roland',
@@ -46,11 +46,11 @@ export const FANTOM06_CONTROLS = {
   'slider-7': { type: 'slider', section: 'zone', label: '7' },
   'slider-8': { type: 'slider', section: 'zone', label: '8' },
   'split': { type: 'button', section: 'zone', label: 'SPLIT' },
-  'chord-memory': { type: 'button', section: 'zone', label: 'CHORD MEMORY' },
+  'chord-memory': { type: 'button', section: 'zone', label: 'CHORD\nMEMORY' },
   'arpeggio': { type: 'button', section: 'zone', label: 'ARPEGGIO' },
   'transpose': { type: 'button', section: 'zone', label: 'TRANSPOSE' },
-  'octave-down': { type: 'button', section: 'zone', label: 'OCTAVE DOWN' },
-  'octave-up': { type: 'button', section: 'zone', label: 'OCTAVE UP' },
+  'octave-down': { type: 'button', section: 'zone', label: 'DOWN' },
+  'octave-up': { type: 'button', section: 'zone', label: 'UP' },
   'write': { type: 'button', section: 'common', label: 'WRITE' },
   'master-fx': { type: 'button', section: 'common', label: 'MASTER FX' },
   'motional-pad': { type: 'button', section: 'common', label: 'MOTIONAL PAD' },

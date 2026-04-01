@@ -40,8 +40,8 @@ export default function SynthSection({
               label=""
               value={getState('cutoff').value ?? 64}
               highlighted={isHighlighted('cutoff')}
-              outerSize={35}
-              innerSize={25}
+              outerSize={39}
+              innerSize={27}
             />
           </div>
         <div
@@ -71,8 +71,8 @@ export default function SynthSection({
               label=""
               value={getState('resonance').value ?? 64}
               highlighted={isHighlighted('resonance')}
-              outerSize={35}
-              innerSize={25}
+              outerSize={39}
+              innerSize={27}
             />
           </div>
         <div
@@ -124,7 +124,7 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '69.90%',
+              left: '67.10%',
               top: '19.90%',
               width: '2.60%',
               height: '7.80%',
@@ -144,7 +144,7 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '69.9%',
+            left: '67.1%',
             top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
@@ -157,7 +157,7 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '75.50%',
+              left: '69.80%',
               top: '19.90%',
               width: '2.60%',
               height: '7.80%',
@@ -177,7 +177,7 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '75.5%',
+            left: '69.8%',
             top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
@@ -190,7 +190,7 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '67.20%',
+              left: '64.40%',
               top: '26.60%',
               width: '2.60%',
               height: '7.80%',
@@ -210,7 +210,7 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '67.2%',
+            left: '64.4%',
             top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
@@ -223,7 +223,7 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '72.70%',
+              left: '67.10%',
               top: '26.60%',
               width: '2.60%',
               height: '7.80%',
@@ -243,7 +243,7 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '72.7%',
+            left: '67.1%',
             top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
@@ -256,7 +256,7 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '78.20%',
+              left: '69.80%',
               top: '26.60%',
               width: '2.60%',
               height: '7.80%',
@@ -276,7 +276,7 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '78.2%',
+            left: '69.8%',
             top: '25.4%',
             width: '2.6%',
             textAlign: 'center',

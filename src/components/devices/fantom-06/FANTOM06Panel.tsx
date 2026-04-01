@@ -43,7 +43,7 @@ export default function FANTOM06Panel({
         <SectionContainer id="controller" x={3.9} y={4.2} w={9.1} h={93.6} />
 
         {/* ZONE background */}
-        <SectionContainer id="zone" x={10} y={2.2} w={30.6} h={59} headerLabel="ZONE" />
+        <SectionContainer id="zone" x={10} y={2.2} w={30.7} h={65.4} headerLabel="ZONE" />
 
         {/* common background */}
         <SectionContainer id="common" x={38.5} y={2.5} w={20} h={27.7} />
@@ -67,20 +67,24 @@ export default function FANTOM06Panel({
           style={{
             left: '5.5%',
             top: '6.4%',
-            width: 32,
-            height: 133,
+            width: 36,
+            height: 148,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Wheel
-            id="wheel-1"
-            label=""
-            width={32}
-            height={133}
-            highlighted={isHighlighted('wheel-1')}
-          />
+
+              <Wheel
+                id="wheel-1"
+                label=""
+                width={36}
+                height={148}
+                highlighted={isHighlighted('wheel-1')}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -102,20 +106,24 @@ export default function FANTOM06Panel({
           style={{
             left: '9.3%',
             top: '6.4%',
-            width: 32,
-            height: 133,
+            width: 36,
+            height: 148,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Wheel
-            id="wheel-2"
-            label=""
-            width={32}
-            height={133}
-            highlighted={isHighlighted('wheel-2')}
-          />
+
+              <Wheel
+                id="wheel-2"
+                label=""
+                width={36}
+                height={148}
+                highlighted={isHighlighted('wheel-2')}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -135,32 +143,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '4.5%',
-            top: '61.2%',
-            width: 52,
-            height: 25,
+            left: '4.2%',
+            top: '65.1%',
+            width: 60,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="s1"
-              label=""
-              size="sm"
-              active={getState('s1').active}
-              highlighted={isHighlighted('s1')}
-              onClick={() => onButtonClick?.('s1')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="s1"
+                  label=""
+                  size="sm"
+                  active={getState('s1').active}
+                  highlighted={isHighlighted('s1')}
+                  onClick={() => onButtonClick?.('s1')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '4.5%',
-            top: '60.0%',
-            width: '4.8%',
+            left: '4.2%',
+            top: '63.9%',
+            width: '5.0%',
             textAlign: 'center',
           }}
         >
@@ -173,32 +185,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '6.9%',
-            top: '83.4%',
-            width: 52,
-            height: 25,
+            left: '5.8%',
+            top: '64.8%',
+            width: 60,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="s2"
-              label=""
-              size="sm"
-              active={getState('s2').active}
-              highlighted={isHighlighted('s2')}
-              onClick={() => onButtonClick?.('s2')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="s2"
+                  label=""
+                  size="sm"
+                  active={getState('s2').active}
+                  highlighted={isHighlighted('s2')}
+                  onClick={() => onButtonClick?.('s2')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '6.9%',
-            top: '82.2%',
-            width: '4.8%',
+            left: '5.8%',
+            top: '63.6%',
+            width: '5.0%',
             textAlign: 'center',
           }}
         >
@@ -213,21 +229,25 @@ export default function FANTOM06Panel({
           style={{
             left: '6.8%',
             top: '59.0%',
-            width: 54,
-            height: 119,
+            width: 60,
+            height: 132,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <DirectionSwitch
-            id="pitch-bend-lever"
-            label=""
-            positions={["FWD","REV","SLIP REV"]}
-            highlighted={isHighlighted('pitch-bend-lever')}
-            width={54}
-            height={119}
-          />
+
+              <DirectionSwitch
+                id="pitch-bend-lever"
+                label=""
+                positions={["FWD","REV","SLIP REV"]}
+                highlighted={isHighlighted('pitch-bend-lever')}
+                width={60}
+                height={132}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -249,21 +269,25 @@ export default function FANTOM06Panel({
           style={{
             left: '12.5%',
             top: '17.5%',
-            width: 65,
-            height: 43,
+            width: 72,
+            height: 48,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="master-volume"
-            label=""
-            value={getState('master-volume').value ?? 64}
-            highlighted={isHighlighted('master-volume')}
-            outerSize={43}
-            innerSize={30}
-          />
+
+              <Knob
+                id="master-volume"
+                label=""
+                value={getState('master-volume').value ?? 64}
+                highlighted={isHighlighted('master-volume')}
+                outerSize={48}
+                innerSize={34}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -283,30 +307,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '15.6%',
+            left: '15.5%',
             top: '12.9%',
-            width: 51,
-            height: 29,
+            width: 56,
+            height: 32,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="pan-level"
-              label=""
-              size="sm"
-              active={getState('pan-level').active}
-              highlighted={isHighlighted('pan-level')}
-              onClick={() => onButtonClick?.('pan-level')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="pan-level"
+                  label=""
+                  size="sm"
+                  active={getState('pan-level').active}
+                  highlighted={isHighlighted('pan-level')}
+                  onClick={() => onButtonClick?.('pan-level')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '15.6%',
+            left: '15.5%',
             top: '11.7%',
             width: '4.7%',
             textAlign: 'center',
@@ -321,30 +349,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '20.4%',
+            left: '18.5%',
             top: '13.2%',
-            width: 22,
-            height: 25,
+            width: 24,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="ctrl"
-              label=""
-              size="sm"
-              active={getState('ctrl').active}
-              highlighted={isHighlighted('ctrl')}
-              onClick={() => onButtonClick?.('ctrl')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="ctrl"
+                  label=""
+                  size="sm"
+                  active={getState('ctrl').active}
+                  highlighted={isHighlighted('ctrl')}
+                  onClick={() => onButtonClick?.('ctrl')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '20.4%',
+            left: '18.5%',
             top: '12.0%',
             width: '2.0%',
             textAlign: 'center',
@@ -359,30 +391,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '21.8%',
+            left: '16.9%',
             top: '24.1%',
-            width: 57,
-            height: 11,
+            width: 64,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="assign"
-              label=""
-              size="sm"
-              active={getState('assign').active}
-              highlighted={isHighlighted('assign')}
-              onClick={() => onButtonClick?.('assign')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="assign"
+                  label=""
+                  size="sm"
+                  active={getState('assign').active}
+                  highlighted={isHighlighted('assign')}
+                  onClick={() => onButtonClick?.('assign')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '21.8%',
+            left: '16.9%',
             top: '22.9%',
             width: '5.3%',
             textAlign: 'center',
@@ -397,30 +433,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '18.7%',
+            left: '16.1%',
             top: '29.4%',
-            width: 32,
-            height: 11,
+            width: 36,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-9-16"
-              label=""
-              size="sm"
-              active={getState('zone-9-16').active}
-              highlighted={isHighlighted('zone-9-16')}
-              onClick={() => onButtonClick?.('zone-9-16')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-9-16"
+                  label=""
+                  size="sm"
+                  active={getState('zone-9-16').active}
+                  highlighted={isHighlighted('zone-9-16')}
+                  onClick={() => onButtonClick?.('zone-9-16')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '18.7%',
+            left: '16.1%',
             top: '28.2%',
             width: '3.0%',
             textAlign: 'center',
@@ -437,23 +477,27 @@ export default function FANTOM06Panel({
           style={{
             left: '16.9%',
             top: '28.7%',
-            width: 57,
-            height: 18,
+            width: 64,
+            height: 20,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-select"
-              label=""
-              size="sm"
-              active={getState('zone-select').active}
-              highlighted={isHighlighted('zone-select')}
-              onClick={() => onButtonClick?.('zone-select')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-select"
+                  label=""
+                  size="sm"
+                  active={getState('zone-select').active}
+                  highlighted={isHighlighted('zone-select')}
+                  onClick={() => onButtonClick?.('zone-select')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -473,28 +517,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '22.6%',
+            left: '20.5%',
             top: '13.4%',
-            width: 36,
-            height: 29,
+            width: 40,
+            height: 32,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="knob-1"
-            label=""
-            value={getState('knob-1').value ?? 64}
-            highlighted={isHighlighted('knob-1')}
-            outerSize={29}
-            innerSize={20}
-          />
+
+              <Knob
+                id="knob-1"
+                label=""
+                value={getState('knob-1').value ?? 64}
+                highlighted={isHighlighted('knob-1')}
+                outerSize={32}
+                innerSize={22}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '22.6%',
+            left: '20.5%',
             top: '22.5%',
             width: '3.3%',
             textAlign: 'center',
@@ -509,28 +557,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '26.1%',
+            left: '22.8%',
             top: '13.2%',
-            width: 38,
-            height: 25,
+            width: 42,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="knob-2"
-            label=""
-            value={getState('knob-2').value ?? 64}
-            highlighted={isHighlighted('knob-2')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="knob-2"
+                label=""
+                value={getState('knob-2').value ?? 64}
+                highlighted={isHighlighted('knob-2')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '26.1%',
+            left: '22.8%',
             top: '21.2%',
             width: '3.5%',
             textAlign: 'center',
@@ -545,28 +597,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '29.7%',
+            left: '24.8%',
             top: '13.4%',
-            width: 40,
-            height: 25,
+            width: 44,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="knob-3"
-            label=""
-            value={getState('knob-3').value ?? 64}
-            highlighted={isHighlighted('knob-3')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="knob-3"
+                label=""
+                value={getState('knob-3').value ?? 64}
+                highlighted={isHighlighted('knob-3')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '29.7%',
+            left: '24.8%',
             top: '21.4%',
             width: '3.7%',
             textAlign: 'center',
@@ -581,28 +637,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '33.6%',
+            left: '26.9%',
             top: '13.2%',
-            width: 38,
-            height: 25,
+            width: 42,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="knob-4"
-            label=""
-            value={getState('knob-4').value ?? 64}
-            highlighted={isHighlighted('knob-4')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="knob-4"
+                label=""
+                value={getState('knob-4').value ?? 64}
+                highlighted={isHighlighted('knob-4')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '33.6%',
+            left: '26.9%',
             top: '21.2%',
             width: '3.5%',
             textAlign: 'center',
@@ -617,28 +677,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '37.3%',
+            left: '29.2%',
             top: '13.2%',
-            width: 38,
-            height: 25,
+            width: 42,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="knob-5"
-            label=""
-            value={getState('knob-5').value ?? 64}
-            highlighted={isHighlighted('knob-5')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="knob-5"
+                label=""
+                value={getState('knob-5').value ?? 64}
+                highlighted={isHighlighted('knob-5')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '37.3%',
+            left: '29.2%',
             top: '21.2%',
             width: '3.5%',
             textAlign: 'center',
@@ -653,28 +717,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '40.9%',
+            left: '31.7%',
             top: '12.6%',
-            width: 36,
-            height: 29,
+            width: 40,
+            height: 32,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="knob-6"
-            label=""
-            value={getState('knob-6').value ?? 64}
-            highlighted={isHighlighted('knob-6')}
-            outerSize={29}
-            innerSize={20}
-          />
+
+              <Knob
+                id="knob-6"
+                label=""
+                value={getState('knob-6').value ?? 64}
+                highlighted={isHighlighted('knob-6')}
+                outerSize={32}
+                innerSize={22}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '40.9%',
+            left: '31.7%',
             top: '21.7%',
             width: '3.3%',
             textAlign: 'center',
@@ -689,28 +757,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '44.4%',
+            left: '33.9%',
             top: '12.6%',
-            width: 36,
-            height: 29,
+            width: 40,
+            height: 32,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="knob-7"
-            label=""
-            value={getState('knob-7').value ?? 64}
-            highlighted={isHighlighted('knob-7')}
-            outerSize={29}
-            innerSize={20}
-          />
+
+              <Knob
+                id="knob-7"
+                label=""
+                value={getState('knob-7').value ?? 64}
+                highlighted={isHighlighted('knob-7')}
+                outerSize={32}
+                innerSize={22}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '44.4%',
+            left: '33.9%',
             top: '21.7%',
             width: '3.3%',
             textAlign: 'center',
@@ -725,28 +797,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '47.9%',
+            left: '35.8%',
             top: '13.2%',
-            width: 38,
-            height: 25,
+            width: 42,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="knob-8"
-            label=""
-            value={getState('knob-8').value ?? 64}
-            highlighted={isHighlighted('knob-8')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="knob-8"
+                label=""
+                value={getState('knob-8').value ?? 64}
+                highlighted={isHighlighted('knob-8')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '47.9%',
+            left: '35.8%',
             top: '21.2%',
             width: '3.5%',
             textAlign: 'center',
@@ -761,31 +837,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '27.3%',
-            top: '23.5%',
-            width: 40,
-            height: 14,
+            left: '20.2%',
+            top: '25.2%',
+            width: 44,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-int-ext-1"
-              label=""
-              size="sm"
-              active={getState('zone-int-ext-1').active}
-              highlighted={isHighlighted('zone-int-ext-1')}
-              onClick={() => onButtonClick?.('zone-int-ext-1')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-int-ext-1"
+                  label=""
+                  size="sm"
+                  active={getState('zone-int-ext-1').active}
+                  highlighted={isHighlighted('zone-int-ext-1')}
+                  onClick={() => onButtonClick?.('zone-int-ext-1')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '27.3%',
-            top: '22.3%',
+            left: '20.2%',
+            top: '24.0%',
             width: '3.7%',
             textAlign: 'center',
           }}
@@ -799,30 +879,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '31.2%',
+            left: '22.4%',
             top: '24.9%',
-            width: 36,
-            height: 14,
+            width: 40,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-int-ext-2"
-              label=""
-              size="sm"
-              active={getState('zone-int-ext-2').active}
-              highlighted={isHighlighted('zone-int-ext-2')}
-              onClick={() => onButtonClick?.('zone-int-ext-2')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-int-ext-2"
+                  label=""
+                  size="sm"
+                  active={getState('zone-int-ext-2').active}
+                  highlighted={isHighlighted('zone-int-ext-2')}
+                  onClick={() => onButtonClick?.('zone-int-ext-2')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '31.2%',
+            left: '22.4%',
             top: '23.7%',
             width: '3.3%',
             textAlign: 'center',
@@ -837,30 +921,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '34.6%',
+            left: '24.6%',
             top: '24.9%',
-            width: 36,
-            height: 14,
+            width: 40,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-int-ext-3"
-              label=""
-              size="sm"
-              active={getState('zone-int-ext-3').active}
-              highlighted={isHighlighted('zone-int-ext-3')}
-              onClick={() => onButtonClick?.('zone-int-ext-3')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-int-ext-3"
+                  label=""
+                  size="sm"
+                  active={getState('zone-int-ext-3').active}
+                  highlighted={isHighlighted('zone-int-ext-3')}
+                  onClick={() => onButtonClick?.('zone-int-ext-3')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '34.6%',
+            left: '24.6%',
             top: '23.7%',
             width: '3.3%',
             textAlign: 'center',
@@ -875,30 +963,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '38.1%',
+            left: '27.1%',
             top: '24.6%',
-            width: 36,
-            height: 14,
+            width: 40,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-int-ext-4"
-              label=""
-              size="sm"
-              active={getState('zone-int-ext-4').active}
-              highlighted={isHighlighted('zone-int-ext-4')}
-              onClick={() => onButtonClick?.('zone-int-ext-4')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-int-ext-4"
+                  label=""
+                  size="sm"
+                  active={getState('zone-int-ext-4').active}
+                  highlighted={isHighlighted('zone-int-ext-4')}
+                  onClick={() => onButtonClick?.('zone-int-ext-4')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '38.1%',
+            left: '27.1%',
             top: '23.4%',
             width: '3.3%',
             textAlign: 'center',
@@ -913,32 +1005,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '24.8%',
-            top: '48.7%',
-            width: 38,
-            height: 25,
+            left: '29.1%',
+            top: '25.4%',
+            width: 44,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-int-ext-5"
-              label=""
-              size="sm"
-              active={getState('zone-int-ext-5').active}
-              highlighted={isHighlighted('zone-int-ext-5')}
-              onClick={() => onButtonClick?.('zone-int-ext-5')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-int-ext-5"
+                  label=""
+                  size="sm"
+                  active={getState('zone-int-ext-5').active}
+                  highlighted={isHighlighted('zone-int-ext-5')}
+                  onClick={() => onButtonClick?.('zone-int-ext-5')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '24.8%',
-            top: '47.5%',
-            width: '3.5%',
+            left: '29.1%',
+            top: '24.2%',
+            width: '3.7%',
             textAlign: 'center',
           }}
         >
@@ -951,32 +1047,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '29.2%',
-            top: '48.7%',
-            width: 38,
-            height: 25,
+            left: '31.5%',
+            top: '25.4%',
+            width: 40,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-int-ext-6"
-              label=""
-              size="sm"
-              active={getState('zone-int-ext-6').active}
-              highlighted={isHighlighted('zone-int-ext-6')}
-              onClick={() => onButtonClick?.('zone-int-ext-6')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-int-ext-6"
+                  label=""
+                  size="sm"
+                  active={getState('zone-int-ext-6').active}
+                  highlighted={isHighlighted('zone-int-ext-6')}
+                  onClick={() => onButtonClick?.('zone-int-ext-6')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '29.2%',
-            top: '47.5%',
-            width: '3.5%',
+            left: '31.5%',
+            top: '24.2%',
+            width: '3.3%',
             textAlign: 'center',
           }}
         >
@@ -989,32 +1089,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '32.9%',
-            top: '48.8%',
-            width: 38,
-            height: 25,
+            left: '33.7%',
+            top: '25.8%',
+            width: 40,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-int-ext-7"
-              label=""
-              size="sm"
-              active={getState('zone-int-ext-7').active}
-              highlighted={isHighlighted('zone-int-ext-7')}
-              onClick={() => onButtonClick?.('zone-int-ext-7')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-int-ext-7"
+                  label=""
+                  size="sm"
+                  active={getState('zone-int-ext-7').active}
+                  highlighted={isHighlighted('zone-int-ext-7')}
+                  onClick={() => onButtonClick?.('zone-int-ext-7')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '32.9%',
-            top: '47.6%',
-            width: '3.5%',
+            left: '33.7%',
+            top: '24.6%',
+            width: '3.3%',
             textAlign: 'center',
           }}
         >
@@ -1027,32 +1131,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '36.5%',
-            top: '48.7%',
-            width: 38,
-            height: 25,
+            left: '35.8%',
+            top: '25.4%',
+            width: 44,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-int-ext-8"
-              label=""
-              size="sm"
-              active={getState('zone-int-ext-8').active}
-              highlighted={isHighlighted('zone-int-ext-8')}
-              onClick={() => onButtonClick?.('zone-int-ext-8')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-int-ext-8"
+                  label=""
+                  size="sm"
+                  active={getState('zone-int-ext-8').active}
+                  highlighted={isHighlighted('zone-int-ext-8')}
+                  onClick={() => onButtonClick?.('zone-int-ext-8')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '36.5%',
-            top: '47.5%',
-            width: '3.5%',
+            left: '35.8%',
+            top: '24.2%',
+            width: '3.7%',
             textAlign: 'center',
           }}
         >
@@ -1065,29 +1173,33 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '21.1%',
-            top: '23.5%',
-            width: 22,
-            height: 115,
+            left: '21.4%',
+            top: '24.7%',
+            width: 24,
+            height: 128,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Slider
-            id="slider-1"
-            label=""
-            value={getState('slider-1').value ?? 64}
-            highlighted={isHighlighted('slider-1')}
-            trackHeight={95}
-            trackWidth={12}
-          />
+
+              <Slider
+                id="slider-1"
+                label=""
+                value={getState('slider-1').value ?? 64}
+                highlighted={isHighlighted('slider-1')}
+                trackHeight={108}
+                trackWidth={14}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '21.1%',
-            top: '59.2%',
+            left: '21.4%',
+            top: '60.4%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -1101,29 +1213,33 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '23.6%',
-            top: '22.7%',
-            width: 22,
-            height: 115,
+            left: '23.8%',
+            top: '23.3%',
+            width: 24,
+            height: 128,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Slider
-            id="slider-2"
-            label=""
-            value={getState('slider-2').value ?? 64}
-            highlighted={isHighlighted('slider-2')}
-            trackHeight={95}
-            trackWidth={12}
-          />
+
+              <Slider
+                id="slider-2"
+                label=""
+                value={getState('slider-2').value ?? 64}
+                highlighted={isHighlighted('slider-2')}
+                trackHeight={108}
+                trackWidth={14}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '23.6%',
-            top: '58.4%',
+            left: '23.8%',
+            top: '59.0%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -1138,28 +1254,32 @@ export default function FANTOM06Panel({
           className="absolute"
           style={{
             left: '25.8%',
-            top: '22.7%',
-            width: 22,
-            height: 115,
+            top: '23.3%',
+            width: 24,
+            height: 128,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Slider
-            id="slider-3"
-            label=""
-            value={getState('slider-3').value ?? 64}
-            highlighted={isHighlighted('slider-3')}
-            trackHeight={95}
-            trackWidth={12}
-          />
+
+              <Slider
+                id="slider-3"
+                label=""
+                value={getState('slider-3').value ?? 64}
+                highlighted={isHighlighted('slider-3')}
+                trackHeight={108}
+                trackWidth={14}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '25.8%',
-            top: '58.4%',
+            top: '59.0%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -1173,28 +1293,32 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '27.9%',
+            left: '27.8%',
             top: '22.4%',
-            width: 22,
-            height: 115,
+            width: 24,
+            height: 128,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Slider
-            id="slider-4"
-            label=""
-            value={getState('slider-4').value ?? 64}
-            highlighted={isHighlighted('slider-4')}
-            trackHeight={95}
-            trackWidth={12}
-          />
+
+              <Slider
+                id="slider-4"
+                label=""
+                value={getState('slider-4').value ?? 64}
+                highlighted={isHighlighted('slider-4')}
+                trackHeight={108}
+                trackWidth={14}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '27.9%',
+            left: '27.8%',
             top: '58.1%',
             width: '2.0%',
             textAlign: 'center',
@@ -1209,29 +1333,33 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '30.1%',
-            top: '21.9%',
-            width: 22,
-            height: 115,
+            left: '30.3%',
+            top: '22.4%',
+            width: 24,
+            height: 128,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Slider
-            id="slider-5"
-            label=""
-            value={getState('slider-5').value ?? 64}
-            highlighted={isHighlighted('slider-5')}
-            trackHeight={95}
-            trackWidth={12}
-          />
+
+              <Slider
+                id="slider-5"
+                label=""
+                value={getState('slider-5').value ?? 64}
+                highlighted={isHighlighted('slider-5')}
+                trackHeight={108}
+                trackWidth={14}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '30.1%',
-            top: '57.6%',
+            left: '30.3%',
+            top: '58.1%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -1245,29 +1373,33 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '32.3%',
-            top: '21.9%',
-            width: 22,
-            height: 115,
+            left: '32.4%',
+            top: '22.2%',
+            width: 24,
+            height: 128,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Slider
-            id="slider-6"
-            label=""
-            value={getState('slider-6').value ?? 64}
-            highlighted={isHighlighted('slider-6')}
-            trackHeight={95}
-            trackWidth={12}
-          />
+
+              <Slider
+                id="slider-6"
+                label=""
+                value={getState('slider-6').value ?? 64}
+                highlighted={isHighlighted('slider-6')}
+                trackHeight={108}
+                trackWidth={14}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '32.3%',
-            top: '57.6%',
+            left: '32.4%',
+            top: '57.9%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -1281,29 +1413,33 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '34.7%',
-            top: '22.7%',
-            width: 22,
-            height: 115,
+            left: '34.8%',
+            top: '23.0%',
+            width: 24,
+            height: 128,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Slider
-            id="slider-7"
-            label=""
-            value={getState('slider-7').value ?? 64}
-            highlighted={isHighlighted('slider-7')}
-            trackHeight={95}
-            trackWidth={12}
-          />
+
+              <Slider
+                id="slider-7"
+                label=""
+                value={getState('slider-7').value ?? 64}
+                highlighted={isHighlighted('slider-7')}
+                trackHeight={108}
+                trackWidth={14}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '34.7%',
-            top: '58.4%',
+            left: '34.8%',
+            top: '58.7%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -1318,28 +1454,32 @@ export default function FANTOM06Panel({
           className="absolute"
           style={{
             left: '36.9%',
-            top: '22.4%',
-            width: 22,
-            height: 115,
+            top: '22.7%',
+            width: 24,
+            height: 128,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Slider
-            id="slider-8"
-            label=""
-            value={getState('slider-8').value ?? 64}
-            highlighted={isHighlighted('slider-8')}
-            trackHeight={95}
-            trackWidth={12}
-          />
+
+              <Slider
+                id="slider-8"
+                label=""
+                value={getState('slider-8').value ?? 64}
+                highlighted={isHighlighted('slider-8')}
+                trackHeight={108}
+                trackWidth={14}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '36.9%',
-            top: '58.1%',
+            top: '58.4%',
             width: '2.0%',
             textAlign: 'center',
           }}
@@ -1353,31 +1493,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '10.7%',
-            top: '12.6%',
-            width: 51,
-            height: 29,
+            left: '13.3%',
+            top: '35.6%',
+            width: 56,
+            height: 16,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="split"
-              label=""
-              size="sm"
-              active={getState('split').active}
-              highlighted={isHighlighted('split')}
-              onClick={() => onButtonClick?.('split')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="split"
+                  label=""
+                  size="sm"
+                  active={getState('split').active}
+                  highlighted={isHighlighted('split')}
+                  onClick={() => onButtonClick?.('split')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '10.7%',
-            top: '11.4%',
+            left: '13.3%',
+            top: '34.4%',
             width: '4.7%',
             textAlign: 'center',
           }}
@@ -1391,32 +1535,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '13.2%',
-            top: '4.4%',
-            width: 52,
-            height: 25,
+            left: '15.2%',
+            top: '35.2%',
+            width: 56,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="chord-memory"
-              label=""
-              size="sm"
-              active={getState('chord-memory').active}
-              highlighted={isHighlighted('chord-memory')}
-              onClick={() => onButtonClick?.('chord-memory')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="chord-memory"
+                  label=""
+                  size="sm"
+                  active={getState('chord-memory').active}
+                  highlighted={isHighlighted('chord-memory')}
+                  onClick={() => onButtonClick?.('chord-memory')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '13.2%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '15.2%',
+            top: '34.0%',
+            width: '4.7%',
             textAlign: 'center',
           }}
         >
@@ -1429,32 +1577,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '19.7%',
-            top: '4.4%',
-            width: 52,
-            height: 25,
+            left: '18.0%',
+            top: '36.3%',
+            width: 44,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="arpeggio"
-              label=""
-              size="sm"
-              active={getState('arpeggio').active}
-              highlighted={isHighlighted('arpeggio')}
-              onClick={() => onButtonClick?.('arpeggio')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="arpeggio"
+                  label=""
+                  size="sm"
+                  active={getState('arpeggio').active}
+                  highlighted={isHighlighted('arpeggio')}
+                  onClick={() => onButtonClick?.('arpeggio')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '19.7%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '18.0%',
+            top: '35.1%',
+            width: '3.7%',
             textAlign: 'center',
           }}
         >
@@ -1467,32 +1619,36 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '24.7%',
-            top: '4.4%',
-            width: 52,
-            height: 25,
+            left: '12.6%',
+            top: '42.7%',
+            width: 60,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="transpose"
-              label=""
-              size="sm"
-              active={getState('transpose').active}
-              highlighted={isHighlighted('transpose')}
-              onClick={() => onButtonClick?.('transpose')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="transpose"
+                  label=""
+                  size="sm"
+                  active={getState('transpose').active}
+                  highlighted={isHighlighted('transpose')}
+                  onClick={() => onButtonClick?.('transpose')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '24.7%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '12.6%',
+            top: '41.5%',
+            width: '5.0%',
             textAlign: 'center',
           }}
         >
@@ -1505,37 +1661,41 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '29.6%',
-            top: '4.4%',
-            width: 52,
-            height: 25,
+            left: '15.2%',
+            top: '42.9%',
+            width: 56,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="octave-down"
-              label=""
-              size="sm"
-              active={getState('octave-down').active}
-              highlighted={isHighlighted('octave-down')}
-              onClick={() => onButtonClick?.('octave-down')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="octave-down"
+                  label=""
+                  size="sm"
+                  active={getState('octave-down').active}
+                  highlighted={isHighlighted('octave-down')}
+                  onClick={() => onButtonClick?.('octave-down')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '29.6%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '15.2%',
+            top: '41.7%',
+            width: '4.7%',
             textAlign: 'center',
           }}
         >
           <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
-            OCTAVE DOWN
+            DOWN
           </span>
         </div>
 
@@ -1543,37 +1703,41 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '35.2%',
-            top: '4.4%',
-            width: 52,
-            height: 25,
+            left: '17.0%',
+            top: '42.7%',
+            width: 60,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="octave-up"
-              label=""
-              size="sm"
-              active={getState('octave-up').active}
-              highlighted={isHighlighted('octave-up')}
-              onClick={() => onButtonClick?.('octave-up')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="octave-up"
+                  label=""
+                  size="sm"
+                  active={getState('octave-up').active}
+                  highlighted={isHighlighted('octave-up')}
+                  onClick={() => onButtonClick?.('octave-up')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '35.2%',
-            top: '3.2%',
-            width: '4.8%',
+            left: '17.0%',
+            top: '41.5%',
+            width: '5.0%',
             textAlign: 'center',
           }}
         >
           <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
-            OCTAVE UP
+            UP
           </span>
         </div>
 
@@ -1583,23 +1747,27 @@ export default function FANTOM06Panel({
           style={{
             left: '34.2%',
             top: '84.0%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="write"
-              label=""
-              size="sm"
-              active={getState('write').active}
-              highlighted={isHighlighted('write')}
-              onClick={() => onButtonClick?.('write')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="write"
+                  label=""
+                  size="sm"
+                  active={getState('write').active}
+                  highlighted={isHighlighted('write')}
+                  onClick={() => onButtonClick?.('write')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1621,23 +1789,27 @@ export default function FANTOM06Panel({
           style={{
             left: '38.7%',
             top: '84.0%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="master-fx"
-              label=""
-              size="sm"
-              active={getState('master-fx').active}
-              highlighted={isHighlighted('master-fx')}
-              onClick={() => onButtonClick?.('master-fx')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="master-fx"
+                  label=""
+                  size="sm"
+                  active={getState('master-fx').active}
+                  highlighted={isHighlighted('master-fx')}
+                  onClick={() => onButtonClick?.('master-fx')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1659,23 +1831,27 @@ export default function FANTOM06Panel({
           style={{
             left: '43.2%',
             top: '84.0%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="motional-pad"
-              label=""
-              size="sm"
-              active={getState('motional-pad').active}
-              highlighted={isHighlighted('motional-pad')}
-              onClick={() => onButtonClick?.('motional-pad')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="motional-pad"
+                  label=""
+                  size="sm"
+                  active={getState('motional-pad').active}
+                  highlighted={isHighlighted('motional-pad')}
+                  onClick={() => onButtonClick?.('motional-pad')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1697,23 +1873,27 @@ export default function FANTOM06Panel({
           style={{
             left: '47.7%',
             top: '84.0%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="daw-ctrl"
-              label=""
-              size="sm"
-              active={getState('daw-ctrl').active}
-              highlighted={isHighlighted('daw-ctrl')}
-              onClick={() => onButtonClick?.('daw-ctrl')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="daw-ctrl"
+                  label=""
+                  size="sm"
+                  active={getState('daw-ctrl').active}
+                  highlighted={isHighlighted('daw-ctrl')}
+                  onClick={() => onButtonClick?.('daw-ctrl')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1735,23 +1915,27 @@ export default function FANTOM06Panel({
           style={{
             left: '52.2%',
             top: '84.0%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="menu"
-              label=""
-              size="sm"
-              active={getState('menu').active}
-              highlighted={isHighlighted('menu')}
-              onClick={() => onButtonClick?.('menu')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="menu"
+                  label=""
+                  size="sm"
+                  active={getState('menu').active}
+                  highlighted={isHighlighted('menu')}
+                  onClick={() => onButtonClick?.('menu')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1771,29 +1955,33 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '51.5%',
+            left: '39.2%',
             top: '4.7%',
-            width: 202,
-            height: 76,
+            width: 224,
+            height: 84,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <TouchDisplay
-            id="display"
-            label=""
-            variant="main"
-            showMockContent
-            width={202}
-            height={76}
-            highlighted={isHighlighted('display')}
-          />
+
+              <TouchDisplay
+                id="display"
+                label=""
+                variant="main"
+                showMockContent
+                width={224}
+                height={84}
+                highlighted={isHighlighted('display')}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '51.5%',
+            left: '39.2%',
             top: '3.5%',
             width: '18.7%',
             textAlign: 'center',
@@ -1810,21 +1998,25 @@ export default function FANTOM06Panel({
           style={{
             left: '34.2%',
             top: '92.8%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="e1"
-            label=""
-            value={getState('e1').value ?? 64}
-            highlighted={isHighlighted('e1')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="e1"
+                label=""
+                value={getState('e1').value ?? 64}
+                highlighted={isHighlighted('e1')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1846,21 +2038,25 @@ export default function FANTOM06Panel({
           style={{
             left: '38.7%',
             top: '92.8%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="e2"
-            label=""
-            value={getState('e2').value ?? 64}
-            highlighted={isHighlighted('e2')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="e2"
+                label=""
+                value={getState('e2').value ?? 64}
+                highlighted={isHighlighted('e2')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1882,21 +2078,25 @@ export default function FANTOM06Panel({
           style={{
             left: '43.2%',
             top: '92.8%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="e3"
-            label=""
-            value={getState('e3').value ?? 64}
-            highlighted={isHighlighted('e3')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="e3"
+                label=""
+                value={getState('e3').value ?? 64}
+                highlighted={isHighlighted('e3')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1918,21 +2118,25 @@ export default function FANTOM06Panel({
           style={{
             left: '47.7%',
             top: '92.8%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="e4"
-            label=""
-            value={getState('e4').value ?? 64}
-            highlighted={isHighlighted('e4')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="e4"
+                label=""
+                value={getState('e4').value ?? 64}
+                highlighted={isHighlighted('e4')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1954,21 +2158,25 @@ export default function FANTOM06Panel({
           style={{
             left: '52.2%',
             top: '92.8%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="e5"
-            label=""
-            value={getState('e5').value ?? 64}
-            highlighted={isHighlighted('e5')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="e5"
+                label=""
+                value={getState('e5').value ?? 64}
+                highlighted={isHighlighted('e5')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1990,21 +2198,25 @@ export default function FANTOM06Panel({
           style={{
             left: '34.2%',
             top: '101.7%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="e6"
-            label=""
-            value={getState('e6').value ?? 64}
-            highlighted={isHighlighted('e6')}
-            outerSize={25}
-            innerSize={18}
-          />
+
+              <Knob
+                id="e6"
+                label=""
+                value={getState('e6').value ?? 64}
+                highlighted={isHighlighted('e6')}
+                outerSize={28}
+                innerSize={20}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2026,23 +2238,27 @@ export default function FANTOM06Panel({
           style={{
             left: '38.7%',
             top: '101.7%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tempo"
-              label=""
-              size="sm"
-              active={getState('tempo').active}
-              highlighted={isHighlighted('tempo')}
-              onClick={() => onButtonClick?.('tempo')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tempo"
+                  label=""
+                  size="sm"
+                  active={getState('tempo').active}
+                  highlighted={isHighlighted('tempo')}
+                  onClick={() => onButtonClick?.('tempo')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2064,19 +2280,23 @@ export default function FANTOM06Panel({
           style={{
             left: '43.2%',
             top: '101.7%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <ValueDial
-            id="value-dial"
-            label=""
-            outerSize={25}
-            highlighted={isHighlighted('value-dial')}
-          />
+
+              <ValueDial
+                id="value-dial"
+                label=""
+                outerSize={28}
+                highlighted={isHighlighted('value-dial')}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2098,23 +2318,27 @@ export default function FANTOM06Panel({
           style={{
             left: '47.7%',
             top: '101.7%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="dec"
-              label=""
-              size="sm"
-              active={getState('dec').active}
-              highlighted={isHighlighted('dec')}
-              onClick={() => onButtonClick?.('dec')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="dec"
+                  label=""
+                  size="sm"
+                  active={getState('dec').active}
+                  highlighted={isHighlighted('dec')}
+                  onClick={() => onButtonClick?.('dec')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2136,23 +2360,27 @@ export default function FANTOM06Panel({
           style={{
             left: '52.2%',
             top: '101.7%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="inc"
-              label=""
-              size="sm"
-              active={getState('inc').active}
-              highlighted={isHighlighted('inc')}
-              onClick={() => onButtonClick?.('inc')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="inc"
+                  label=""
+                  size="sm"
+                  active={getState('inc').active}
+                  highlighted={isHighlighted('inc')}
+                  onClick={() => onButtonClick?.('inc')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2174,23 +2402,27 @@ export default function FANTOM06Panel({
           style={{
             left: '34.2%',
             top: '110.5%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="cursor-up"
-              label=""
-              size="sm"
-              active={getState('cursor-up').active}
-              highlighted={isHighlighted('cursor-up')}
-              onClick={() => onButtonClick?.('cursor-up')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="cursor-up"
+                  label=""
+                  size="sm"
+                  active={getState('cursor-up').active}
+                  highlighted={isHighlighted('cursor-up')}
+                  onClick={() => onButtonClick?.('cursor-up')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2212,23 +2444,27 @@ export default function FANTOM06Panel({
           style={{
             left: '47.7%',
             top: '110.5%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="cursor-down"
-              label=""
-              size="sm"
-              active={getState('cursor-down').active}
-              highlighted={isHighlighted('cursor-down')}
-              onClick={() => onButtonClick?.('cursor-down')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="cursor-down"
+                  label=""
+                  size="sm"
+                  active={getState('cursor-down').active}
+                  highlighted={isHighlighted('cursor-down')}
+                  onClick={() => onButtonClick?.('cursor-down')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2250,23 +2486,27 @@ export default function FANTOM06Panel({
           style={{
             left: '38.7%',
             top: '110.5%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="cursor-left"
-              label=""
-              size="sm"
-              active={getState('cursor-left').active}
-              highlighted={isHighlighted('cursor-left')}
-              onClick={() => onButtonClick?.('cursor-left')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="cursor-left"
+                  label=""
+                  size="sm"
+                  active={getState('cursor-left').active}
+                  highlighted={isHighlighted('cursor-left')}
+                  onClick={() => onButtonClick?.('cursor-left')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2288,23 +2528,27 @@ export default function FANTOM06Panel({
           style={{
             left: '43.2%',
             top: '110.5%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="cursor-right"
-              label=""
-              size="sm"
-              active={getState('cursor-right').active}
-              highlighted={isHighlighted('cursor-right')}
-              onClick={() => onButtonClick?.('cursor-right')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="cursor-right"
+                  label=""
+                  size="sm"
+                  active={getState('cursor-right').active}
+                  highlighted={isHighlighted('cursor-right')}
+                  onClick={() => onButtonClick?.('cursor-right')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2326,23 +2570,27 @@ export default function FANTOM06Panel({
           style={{
             left: '52.2%',
             top: '110.5%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="shift"
-              label=""
-              size="sm"
-              active={getState('shift').active}
-              highlighted={isHighlighted('shift')}
-              onClick={() => onButtonClick?.('shift')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="shift"
+                  label=""
+                  size="sm"
+                  active={getState('shift').active}
+                  highlighted={isHighlighted('shift')}
+                  onClick={() => onButtonClick?.('shift')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2364,23 +2612,27 @@ export default function FANTOM06Panel({
           style={{
             left: '34.2%',
             top: '119.4%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="exit"
-              label=""
-              size="sm"
-              active={getState('exit').active}
-              highlighted={isHighlighted('exit')}
-              onClick={() => onButtonClick?.('exit')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="exit"
+                  label=""
+                  size="sm"
+                  active={getState('exit').active}
+                  highlighted={isHighlighted('exit')}
+                  onClick={() => onButtonClick?.('exit')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2402,23 +2654,27 @@ export default function FANTOM06Panel({
           style={{
             left: '38.7%',
             top: '119.4%',
-            width: 45,
-            height: 25,
+            width: 50,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="enter"
-              label=""
-              size="sm"
-              active={getState('enter').active}
-              highlighted={isHighlighted('enter')}
-              onClick={() => onButtonClick?.('enter')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="enter"
+                  label=""
+                  size="sm"
+                  active={getState('enter').active}
+                  highlighted={isHighlighted('enter')}
+                  onClick={() => onButtonClick?.('enter')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2440,23 +2696,27 @@ export default function FANTOM06Panel({
           style={{
             left: '56.7%',
             top: '7.3%',
-            width: 57,
-            height: 25,
+            width: 64,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="scene-select"
-              label=""
-              size="sm"
-              active={getState('scene-select').active}
-              highlighted={isHighlighted('scene-select')}
-              onClick={() => onButtonClick?.('scene-select')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="scene-select"
+                  label=""
+                  size="sm"
+                  active={getState('scene-select').active}
+                  highlighted={isHighlighted('scene-select')}
+                  onClick={() => onButtonClick?.('scene-select')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2478,23 +2738,27 @@ export default function FANTOM06Panel({
           style={{
             left: '56.7%',
             top: '18.4%',
-            width: 57,
-            height: 25,
+            width: 64,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="scene-chain"
-              label=""
-              size="sm"
-              active={getState('scene-chain').active}
-              highlighted={isHighlighted('scene-chain')}
-              onClick={() => onButtonClick?.('scene-chain')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="scene-chain"
+                  label=""
+                  size="sm"
+                  active={getState('scene-chain').active}
+                  highlighted={isHighlighted('scene-chain')}
+                  onClick={() => onButtonClick?.('scene-chain')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2516,23 +2780,27 @@ export default function FANTOM06Panel({
           style={{
             left: '56.7%',
             top: '25.2%',
-            width: 57,
-            height: 25,
+            width: 64,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="zone-view"
-              label=""
-              size="sm"
-              active={getState('zone-view').active}
-              highlighted={isHighlighted('zone-view')}
-              onClick={() => onButtonClick?.('zone-view')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="zone-view"
+                  label=""
+                  size="sm"
+                  active={getState('zone-view').active}
+                  highlighted={isHighlighted('zone-view')}
+                  onClick={() => onButtonClick?.('zone-view')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2554,23 +2822,27 @@ export default function FANTOM06Panel({
           style={{
             left: '56.7%',
             top: '34.1%',
-            width: 57,
-            height: 25,
+            width: 64,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="single-tone"
-              label=""
-              size="sm"
-              active={getState('single-tone').active}
-              highlighted={isHighlighted('single-tone')}
-              onClick={() => onButtonClick?.('single-tone')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="single-tone"
+                  label=""
+                  size="sm"
+                  active={getState('single-tone').active}
+                  highlighted={isHighlighted('single-tone')}
+                  onClick={() => onButtonClick?.('single-tone')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2592,21 +2864,25 @@ export default function FANTOM06Panel({
           style={{
             left: '63.7%',
             top: '6.6%',
-            width: 43,
-            height: 35,
+            width: 48,
+            height: 39,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="cutoff"
-            label=""
-            value={getState('cutoff').value ?? 64}
-            highlighted={isHighlighted('cutoff')}
-            outerSize={35}
-            innerSize={25}
-          />
+
+              <Knob
+                id="cutoff"
+                label=""
+                value={getState('cutoff').value ?? 64}
+                highlighted={isHighlighted('cutoff')}
+                outerSize={39}
+                innerSize={27}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2628,21 +2904,25 @@ export default function FANTOM06Panel({
           style={{
             left: '68.9%',
             top: '6.6%',
-            width: 43,
-            height: 35,
+            width: 48,
+            height: 39,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <Knob
-            id="resonance"
-            label=""
-            value={getState('resonance').value ?? 64}
-            highlighted={isHighlighted('resonance')}
-            outerSize={35}
-            innerSize={25}
-          />
+
+              <Knob
+                id="resonance"
+                label=""
+                value={getState('resonance').value ?? 64}
+                highlighted={isHighlighted('resonance')}
+                outerSize={39}
+                innerSize={27}
+              />
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2664,23 +2944,27 @@ export default function FANTOM06Panel({
           style={{
             left: '64.4%',
             top: '19.9%',
-            width: 28,
-            height: 25,
+            width: 31,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="osc"
-              label=""
-              size="sm"
-              active={getState('osc').active}
-              highlighted={isHighlighted('osc')}
-              onClick={() => onButtonClick?.('osc')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="osc"
+                  label=""
+                  size="sm"
+                  active={getState('osc').active}
+                  highlighted={isHighlighted('osc')}
+                  onClick={() => onButtonClick?.('osc')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2700,30 +2984,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '69.9%',
+            left: '67.1%',
             top: '19.9%',
-            width: 28,
-            height: 25,
+            width: 31,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="filter-type"
-              label=""
-              size="sm"
-              active={getState('filter-type').active}
-              highlighted={isHighlighted('filter-type')}
-              onClick={() => onButtonClick?.('filter-type')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="filter-type"
+                  label=""
+                  size="sm"
+                  active={getState('filter-type').active}
+                  highlighted={isHighlighted('filter-type')}
+                  onClick={() => onButtonClick?.('filter-type')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '69.9%',
+            left: '67.1%',
             top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
@@ -2738,30 +3026,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '75.5%',
+            left: '69.8%',
             top: '19.9%',
-            width: 28,
-            height: 25,
+            width: 31,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="param"
-              label=""
-              size="sm"
-              active={getState('param').active}
-              highlighted={isHighlighted('param')}
-              onClick={() => onButtonClick?.('param')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="param"
+                  label=""
+                  size="sm"
+                  active={getState('param').active}
+                  highlighted={isHighlighted('param')}
+                  onClick={() => onButtonClick?.('param')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '75.5%',
+            left: '69.8%',
             top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
@@ -2776,30 +3068,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '67.2%',
+            left: '64.4%',
             top: '26.6%',
-            width: 28,
-            height: 25,
+            width: 31,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="amp"
-              label=""
-              size="sm"
-              active={getState('amp').active}
-              highlighted={isHighlighted('amp')}
-              onClick={() => onButtonClick?.('amp')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="amp"
+                  label=""
+                  size="sm"
+                  active={getState('amp').active}
+                  highlighted={isHighlighted('amp')}
+                  onClick={() => onButtonClick?.('amp')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '67.2%',
+            left: '64.4%',
             top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
@@ -2814,30 +3110,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '72.7%',
+            left: '67.1%',
             top: '26.6%',
-            width: 28,
-            height: 25,
+            width: 31,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="fx"
-              label=""
-              size="sm"
-              active={getState('fx').active}
-              highlighted={isHighlighted('fx')}
-              onClick={() => onButtonClick?.('fx')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="fx"
+                  label=""
+                  size="sm"
+                  active={getState('fx').active}
+                  highlighted={isHighlighted('fx')}
+                  onClick={() => onButtonClick?.('fx')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '72.7%',
+            left: '67.1%',
             top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
@@ -2852,30 +3152,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '78.2%',
+            left: '69.8%',
             top: '26.6%',
-            width: 28,
-            height: 25,
+            width: 31,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="lfo"
-              label=""
-              size="sm"
-              active={getState('lfo').active}
-              highlighted={isHighlighted('lfo')}
-              onClick={() => onButtonClick?.('lfo')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="lfo"
+                  label=""
+                  size="sm"
+                  active={getState('lfo').active}
+                  highlighted={isHighlighted('lfo')}
+                  onClick={() => onButtonClick?.('lfo')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '78.2%',
+            left: '69.8%',
             top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
@@ -2892,23 +3196,27 @@ export default function FANTOM06Panel({
           style={{
             left: '75.0%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="pattern"
-              label=""
-              size="lg"
-              active={getState('pattern').active}
-              highlighted={isHighlighted('pattern')}
-              onClick={() => onButtonClick?.('pattern')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="pattern"
+                  label=""
+                  size="lg"
+                  active={getState('pattern').active}
+                  highlighted={isHighlighted('pattern')}
+                  onClick={() => onButtonClick?.('pattern')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2928,30 +3236,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '77.5%',
+            left: '75.0%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="group"
-              label=""
-              size="lg"
-              active={getState('group').active}
-              highlighted={isHighlighted('group')}
-              onClick={() => onButtonClick?.('group')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="group"
+                  label=""
+                  size="lg"
+                  active={getState('group').active}
+                  highlighted={isHighlighted('group')}
+                  onClick={() => onButtonClick?.('group')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '77.5%',
+            left: '75.0%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -2966,30 +3278,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '79.9%',
+            left: '77.9%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="song"
-              label=""
-              size="lg"
-              active={getState('song').active}
-              highlighted={isHighlighted('song')}
-              onClick={() => onButtonClick?.('song')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="song"
+                  label=""
+                  size="lg"
+                  active={getState('song').active}
+                  highlighted={isHighlighted('song')}
+                  onClick={() => onButtonClick?.('song')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '79.9%',
+            left: '77.9%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -3004,30 +3320,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '82.4%',
+            left: '77.9%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tr-rec"
-              label=""
-              size="lg"
-              active={getState('tr-rec').active}
-              highlighted={isHighlighted('tr-rec')}
-              onClick={() => onButtonClick?.('tr-rec')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tr-rec"
+                  label=""
+                  size="lg"
+                  active={getState('tr-rec').active}
+                  highlighted={isHighlighted('tr-rec')}
+                  onClick={() => onButtonClick?.('tr-rec')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '82.4%',
+            left: '77.9%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -3042,30 +3362,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '84.9%',
+            left: '79.8%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="rhythm-ptn"
-              label=""
-              size="lg"
-              active={getState('rhythm-ptn').active}
-              highlighted={isHighlighted('rhythm-ptn')}
-              onClick={() => onButtonClick?.('rhythm-ptn')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="rhythm-ptn"
+                  label=""
+                  size="lg"
+                  active={getState('rhythm-ptn').active}
+                  highlighted={isHighlighted('rhythm-ptn')}
+                  onClick={() => onButtonClick?.('rhythm-ptn')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '84.9%',
+            left: '79.8%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -3080,30 +3404,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '87.3%',
+            left: '82.6%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="stop"
-              label=""
-              size="lg"
-              active={getState('stop').active}
-              highlighted={isHighlighted('stop')}
-              onClick={() => onButtonClick?.('stop')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="stop"
+                  label=""
+                  size="lg"
+                  active={getState('stop').active}
+                  highlighted={isHighlighted('stop')}
+                  onClick={() => onButtonClick?.('stop')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '87.3%',
+            left: '82.6%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -3118,30 +3446,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '89.8%',
+            left: '83.9%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="play"
-              label=""
-              size="lg"
-              active={getState('play').active}
-              highlighted={isHighlighted('play')}
-              onClick={() => onButtonClick?.('play')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="play"
+                  label=""
+                  size="lg"
+                  active={getState('play').active}
+                  highlighted={isHighlighted('play')}
+                  onClick={() => onButtonClick?.('play')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '89.8%',
+            left: '83.9%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -3156,30 +3488,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '92.3%',
+            left: '85.4%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="rec"
-              label=""
-              size="lg"
-              active={getState('rec').active}
-              highlighted={isHighlighted('rec')}
-              onClick={() => onButtonClick?.('rec')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="rec"
+                  label=""
+                  size="lg"
+                  active={getState('rec').active}
+                  highlighted={isHighlighted('rec')}
+                  onClick={() => onButtonClick?.('rec')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '92.3%',
+            left: '85.4%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -3196,23 +3532,27 @@ export default function FANTOM06Panel({
           style={{
             left: '74.2%',
             top: '28.8%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-1"
-              label=""
-              size="sm"
-              active={getState('tone-cat-1').active}
-              highlighted={isHighlighted('tone-cat-1')}
-              onClick={() => onButtonClick?.('tone-cat-1')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-1"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-1').active}
+                  highlighted={isHighlighted('tone-cat-1')}
+                  onClick={() => onButtonClick?.('tone-cat-1')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3234,23 +3574,27 @@ export default function FANTOM06Panel({
           style={{
             left: '77.3%',
             top: '28.8%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-2"
-              label=""
-              size="sm"
-              active={getState('tone-cat-2').active}
-              highlighted={isHighlighted('tone-cat-2')}
-              onClick={() => onButtonClick?.('tone-cat-2')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-2"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-2').active}
+                  highlighted={isHighlighted('tone-cat-2')}
+                  onClick={() => onButtonClick?.('tone-cat-2')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3270,30 +3614,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '80.3%',
+            left: '79.5%',
             top: '28.8%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-3"
-              label=""
-              size="sm"
-              active={getState('tone-cat-3').active}
-              highlighted={isHighlighted('tone-cat-3')}
-              onClick={() => onButtonClick?.('tone-cat-3')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-3"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-3').active}
+                  highlighted={isHighlighted('tone-cat-3')}
+                  onClick={() => onButtonClick?.('tone-cat-3')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '80.3%',
+            left: '79.5%',
             top: '27.6%',
             width: '2.8%',
             textAlign: 'center',
@@ -3310,23 +3658,27 @@ export default function FANTOM06Panel({
           style={{
             left: '83.8%',
             top: '28.8%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-4"
-              label=""
-              size="sm"
-              active={getState('tone-cat-4').active}
-              highlighted={isHighlighted('tone-cat-4')}
-              onClick={() => onButtonClick?.('tone-cat-4')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-4"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-4').active}
+                  highlighted={isHighlighted('tone-cat-4')}
+                  onClick={() => onButtonClick?.('tone-cat-4')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3348,23 +3700,27 @@ export default function FANTOM06Panel({
           style={{
             left: '74.2%',
             top: '34.3%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-5"
-              label=""
-              size="sm"
-              active={getState('tone-cat-5').active}
-              highlighted={isHighlighted('tone-cat-5')}
-              onClick={() => onButtonClick?.('tone-cat-5')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-5"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-5').active}
+                  highlighted={isHighlighted('tone-cat-5')}
+                  onClick={() => onButtonClick?.('tone-cat-5')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3384,30 +3740,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '80.1%',
+            left: '77.3%',
             top: '34.3%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-6"
-              label=""
-              size="sm"
-              active={getState('tone-cat-6').active}
-              highlighted={isHighlighted('tone-cat-6')}
-              onClick={() => onButtonClick?.('tone-cat-6')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-6"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-6').active}
+                  highlighted={isHighlighted('tone-cat-6')}
+                  onClick={() => onButtonClick?.('tone-cat-6')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '80.1%',
+            left: '77.3%',
             top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
@@ -3422,30 +3782,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '86.1%',
+            left: '79.5%',
             top: '34.3%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-7"
-              label=""
-              size="sm"
-              active={getState('tone-cat-7').active}
-              highlighted={isHighlighted('tone-cat-7')}
-              onClick={() => onButtonClick?.('tone-cat-7')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-7"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-7').active}
+                  highlighted={isHighlighted('tone-cat-7')}
+                  onClick={() => onButtonClick?.('tone-cat-7')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '86.1%',
+            left: '79.5%',
             top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
@@ -3460,30 +3824,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '92.0%',
+            left: '83.8%',
             top: '34.3%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-8"
-              label=""
-              size="sm"
-              active={getState('tone-cat-8').active}
-              highlighted={isHighlighted('tone-cat-8')}
-              onClick={() => onButtonClick?.('tone-cat-8')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-8"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-8').active}
+                  highlighted={isHighlighted('tone-cat-8')}
+                  onClick={() => onButtonClick?.('tone-cat-8')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '92.0%',
+            left: '83.8%',
             top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
@@ -3498,30 +3866,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '77.2%',
+            left: '74.2%',
             top: '39.9%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-9"
-              label=""
-              size="sm"
-              active={getState('tone-cat-9').active}
-              highlighted={isHighlighted('tone-cat-9')}
-              onClick={() => onButtonClick?.('tone-cat-9')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-9"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-9').active}
+                  highlighted={isHighlighted('tone-cat-9')}
+                  onClick={() => onButtonClick?.('tone-cat-9')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '77.2%',
+            left: '74.2%',
             top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
@@ -3536,30 +3908,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '83.1%',
+            left: '77.3%',
             top: '39.9%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-10"
-              label=""
-              size="sm"
-              active={getState('tone-cat-10').active}
-              highlighted={isHighlighted('tone-cat-10')}
-              onClick={() => onButtonClick?.('tone-cat-10')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-10"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-10').active}
+                  highlighted={isHighlighted('tone-cat-10')}
+                  onClick={() => onButtonClick?.('tone-cat-10')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '83.1%',
+            left: '77.3%',
             top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
@@ -3574,30 +3950,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '89.0%',
+            left: '79.5%',
             top: '39.9%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-11"
-              label=""
-              size="sm"
-              active={getState('tone-cat-11').active}
-              highlighted={isHighlighted('tone-cat-11')}
-              onClick={() => onButtonClick?.('tone-cat-11')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-11"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-11').active}
+                  highlighted={isHighlighted('tone-cat-11')}
+                  onClick={() => onButtonClick?.('tone-cat-11')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '89.0%',
+            left: '79.5%',
             top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
@@ -3612,30 +3992,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '95.0%',
+            left: '83.8%',
             top: '39.9%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-12"
-              label=""
-              size="sm"
-              active={getState('tone-cat-12').active}
-              highlighted={isHighlighted('tone-cat-12')}
-              onClick={() => onButtonClick?.('tone-cat-12')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-12"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-12').active}
+                  highlighted={isHighlighted('tone-cat-12')}
+                  onClick={() => onButtonClick?.('tone-cat-12')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '95.0%',
+            left: '83.8%',
             top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
@@ -3652,23 +4036,27 @@ export default function FANTOM06Panel({
           style={{
             left: '74.2%',
             top: '45.4%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-13"
-              label=""
-              size="sm"
-              active={getState('tone-cat-13').active}
-              highlighted={isHighlighted('tone-cat-13')}
-              onClick={() => onButtonClick?.('tone-cat-13')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-13"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-13').active}
+                  highlighted={isHighlighted('tone-cat-13')}
+                  onClick={() => onButtonClick?.('tone-cat-13')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3690,23 +4078,27 @@ export default function FANTOM06Panel({
           style={{
             left: '77.3%',
             top: '45.4%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-14"
-              label=""
-              size="sm"
-              active={getState('tone-cat-14').active}
-              highlighted={isHighlighted('tone-cat-14')}
-              onClick={() => onButtonClick?.('tone-cat-14')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-14"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-14').active}
+                  highlighted={isHighlighted('tone-cat-14')}
+                  onClick={() => onButtonClick?.('tone-cat-14')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3726,30 +4118,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '80.3%',
+            left: '79.5%',
             top: '45.4%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-15"
-              label=""
-              size="sm"
-              active={getState('tone-cat-15').active}
-              highlighted={isHighlighted('tone-cat-15')}
-              onClick={() => onButtonClick?.('tone-cat-15')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-15"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-15').active}
+                  highlighted={isHighlighted('tone-cat-15')}
+                  onClick={() => onButtonClick?.('tone-cat-15')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '80.3%',
+            left: '79.5%',
             top: '44.2%',
             width: '2.8%',
             textAlign: 'center',
@@ -3766,23 +4162,27 @@ export default function FANTOM06Panel({
           style={{
             left: '83.8%',
             top: '45.4%',
-            width: 30,
-            height: 25,
+            width: 34,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="tone-cat-16"
-              label=""
-              size="sm"
-              active={getState('tone-cat-16').active}
-              highlighted={isHighlighted('tone-cat-16')}
-              onClick={() => onButtonClick?.('tone-cat-16')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="tone-cat-16"
+                  label=""
+                  size="sm"
+                  active={getState('tone-cat-16').active}
+                  highlighted={isHighlighted('tone-cat-16')}
+                  onClick={() => onButtonClick?.('tone-cat-16')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3802,30 +4202,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '94.7%',
+            left: '88.2%',
             top: '6.7%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 54,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="sampling"
-              label=""
-              size="lg"
-              active={getState('sampling').active}
-              highlighted={isHighlighted('sampling')}
-              onClick={() => onButtonClick?.('sampling')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="sampling"
+                  label=""
+                  size="lg"
+                  active={getState('sampling').active}
+                  highlighted={isHighlighted('sampling')}
+                  onClick={() => onButtonClick?.('sampling')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '94.7%',
+            left: '88.2%',
             top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
@@ -3840,30 +4244,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '97.2%',
+            left: '90.8%',
             top: '6.6%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="pad-mode"
-              label=""
-              size="lg"
-              active={getState('pad-mode').active}
-              highlighted={isHighlighted('pad-mode')}
-              onClick={() => onButtonClick?.('pad-mode')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="pad-mode"
+                  label=""
+                  size="lg"
+                  active={getState('pad-mode').active}
+                  highlighted={isHighlighted('pad-mode')}
+                  onClick={() => onButtonClick?.('pad-mode')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '97.2%',
+            left: '90.8%',
             top: '5.4%',
             width: '2.3%',
             textAlign: 'center',
@@ -3878,30 +4286,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '99.7%',
+            left: '92.4%',
             top: '6.6%',
-            width: 25,
-            height: 49,
+            width: 28,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="clip-board"
-              label=""
-              size="lg"
-              active={getState('clip-board').active}
-              highlighted={isHighlighted('clip-board')}
-              onClick={() => onButtonClick?.('clip-board')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="clip-board"
+                  label=""
+                  size="lg"
+                  active={getState('clip-board').active}
+                  highlighted={isHighlighted('clip-board')}
+                  onClick={() => onButtonClick?.('clip-board')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '99.7%',
+            left: '92.4%',
             top: '5.4%',
             width: '2.3%',
             textAlign: 'center',
@@ -3916,30 +4328,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '102.1%',
+            left: '93.8%',
             top: '6.6%',
-            width: 27,
-            height: 49,
+            width: 30,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="bank"
-              label=""
-              size="lg"
-              active={getState('bank').active}
-              highlighted={isHighlighted('bank')}
-              onClick={() => onButtonClick?.('bank')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="bank"
+                  label=""
+                  size="lg"
+                  active={getState('bank').active}
+                  highlighted={isHighlighted('bank')}
+                  onClick={() => onButtonClick?.('bank')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '102.1%',
+            left: '93.8%',
             top: '5.4%',
             width: '2.5%',
             textAlign: 'center',
@@ -3954,30 +4370,34 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '104.8%',
+            left: '96.6%',
             top: '6.6%',
-            width: 27,
-            height: 49,
+            width: 30,
+            height: 55,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PanelButton
-              id="hold"
-              label=""
-              size="lg"
-              active={getState('hold').active}
-              highlighted={isHighlighted('hold')}
-              onClick={() => onButtonClick?.('hold')}
-            />
-          </div>
+
+              <div>
+                <PanelButton
+                  id="hold"
+                  label=""
+                  size="lg"
+                  active={getState('hold').active}
+                  highlighted={isHighlighted('hold')}
+                  onClick={() => onButtonClick?.('hold')}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '104.8%',
+            left: '96.6%',
             top: '5.4%',
             width: '2.5%',
             textAlign: 'center',
@@ -3994,24 +4414,28 @@ export default function FANTOM06Panel({
           style={{
             left: '88.2%',
             top: '28.8%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-1"
-              label=""
-              active={getState('pad-1').active}
-              highlighted={isHighlighted('pad-1')}
-              onClick={() => onButtonClick?.('pad-1')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-1"
+                  label=""
+                  active={getState('pad-1').active}
+                  highlighted={isHighlighted('pad-1')}
+                  onClick={() => onButtonClick?.('pad-1')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4033,24 +4457,28 @@ export default function FANTOM06Panel({
           style={{
             left: '91.0%',
             top: '28.8%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-2"
-              label=""
-              active={getState('pad-2').active}
-              highlighted={isHighlighted('pad-2')}
-              onClick={() => onButtonClick?.('pad-2')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-2"
+                  label=""
+                  active={getState('pad-2').active}
+                  highlighted={isHighlighted('pad-2')}
+                  onClick={() => onButtonClick?.('pad-2')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4072,24 +4500,28 @@ export default function FANTOM06Panel({
           style={{
             left: '93.8%',
             top: '28.8%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-3"
-              label=""
-              active={getState('pad-3').active}
-              highlighted={isHighlighted('pad-3')}
-              onClick={() => onButtonClick?.('pad-3')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-3"
+                  label=""
+                  active={getState('pad-3').active}
+                  highlighted={isHighlighted('pad-3')}
+                  onClick={() => onButtonClick?.('pad-3')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4111,24 +4543,28 @@ export default function FANTOM06Panel({
           style={{
             left: '96.6%',
             top: '28.8%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-4"
-              label=""
-              active={getState('pad-4').active}
-              highlighted={isHighlighted('pad-4')}
-              onClick={() => onButtonClick?.('pad-4')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-4"
+                  label=""
+                  active={getState('pad-4').active}
+                  highlighted={isHighlighted('pad-4')}
+                  onClick={() => onButtonClick?.('pad-4')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4148,31 +4584,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '97.9%',
+            left: '88.2%',
             top: '34.3%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-5"
-              label=""
-              active={getState('pad-5').active}
-              highlighted={isHighlighted('pad-5')}
-              onClick={() => onButtonClick?.('pad-5')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-5"
+                  label=""
+                  active={getState('pad-5').active}
+                  highlighted={isHighlighted('pad-5')}
+                  onClick={() => onButtonClick?.('pad-5')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '97.9%',
+            left: '88.2%',
             top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
@@ -4187,31 +4627,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '103.3%',
+            left: '91.0%',
             top: '34.3%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-6"
-              label=""
-              active={getState('pad-6').active}
-              highlighted={isHighlighted('pad-6')}
-              onClick={() => onButtonClick?.('pad-6')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-6"
+                  label=""
+                  active={getState('pad-6').active}
+                  highlighted={isHighlighted('pad-6')}
+                  onClick={() => onButtonClick?.('pad-6')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '103.3%',
+            left: '91.0%',
             top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
@@ -4226,31 +4670,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '108.6%',
+            left: '93.8%',
             top: '34.3%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-7"
-              label=""
-              active={getState('pad-7').active}
-              highlighted={isHighlighted('pad-7')}
-              onClick={() => onButtonClick?.('pad-7')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-7"
+                  label=""
+                  active={getState('pad-7').active}
+                  highlighted={isHighlighted('pad-7')}
+                  onClick={() => onButtonClick?.('pad-7')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '108.6%',
+            left: '93.8%',
             top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
@@ -4265,31 +4713,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '113.9%',
+            left: '96.6%',
             top: '34.3%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-8"
-              label=""
-              active={getState('pad-8').active}
-              highlighted={isHighlighted('pad-8')}
-              onClick={() => onButtonClick?.('pad-8')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-8"
+                  label=""
+                  active={getState('pad-8').active}
+                  highlighted={isHighlighted('pad-8')}
+                  onClick={() => onButtonClick?.('pad-8')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '113.9%',
+            left: '96.6%',
             top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
@@ -4304,31 +4756,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '100.6%',
+            left: '88.2%',
             top: '39.9%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-9"
-              label=""
-              active={getState('pad-9').active}
-              highlighted={isHighlighted('pad-9')}
-              onClick={() => onButtonClick?.('pad-9')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-9"
+                  label=""
+                  active={getState('pad-9').active}
+                  highlighted={isHighlighted('pad-9')}
+                  onClick={() => onButtonClick?.('pad-9')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '100.6%',
+            left: '88.2%',
             top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
@@ -4343,31 +4799,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '105.9%',
+            left: '91.0%',
             top: '39.9%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-10"
-              label=""
-              active={getState('pad-10').active}
-              highlighted={isHighlighted('pad-10')}
-              onClick={() => onButtonClick?.('pad-10')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-10"
+                  label=""
+                  active={getState('pad-10').active}
+                  highlighted={isHighlighted('pad-10')}
+                  onClick={() => onButtonClick?.('pad-10')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '105.9%',
+            left: '91.0%',
             top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
@@ -4382,31 +4842,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '111.3%',
+            left: '93.8%',
             top: '39.9%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-11"
-              label=""
-              active={getState('pad-11').active}
-              highlighted={isHighlighted('pad-11')}
-              onClick={() => onButtonClick?.('pad-11')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-11"
+                  label=""
+                  active={getState('pad-11').active}
+                  highlighted={isHighlighted('pad-11')}
+                  onClick={() => onButtonClick?.('pad-11')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '111.3%',
+            left: '93.8%',
             top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
@@ -4421,31 +4885,35 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '116.6%',
+            left: '96.6%',
             top: '39.9%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-12"
-              label=""
-              active={getState('pad-12').active}
-              highlighted={isHighlighted('pad-12')}
-              onClick={() => onButtonClick?.('pad-12')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-12"
+                  label=""
+                  active={getState('pad-12').active}
+                  highlighted={isHighlighted('pad-12')}
+                  onClick={() => onButtonClick?.('pad-12')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '116.6%',
+            left: '96.6%',
             top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
@@ -4462,24 +4930,28 @@ export default function FANTOM06Panel({
           style={{
             left: '88.2%',
             top: '45.4%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-13"
-              label=""
-              active={getState('pad-13').active}
-              highlighted={isHighlighted('pad-13')}
-              onClick={() => onButtonClick?.('pad-13')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-13"
+                  label=""
+                  active={getState('pad-13').active}
+                  highlighted={isHighlighted('pad-13')}
+                  onClick={() => onButtonClick?.('pad-13')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4501,24 +4973,28 @@ export default function FANTOM06Panel({
           style={{
             left: '91.0%',
             top: '45.4%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-14"
-              label=""
-              active={getState('pad-14').active}
-              highlighted={isHighlighted('pad-14')}
-              onClick={() => onButtonClick?.('pad-14')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-14"
+                  label=""
+                  active={getState('pad-14').active}
+                  highlighted={isHighlighted('pad-14')}
+                  onClick={() => onButtonClick?.('pad-14')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4540,24 +5016,28 @@ export default function FANTOM06Panel({
           style={{
             left: '93.8%',
             top: '45.4%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-15"
-              label=""
-              active={getState('pad-15').active}
-              highlighted={isHighlighted('pad-15')}
-              onClick={() => onButtonClick?.('pad-15')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-15"
+                  label=""
+                  active={getState('pad-15').active}
+                  highlighted={isHighlighted('pad-15')}
+                  onClick={() => onButtonClick?.('pad-15')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4579,24 +5059,28 @@ export default function FANTOM06Panel({
           style={{
             left: '96.6%',
             top: '45.4%',
-            width: 27,
-            height: 25,
+            width: 30,
+            height: 28,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            transform: 'scale(0.4)',
+            transformOrigin: 'center',
           }}
         >
-          <div>
-            <PadButton
-              id="pad-16"
-              label=""
-              active={getState('pad-16').active}
-              highlighted={isHighlighted('pad-16')}
-              onClick={() => onButtonClick?.('pad-16')}
-              width={27}
-              height={25}
-            />
-          </div>
+
+              <div>
+                <PadButton
+                  id="pad-16"
+                  label=""
+                  active={getState('pad-16').active}
+                  highlighted={isHighlighted('pad-16')}
+                  onClick={() => onButtonClick?.('pad-16')}
+                  width={30}
+                  height={28}
+                />
+              </div>
         </div>
         <div
           className="absolute pointer-events-none"

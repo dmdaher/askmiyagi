@@ -1159,6 +1159,7 @@ function generateFlatPanel(
   controlMap: Map<string, ManifestControl>,
   panelWidth: number,
   panelHeight: number,
+  controlScale: number,
 ): string {
   const pascalName = deviceIdToPascal(manifest.deviceId);
   const constPrefix = deviceIdToConstPrefix(manifest.deviceId);
@@ -1203,9 +1204,17 @@ function generateFlatPanel(
       // Compute pixel dimensions for component sizing
       const pxW = Math.round((ep.w / 100) * panelWidth);
       const pxH = Math.round((ep.h / 100) * panelHeight);
-      const controlJsx = renderControl(ctrl.id, ctrl, '          ', controlMap, pxW, pxH);
+      // Render control at full size — the inner transform will scale it down
+      const controlJsx = renderControl(ctrl.id, ctrl, '              ', controlMap, pxW, pxH);
 
       const rotation = (ctrl as any).rotation as number | undefined;
+      const transforms: string[] = [];
+      if (controlScale < 1) transforms.push(`scale(${controlScale})`);
+      if (rotation) transforms.push(`rotate(${rotation}deg)`);
+      const transformStr = transforms.length > 0
+        ? `            transform: '${transforms.join(' ')}',\n            transformOrigin: 'center',\n`
+        : '';
+
       const styleLines = [
         `            left: '${ep.x.toFixed(1)}%',`,
         `            top: '${ep.y.toFixed(1)}%',`,
@@ -1214,9 +1223,10 @@ function generateFlatPanel(
         `            display: 'flex',`,
         `            alignItems: 'center',`,
         `            justifyContent: 'center',`,
+        `            overflow: 'hidden',`,
       ];
-      if (rotation) {
-        styleLines.push(`            transform: 'rotate(${rotation}deg)',`);
+      if (transforms.length > 0) {
+        styleLines.push(`            transform: '${transforms.join(' ')}',`);
         styleLines.push(`            transformOrigin: 'center',`);
       }
 
@@ -1227,7 +1237,7 @@ function generateFlatPanel(
         `          style={{`,
         ...styleLines,
         `          }}`,
-        `        >`,
+        `        >`,,
         controlJsx,
         `        </div>`,
       ];
@@ -1412,13 +1422,14 @@ function generateRootPanel(
   controlMap: Map<string, ManifestControl>,
   panelWidth: number,
   panelHeight: number,
+  controlScale: number = 1,
 ): string {
   // Check if any control has editorPosition — if so, use flat panel mode
   const hasEditorPositions = manifest.controls.some((c: any) => c.editorPosition);
 
   if (hasEditorPositions) {
     console.log('  Layout mode: FLAT (panel-level percentage positioning from editor)');
-    return generateFlatPanel(manifest, sections, controlMap, panelWidth, panelHeight);
+    return generateFlatPanel(manifest, sections, controlMap, panelWidth, panelHeight, controlScale);
   } else {
     console.log('  Layout mode: SECTION-BASED (archetype layout from templates)');
     return generateSectionBasedPanel(manifest, sections, panelWidth, panelHeight);
@@ -1673,10 +1684,21 @@ function main() {
   const sectionsDir = path.join(deviceDir, 'sections');
   const constantsPath = path.join(PROJECT_ROOT, `src/lib/devices/${deviceId}-constants.ts`);
 
+  // Read controlScale from editor manifest (for scaling controls in generated panel)
+  const editorManifestPath = path.join(PROJECT_ROOT, `.pipeline/${deviceId}/manifest-editor.json`);
+  let controlScale = 1;
+  if (fs.existsSync(editorManifestPath)) {
+    try {
+      const editorData = JSON.parse(fs.readFileSync(editorManifestPath, 'utf-8'));
+      controlScale = (editorData.controlScale as number) ?? 1;
+    } catch { /* default to 1 */ }
+  }
+
   console.log(`\nPanel Codegen — ${manifest.deviceName} (${deviceId})`);
   console.log(`  Sections: ${manifest.sections.length}`);
   console.log(`  Controls: ${manifest.controls.length}`);
   console.log(`  Panel: ${panelWidth}x${panelHeight}`);
+  console.log(`  Control Scale: ${controlScale}`);
   console.log(`  Mode: ${dryRun ? 'DRY RUN' : 'WRITE'}\n`);
 
   // Generate section files
@@ -1699,7 +1721,7 @@ function main() {
   }
 
   // Generate root panel
-  const rootPanelContent = generateRootPanel(manifest, manifest.sections, controlMap, panelWidth, panelHeight);
+  const rootPanelContent = generateRootPanel(manifest, manifest.sections, controlMap, panelWidth, panelHeight, controlScale);
   const rootPanelPath = path.join(deviceDir, `${pascalName}Panel.tsx`);
   console.log(`  Root: ${pascalName}Panel.tsx`);
 
