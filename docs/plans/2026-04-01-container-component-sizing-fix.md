@@ -8,6 +8,24 @@
 
 ---
 
+## Research: How Figma Handles This
+
+Figma has the same concept — a frame (container) with content inside. The key differences:
+
+1. **No minimum sizes.** A Figma rectangle renders at whatever size you set. 4px × 4px? Fine. There's no "sm/md/lg" preset that overrides your dimensions.
+
+2. **The frame IS the visual.** When you resize a frame, the content scales with it. There's no invisible container larger than the visual.
+
+3. **Components scale proportionally.** A Figma component instance resizes its internals proportionally. A button at 100px wide with 12px text, resized to 50px, renders 6px text.
+
+4. **No CSS class minimums.** Figma doesn't use Tailwind `w-8 h-6`. Everything is explicit pixel values.
+
+Our PanelButton/Knob/Slider are built like CSS components with fixed Tailwind classes. They need to behave like Figma components — render at whatever pixel size they're told, scaling internals proportionally.
+
+**The mindset shift:** Stop thinking of PanelButton as a "button with preset sizes." Think of it as a "visual frame that renders button-like content at any dimensions."
+
+---
+
 ## The Root Problem
 
 The editor and generated panel use different sizing systems:
