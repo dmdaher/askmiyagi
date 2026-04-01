@@ -4,7 +4,7 @@ import { useEditorStore } from './store';
 import type { SnapGrid } from './store';
 import VersionHistoryDropdown from './VersionHistoryDropdown';
 
-const SNAP_OPTIONS: SnapGrid[] = [4, 8, 16, 32];
+const SNAP_OPTIONS: SnapGrid[] = [1, 2, 4, 8, 16, 32];
 const ZOOM_STEP = 0.1;
 
 interface EditorToolbarProps {

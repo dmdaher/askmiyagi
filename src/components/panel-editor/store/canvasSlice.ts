@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-export type SnapGrid = 4 | 8 | 16 | 32;
+export type SnapGrid = 1 | 2 | 4 | 8 | 16 | 32;
 
 export interface CanvasSlice {
   // State
@@ -55,7 +55,7 @@ export const createCanvasSlice: StateCreator<
   zoom: 1,
   panX: 0,
   panY: 0,
-  snapGrid: 8,
+  snapGrid: 4,
   showGrid: true,
   showPhoto: false,
   showLayers: false, // Start collapsed for maximum canvas space
