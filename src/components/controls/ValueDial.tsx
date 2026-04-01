@@ -38,10 +38,11 @@ export default function ValueDial({
   hasPush = false,
 }: ValueDialProps) {
   const DIAL_SIZE = outerSize ?? DIAL_SIZES[size];
-  const capInset = DIAL_SIZE > 60 ? 20 : 8;
-  const centerDot = size === 'lg' ? 10 : 6;
-  const ridgeHeight = size === 'lg' ? 6 : 4;
-  const highlightRidgeHeight = size === 'lg' ? 5 : 3;
+  // Scale internal proportions from DIAL_SIZE for fluid rendering at any size
+  const capInset = Math.max(Math.round(DIAL_SIZE * 0.17), 3);
+  const centerDot = Math.max(Math.round(DIAL_SIZE * 0.12), 3);
+  const ridgeHeight = Math.max(Math.round(DIAL_SIZE * 0.08), 2);
+  const highlightRidgeHeight = Math.max(Math.round(DIAL_SIZE * 0.06), 2);
 
   // Generate ridge lines around circumference
   const ridges = Array.from({ length: RIDGE_COUNT }, (_, i) => {

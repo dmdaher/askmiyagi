@@ -124,15 +124,21 @@ function renderControl(
       if (control.shape === 'circle') {
         // Force transport variant for circle buttons
         const circleVariant = control.buttonStyle === 'transport' ? 'transport' : 'transport';
-        const circleSize = pxH && pxH <= 32 ? 'sm' : pxH && pxH <= 48 ? 'md' : 'lg';
         const lines = [
           `${indent}<div>`,
           `${indent}  <PanelButton`,
           `${indent}    id="${controlId}"`,
           `${indent}    label="${escapeJsx(label)}"`,
           `${indent}    variant="${circleVariant}"`,
-          `${indent}    size="${circleSize}"`,
         ];
+        // Fluid sizing: pass pixel dimensions when available
+        if (pxW && pxH) {
+          lines.push(`${indent}    width={${pxW}}`);
+          lines.push(`${indent}    height={${pxH}}`);
+        } else {
+          const circleSize = pxH && pxH <= 32 ? 'sm' : pxH && pxH <= 48 ? 'md' : 'lg';
+          lines.push(`${indent}    size="${circleSize}"`);
+        }
         if (control.surfaceColor) lines.push(`${indent}    surfaceColor="${control.surfaceColor}"`);
         if (control.hasLed) {
           lines.push(`${indent}    hasLed`);
@@ -157,7 +163,6 @@ function renderControl(
       const variant = rawStyle === 'raised' ? 'standard'
         : rawStyle ?? undefined;
       const useIcon = resolvedIcon && control.labelDisplay === 'icon-only';
-      const btnSize: string = pxH ? (pxH <= 32 ? 'sm' : pxH <= 48 ? 'md' : 'lg') : 'md';
       const lines: string[] = [
         `${indent}<div>`,
         `${indent}  <PanelButton`,
@@ -165,7 +170,14 @@ function renderControl(
         `${indent}    label="${escapeJsx(label)}"`,
       ];
       if (variant) lines.push(`${indent}    variant="${variant}"`);
-      if (btnSize) lines.push(`${indent}    size="${btnSize}"`);
+      // Fluid sizing: pass pixel dimensions when available
+      if (pxW && pxH) {
+        lines.push(`${indent}    width={${pxW}}`);
+        lines.push(`${indent}    height={${pxH}}`);
+      } else {
+        const btnSize = pxH ? (pxH <= 32 ? 'sm' : pxH <= 48 ? 'md' : 'lg') : 'md';
+        lines.push(`${indent}    size="${btnSize}"`);
+      }
       if (control.surfaceColor) lines.push(`${indent}    surfaceColor="${control.surfaceColor}"`);
       if (useIcon) lines.push(`${indent}    iconContent="${escapeJsx(resolvedIcon!)}"`);
       if (control.hasLed) lines.push(`${indent}    hasLed`);

@@ -30,10 +30,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '12.70%',
-              top: '18.00%',
-              width: '6.00%',
-              height: '13.30%',
+              left: '13.70%',
+              top: '21.10%',
+              width: '2.80%',
+              height: '5.30%',
             }}
           >
             <Knob
@@ -41,16 +41,16 @@ export default function ZoneSection({
               label=""
               value={getState('master-volume').value ?? 64}
               highlighted={isHighlighted('master-volume')}
-              outerSize={48}
-              innerSize={34}
+              outerSize={19}
+              innerSize={13}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '12.7%',
-            top: '31.5%',
-            width: '6.0%',
+            left: '13.7%',
+            top: '26.6%',
+            width: '2.8%',
             textAlign: 'center',
           }}
         >
@@ -63,15 +63,16 @@ export default function ZoneSection({
             style={{
               left: '15.30%',
               top: '13.40%',
-              width: '4.70%',
-              height: '8.90%',
+              width: '2.80%',
+              height: '5.30%',
             }}
           >
             <div>
               <PanelButton
                 id="pan-level"
                 label=""
-                size="sm"
+                width={34}
+                height={19}
                 active={getState('pan-level').active}
                 highlighted={isHighlighted('pan-level')}
                 onClick={() => onButtonClick?.('pan-level')}
@@ -83,7 +84,7 @@ export default function ZoneSection({
           style={{
             left: '15.3%',
             top: '12.2%',
-            width: '4.7%',
+            width: '2.8%',
             textAlign: 'center',
           }}
         >
@@ -96,15 +97,16 @@ export default function ZoneSection({
             style={{
               left: '18.50%',
               top: '15.70%',
-              width: '2.00%',
-              height: '3.30%',
+              width: '1.20%',
+              height: '2.00%',
             }}
           >
             <div>
               <PanelButton
                 id="ctrl"
                 label=""
-                size="sm"
+                width={14}
+                height={7}
                 active={getState('ctrl').active}
                 highlighted={isHighlighted('ctrl')}
                 onClick={() => onButtonClick?.('ctrl')}
@@ -116,7 +118,7 @@ export default function ZoneSection({
           style={{
             left: '18.5%',
             top: '14.5%',
-            width: '2.0%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -129,15 +131,16 @@ export default function ZoneSection({
             style={{
               left: '16.70%',
               top: '22.40%',
-              width: '5.30%',
-              height: '3.30%',
+              width: '3.20%',
+              height: '2.00%',
             }}
           >
             <div>
               <PanelButton
                 id="assign"
                 label=""
-                size="sm"
+                width={38}
+                height={7}
                 active={getState('assign').active}
                 highlighted={isHighlighted('assign')}
                 onClick={() => onButtonClick?.('assign')}
@@ -149,7 +152,7 @@ export default function ZoneSection({
           style={{
             left: '16.7%',
             top: '21.2%',
-            width: '5.3%',
+            width: '3.2%',
             textAlign: 'center',
           }}
         >
@@ -162,15 +165,16 @@ export default function ZoneSection({
             style={{
               left: '16.10%',
               top: '29.40%',
-              width: '3.00%',
-              height: '3.30%',
+              width: '1.80%',
+              height: '2.00%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-9-16"
                 label=""
-                size="sm"
+                width={22}
+                height={7}
                 active={getState('zone-9-16').active}
                 highlighted={isHighlighted('zone-9-16')}
                 onClick={() => onButtonClick?.('zone-9-16')}
@@ -182,7 +186,7 @@ export default function ZoneSection({
           style={{
             left: '16.1%',
             top: '28.2%',
-            width: '3.0%',
+            width: '1.8%',
             textAlign: 'center',
           }}
         >
@@ -195,15 +199,16 @@ export default function ZoneSection({
             style={{
               left: '16.80%',
               top: '28.50%',
-              width: '5.30%',
-              height: '5.50%',
+              width: '3.20%',
+              height: '3.30%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-select"
                 label=""
-                size="sm"
+                width={38}
+                height={12}
                 active={getState('zone-select').active}
                 highlighted={isHighlighted('zone-select')}
                 onClick={() => onButtonClick?.('zone-select')}
@@ -215,7 +220,7 @@ export default function ZoneSection({
           style={{
             left: '16.8%',
             top: '27.3%',
-            width: '5.3%',
+            width: '3.2%',
             textAlign: 'center',
           }}
         >
@@ -226,10 +231,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '20.50%',
-              top: '13.40%',
-              width: '3.30%',
-              height: '8.90%',
+              left: '20.60%',
+              top: '13.70%',
+              width: '2.00%',
+              height: '5.30%',
             }}
           >
             <Knob
@@ -237,16 +242,16 @@ export default function ZoneSection({
               label=""
               value={getState('knob-1').value ?? 64}
               highlighted={isHighlighted('knob-1')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={19}
+              innerSize={13}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '20.5%',
-            top: '22.5%',
-            width: '3.3%',
+            left: '20.6%',
+            top: '19.2%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >
@@ -259,8 +264,8 @@ export default function ZoneSection({
             style={{
               left: '22.80%',
               top: '13.20%',
-              width: '3.50%',
-              height: '7.80%',
+              width: '2.10%',
+              height: '4.70%',
             }}
           >
             <Knob
@@ -268,16 +273,16 @@ export default function ZoneSection({
               label=""
               value={getState('knob-2').value ?? 64}
               highlighted={isHighlighted('knob-2')}
-              outerSize={28}
-              innerSize={20}
+              outerSize={17}
+              innerSize={12}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '22.8%',
-            top: '21.2%',
-            width: '3.5%',
+            top: '18.1%',
+            width: '2.1%',
             textAlign: 'center',
           }}
         >
@@ -290,8 +295,8 @@ export default function ZoneSection({
             style={{
               left: '24.80%',
               top: '13.40%',
-              width: '3.70%',
-              height: '7.80%',
+              width: '2.20%',
+              height: '4.70%',
             }}
           >
             <Knob
@@ -299,16 +304,16 @@ export default function ZoneSection({
               label=""
               value={getState('knob-3').value ?? 64}
               highlighted={isHighlighted('knob-3')}
-              outerSize={28}
-              innerSize={20}
+              outerSize={17}
+              innerSize={12}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '24.8%',
-            top: '21.4%',
-            width: '3.7%',
+            top: '18.3%',
+            width: '2.2%',
             textAlign: 'center',
           }}
         >
@@ -319,10 +324,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '26.90%',
-              top: '13.20%',
-              width: '3.50%',
-              height: '7.80%',
+              left: '27.00%',
+              top: '13.40%',
+              width: '2.10%',
+              height: '4.70%',
             }}
           >
             <Knob
@@ -330,16 +335,16 @@ export default function ZoneSection({
               label=""
               value={getState('knob-4').value ?? 64}
               highlighted={isHighlighted('knob-4')}
-              outerSize={28}
-              innerSize={20}
+              outerSize={17}
+              innerSize={12}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '26.9%',
-            top: '21.2%',
-            width: '3.5%',
+            left: '27.0%',
+            top: '18.3%',
+            width: '2.1%',
             textAlign: 'center',
           }}
         >
@@ -352,8 +357,8 @@ export default function ZoneSection({
             style={{
               left: '29.20%',
               top: '13.20%',
-              width: '3.50%',
-              height: '7.80%',
+              width: '2.10%',
+              height: '4.70%',
             }}
           >
             <Knob
@@ -361,16 +366,16 @@ export default function ZoneSection({
               label=""
               value={getState('knob-5').value ?? 64}
               highlighted={isHighlighted('knob-5')}
-              outerSize={28}
-              innerSize={20}
+              outerSize={17}
+              innerSize={12}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '29.2%',
-            top: '21.2%',
-            width: '3.5%',
+            top: '18.1%',
+            width: '2.1%',
             textAlign: 'center',
           }}
         >
@@ -383,8 +388,8 @@ export default function ZoneSection({
             style={{
               left: '31.70%',
               top: '12.60%',
-              width: '3.30%',
-              height: '8.90%',
+              width: '2.00%',
+              height: '5.30%',
             }}
           >
             <Knob
@@ -392,16 +397,16 @@ export default function ZoneSection({
               label=""
               value={getState('knob-6').value ?? 64}
               highlighted={isHighlighted('knob-6')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={19}
+              innerSize={13}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '31.7%',
-            top: '21.7%',
-            width: '3.3%',
+            top: '18.1%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >
@@ -414,8 +419,8 @@ export default function ZoneSection({
             style={{
               left: '33.90%',
               top: '12.60%',
-              width: '3.30%',
-              height: '8.90%',
+              width: '2.00%',
+              height: '5.30%',
             }}
           >
             <Knob
@@ -423,16 +428,16 @@ export default function ZoneSection({
               label=""
               value={getState('knob-7').value ?? 64}
               highlighted={isHighlighted('knob-7')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={19}
+              innerSize={13}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '33.9%',
-            top: '21.7%',
-            width: '3.3%',
+            top: '18.1%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >
@@ -445,8 +450,8 @@ export default function ZoneSection({
             style={{
               left: '35.80%',
               top: '13.20%',
-              width: '3.50%',
-              height: '7.80%',
+              width: '2.10%',
+              height: '4.70%',
             }}
           >
             <Knob
@@ -454,16 +459,16 @@ export default function ZoneSection({
               label=""
               value={getState('knob-8').value ?? 64}
               highlighted={isHighlighted('knob-8')}
-              outerSize={28}
-              innerSize={20}
+              outerSize={17}
+              innerSize={12}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '35.8%',
-            top: '21.2%',
-            width: '3.5%',
+            top: '18.1%',
+            width: '2.1%',
             textAlign: 'center',
           }}
         >
@@ -476,15 +481,16 @@ export default function ZoneSection({
             style={{
               left: '20.20%',
               top: '25.20%',
-              width: '3.70%',
-              height: '4.40%',
+              width: '2.20%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-1"
                 label=""
-                size="sm"
+                width={26}
+                height={10}
                 active={getState('zone-int-ext-1').active}
                 highlighted={isHighlighted('zone-int-ext-1')}
                 onClick={() => onButtonClick?.('zone-int-ext-1')}
@@ -496,7 +502,7 @@ export default function ZoneSection({
           style={{
             left: '20.2%',
             top: '24.0%',
-            width: '3.7%',
+            width: '2.2%',
             textAlign: 'center',
           }}
         >
@@ -509,15 +515,16 @@ export default function ZoneSection({
             style={{
               left: '22.40%',
               top: '24.90%',
-              width: '3.30%',
-              height: '4.40%',
+              width: '2.00%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-2"
                 label=""
-                size="sm"
+                width={24}
+                height={10}
                 active={getState('zone-int-ext-2').active}
                 highlighted={isHighlighted('zone-int-ext-2')}
                 onClick={() => onButtonClick?.('zone-int-ext-2')}
@@ -529,7 +536,7 @@ export default function ZoneSection({
           style={{
             left: '22.4%',
             top: '23.7%',
-            width: '3.3%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >
@@ -542,15 +549,16 @@ export default function ZoneSection({
             style={{
               left: '24.60%',
               top: '24.90%',
-              width: '3.30%',
-              height: '4.40%',
+              width: '2.00%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-3"
                 label=""
-                size="sm"
+                width={24}
+                height={10}
                 active={getState('zone-int-ext-3').active}
                 highlighted={isHighlighted('zone-int-ext-3')}
                 onClick={() => onButtonClick?.('zone-int-ext-3')}
@@ -562,7 +570,7 @@ export default function ZoneSection({
           style={{
             left: '24.6%',
             top: '23.7%',
-            width: '3.3%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >
@@ -575,15 +583,16 @@ export default function ZoneSection({
             style={{
               left: '27.10%',
               top: '24.60%',
-              width: '3.30%',
-              height: '4.40%',
+              width: '2.00%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-4"
                 label=""
-                size="sm"
+                width={24}
+                height={10}
                 active={getState('zone-int-ext-4').active}
                 highlighted={isHighlighted('zone-int-ext-4')}
                 onClick={() => onButtonClick?.('zone-int-ext-4')}
@@ -595,7 +604,7 @@ export default function ZoneSection({
           style={{
             left: '27.1%',
             top: '23.4%',
-            width: '3.3%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >
@@ -608,15 +617,16 @@ export default function ZoneSection({
             style={{
               left: '29.10%',
               top: '25.40%',
-              width: '3.70%',
-              height: '4.40%',
+              width: '2.20%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-5"
                 label=""
-                size="sm"
+                width={26}
+                height={10}
                 active={getState('zone-int-ext-5').active}
                 highlighted={isHighlighted('zone-int-ext-5')}
                 onClick={() => onButtonClick?.('zone-int-ext-5')}
@@ -628,7 +638,7 @@ export default function ZoneSection({
           style={{
             left: '29.1%',
             top: '24.2%',
-            width: '3.7%',
+            width: '2.2%',
             textAlign: 'center',
           }}
         >
@@ -641,15 +651,16 @@ export default function ZoneSection({
             style={{
               left: '31.50%',
               top: '25.40%',
-              width: '3.30%',
-              height: '4.40%',
+              width: '2.00%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-6"
                 label=""
-                size="sm"
+                width={24}
+                height={10}
                 active={getState('zone-int-ext-6').active}
                 highlighted={isHighlighted('zone-int-ext-6')}
                 onClick={() => onButtonClick?.('zone-int-ext-6')}
@@ -661,7 +672,7 @@ export default function ZoneSection({
           style={{
             left: '31.5%',
             top: '24.2%',
-            width: '3.3%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >
@@ -674,15 +685,16 @@ export default function ZoneSection({
             style={{
               left: '33.70%',
               top: '25.80%',
-              width: '3.30%',
-              height: '3.30%',
+              width: '2.00%',
+              height: '2.00%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-7"
                 label=""
-                size="sm"
+                width={24}
+                height={7}
                 active={getState('zone-int-ext-7').active}
                 highlighted={isHighlighted('zone-int-ext-7')}
                 onClick={() => onButtonClick?.('zone-int-ext-7')}
@@ -694,7 +706,7 @@ export default function ZoneSection({
           style={{
             left: '33.7%',
             top: '24.6%',
-            width: '3.3%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >
@@ -707,15 +719,16 @@ export default function ZoneSection({
             style={{
               left: '35.80%',
               top: '25.40%',
-              width: '3.70%',
-              height: '3.30%',
+              width: '2.20%',
+              height: '2.00%',
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-8"
                 label=""
-                size="sm"
+                width={26}
+                height={7}
                 active={getState('zone-int-ext-8').active}
                 highlighted={isHighlighted('zone-int-ext-8')}
                 onClick={() => onButtonClick?.('zone-int-ext-8')}
@@ -727,7 +740,7 @@ export default function ZoneSection({
           style={{
             left: '35.8%',
             top: '24.2%',
-            width: '3.7%',
+            width: '2.2%',
             textAlign: 'center',
           }}
         >
@@ -738,10 +751,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '21.10%',
-              top: '23.50%',
-              width: '2.00%',
-              height: '35.50%',
+              left: '21.40%',
+              top: '29.10%',
+              width: '1.20%',
+              height: '12.00%',
             }}
           >
             <Slider
@@ -749,16 +762,16 @@ export default function ZoneSection({
               label=""
               value={getState('slider-1').value ?? 64}
               highlighted={isHighlighted('slider-1')}
-              trackHeight={108}
-              trackWidth={14}
+              trackHeight={23}
+              trackWidth={4}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '21.1%',
-            top: '59.2%',
-            width: '2.0%',
+            left: '21.4%',
+            top: '41.3%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -769,10 +782,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '23.40%',
-              top: '23.30%',
-              width: '2.00%',
-              height: '35.50%',
+              left: '23.80%',
+              top: '28.80%',
+              width: '1.20%',
+              height: '12.00%',
             }}
           >
             <Slider
@@ -780,16 +793,16 @@ export default function ZoneSection({
               label=""
               value={getState('slider-2').value ?? 64}
               highlighted={isHighlighted('slider-2')}
-              trackHeight={108}
-              trackWidth={14}
+              trackHeight={23}
+              trackWidth={4}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '23.4%',
-            top: '59.0%',
-            width: '2.0%',
+            left: '23.8%',
+            top: '41.0%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -800,10 +813,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '25.50%',
-              top: '23.30%',
-              width: '2.00%',
-              height: '35.50%',
+              left: '25.80%',
+              top: '28.80%',
+              width: '1.20%',
+              height: '12.00%',
             }}
           >
             <Slider
@@ -811,16 +824,16 @@ export default function ZoneSection({
               label=""
               value={getState('slider-3').value ?? 64}
               highlighted={isHighlighted('slider-3')}
-              trackHeight={108}
-              trackWidth={14}
+              trackHeight={23}
+              trackWidth={4}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '25.5%',
-            top: '59.0%',
-            width: '2.0%',
+            left: '25.8%',
+            top: '41.0%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -831,10 +844,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '27.80%',
-              top: '23.30%',
-              width: '2.00%',
-              height: '35.50%',
+              left: '28.10%',
+              top: '28.80%',
+              width: '1.20%',
+              height: '12.00%',
             }}
           >
             <Slider
@@ -842,16 +855,16 @@ export default function ZoneSection({
               label=""
               value={getState('slider-4').value ?? 64}
               highlighted={isHighlighted('slider-4')}
-              trackHeight={108}
-              trackWidth={14}
+              trackHeight={23}
+              trackWidth={4}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '27.8%',
-            top: '59.0%',
-            width: '2.0%',
+            left: '28.1%',
+            top: '41.0%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -862,10 +875,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '30.30%',
-              top: '23.50%',
-              width: '2.00%',
-              height: '35.50%',
+              left: '30.60%',
+              top: '29.10%',
+              width: '1.20%',
+              height: '12.00%',
             }}
           >
             <Slider
@@ -873,16 +886,16 @@ export default function ZoneSection({
               label=""
               value={getState('slider-5').value ?? 64}
               highlighted={isHighlighted('slider-5')}
-              trackHeight={108}
-              trackWidth={14}
+              trackHeight={23}
+              trackWidth={4}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '30.3%',
-            top: '59.2%',
-            width: '2.0%',
+            left: '30.6%',
+            top: '41.3%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -893,10 +906,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '32.40%',
-              top: '23.30%',
-              width: '2.00%',
-              height: '35.50%',
+              left: '32.80%',
+              top: '28.80%',
+              width: '1.20%',
+              height: '12.00%',
             }}
           >
             <Slider
@@ -904,16 +917,16 @@ export default function ZoneSection({
               label=""
               value={getState('slider-6').value ?? 64}
               highlighted={isHighlighted('slider-6')}
-              trackHeight={108}
-              trackWidth={14}
+              trackHeight={23}
+              trackWidth={4}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '32.4%',
-            top: '59.0%',
-            width: '2.0%',
+            left: '32.8%',
+            top: '41.0%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -924,10 +937,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '34.60%',
-              top: '23.50%',
-              width: '2.00%',
-              height: '35.50%',
+              left: '34.90%',
+              top: '29.10%',
+              width: '1.20%',
+              height: '12.00%',
             }}
           >
             <Slider
@@ -935,16 +948,16 @@ export default function ZoneSection({
               label=""
               value={getState('slider-7').value ?? 64}
               highlighted={isHighlighted('slider-7')}
-              trackHeight={108}
-              trackWidth={14}
+              trackHeight={23}
+              trackWidth={4}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '34.6%',
-            top: '59.2%',
-            width: '2.0%',
+            left: '34.9%',
+            top: '41.3%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -955,10 +968,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '36.80%',
-              top: '23.30%',
-              width: '2.00%',
-              height: '35.50%',
+              left: '36.70%',
+              top: '29.60%',
+              width: '1.20%',
+              height: '12.00%',
             }}
           >
             <Slider
@@ -966,16 +979,16 @@ export default function ZoneSection({
               label=""
               value={getState('slider-8').value ?? 64}
               highlighted={isHighlighted('slider-8')}
-              trackHeight={108}
-              trackWidth={14}
+              trackHeight={23}
+              trackWidth={4}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '36.8%',
-            top: '59.0%',
-            width: '2.0%',
+            left: '36.7%',
+            top: '41.8%',
+            width: '1.2%',
             textAlign: 'center',
           }}
         >
@@ -988,15 +1001,16 @@ export default function ZoneSection({
             style={{
               left: '13.20%',
               top: '35.30%',
-              width: '4.70%',
-              height: '4.40%',
+              width: '2.80%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="split"
                 label=""
-                size="sm"
+                width={34}
+                height={10}
                 active={getState('split').active}
                 highlighted={isHighlighted('split')}
                 onClick={() => onButtonClick?.('split')}
@@ -1008,7 +1022,7 @@ export default function ZoneSection({
           style={{
             left: '13.2%',
             top: '34.1%',
-            width: '4.7%',
+            width: '2.8%',
             textAlign: 'center',
           }}
         >
@@ -1021,15 +1035,16 @@ export default function ZoneSection({
             style={{
               left: '15.40%',
               top: '34.60%',
-              width: '4.70%',
-              height: '7.80%',
+              width: '2.80%',
+              height: '4.70%',
             }}
           >
             <div>
               <PanelButton
                 id="chord-memory"
                 label=""
-                size="sm"
+                width={34}
+                height={17}
                 active={getState('chord-memory').active}
                 highlighted={isHighlighted('chord-memory')}
                 onClick={() => onButtonClick?.('chord-memory')}
@@ -1041,7 +1056,7 @@ export default function ZoneSection({
           style={{
             left: '15.4%',
             top: '33.4%',
-            width: '4.7%',
+            width: '2.8%',
             textAlign: 'center',
           }}
         >
@@ -1054,15 +1069,16 @@ export default function ZoneSection({
             style={{
               left: '17.70%',
               top: '36.60%',
-              width: '3.70%',
-              height: '3.30%',
+              width: '2.20%',
+              height: '2.00%',
             }}
           >
             <div>
               <PanelButton
                 id="arpeggio"
                 label=""
-                size="sm"
+                width={26}
+                height={7}
                 active={getState('arpeggio').active}
                 highlighted={isHighlighted('arpeggio')}
                 onClick={() => onButtonClick?.('arpeggio')}
@@ -1074,7 +1090,7 @@ export default function ZoneSection({
           style={{
             left: '17.7%',
             top: '35.4%',
-            width: '3.7%',
+            width: '2.2%',
             textAlign: 'center',
           }}
         >
@@ -1087,15 +1103,16 @@ export default function ZoneSection({
             style={{
               left: '13.10%',
               top: '42.90%',
-              width: '5.00%',
-              height: '3.30%',
+              width: '3.00%',
+              height: '2.00%',
             }}
           >
             <div>
               <PanelButton
                 id="transpose"
                 label=""
-                size="sm"
+                width={36}
+                height={7}
                 active={getState('transpose').active}
                 highlighted={isHighlighted('transpose')}
                 onClick={() => onButtonClick?.('transpose')}
@@ -1107,7 +1124,7 @@ export default function ZoneSection({
           style={{
             left: '13.1%',
             top: '41.7%',
-            width: '5.0%',
+            width: '3.0%',
             textAlign: 'center',
           }}
         >
@@ -1120,15 +1137,16 @@ export default function ZoneSection({
             style={{
               left: '15.20%',
               top: '42.90%',
-              width: '4.70%',
-              height: '3.30%',
+              width: '2.80%',
+              height: '5.30%',
             }}
           >
             <div>
               <PanelButton
                 id="octave-down"
                 label=""
-                size="sm"
+                width={34}
+                height={19}
                 active={getState('octave-down').active}
                 highlighted={isHighlighted('octave-down')}
                 onClick={() => onButtonClick?.('octave-down')}
@@ -1140,7 +1158,7 @@ export default function ZoneSection({
           style={{
             left: '15.2%',
             top: '41.7%',
-            width: '4.7%',
+            width: '2.8%',
             textAlign: 'center',
           }}
         >
@@ -1152,16 +1170,17 @@ export default function ZoneSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '17.80%',
-              top: '42.90%',
-              width: '3.30%',
-              height: '4.40%',
+              top: '43.20%',
+              width: '2.00%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="octave-up"
                 label=""
-                size="sm"
+                width={24}
+                height={10}
                 active={getState('octave-up').active}
                 highlighted={isHighlighted('octave-up')}
                 onClick={() => onButtonClick?.('octave-up')}
@@ -1172,8 +1191,8 @@ export default function ZoneSection({
           className="absolute pointer-events-none"
           style={{
             left: '17.8%',
-            top: '41.7%',
-            width: '3.3%',
+            top: '42.0%',
+            width: '2.0%',
             textAlign: 'center',
           }}
         >

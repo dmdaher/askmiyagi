@@ -32,15 +32,15 @@ export default function ControllerSection({
             style={{
               left: '5.90%',
               top: '6.60%',
-              width: '3.00%',
-              height: '41.00%',
+              width: '1.80%',
+              height: '24.60%',
             }}
           >
             <Wheel
               id="wheel-1"
               label=""
-              width={36}
-              height={148}
+              width={22}
+              height={89}
               highlighted={isHighlighted('wheel-1')}
             />
           </div>
@@ -49,7 +49,7 @@ export default function ControllerSection({
           style={{
             left: '5.9%',
             top: '5.4%',
-            width: '3.0%',
+            width: '1.8%',
             textAlign: 'center',
           }}
         >
@@ -62,15 +62,15 @@ export default function ControllerSection({
             style={{
               left: '9.30%',
               top: '6.40%',
-              width: '3.00%',
-              height: '41.00%',
+              width: '1.80%',
+              height: '24.60%',
             }}
           >
             <Wheel
               id="wheel-2"
               label=""
-              width={36}
-              height={148}
+              width={22}
+              height={89}
               highlighted={isHighlighted('wheel-2')}
             />
           </div>
@@ -79,7 +79,7 @@ export default function ControllerSection({
           style={{
             left: '9.3%',
             top: '5.2%',
-            width: '3.0%',
+            width: '1.8%',
             textAlign: 'center',
           }}
         >
@@ -92,15 +92,16 @@ export default function ControllerSection({
             style={{
               left: '4.20%',
               top: '65.10%',
-              width: '5.00%',
-              height: '4.40%',
+              width: '3.00%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="s1"
                 label=""
-                size="sm"
+                width={36}
+                height={10}
                 active={getState('s1').active}
                 highlighted={isHighlighted('s1')}
                 onClick={() => onButtonClick?.('s1')}
@@ -112,7 +113,7 @@ export default function ControllerSection({
           style={{
             left: '4.2%',
             top: '63.9%',
-            width: '5.0%',
+            width: '3.0%',
             textAlign: 'center',
           }}
         >
@@ -125,15 +126,16 @@ export default function ControllerSection({
             style={{
               left: '5.80%',
               top: '64.80%',
-              width: '5.00%',
-              height: '4.40%',
+              width: '3.00%',
+              height: '2.70%',
             }}
           >
             <div>
               <PanelButton
                 id="s2"
                 label=""
-                size="sm"
+                width={36}
+                height={10}
                 active={getState('s2').active}
                 highlighted={isHighlighted('s2')}
                 onClick={() => onButtonClick?.('s2')}
@@ -145,7 +147,7 @@ export default function ControllerSection({
           style={{
             left: '5.8%',
             top: '63.6%',
-            width: '5.0%',
+            width: '3.0%',
             textAlign: 'center',
           }}
         >
@@ -156,10 +158,10 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '6.80%',
-              top: '59.00%',
-              width: '5.00%',
-              height: '36.60%',
+              left: '7.10%',
+              top: '72.00%',
+              width: '2.80%',
+              height: '10.60%',
             }}
           >
             <DirectionSwitch
@@ -167,16 +169,16 @@ export default function ControllerSection({
               label=""
               positions={["FWD","REV","SLIP REV"]}
               highlighted={isHighlighted('pitch-bend-lever')}
-              width={60}
-              height={132}
+              width={34}
+              height={38}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '6.8%',
-            top: '57.8%',
-            width: '5.0%',
+            left: '7.1%',
+            top: '70.8%',
+            width: '2.8%',
             textAlign: 'center',
           }}
         >

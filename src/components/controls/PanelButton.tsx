@@ -7,6 +7,8 @@ interface PanelButtonProps {
   label: string;
   variant?: 'standard' | 'zone' | 'scene' | 'category' | 'function' | 'menu' | 'flat-key' | 'transport' | 'rubber';
   size?: 'sm' | 'md' | 'lg';
+  width?: number;   // Fluid mode: explicit pixel width (overrides size preset)
+  height?: number;  // Fluid mode: explicit pixel height (overrides size preset)
   active?: boolean;
   hasLed?: boolean;
   ledOn?: boolean;
@@ -18,6 +20,7 @@ interface PanelButtonProps {
   onClick?: () => void;
 }
 
+// Preset sizes (backward compat with Fantom-08 hand-built panel)
 const sizeClasses: Record<string, { button: string; text: string; led: string }> = {
   sm: { button: 'w-8 h-6', text: 'text-[8px]', led: 'w-2 h-2' },
   md: { button: 'w-10 h-7', text: 'text-[9px]', led: 'w-2.5 h-2.5' },
@@ -83,6 +86,8 @@ export default function PanelButton({
   label,
   variant = 'standard',
   size = 'md',
+  width,
+  height,
   active = false,
   hasLed = false,
   ledOn = false,
@@ -93,6 +98,9 @@ export default function PanelButton({
   iconContent,
   onClick,
 }: PanelButtonProps) {
+  // Fluid mode: when width/height are provided, compute all visuals proportionally.
+  // Preset mode: when only size is provided, use Tailwind classes (Fantom-08 compat).
+  const isFluid = width != null && height != null;
   const sizeStyle = sizeClasses[size];
   const variantStyle = variantStyles[variant];
 
@@ -100,12 +108,28 @@ export default function PanelButton({
   const isRubber = variant === 'rubber';
   const isFlatKey = variant === 'flat-key';
 
-  // Transport buttons are circular with an accent ring
+  // ── Fluid sizing computations ──────────────────────────────────────────
+  const fluidFontSize = isFluid ? Math.max(Math.round(height! * 0.35), 6) : undefined;
+  const fluidBorderRadius = isFluid
+    ? (isTransport ? '50%' : Math.max(Math.round(Math.min(width!, height!) * 0.15), 2))
+    : undefined;
+  const fluidLedSize = isFluid ? Math.max(Math.min(Math.round(height! * 0.2), 8), 3) : undefined;
+
+  // Fluid shadow scales with height
+  const fluidShadow = isFluid
+    ? (active
+        ? `inset 0 ${Math.round(height! * 0.05)}px ${Math.round(height! * 0.1)}px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)`
+        : `0 ${Math.round(height! * 0.1)}px ${Math.round(height! * 0.2)}px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)`)
+    : undefined;
+
+  // ── Transport style ────────────────────────────────────────────────────
+  const transportW = isFluid ? width! : 40;
+  const transportH = isFluid ? height! : 40;
   const transportStyle = isTransport
     ? {
         borderRadius: '50%',
-        width: 40,
-        height: 40,
+        width: transportW,
+        height: transportH,
         border: surfaceColor ? `3px solid ${surfaceColor}` : '3px solid #555',
         boxShadow: active
           ? `inset 0 2px 4px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)${surfaceColor ? `, 0 0 8px ${surfaceColor}44` : ''}`
@@ -114,10 +138,10 @@ export default function PanelButton({
       }
     : undefined;
 
-  // Rubber buttons are small squares with rounded corners and a rubber feel
+  // ── Rubber style ───────────────────────────────────────────────────────
   const rubberStyle = isRubber
     ? {
-        borderRadius: 4,
+        borderRadius: isFluid ? fluidBorderRadius : 4,
         boxShadow: active
           ? 'inset 0 2px 3px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.04)'
           : '0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.06)',
@@ -125,7 +149,7 @@ export default function PanelButton({
       }
     : undefined;
 
-  // Flat-key buttons are low-profile with less 3D gradient
+  // ── Flat-key style ─────────────────────────────────────────────────────
   const flatKeyStyle = isFlatKey
     ? {
         boxShadow: active
@@ -136,18 +160,35 @@ export default function PanelButton({
       }
     : undefined;
 
+  // ── Default style ──────────────────────────────────────────────────────
   const customStyle = transportStyle ?? rubberStyle ?? flatKeyStyle ?? {
-    boxShadow: active
+    boxShadow: isFluid ? fluidShadow : (active
       ? 'inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)'
-      : '0 3px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)',
+      : '0 3px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)'),
     transform: active ? 'translateY(1px)' : 'translateY(0)',
   };
 
+  // ── Fluid button style (inline, replaces Tailwind classes) ─────────────
+  const fluidButtonStyle = isFluid ? {
+    width: width!,
+    height: height!,
+    borderRadius: fluidBorderRadius,
+    overflow: 'hidden' as const,
+    ...customStyle,
+  } : customStyle;
+
+  // Text style — fluid or preset
+  const textClass = isFluid ? '' : sizeStyle.text;
+  const textStyle = isFluid ? { fontSize: fluidFontSize } : undefined;
+
   return (
     <div className="flex flex-col items-center" data-control-id={id}>
-      {/* Label above button (panel-printed text) — rendered before LED per hardware layout */}
+      {/* Label above button */}
       {labelPosition === 'above' && (
-        <span className={`${sizeStyle.text} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}>
+        <span
+          className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
+          style={textStyle}
+        >
           {label}
         </span>
       )}
@@ -155,8 +196,9 @@ export default function PanelButton({
       {/* LED indicator */}
       {hasLed && (
         <div
-          className={`${sizeStyle.led} rounded-full transition-all duration-150`}
+          className={`${isFluid ? '' : sizeStyle.led} rounded-full transition-all duration-150`}
           style={{
+            ...(isFluid ? { width: fluidLedSize, height: fluidLedSize } : {}),
             backgroundColor: ledOn ? ledColor : '#1a1a1a',
             boxShadow: ledOn ? `0 0 6px 2px ${ledColor}` : 'inset 0 1px 2px rgba(0,0,0,0.5)',
           }}
@@ -168,37 +210,43 @@ export default function PanelButton({
         type="button"
         onClick={onClick}
         className={[
-          isTransport ? '' : sizeStyle.button,
-          isTransport ? '' : 'rounded-md',
+          isFluid ? '' : (isTransport ? '' : sizeStyle.button),
+          isFluid ? '' : (isTransport ? '' : 'rounded-md'),
           'border',
           'cursor-pointer select-none',
           'flex items-center justify-center',
           'transition-colors duration-100',
           active ? variantStyle.active : variantStyle.base,
         ].join(' ')}
-        style={customStyle}
+        style={fluidButtonStyle}
         {...(highlighted ? highlightAnimation : {})}
         whileTap={{ scale: isTransport ? 0.92 : 0.95, y: 2 }}
       >
         {iconContent ? (
           <span
             className="text-gray-200 leading-none text-center select-none"
-            style={{ fontSize: isTransport ? 18 : 16 }}
+            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16) }}
           >
             {iconContent}
           </span>
         ) : (
           labelPosition === 'on' && (
-            <span className={`${sizeStyle.text} font-medium text-gray-200 leading-tight text-center px-1 tracking-wide uppercase`}>
+            <span
+              className={`${textClass} font-medium text-gray-200 leading-tight text-center px-1 tracking-wide uppercase`}
+              style={textStyle}
+            >
               {label}
             </span>
           )
         )}
       </motion.button>
 
-      {/* Label below button (panel-printed text) */}
+      {/* Label below button */}
       {labelPosition === 'below' && (
-        <span className={`${sizeStyle.text} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}>
+        <span
+          className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
+          style={textStyle}
+        >
           {label}
         </span>
       )}
