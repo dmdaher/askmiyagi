@@ -121,6 +121,40 @@ At controlScale=1.0 (100%):
 
 ---
 
+## Audit Results (2026-04-01)
+
+### Components already fluid (no changes needed):
+- Knob — `outerSize` prop works at any value
+- Slider — `trackHeight`/`trackWidth` props work at any value
+- PadButton — `width`/`height` props already accepted
+- Wheel — `width`/`height` props already accepted
+- TouchDisplay — `width`/`height` props already accepted
+
+### Components needing modification:
+- **PanelButton** — hardcoded Tailwind `w-8 h-6` (sm), `w-10 h-7` (md), `w-14 h-9` (lg). Needs `width`/`height` override props.
+- **ValueDial** — hardcoded size presets. Same fix.
+
+### Pipeline impact: NONE
+- Tutorials highlight by ID, not size — changing dimensions doesn't break tutorials
+- PanelState is size-agnostic (active/ledOn/value only)
+- sizeClass stays in manifest for hash stability + label font sizing
+- Fantom-08 hand-built panel uses `size="md"` — backward compatible if we keep the prop
+
+### Backward compatibility approach:
+```typescript
+// Keep size prop for Fantom-08, add width/height for pipeline panels
+interface PanelButtonProps {
+  size?: 'sm' | 'md' | 'lg';  // kept for backward compat
+  width?: number;               // NEW — overrides size preset
+  height?: number;              // NEW — overrides size preset
+}
+```
+
+### Minimum viable size: ~16px
+Below 16px, text and details become illegible. This is fine for the Fantom-06 at 40% scale (most controls land at 16-24px).
+
+---
+
 ## Implementation Order
 
 1. Update PanelButton to accept `width`/`height` props (override size presets)
