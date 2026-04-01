@@ -50,12 +50,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SAMPLING
           </span>
         </div>
@@ -83,12 +83,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '90.8%',
-            top: '6.1%',
+            top: '5.4%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             PAD MODE
           </span>
         </div>
@@ -116,12 +116,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '92.4%',
-            top: '6.1%',
+            top: '5.4%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CLIP BOARD
           </span>
         </div>
@@ -149,12 +149,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '6.1%',
+            top: '5.4%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             BANK
           </span>
         </div>
@@ -182,12 +182,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '6.1%',
+            top: '5.4%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             HOLD
           </span>
         </div>
@@ -216,12 +216,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             1
           </span>
         </div>
@@ -250,12 +250,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             2
           </span>
         </div>
@@ -284,12 +284,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             3
           </span>
         </div>
@@ -318,12 +318,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             4
           </span>
         </div>
@@ -352,12 +352,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             5
           </span>
         </div>
@@ -386,12 +386,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             6
           </span>
         </div>
@@ -420,12 +420,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             7
           </span>
         </div>
@@ -454,12 +454,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             8
           </span>
         </div>
@@ -488,12 +488,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             9
           </span>
         </div>
@@ -522,12 +522,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             10
           </span>
         </div>
@@ -556,12 +556,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             11
           </span>
         </div>
@@ -590,12 +590,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             12
           </span>
         </div>
@@ -624,12 +624,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             13
           </span>
         </div>
@@ -658,12 +658,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             14
           </span>
         </div>
@@ -692,12 +692,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             15
           </span>
         </div>
@@ -726,12 +726,12 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             16
           </span>
         </div>

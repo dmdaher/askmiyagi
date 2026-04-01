@@ -49,12 +49,12 @@ export default function SceneSection({
           className="absolute pointer-events-none"
           style={{
             left: '56.7%',
-            top: '6.8%',
+            top: '6.1%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SCENE SELECT
           </span>
         </div>
@@ -82,12 +82,12 @@ export default function SceneSection({
           className="absolute pointer-events-none"
           style={{
             left: '56.7%',
-            top: '17.9%',
+            top: '17.2%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SCENE CHAIN
           </span>
         </div>
@@ -115,12 +115,12 @@ export default function SceneSection({
           className="absolute pointer-events-none"
           style={{
             left: '56.7%',
-            top: '24.7%',
+            top: '24.0%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ZONE VIEW
           </span>
         </div>
@@ -148,12 +148,12 @@ export default function SceneSection({
           className="absolute pointer-events-none"
           style={{
             left: '56.7%',
-            top: '33.6%',
+            top: '32.9%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SINGLE TONE
           </span>
         </div>

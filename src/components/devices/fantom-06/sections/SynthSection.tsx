@@ -53,7 +53,7 @@ export default function SynthSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CUTOFF
           </span>
         </div>
@@ -84,7 +84,7 @@ export default function SynthSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             RESONANCE
           </span>
         </div>
@@ -112,12 +112,12 @@ export default function SynthSection({
           className="absolute pointer-events-none"
           style={{
             left: '64.4%',
-            top: '19.4%',
+            top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             OSC
           </span>
         </div>
@@ -145,12 +145,12 @@ export default function SynthSection({
           className="absolute pointer-events-none"
           style={{
             left: '67.1%',
-            top: '19.4%',
+            top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             FILTER TYPE
           </span>
         </div>
@@ -178,12 +178,12 @@ export default function SynthSection({
           className="absolute pointer-events-none"
           style={{
             left: '69.8%',
-            top: '19.4%',
+            top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             PARAM
           </span>
         </div>
@@ -211,12 +211,12 @@ export default function SynthSection({
           className="absolute pointer-events-none"
           style={{
             left: '64.4%',
-            top: '26.1%',
+            top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             AMP
           </span>
         </div>
@@ -244,12 +244,12 @@ export default function SynthSection({
           className="absolute pointer-events-none"
           style={{
             left: '67.1%',
-            top: '26.1%',
+            top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             FX
           </span>
         </div>
@@ -277,12 +277,12 @@ export default function SynthSection({
           className="absolute pointer-events-none"
           style={{
             left: '69.8%',
-            top: '26.1%',
+            top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             LFO
           </span>
         </div>

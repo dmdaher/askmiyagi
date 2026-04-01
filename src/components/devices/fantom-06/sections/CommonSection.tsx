@@ -52,12 +52,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '34.2%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             WRITE
           </span>
         </div>
@@ -85,12 +85,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '38.7%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             MASTER FX
           </span>
         </div>
@@ -118,12 +118,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '43.2%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             MOTIONAL PAD
           </span>
         </div>
@@ -151,12 +151,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '47.7%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             DAW CTRL
           </span>
         </div>
@@ -184,12 +184,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '52.2%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             MENU
           </span>
         </div>
@@ -216,12 +216,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '39.2%',
-            top: '4.2%',
+            top: '3.5%',
             width: '18.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             Display
           </span>
         </div>
@@ -252,7 +252,7 @@ export default function CommonSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E1
           </span>
         </div>
@@ -283,7 +283,7 @@ export default function CommonSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E2
           </span>
         </div>
@@ -314,7 +314,7 @@ export default function CommonSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E3
           </span>
         </div>
@@ -345,7 +345,7 @@ export default function CommonSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E4
           </span>
         </div>
@@ -376,7 +376,7 @@ export default function CommonSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E5
           </span>
         </div>
@@ -407,7 +407,7 @@ export default function CommonSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E6
           </span>
         </div>
@@ -435,12 +435,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '38.7%',
-            top: '101.2%',
+            top: '100.5%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             TEMPO
           </span>
         </div>
@@ -469,7 +469,7 @@ export default function CommonSection({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             VALUE
           </span>
         </div>
@@ -497,12 +497,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '47.7%',
-            top: '101.2%',
+            top: '100.5%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             DEC
           </span>
         </div>
@@ -530,12 +530,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '52.2%',
-            top: '101.2%',
+            top: '100.5%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             INC
           </span>
         </div>
@@ -563,12 +563,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '34.2%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CURSOR UP
           </span>
         </div>
@@ -596,12 +596,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '47.7%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CURSOR DOWN
           </span>
         </div>
@@ -629,12 +629,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '38.7%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CURSOR LEFT
           </span>
         </div>
@@ -662,12 +662,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '43.2%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CURSOR RIGHT
           </span>
         </div>
@@ -695,12 +695,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '52.2%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SHIFT
           </span>
         </div>
@@ -728,12 +728,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '34.2%',
-            top: '118.9%',
+            top: '118.2%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             EXIT
           </span>
         </div>
@@ -761,12 +761,12 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '38.7%',
-            top: '118.9%',
+            top: '118.2%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ENTER
           </span>
         </div>

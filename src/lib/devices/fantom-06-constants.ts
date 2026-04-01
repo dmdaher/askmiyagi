@@ -16,7 +16,7 @@ export const FANTOM06_CONTROLS = {
   's2': { type: 'button', section: 'controller', label: 'S2' },
   'pitch-bend-lever': { type: 'lever', section: 'controller', label: 'PITCH BEND/MOD' },
   'master-volume': { type: 'knob', section: 'zone', label: 'MASTER\nVOLUME' },
-  'pan-level': { type: 'button', section: 'zone', label: 'PAN/LEVEL' },
+  'pan-level': { type: 'button', section: 'zone', label: 'PAN/\nLEVEL' },
   'ctrl': { type: 'button', section: 'zone', label: 'CTRL' },
   'assign': { type: 'button', section: 'zone', label: 'ASSIGN' },
   'zone-9-16': { type: 'button', section: 'zone', label: 'ZONE 9-16' },

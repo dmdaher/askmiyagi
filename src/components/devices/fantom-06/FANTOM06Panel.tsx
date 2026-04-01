@@ -65,8 +65,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '5.5%',
-            top: '6.4%',
+            left: '5.9%',
+            top: '6.6%',
             width: 36,
             height: 148,
             display: 'flex',
@@ -74,7 +74,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Wheel
               id="wheel-1"
               label=""
@@ -82,18 +81,17 @@ export default function FANTOM06Panel({
               height={148}
               highlighted={isHighlighted('wheel-1')}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '5.5%',
-            top: '5.9%',
+            left: '5.9%',
+            top: '5.4%',
             width: '3.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             WHEEL1
           </span>
         </div>
@@ -111,7 +109,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Wheel
               id="wheel-2"
               label=""
@@ -119,18 +116,17 @@ export default function FANTOM06Panel({
               height={148}
               highlighted={isHighlighted('wheel-2')}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '9.3%',
-            top: '5.9%',
+            top: '5.2%',
             width: '3.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             WHEEL2
           </span>
         </div>
@@ -148,7 +144,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="s1"
@@ -159,18 +154,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('s1')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '4.2%',
-            top: '64.6%',
+            top: '63.9%',
             width: '5.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             S1
           </span>
         </div>
@@ -188,7 +182,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="s2"
@@ -199,18 +192,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('s2')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '5.8%',
-            top: '64.3%',
+            top: '63.6%',
             width: '5.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             S2
           </span>
         </div>
@@ -228,7 +220,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <DirectionSwitch
               id="pitch-bend-lever"
               label=""
@@ -237,18 +228,17 @@ export default function FANTOM06Panel({
               width={60}
               height={132}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '6.8%',
-            top: '58.5%',
+            top: '57.8%',
             width: '5.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             PITCH BEND/MOD
           </span>
         </div>
@@ -257,8 +247,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '12.5%',
-            top: '17.5%',
+            left: '12.7%',
+            top: '18.0%',
             width: 72,
             height: 48,
             display: 'flex',
@@ -266,7 +256,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="master-volume"
               label=""
@@ -275,18 +264,17 @@ export default function FANTOM06Panel({
               outerSize={48}
               innerSize={34}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '12.5%',
-            top: '31.0%',
+            left: '12.7%',
+            top: '31.5%',
             width: '6.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             MASTER VOLUME
           </span>
         </div>
@@ -295,8 +283,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '15.5%',
-            top: '12.9%',
+            left: '15.3%',
+            top: '13.4%',
             width: 56,
             height: 32,
             display: 'flex',
@@ -304,7 +292,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="pan-level"
@@ -315,19 +302,18 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('pan-level')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '15.5%',
-            top: '12.4%',
+            left: '15.3%',
+            top: '12.2%',
             width: '4.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
-            PAN/LEVEL
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+            PAN/ LEVEL
           </span>
         </div>
 
@@ -336,15 +322,14 @@ export default function FANTOM06Panel({
           className="absolute"
           style={{
             left: '18.5%',
-            top: '13.2%',
+            top: '15.7%',
             width: 24,
-            height: 28,
+            height: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="ctrl"
@@ -355,18 +340,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('ctrl')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '18.5%',
-            top: '12.7%',
+            top: '14.5%',
             width: '2.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CTRL
           </span>
         </div>
@@ -375,8 +359,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '16.9%',
-            top: '24.1%',
+            left: '16.7%',
+            top: '22.4%',
             width: 64,
             height: 12,
             display: 'flex',
@@ -384,7 +368,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="assign"
@@ -395,18 +378,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('assign')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '16.9%',
-            top: '23.6%',
+            left: '16.7%',
+            top: '21.2%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ASSIGN
           </span>
         </div>
@@ -424,7 +406,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-9-16"
@@ -435,18 +416,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-9-16')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '16.1%',
-            top: '28.9%',
+            top: '28.2%',
             width: '3.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ZONE 9-16
           </span>
         </div>
@@ -455,8 +435,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '16.9%',
-            top: '28.7%',
+            left: '16.8%',
+            top: '28.5%',
             width: 64,
             height: 20,
             display: 'flex',
@@ -464,7 +444,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-select"
@@ -475,18 +454,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-select')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '16.9%',
-            top: '28.2%',
+            left: '16.8%',
+            top: '27.3%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ZONE SELECT
           </span>
         </div>
@@ -504,7 +482,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="knob-1"
               label=""
@@ -513,7 +490,6 @@ export default function FANTOM06Panel({
               outerSize={32}
               innerSize={22}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -524,7 +500,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             1
           </span>
         </div>
@@ -542,7 +518,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="knob-2"
               label=""
@@ -551,7 +526,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -562,7 +536,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             2
           </span>
         </div>
@@ -580,7 +554,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="knob-3"
               label=""
@@ -589,7 +562,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -600,7 +572,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             3
           </span>
         </div>
@@ -618,7 +590,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="knob-4"
               label=""
@@ -627,7 +598,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -638,7 +608,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             4
           </span>
         </div>
@@ -656,7 +626,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="knob-5"
               label=""
@@ -665,7 +634,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -676,7 +644,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             5
           </span>
         </div>
@@ -694,7 +662,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="knob-6"
               label=""
@@ -703,7 +670,6 @@ export default function FANTOM06Panel({
               outerSize={32}
               innerSize={22}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -714,7 +680,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             6
           </span>
         </div>
@@ -732,7 +698,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="knob-7"
               label=""
@@ -741,7 +706,6 @@ export default function FANTOM06Panel({
               outerSize={32}
               innerSize={22}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -752,7 +716,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             7
           </span>
         </div>
@@ -770,7 +734,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="knob-8"
               label=""
@@ -779,7 +742,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -790,7 +752,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             8
           </span>
         </div>
@@ -808,7 +770,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-int-ext-1"
@@ -819,18 +780,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-int-ext-1')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '20.2%',
-            top: '24.7%',
+            top: '24.0%',
             width: '3.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             1
           </span>
         </div>
@@ -848,7 +808,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-int-ext-2"
@@ -859,18 +818,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-int-ext-2')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '22.4%',
-            top: '24.4%',
+            top: '23.7%',
             width: '3.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             2
           </span>
         </div>
@@ -888,7 +846,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-int-ext-3"
@@ -899,18 +856,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-int-ext-3')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '24.6%',
-            top: '24.4%',
+            top: '23.7%',
             width: '3.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             3
           </span>
         </div>
@@ -928,7 +884,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-int-ext-4"
@@ -939,18 +894,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-int-ext-4')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '27.1%',
-            top: '24.1%',
+            top: '23.4%',
             width: '3.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             4
           </span>
         </div>
@@ -968,7 +922,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-int-ext-5"
@@ -979,18 +932,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-int-ext-5')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '29.1%',
-            top: '24.9%',
+            top: '24.2%',
             width: '3.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             5
           </span>
         </div>
@@ -1008,7 +960,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-int-ext-6"
@@ -1019,18 +970,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-int-ext-6')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '31.5%',
-            top: '24.9%',
+            top: '24.2%',
             width: '3.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             6
           </span>
         </div>
@@ -1048,7 +998,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-int-ext-7"
@@ -1059,18 +1008,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-int-ext-7')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '33.7%',
-            top: '25.3%',
+            top: '24.6%',
             width: '3.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             7
           </span>
         </div>
@@ -1088,7 +1036,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-int-ext-8"
@@ -1099,18 +1046,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-int-ext-8')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '35.8%',
-            top: '24.9%',
+            top: '24.2%',
             width: '3.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             8
           </span>
         </div>
@@ -1119,8 +1065,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '21.7%',
-            top: '24.4%',
+            left: '21.1%',
+            top: '23.5%',
             width: 24,
             height: 128,
             display: 'flex',
@@ -1128,7 +1074,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Slider
               id="slider-1"
               label=""
@@ -1137,18 +1082,17 @@ export default function FANTOM06Panel({
               trackHeight={108}
               trackWidth={14}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '21.7%',
-            top: '60.1%',
+            left: '21.1%',
+            top: '59.2%',
             width: '2.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             1
           </span>
         </div>
@@ -1157,197 +1101,7 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '23.9%',
-            top: '23.8%',
-            width: 24,
-            height: 128,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
-            <Slider
-              id="slider-2"
-              label=""
-              value={getState('slider-2').value ?? 64}
-              highlighted={isHighlighted('slider-2')}
-              trackHeight={108}
-              trackWidth={14}
-            />
-          </div>
-        </div>
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: '23.9%',
-            top: '59.5%',
-            width: '2.0%',
-            textAlign: 'center',
-          }}
-        >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
-            2
-          </span>
-        </div>
-
-        {/* slider-3 */}
-        <div
-          className="absolute"
-          style={{
-            left: '26.1%',
-            top: '24.1%',
-            width: 24,
-            height: 128,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
-            <Slider
-              id="slider-3"
-              label=""
-              value={getState('slider-3').value ?? 64}
-              highlighted={isHighlighted('slider-3')}
-              trackHeight={108}
-              trackWidth={14}
-            />
-          </div>
-        </div>
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: '26.1%',
-            top: '59.8%',
-            width: '2.0%',
-            textAlign: 'center',
-          }}
-        >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
-            3
-          </span>
-        </div>
-
-        {/* slider-4 */}
-        <div
-          className="absolute"
-          style={{
-            left: '28.3%',
-            top: '23.8%',
-            width: 24,
-            height: 128,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
-            <Slider
-              id="slider-4"
-              label=""
-              value={getState('slider-4').value ?? 64}
-              highlighted={isHighlighted('slider-4')}
-              trackHeight={108}
-              trackWidth={14}
-            />
-          </div>
-        </div>
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: '28.3%',
-            top: '59.5%',
-            width: '2.0%',
-            textAlign: 'center',
-          }}
-        >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
-            4
-          </span>
-        </div>
-
-        {/* slider-5 */}
-        <div
-          className="absolute"
-          style={{
-            left: '30.4%',
-            top: '24.1%',
-            width: 24,
-            height: 128,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
-            <Slider
-              id="slider-5"
-              label=""
-              value={getState('slider-5').value ?? 64}
-              highlighted={isHighlighted('slider-5')}
-              trackHeight={108}
-              trackWidth={14}
-            />
-          </div>
-        </div>
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: '30.4%',
-            top: '59.8%',
-            width: '2.0%',
-            textAlign: 'center',
-          }}
-        >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
-            5
-          </span>
-        </div>
-
-        {/* slider-6 */}
-        <div
-          className="absolute"
-          style={{
-            left: '32.7%',
-            top: '24.1%',
-            width: 24,
-            height: 128,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
-            <Slider
-              id="slider-6"
-              label=""
-              value={getState('slider-6').value ?? 64}
-              highlighted={isHighlighted('slider-6')}
-              trackHeight={108}
-              trackWidth={14}
-            />
-          </div>
-        </div>
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: '32.7%',
-            top: '59.8%',
-            width: '2.0%',
-            textAlign: 'center',
-          }}
-        >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
-            6
-          </span>
-        </div>
-
-        {/* slider-7 */}
-        <div
-          className="absolute"
-          style={{
-            left: '34.8%',
+            left: '23.4%',
             top: '23.3%',
             width: 24,
             height: 128,
@@ -1356,7 +1110,186 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-2"
+              label=""
+              value={getState('slider-2').value ?? 64}
+              highlighted={isHighlighted('slider-2')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '23.4%',
+            top: '59.0%',
+            width: '2.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+            2
+          </span>
+        </div>
+
+        {/* slider-3 */}
+        <div
+          className="absolute"
+          style={{
+            left: '25.5%',
+            top: '23.3%',
+            width: 24,
+            height: 128,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+            <Slider
+              id="slider-3"
+              label=""
+              value={getState('slider-3').value ?? 64}
+              highlighted={isHighlighted('slider-3')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '25.5%',
+            top: '59.0%',
+            width: '2.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+            3
+          </span>
+        </div>
+
+        {/* slider-4 */}
+        <div
+          className="absolute"
+          style={{
+            left: '27.8%',
+            top: '23.3%',
+            width: 24,
+            height: 128,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+            <Slider
+              id="slider-4"
+              label=""
+              value={getState('slider-4').value ?? 64}
+              highlighted={isHighlighted('slider-4')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '27.8%',
+            top: '59.0%',
+            width: '2.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+            4
+          </span>
+        </div>
+
+        {/* slider-5 */}
+        <div
+          className="absolute"
+          style={{
+            left: '30.3%',
+            top: '23.5%',
+            width: 24,
+            height: 128,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+            <Slider
+              id="slider-5"
+              label=""
+              value={getState('slider-5').value ?? 64}
+              highlighted={isHighlighted('slider-5')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '30.3%',
+            top: '59.2%',
+            width: '2.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+            5
+          </span>
+        </div>
+
+        {/* slider-6 */}
+        <div
+          className="absolute"
+          style={{
+            left: '32.4%',
+            top: '23.3%',
+            width: 24,
+            height: 128,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+            <Slider
+              id="slider-6"
+              label=""
+              value={getState('slider-6').value ?? 64}
+              highlighted={isHighlighted('slider-6')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+        </div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '32.4%',
+            top: '59.0%',
+            width: '2.0%',
+            textAlign: 'center',
+          }}
+        >
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+            6
+          </span>
+        </div>
+
+        {/* slider-7 */}
+        <div
+          className="absolute"
+          style={{
+            left: '34.6%',
+            top: '23.5%',
+            width: 24,
+            height: 128,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
             <Slider
               id="slider-7"
               label=""
@@ -1365,18 +1298,17 @@ export default function FANTOM06Panel({
               trackHeight={108}
               trackWidth={14}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '34.8%',
-            top: '59.0%',
+            left: '34.6%',
+            top: '59.2%',
             width: '2.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             7
           </span>
         </div>
@@ -1385,8 +1317,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '37.0%',
-            top: '23.0%',
+            left: '36.8%',
+            top: '23.3%',
             width: 24,
             height: 128,
             display: 'flex',
@@ -1394,7 +1326,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Slider
               id="slider-8"
               label=""
@@ -1403,18 +1334,17 @@ export default function FANTOM06Panel({
               trackHeight={108}
               trackWidth={14}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '37.0%',
-            top: '58.7%',
+            left: '36.8%',
+            top: '59.0%',
             width: '2.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             8
           </span>
         </div>
@@ -1423,8 +1353,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '13.3%',
-            top: '35.6%',
+            left: '13.2%',
+            top: '35.3%',
             width: 56,
             height: 16,
             display: 'flex',
@@ -1432,7 +1362,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="split"
@@ -1443,18 +1372,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('split')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '13.3%',
-            top: '35.1%',
+            left: '13.2%',
+            top: '34.1%',
             width: '4.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SPLIT
           </span>
         </div>
@@ -1463,8 +1391,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '15.2%',
-            top: '35.2%',
+            left: '15.4%',
+            top: '34.6%',
             width: 56,
             height: 28,
             display: 'flex',
@@ -1472,7 +1400,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="chord-memory"
@@ -1483,18 +1410,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('chord-memory')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '15.2%',
-            top: '34.7%',
+            left: '15.4%',
+            top: '33.4%',
             width: '4.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CHORD MEMORY
           </span>
         </div>
@@ -1503,8 +1429,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '18.0%',
-            top: '36.3%',
+            left: '17.7%',
+            top: '36.6%',
             width: 44,
             height: 12,
             display: 'flex',
@@ -1512,7 +1438,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="arpeggio"
@@ -1523,18 +1448,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('arpeggio')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '18.0%',
-            top: '35.8%',
+            left: '17.7%',
+            top: '35.4%',
             width: '3.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ARPEGGIO
           </span>
         </div>
@@ -1543,8 +1467,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '12.6%',
-            top: '42.7%',
+            left: '13.1%',
+            top: '42.9%',
             width: 60,
             height: 12,
             display: 'flex',
@@ -1552,7 +1476,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="transpose"
@@ -1563,18 +1486,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('transpose')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '12.6%',
-            top: '42.2%',
+            left: '13.1%',
+            top: '41.7%',
             width: '5.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             TRANSPOSE
           </span>
         </div>
@@ -1592,7 +1514,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="octave-down"
@@ -1603,18 +1524,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('octave-down')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '15.2%',
-            top: '42.4%',
+            top: '41.7%',
             width: '4.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             DOWN
           </span>
         </div>
@@ -1623,8 +1543,8 @@ export default function FANTOM06Panel({
         <div
           className="absolute"
           style={{
-            left: '18.3%',
-            top: '42.4%',
+            left: '17.8%',
+            top: '42.9%',
             width: 40,
             height: 16,
             display: 'flex',
@@ -1632,7 +1552,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="octave-up"
@@ -1643,18 +1562,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('octave-up')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '18.3%',
-            top: '41.9%',
+            left: '17.8%',
+            top: '41.7%',
             width: '3.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             UP
           </span>
         </div>
@@ -1672,7 +1590,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="write"
@@ -1683,18 +1600,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('write')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '34.2%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             WRITE
           </span>
         </div>
@@ -1712,7 +1628,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="master-fx"
@@ -1723,18 +1638,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('master-fx')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '38.7%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             MASTER FX
           </span>
         </div>
@@ -1752,7 +1666,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="motional-pad"
@@ -1763,18 +1676,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('motional-pad')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '43.2%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             MOTIONAL PAD
           </span>
         </div>
@@ -1792,7 +1704,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="daw-ctrl"
@@ -1803,18 +1714,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('daw-ctrl')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '47.7%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             DAW CTRL
           </span>
         </div>
@@ -1832,7 +1742,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="menu"
@@ -1843,18 +1752,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('menu')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '52.2%',
-            top: '83.5%',
+            top: '82.8%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             MENU
           </span>
         </div>
@@ -1872,7 +1780,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <TouchDisplay
               id="display"
               label=""
@@ -1882,18 +1789,17 @@ export default function FANTOM06Panel({
               height={84}
               highlighted={isHighlighted('display')}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '39.2%',
-            top: '4.2%',
+            top: '3.5%',
             width: '18.7%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             Display
           </span>
         </div>
@@ -1911,7 +1817,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="e1"
               label=""
@@ -1920,7 +1825,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1931,7 +1835,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E1
           </span>
         </div>
@@ -1949,7 +1853,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="e2"
               label=""
@@ -1958,7 +1861,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1969,7 +1871,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E2
           </span>
         </div>
@@ -1987,7 +1889,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="e3"
               label=""
@@ -1996,7 +1897,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2007,7 +1907,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E3
           </span>
         </div>
@@ -2025,7 +1925,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="e4"
               label=""
@@ -2034,7 +1933,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2045,7 +1943,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E4
           </span>
         </div>
@@ -2063,7 +1961,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="e5"
               label=""
@@ -2072,7 +1969,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2083,7 +1979,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E5
           </span>
         </div>
@@ -2101,7 +1997,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="e6"
               label=""
@@ -2110,7 +2005,6 @@ export default function FANTOM06Panel({
               outerSize={28}
               innerSize={20}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2121,7 +2015,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E6
           </span>
         </div>
@@ -2139,7 +2033,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tempo"
@@ -2150,18 +2043,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tempo')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '38.7%',
-            top: '101.2%',
+            top: '100.5%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             TEMPO
           </span>
         </div>
@@ -2179,14 +2071,12 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <ValueDial
               id="value-dial"
               label=""
               outerSize={28}
               highlighted={isHighlighted('value-dial')}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2197,7 +2087,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             VALUE
           </span>
         </div>
@@ -2215,7 +2105,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="dec"
@@ -2226,18 +2115,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('dec')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '47.7%',
-            top: '101.2%',
+            top: '100.5%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             DEC
           </span>
         </div>
@@ -2255,7 +2143,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="inc"
@@ -2266,18 +2153,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('inc')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '52.2%',
-            top: '101.2%',
+            top: '100.5%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             INC
           </span>
         </div>
@@ -2295,7 +2181,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="cursor-up"
@@ -2306,18 +2191,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('cursor-up')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '34.2%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CURSOR UP
           </span>
         </div>
@@ -2335,7 +2219,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="cursor-down"
@@ -2346,18 +2229,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('cursor-down')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '47.7%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CURSOR DOWN
           </span>
         </div>
@@ -2375,7 +2257,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="cursor-left"
@@ -2386,18 +2267,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('cursor-left')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '38.7%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CURSOR LEFT
           </span>
         </div>
@@ -2415,7 +2295,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="cursor-right"
@@ -2426,18 +2305,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('cursor-right')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '43.2%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CURSOR RIGHT
           </span>
         </div>
@@ -2455,7 +2333,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="shift"
@@ -2466,18 +2343,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('shift')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '52.2%',
-            top: '110.0%',
+            top: '109.3%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SHIFT
           </span>
         </div>
@@ -2495,7 +2371,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="exit"
@@ -2506,18 +2381,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('exit')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '34.2%',
-            top: '118.9%',
+            top: '118.2%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             EXIT
           </span>
         </div>
@@ -2535,7 +2409,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="enter"
@@ -2546,18 +2419,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('enter')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '38.7%',
-            top: '118.9%',
+            top: '118.2%',
             width: '4.2%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ENTER
           </span>
         </div>
@@ -2575,7 +2447,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="scene-select"
@@ -2586,18 +2457,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('scene-select')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '56.7%',
-            top: '6.8%',
+            top: '6.1%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SCENE SELECT
           </span>
         </div>
@@ -2615,7 +2485,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="scene-chain"
@@ -2626,18 +2495,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('scene-chain')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '56.7%',
-            top: '17.9%',
+            top: '17.2%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SCENE CHAIN
           </span>
         </div>
@@ -2655,7 +2523,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="zone-view"
@@ -2666,18 +2533,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('zone-view')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '56.7%',
-            top: '24.7%',
+            top: '24.0%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ZONE VIEW
           </span>
         </div>
@@ -2695,7 +2561,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="single-tone"
@@ -2706,18 +2571,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('single-tone')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '56.7%',
-            top: '33.6%',
+            top: '32.9%',
             width: '5.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SINGLE TONE
           </span>
         </div>
@@ -2735,7 +2599,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="cutoff"
               label=""
@@ -2744,7 +2607,6 @@ export default function FANTOM06Panel({
               outerSize={39}
               innerSize={27}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2755,7 +2617,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CUTOFF
           </span>
         </div>
@@ -2773,7 +2635,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <Knob
               id="resonance"
               label=""
@@ -2782,7 +2643,6 @@ export default function FANTOM06Panel({
               outerSize={39}
               innerSize={27}
             />
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2793,7 +2653,7 @@ export default function FANTOM06Panel({
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             RESONANCE
           </span>
         </div>
@@ -2811,7 +2671,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="osc"
@@ -2822,18 +2681,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('osc')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '64.4%',
-            top: '19.4%',
+            top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             OSC
           </span>
         </div>
@@ -2851,7 +2709,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="filter-type"
@@ -2862,18 +2719,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('filter-type')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '67.1%',
-            top: '19.4%',
+            top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             FILTER TYPE
           </span>
         </div>
@@ -2891,7 +2747,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="param"
@@ -2902,18 +2757,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('param')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '69.8%',
-            top: '19.4%',
+            top: '18.7%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             PARAM
           </span>
         </div>
@@ -2931,7 +2785,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="amp"
@@ -2942,18 +2795,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('amp')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '64.4%',
-            top: '26.1%',
+            top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             AMP
           </span>
         </div>
@@ -2971,7 +2823,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="fx"
@@ -2982,18 +2833,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('fx')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '67.1%',
-            top: '26.1%',
+            top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             FX
           </span>
         </div>
@@ -3011,7 +2861,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="lfo"
@@ -3022,18 +2871,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('lfo')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '69.8%',
-            top: '26.1%',
+            top: '25.4%',
             width: '2.6%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             LFO
           </span>
         </div>
@@ -3051,7 +2899,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="pattern"
@@ -3062,18 +2909,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('pattern')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '75.0%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             PATTERN
           </span>
         </div>
@@ -3091,7 +2937,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="group"
@@ -3102,18 +2947,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('group')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '75.0%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             GROUP
           </span>
         </div>
@@ -3131,7 +2975,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="song"
@@ -3142,18 +2985,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('song')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '77.9%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SONG
           </span>
         </div>
@@ -3171,7 +3013,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tr-rec"
@@ -3182,18 +3023,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tr-rec')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '77.9%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             TR-REC
           </span>
         </div>
@@ -3211,7 +3051,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="rhythm-ptn"
@@ -3222,18 +3061,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('rhythm-ptn')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '79.8%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             RHYTHM PTN
           </span>
         </div>
@@ -3251,7 +3089,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="stop"
@@ -3262,18 +3099,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('stop')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '82.6%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             STOP
           </span>
         </div>
@@ -3291,7 +3127,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="play"
@@ -3302,18 +3137,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('play')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '83.9%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             PLAY
           </span>
         </div>
@@ -3331,7 +3165,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="rec"
@@ -3342,18 +3175,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('rec')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '85.4%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             REC
           </span>
         </div>
@@ -3371,7 +3203,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-1"
@@ -3382,18 +3213,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-1')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '74.2%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             A.PIANO
           </span>
         </div>
@@ -3411,7 +3241,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-2"
@@ -3422,18 +3251,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-2')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '77.3%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             E.PIANO
           </span>
         </div>
@@ -3451,7 +3279,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-3"
@@ -3462,18 +3289,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-3')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '79.5%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             ORGAN
           </span>
         </div>
@@ -3491,7 +3317,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-4"
@@ -3502,18 +3327,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-4')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '83.8%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             GUITAR/BASS
           </span>
         </div>
@@ -3531,7 +3355,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-5"
@@ -3542,18 +3365,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-5')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '74.2%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             STRINGS
           </span>
         </div>
@@ -3571,7 +3393,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-6"
@@ -3582,18 +3403,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-6')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '77.3%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             BRASS
           </span>
         </div>
@@ -3611,7 +3431,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-7"
@@ -3622,18 +3441,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-7')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '79.5%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SYNTH LEAD
           </span>
         </div>
@@ -3651,7 +3469,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-8"
@@ -3662,18 +3479,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-8')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '83.8%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SYNTH PAD
           </span>
         </div>
@@ -3691,7 +3507,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-9"
@@ -3702,18 +3517,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-9')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '74.2%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             BELL/MALLET
           </span>
         </div>
@@ -3731,7 +3545,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-10"
@@ -3742,18 +3555,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-10')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '77.3%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             HIT/OTHER
           </span>
         </div>
@@ -3771,7 +3583,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-11"
@@ -3782,18 +3593,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-11')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '79.5%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             RHYTHM
           </span>
         </div>
@@ -3811,7 +3621,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-12"
@@ -3822,18 +3631,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-12')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '83.8%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             S.N. ACOUSTIC
           </span>
         </div>
@@ -3851,7 +3659,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-13"
@@ -3862,18 +3669,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-13')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '74.2%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             S.N.S
           </span>
         </div>
@@ -3891,7 +3697,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-14"
@@ -3902,18 +3707,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-14')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '77.3%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             VTW
           </span>
         </div>
@@ -3931,7 +3735,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-15"
@@ -3942,18 +3745,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-15')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '79.5%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             MODEL
           </span>
         </div>
@@ -3971,7 +3773,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="tone-cat-16"
@@ -3982,18 +3783,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('tone-cat-16')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '83.8%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.8%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             DRUM
           </span>
         </div>
@@ -4011,7 +3811,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="sampling"
@@ -4022,18 +3821,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('sampling')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '6.2%',
+            top: '5.5%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             SAMPLING
           </span>
         </div>
@@ -4051,7 +3849,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="pad-mode"
@@ -4062,18 +3859,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('pad-mode')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '90.8%',
-            top: '6.1%',
+            top: '5.4%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             PAD MODE
           </span>
         </div>
@@ -4091,7 +3887,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="clip-board"
@@ -4102,18 +3897,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('clip-board')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '92.4%',
-            top: '6.1%',
+            top: '5.4%',
             width: '2.3%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             CLIP BOARD
           </span>
         </div>
@@ -4131,7 +3925,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="bank"
@@ -4142,18 +3935,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('bank')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '6.1%',
+            top: '5.4%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             BANK
           </span>
         </div>
@@ -4171,7 +3963,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PanelButton
                 id="hold"
@@ -4182,18 +3973,17 @@ export default function FANTOM06Panel({
                 onClick={() => onButtonClick?.('hold')}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '6.1%',
+            top: '5.4%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             HOLD
           </span>
         </div>
@@ -4211,7 +4001,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-1"
@@ -4223,18 +4012,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             1
           </span>
         </div>
@@ -4252,7 +4040,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-2"
@@ -4264,18 +4051,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             2
           </span>
         </div>
@@ -4293,7 +4079,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-3"
@@ -4305,18 +4090,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             3
           </span>
         </div>
@@ -4334,7 +4118,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-4"
@@ -4346,18 +4129,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '28.3%',
+            top: '27.6%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             4
           </span>
         </div>
@@ -4375,7 +4157,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-5"
@@ -4387,18 +4168,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             5
           </span>
         </div>
@@ -4416,7 +4196,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-6"
@@ -4428,18 +4207,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             6
           </span>
         </div>
@@ -4457,7 +4235,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-7"
@@ -4469,18 +4246,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             7
           </span>
         </div>
@@ -4498,7 +4274,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-8"
@@ -4510,18 +4285,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '33.8%',
+            top: '33.1%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             8
           </span>
         </div>
@@ -4539,7 +4313,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-9"
@@ -4551,18 +4324,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             9
           </span>
         </div>
@@ -4580,7 +4352,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-10"
@@ -4592,18 +4363,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             10
           </span>
         </div>
@@ -4621,7 +4391,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-11"
@@ -4633,18 +4402,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             11
           </span>
         </div>
@@ -4662,7 +4430,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-12"
@@ -4674,18 +4441,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '39.4%',
+            top: '38.7%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             12
           </span>
         </div>
@@ -4703,7 +4469,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-13"
@@ -4715,18 +4480,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             13
           </span>
         </div>
@@ -4744,7 +4508,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-14"
@@ -4756,18 +4519,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             14
           </span>
         </div>
@@ -4785,7 +4547,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-15"
@@ -4797,18 +4558,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             15
           </span>
         </div>
@@ -4826,7 +4586,6 @@ export default function FANTOM06Panel({
             justifyContent: 'center',
           }}
         >
-          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
             <div>
               <PadButton
                 id="pad-16"
@@ -4838,18 +4597,17 @@ export default function FANTOM06Panel({
                 height={28}
               />
             </div>
-          </div>
         </div>
         <div
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '44.9%',
+            top: '44.2%',
             width: '2.5%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             16
           </span>
         </div>

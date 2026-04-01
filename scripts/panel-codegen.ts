@@ -445,14 +445,13 @@ function renderFloatingLabel(
   const labelText = ctrl.verbatimLabel;
   if (!labelText) return null;
 
-  // Scale font sizes by controlScale so labels match the scaled-down controls
-  const fontSize = Math.max(Math.round(labelFontSize(ctrl.sizeClass) * controlScale), 4);
-  const secFontSize = Math.max(Math.round(secondaryLabelFontSize(ctrl.sizeClass) * controlScale), 4);
+  const fontSize = labelFontSize(ctrl.sizeClass);
+  const secFontSize = secondaryLabelFontSize(ctrl.sizeClass);
   const hasSecondary = ctrl.secondaryLabel && ctrl.secondaryLabel.length > 0;
 
   // Compute label position based on labelDisplay direction.
-  // Heights are in panel-% units. Scale by controlScale for consistency.
-  const labelHeightPct = 1.2 * controlScale;
+  // Heights are in panel-% units. A label line is approximately 1.0-1.2% of panel height.
+  const labelHeightPct = 1.2;
 
   let labelLeft = ep.x;
   let labelTop: number;
@@ -1213,9 +1212,10 @@ function generateFlatPanel(
       const controlJsx = renderControl(ctrl.id, ctrl, '            ', controlMap, pxW, pxH);
 
       const rotation = (ctrl as any).rotation as number | undefined;
-      // Build inner transform (scale + rotation) — applied to inner div, not outer
+      // Inner transform — only rotation, NOT controlScale.
+      // controlScale is an editor-only tool for photo overlay positioning.
+      // The generated panel renders controls at 100% within their containers.
       const innerTransforms: string[] = [];
-      if (controlScale < 1) innerTransforms.push(`scale(${controlScale})`);
       if (rotation) innerTransforms.push(`rotate(${rotation}deg)`);
 
       const styleLines = [

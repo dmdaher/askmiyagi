@@ -30,8 +30,8 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: '5.50%',
-              top: '6.40%',
+              left: '5.90%',
+              top: '6.60%',
               width: '3.00%',
               height: '41.00%',
             }}
@@ -47,13 +47,13 @@ export default function ControllerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '5.5%',
-            top: '5.9%',
+            left: '5.9%',
+            top: '5.4%',
             width: '3.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             WHEEL1
           </span>
         </div>
@@ -78,12 +78,12 @@ export default function ControllerSection({
           className="absolute pointer-events-none"
           style={{
             left: '9.3%',
-            top: '5.9%',
+            top: '5.2%',
             width: '3.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             WHEEL2
           </span>
         </div>
@@ -111,12 +111,12 @@ export default function ControllerSection({
           className="absolute pointer-events-none"
           style={{
             left: '4.2%',
-            top: '64.6%',
+            top: '63.9%',
             width: '5.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             S1
           </span>
         </div>
@@ -144,12 +144,12 @@ export default function ControllerSection({
           className="absolute pointer-events-none"
           style={{
             left: '5.8%',
-            top: '64.3%',
+            top: '63.6%',
             width: '5.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             S2
           </span>
         </div>
@@ -175,12 +175,12 @@ export default function ControllerSection({
           className="absolute pointer-events-none"
           style={{
             left: '6.8%',
-            top: '58.5%',
+            top: '57.8%',
             width: '5.0%',
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 4 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
             PITCH BEND/MOD
           </span>
         </div>
