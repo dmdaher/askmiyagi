@@ -43,7 +43,7 @@ export default function FANTOM06Panel({
         <SectionContainer id="controller" x={3.9} y={4.2} w={9.1} h={93.6} />
 
         {/* ZONE background */}
-        <SectionContainer id="zone" x={10} y={2.2} w={30.7} h={65.4} headerLabel="ZONE" />
+        <SectionContainer id="zone" x={10} y={2.2} w={30.7} h={51} headerLabel="ZONE" />
 
         {/* common background */}
         <SectionContainer id="common" x={38.5} y={2.5} w={20} h={27.7} />
@@ -72,19 +72,17 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Wheel
-                id="wheel-1"
-                label=""
-                width={36}
-                height={148}
-                highlighted={isHighlighted('wheel-1')}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Wheel
+              id="wheel-1"
+              label=""
+              width={36}
+              height={148}
+              highlighted={isHighlighted('wheel-1')}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -111,19 +109,17 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Wheel
-                id="wheel-2"
-                label=""
-                width={36}
-                height={148}
-                highlighted={isHighlighted('wheel-2')}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Wheel
+              id="wheel-2"
+              label=""
+              width={36}
+              height={148}
+              highlighted={isHighlighted('wheel-2')}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -150,22 +146,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="s1"
-                  label=""
-                  size="sm"
-                  active={getState('s1').active}
-                  highlighted={isHighlighted('s1')}
-                  onClick={() => onButtonClick?.('s1')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="s1"
+                label=""
+                size="sm"
+                active={getState('s1').active}
+                highlighted={isHighlighted('s1')}
+                onClick={() => onButtonClick?.('s1')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -192,22 +186,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="s2"
-                  label=""
-                  size="sm"
-                  active={getState('s2').active}
-                  highlighted={isHighlighted('s2')}
-                  onClick={() => onButtonClick?.('s2')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="s2"
+                label=""
+                size="sm"
+                active={getState('s2').active}
+                highlighted={isHighlighted('s2')}
+                onClick={() => onButtonClick?.('s2')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -234,20 +226,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <DirectionSwitch
-                id="pitch-bend-lever"
-                label=""
-                positions={["FWD","REV","SLIP REV"]}
-                highlighted={isHighlighted('pitch-bend-lever')}
-                width={60}
-                height={132}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <DirectionSwitch
+              id="pitch-bend-lever"
+              label=""
+              positions={["FWD","REV","SLIP REV"]}
+              highlighted={isHighlighted('pitch-bend-lever')}
+              width={60}
+              height={132}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -274,20 +264,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="master-volume"
-                label=""
-                value={getState('master-volume').value ?? 64}
-                highlighted={isHighlighted('master-volume')}
-                outerSize={48}
-                innerSize={34}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="master-volume"
+              label=""
+              value={getState('master-volume').value ?? 64}
+              highlighted={isHighlighted('master-volume')}
+              outerSize={48}
+              innerSize={34}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -314,22 +302,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="pan-level"
-                  label=""
-                  size="sm"
-                  active={getState('pan-level').active}
-                  highlighted={isHighlighted('pan-level')}
-                  onClick={() => onButtonClick?.('pan-level')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="pan-level"
+                label=""
+                size="sm"
+                active={getState('pan-level').active}
+                highlighted={isHighlighted('pan-level')}
+                onClick={() => onButtonClick?.('pan-level')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -356,22 +342,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="ctrl"
-                  label=""
-                  size="sm"
-                  active={getState('ctrl').active}
-                  highlighted={isHighlighted('ctrl')}
-                  onClick={() => onButtonClick?.('ctrl')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="ctrl"
+                label=""
+                size="sm"
+                active={getState('ctrl').active}
+                highlighted={isHighlighted('ctrl')}
+                onClick={() => onButtonClick?.('ctrl')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -398,22 +382,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="assign"
-                  label=""
-                  size="sm"
-                  active={getState('assign').active}
-                  highlighted={isHighlighted('assign')}
-                  onClick={() => onButtonClick?.('assign')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="assign"
+                label=""
+                size="sm"
+                active={getState('assign').active}
+                highlighted={isHighlighted('assign')}
+                onClick={() => onButtonClick?.('assign')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -440,22 +422,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-9-16"
-                  label=""
-                  size="sm"
-                  active={getState('zone-9-16').active}
-                  highlighted={isHighlighted('zone-9-16')}
-                  onClick={() => onButtonClick?.('zone-9-16')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-9-16"
+                label=""
+                size="sm"
+                active={getState('zone-9-16').active}
+                highlighted={isHighlighted('zone-9-16')}
+                onClick={() => onButtonClick?.('zone-9-16')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -482,22 +462,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-select"
-                  label=""
-                  size="sm"
-                  active={getState('zone-select').active}
-                  highlighted={isHighlighted('zone-select')}
-                  onClick={() => onButtonClick?.('zone-select')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-select"
+                label=""
+                size="sm"
+                active={getState('zone-select').active}
+                highlighted={isHighlighted('zone-select')}
+                onClick={() => onButtonClick?.('zone-select')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -524,20 +502,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="knob-1"
-                label=""
-                value={getState('knob-1').value ?? 64}
-                highlighted={isHighlighted('knob-1')}
-                outerSize={32}
-                innerSize={22}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="knob-1"
+              label=""
+              value={getState('knob-1').value ?? 64}
+              highlighted={isHighlighted('knob-1')}
+              outerSize={32}
+              innerSize={22}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -564,20 +540,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="knob-2"
-                label=""
-                value={getState('knob-2').value ?? 64}
-                highlighted={isHighlighted('knob-2')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="knob-2"
+              label=""
+              value={getState('knob-2').value ?? 64}
+              highlighted={isHighlighted('knob-2')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -604,20 +578,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="knob-3"
-                label=""
-                value={getState('knob-3').value ?? 64}
-                highlighted={isHighlighted('knob-3')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="knob-3"
+              label=""
+              value={getState('knob-3').value ?? 64}
+              highlighted={isHighlighted('knob-3')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -644,20 +616,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="knob-4"
-                label=""
-                value={getState('knob-4').value ?? 64}
-                highlighted={isHighlighted('knob-4')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="knob-4"
+              label=""
+              value={getState('knob-4').value ?? 64}
+              highlighted={isHighlighted('knob-4')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -684,20 +654,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="knob-5"
-                label=""
-                value={getState('knob-5').value ?? 64}
-                highlighted={isHighlighted('knob-5')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="knob-5"
+              label=""
+              value={getState('knob-5').value ?? 64}
+              highlighted={isHighlighted('knob-5')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -724,20 +692,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="knob-6"
-                label=""
-                value={getState('knob-6').value ?? 64}
-                highlighted={isHighlighted('knob-6')}
-                outerSize={32}
-                innerSize={22}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="knob-6"
+              label=""
+              value={getState('knob-6').value ?? 64}
+              highlighted={isHighlighted('knob-6')}
+              outerSize={32}
+              innerSize={22}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -764,20 +730,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="knob-7"
-                label=""
-                value={getState('knob-7').value ?? 64}
-                highlighted={isHighlighted('knob-7')}
-                outerSize={32}
-                innerSize={22}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="knob-7"
+              label=""
+              value={getState('knob-7').value ?? 64}
+              highlighted={isHighlighted('knob-7')}
+              outerSize={32}
+              innerSize={22}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -804,20 +768,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="knob-8"
-                label=""
-                value={getState('knob-8').value ?? 64}
-                highlighted={isHighlighted('knob-8')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="knob-8"
+              label=""
+              value={getState('knob-8').value ?? 64}
+              highlighted={isHighlighted('knob-8')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -844,22 +806,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-int-ext-1"
-                  label=""
-                  size="sm"
-                  active={getState('zone-int-ext-1').active}
-                  highlighted={isHighlighted('zone-int-ext-1')}
-                  onClick={() => onButtonClick?.('zone-int-ext-1')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-int-ext-1"
+                label=""
+                size="sm"
+                active={getState('zone-int-ext-1').active}
+                highlighted={isHighlighted('zone-int-ext-1')}
+                onClick={() => onButtonClick?.('zone-int-ext-1')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -886,22 +846,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-int-ext-2"
-                  label=""
-                  size="sm"
-                  active={getState('zone-int-ext-2').active}
-                  highlighted={isHighlighted('zone-int-ext-2')}
-                  onClick={() => onButtonClick?.('zone-int-ext-2')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-int-ext-2"
+                label=""
+                size="sm"
+                active={getState('zone-int-ext-2').active}
+                highlighted={isHighlighted('zone-int-ext-2')}
+                onClick={() => onButtonClick?.('zone-int-ext-2')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -928,22 +886,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-int-ext-3"
-                  label=""
-                  size="sm"
-                  active={getState('zone-int-ext-3').active}
-                  highlighted={isHighlighted('zone-int-ext-3')}
-                  onClick={() => onButtonClick?.('zone-int-ext-3')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-int-ext-3"
+                label=""
+                size="sm"
+                active={getState('zone-int-ext-3').active}
+                highlighted={isHighlighted('zone-int-ext-3')}
+                onClick={() => onButtonClick?.('zone-int-ext-3')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -970,22 +926,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-int-ext-4"
-                  label=""
-                  size="sm"
-                  active={getState('zone-int-ext-4').active}
-                  highlighted={isHighlighted('zone-int-ext-4')}
-                  onClick={() => onButtonClick?.('zone-int-ext-4')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-int-ext-4"
+                label=""
+                size="sm"
+                active={getState('zone-int-ext-4').active}
+                highlighted={isHighlighted('zone-int-ext-4')}
+                onClick={() => onButtonClick?.('zone-int-ext-4')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1012,22 +966,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-int-ext-5"
-                  label=""
-                  size="sm"
-                  active={getState('zone-int-ext-5').active}
-                  highlighted={isHighlighted('zone-int-ext-5')}
-                  onClick={() => onButtonClick?.('zone-int-ext-5')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-int-ext-5"
+                label=""
+                size="sm"
+                active={getState('zone-int-ext-5').active}
+                highlighted={isHighlighted('zone-int-ext-5')}
+                onClick={() => onButtonClick?.('zone-int-ext-5')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1054,22 +1006,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-int-ext-6"
-                  label=""
-                  size="sm"
-                  active={getState('zone-int-ext-6').active}
-                  highlighted={isHighlighted('zone-int-ext-6')}
-                  onClick={() => onButtonClick?.('zone-int-ext-6')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-int-ext-6"
+                label=""
+                size="sm"
+                active={getState('zone-int-ext-6').active}
+                highlighted={isHighlighted('zone-int-ext-6')}
+                onClick={() => onButtonClick?.('zone-int-ext-6')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1096,22 +1046,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-int-ext-7"
-                  label=""
-                  size="sm"
-                  active={getState('zone-int-ext-7').active}
-                  highlighted={isHighlighted('zone-int-ext-7')}
-                  onClick={() => onButtonClick?.('zone-int-ext-7')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-int-ext-7"
+                label=""
+                size="sm"
+                active={getState('zone-int-ext-7').active}
+                highlighted={isHighlighted('zone-int-ext-7')}
+                onClick={() => onButtonClick?.('zone-int-ext-7')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1138,22 +1086,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-int-ext-8"
-                  label=""
-                  size="sm"
-                  active={getState('zone-int-ext-8').active}
-                  highlighted={isHighlighted('zone-int-ext-8')}
-                  onClick={() => onButtonClick?.('zone-int-ext-8')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-int-ext-8"
+                label=""
+                size="sm"
+                active={getState('zone-int-ext-8').active}
+                highlighted={isHighlighted('zone-int-ext-8')}
+                onClick={() => onButtonClick?.('zone-int-ext-8')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1180,20 +1126,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Slider
-                id="slider-1"
-                label=""
-                value={getState('slider-1').value ?? 64}
-                highlighted={isHighlighted('slider-1')}
-                trackHeight={108}
-                trackWidth={14}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-1"
+              label=""
+              value={getState('slider-1').value ?? 64}
+              highlighted={isHighlighted('slider-1')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1220,20 +1164,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Slider
-                id="slider-2"
-                label=""
-                value={getState('slider-2').value ?? 64}
-                highlighted={isHighlighted('slider-2')}
-                trackHeight={108}
-                trackWidth={14}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-2"
+              label=""
+              value={getState('slider-2').value ?? 64}
+              highlighted={isHighlighted('slider-2')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1260,20 +1202,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Slider
-                id="slider-3"
-                label=""
-                value={getState('slider-3').value ?? 64}
-                highlighted={isHighlighted('slider-3')}
-                trackHeight={108}
-                trackWidth={14}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-3"
+              label=""
+              value={getState('slider-3').value ?? 64}
+              highlighted={isHighlighted('slider-3')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1300,20 +1240,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Slider
-                id="slider-4"
-                label=""
-                value={getState('slider-4').value ?? 64}
-                highlighted={isHighlighted('slider-4')}
-                trackHeight={108}
-                trackWidth={14}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-4"
+              label=""
+              value={getState('slider-4').value ?? 64}
+              highlighted={isHighlighted('slider-4')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1340,20 +1278,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Slider
-                id="slider-5"
-                label=""
-                value={getState('slider-5').value ?? 64}
-                highlighted={isHighlighted('slider-5')}
-                trackHeight={108}
-                trackWidth={14}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-5"
+              label=""
+              value={getState('slider-5').value ?? 64}
+              highlighted={isHighlighted('slider-5')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1380,20 +1316,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Slider
-                id="slider-6"
-                label=""
-                value={getState('slider-6').value ?? 64}
-                highlighted={isHighlighted('slider-6')}
-                trackHeight={108}
-                trackWidth={14}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-6"
+              label=""
+              value={getState('slider-6').value ?? 64}
+              highlighted={isHighlighted('slider-6')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1420,20 +1354,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Slider
-                id="slider-7"
-                label=""
-                value={getState('slider-7').value ?? 64}
-                highlighted={isHighlighted('slider-7')}
-                trackHeight={108}
-                trackWidth={14}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-7"
+              label=""
+              value={getState('slider-7').value ?? 64}
+              highlighted={isHighlighted('slider-7')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1460,20 +1392,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Slider
-                id="slider-8"
-                label=""
-                value={getState('slider-8').value ?? 64}
-                highlighted={isHighlighted('slider-8')}
-                trackHeight={108}
-                trackWidth={14}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Slider
+              id="slider-8"
+              label=""
+              value={getState('slider-8').value ?? 64}
+              highlighted={isHighlighted('slider-8')}
+              trackHeight={108}
+              trackWidth={14}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1500,22 +1430,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="split"
-                  label=""
-                  size="sm"
-                  active={getState('split').active}
-                  highlighted={isHighlighted('split')}
-                  onClick={() => onButtonClick?.('split')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="split"
+                label=""
+                size="sm"
+                active={getState('split').active}
+                highlighted={isHighlighted('split')}
+                onClick={() => onButtonClick?.('split')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1542,22 +1470,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="chord-memory"
-                  label=""
-                  size="sm"
-                  active={getState('chord-memory').active}
-                  highlighted={isHighlighted('chord-memory')}
-                  onClick={() => onButtonClick?.('chord-memory')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="chord-memory"
+                label=""
+                size="sm"
+                active={getState('chord-memory').active}
+                highlighted={isHighlighted('chord-memory')}
+                onClick={() => onButtonClick?.('chord-memory')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1584,22 +1510,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="arpeggio"
-                  label=""
-                  size="sm"
-                  active={getState('arpeggio').active}
-                  highlighted={isHighlighted('arpeggio')}
-                  onClick={() => onButtonClick?.('arpeggio')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="arpeggio"
+                label=""
+                size="sm"
+                active={getState('arpeggio').active}
+                highlighted={isHighlighted('arpeggio')}
+                onClick={() => onButtonClick?.('arpeggio')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1626,22 +1550,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="transpose"
-                  label=""
-                  size="sm"
-                  active={getState('transpose').active}
-                  highlighted={isHighlighted('transpose')}
-                  onClick={() => onButtonClick?.('transpose')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="transpose"
+                label=""
+                size="sm"
+                active={getState('transpose').active}
+                highlighted={isHighlighted('transpose')}
+                onClick={() => onButtonClick?.('transpose')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1668,22 +1590,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="octave-down"
-                  label=""
-                  size="sm"
-                  active={getState('octave-down').active}
-                  highlighted={isHighlighted('octave-down')}
-                  onClick={() => onButtonClick?.('octave-down')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="octave-down"
+                label=""
+                size="sm"
+                active={getState('octave-down').active}
+                highlighted={isHighlighted('octave-down')}
+                onClick={() => onButtonClick?.('octave-down')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1710,22 +1630,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="octave-up"
-                  label=""
-                  size="sm"
-                  active={getState('octave-up').active}
-                  highlighted={isHighlighted('octave-up')}
-                  onClick={() => onButtonClick?.('octave-up')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="octave-up"
+                label=""
+                size="sm"
+                active={getState('octave-up').active}
+                highlighted={isHighlighted('octave-up')}
+                onClick={() => onButtonClick?.('octave-up')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1752,22 +1670,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="write"
-                  label=""
-                  size="sm"
-                  active={getState('write').active}
-                  highlighted={isHighlighted('write')}
-                  onClick={() => onButtonClick?.('write')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="write"
+                label=""
+                size="sm"
+                active={getState('write').active}
+                highlighted={isHighlighted('write')}
+                onClick={() => onButtonClick?.('write')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1794,22 +1710,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="master-fx"
-                  label=""
-                  size="sm"
-                  active={getState('master-fx').active}
-                  highlighted={isHighlighted('master-fx')}
-                  onClick={() => onButtonClick?.('master-fx')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="master-fx"
+                label=""
+                size="sm"
+                active={getState('master-fx').active}
+                highlighted={isHighlighted('master-fx')}
+                onClick={() => onButtonClick?.('master-fx')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1836,22 +1750,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="motional-pad"
-                  label=""
-                  size="sm"
-                  active={getState('motional-pad').active}
-                  highlighted={isHighlighted('motional-pad')}
-                  onClick={() => onButtonClick?.('motional-pad')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="motional-pad"
+                label=""
+                size="sm"
+                active={getState('motional-pad').active}
+                highlighted={isHighlighted('motional-pad')}
+                onClick={() => onButtonClick?.('motional-pad')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1878,22 +1790,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="daw-ctrl"
-                  label=""
-                  size="sm"
-                  active={getState('daw-ctrl').active}
-                  highlighted={isHighlighted('daw-ctrl')}
-                  onClick={() => onButtonClick?.('daw-ctrl')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="daw-ctrl"
+                label=""
+                size="sm"
+                active={getState('daw-ctrl').active}
+                highlighted={isHighlighted('daw-ctrl')}
+                onClick={() => onButtonClick?.('daw-ctrl')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1920,22 +1830,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="menu"
-                  label=""
-                  size="sm"
-                  active={getState('menu').active}
-                  highlighted={isHighlighted('menu')}
-                  onClick={() => onButtonClick?.('menu')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="menu"
+                label=""
+                size="sm"
+                active={getState('menu').active}
+                highlighted={isHighlighted('menu')}
+                onClick={() => onButtonClick?.('menu')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -1962,21 +1870,19 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <TouchDisplay
-                id="display"
-                label=""
-                variant="main"
-                showMockContent
-                width={224}
-                height={84}
-                highlighted={isHighlighted('display')}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <TouchDisplay
+              id="display"
+              label=""
+              variant="main"
+              showMockContent
+              width={224}
+              height={84}
+              highlighted={isHighlighted('display')}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2003,20 +1909,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="e1"
-                label=""
-                value={getState('e1').value ?? 64}
-                highlighted={isHighlighted('e1')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="e1"
+              label=""
+              value={getState('e1').value ?? 64}
+              highlighted={isHighlighted('e1')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2043,20 +1947,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="e2"
-                label=""
-                value={getState('e2').value ?? 64}
-                highlighted={isHighlighted('e2')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="e2"
+              label=""
+              value={getState('e2').value ?? 64}
+              highlighted={isHighlighted('e2')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2083,20 +1985,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="e3"
-                label=""
-                value={getState('e3').value ?? 64}
-                highlighted={isHighlighted('e3')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="e3"
+              label=""
+              value={getState('e3').value ?? 64}
+              highlighted={isHighlighted('e3')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2123,20 +2023,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="e4"
-                label=""
-                value={getState('e4').value ?? 64}
-                highlighted={isHighlighted('e4')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="e4"
+              label=""
+              value={getState('e4').value ?? 64}
+              highlighted={isHighlighted('e4')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2163,20 +2061,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="e5"
-                label=""
-                value={getState('e5').value ?? 64}
-                highlighted={isHighlighted('e5')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="e5"
+              label=""
+              value={getState('e5').value ?? 64}
+              highlighted={isHighlighted('e5')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2203,20 +2099,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="e6"
-                label=""
-                value={getState('e6').value ?? 64}
-                highlighted={isHighlighted('e6')}
-                outerSize={28}
-                innerSize={20}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="e6"
+              label=""
+              value={getState('e6').value ?? 64}
+              highlighted={isHighlighted('e6')}
+              outerSize={28}
+              innerSize={20}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2243,22 +2137,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tempo"
-                  label=""
-                  size="sm"
-                  active={getState('tempo').active}
-                  highlighted={isHighlighted('tempo')}
-                  onClick={() => onButtonClick?.('tempo')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tempo"
+                label=""
+                size="sm"
+                active={getState('tempo').active}
+                highlighted={isHighlighted('tempo')}
+                onClick={() => onButtonClick?.('tempo')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2285,18 +2177,16 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <ValueDial
-                id="value-dial"
-                label=""
-                outerSize={28}
-                highlighted={isHighlighted('value-dial')}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <ValueDial
+              id="value-dial"
+              label=""
+              outerSize={28}
+              highlighted={isHighlighted('value-dial')}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2323,22 +2213,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="dec"
-                  label=""
-                  size="sm"
-                  active={getState('dec').active}
-                  highlighted={isHighlighted('dec')}
-                  onClick={() => onButtonClick?.('dec')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="dec"
+                label=""
+                size="sm"
+                active={getState('dec').active}
+                highlighted={isHighlighted('dec')}
+                onClick={() => onButtonClick?.('dec')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2365,22 +2253,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="inc"
-                  label=""
-                  size="sm"
-                  active={getState('inc').active}
-                  highlighted={isHighlighted('inc')}
-                  onClick={() => onButtonClick?.('inc')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="inc"
+                label=""
+                size="sm"
+                active={getState('inc').active}
+                highlighted={isHighlighted('inc')}
+                onClick={() => onButtonClick?.('inc')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2407,22 +2293,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="cursor-up"
-                  label=""
-                  size="sm"
-                  active={getState('cursor-up').active}
-                  highlighted={isHighlighted('cursor-up')}
-                  onClick={() => onButtonClick?.('cursor-up')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="cursor-up"
+                label=""
+                size="sm"
+                active={getState('cursor-up').active}
+                highlighted={isHighlighted('cursor-up')}
+                onClick={() => onButtonClick?.('cursor-up')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2449,22 +2333,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="cursor-down"
-                  label=""
-                  size="sm"
-                  active={getState('cursor-down').active}
-                  highlighted={isHighlighted('cursor-down')}
-                  onClick={() => onButtonClick?.('cursor-down')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="cursor-down"
+                label=""
+                size="sm"
+                active={getState('cursor-down').active}
+                highlighted={isHighlighted('cursor-down')}
+                onClick={() => onButtonClick?.('cursor-down')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2491,22 +2373,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="cursor-left"
-                  label=""
-                  size="sm"
-                  active={getState('cursor-left').active}
-                  highlighted={isHighlighted('cursor-left')}
-                  onClick={() => onButtonClick?.('cursor-left')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="cursor-left"
+                label=""
+                size="sm"
+                active={getState('cursor-left').active}
+                highlighted={isHighlighted('cursor-left')}
+                onClick={() => onButtonClick?.('cursor-left')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2533,22 +2413,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="cursor-right"
-                  label=""
-                  size="sm"
-                  active={getState('cursor-right').active}
-                  highlighted={isHighlighted('cursor-right')}
-                  onClick={() => onButtonClick?.('cursor-right')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="cursor-right"
+                label=""
+                size="sm"
+                active={getState('cursor-right').active}
+                highlighted={isHighlighted('cursor-right')}
+                onClick={() => onButtonClick?.('cursor-right')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2575,22 +2453,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="shift"
-                  label=""
-                  size="sm"
-                  active={getState('shift').active}
-                  highlighted={isHighlighted('shift')}
-                  onClick={() => onButtonClick?.('shift')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="shift"
+                label=""
+                size="sm"
+                active={getState('shift').active}
+                highlighted={isHighlighted('shift')}
+                onClick={() => onButtonClick?.('shift')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2617,22 +2493,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="exit"
-                  label=""
-                  size="sm"
-                  active={getState('exit').active}
-                  highlighted={isHighlighted('exit')}
-                  onClick={() => onButtonClick?.('exit')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="exit"
+                label=""
+                size="sm"
+                active={getState('exit').active}
+                highlighted={isHighlighted('exit')}
+                onClick={() => onButtonClick?.('exit')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2659,22 +2533,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="enter"
-                  label=""
-                  size="sm"
-                  active={getState('enter').active}
-                  highlighted={isHighlighted('enter')}
-                  onClick={() => onButtonClick?.('enter')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="enter"
+                label=""
+                size="sm"
+                active={getState('enter').active}
+                highlighted={isHighlighted('enter')}
+                onClick={() => onButtonClick?.('enter')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2701,22 +2573,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="scene-select"
-                  label=""
-                  size="sm"
-                  active={getState('scene-select').active}
-                  highlighted={isHighlighted('scene-select')}
-                  onClick={() => onButtonClick?.('scene-select')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="scene-select"
+                label=""
+                size="sm"
+                active={getState('scene-select').active}
+                highlighted={isHighlighted('scene-select')}
+                onClick={() => onButtonClick?.('scene-select')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2743,22 +2613,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="scene-chain"
-                  label=""
-                  size="sm"
-                  active={getState('scene-chain').active}
-                  highlighted={isHighlighted('scene-chain')}
-                  onClick={() => onButtonClick?.('scene-chain')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="scene-chain"
+                label=""
+                size="sm"
+                active={getState('scene-chain').active}
+                highlighted={isHighlighted('scene-chain')}
+                onClick={() => onButtonClick?.('scene-chain')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2785,22 +2653,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="zone-view"
-                  label=""
-                  size="sm"
-                  active={getState('zone-view').active}
-                  highlighted={isHighlighted('zone-view')}
-                  onClick={() => onButtonClick?.('zone-view')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="zone-view"
+                label=""
+                size="sm"
+                active={getState('zone-view').active}
+                highlighted={isHighlighted('zone-view')}
+                onClick={() => onButtonClick?.('zone-view')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2827,22 +2693,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="single-tone"
-                  label=""
-                  size="sm"
-                  active={getState('single-tone').active}
-                  highlighted={isHighlighted('single-tone')}
-                  onClick={() => onButtonClick?.('single-tone')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="single-tone"
+                label=""
+                size="sm"
+                active={getState('single-tone').active}
+                highlighted={isHighlighted('single-tone')}
+                onClick={() => onButtonClick?.('single-tone')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2869,20 +2733,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="cutoff"
-                label=""
-                value={getState('cutoff').value ?? 64}
-                highlighted={isHighlighted('cutoff')}
-                outerSize={39}
-                innerSize={27}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="cutoff"
+              label=""
+              value={getState('cutoff').value ?? 64}
+              highlighted={isHighlighted('cutoff')}
+              outerSize={39}
+              innerSize={27}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2909,20 +2771,18 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <Knob
-                id="resonance"
-                label=""
-                value={getState('resonance').value ?? 64}
-                highlighted={isHighlighted('resonance')}
-                outerSize={39}
-                innerSize={27}
-              />
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <Knob
+              id="resonance"
+              label=""
+              value={getState('resonance').value ?? 64}
+              highlighted={isHighlighted('resonance')}
+              outerSize={39}
+              innerSize={27}
+            />
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2949,22 +2809,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="osc"
-                  label=""
-                  size="sm"
-                  active={getState('osc').active}
-                  highlighted={isHighlighted('osc')}
-                  onClick={() => onButtonClick?.('osc')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="osc"
+                label=""
+                size="sm"
+                active={getState('osc').active}
+                highlighted={isHighlighted('osc')}
+                onClick={() => onButtonClick?.('osc')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -2991,22 +2849,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="filter-type"
-                  label=""
-                  size="sm"
-                  active={getState('filter-type').active}
-                  highlighted={isHighlighted('filter-type')}
-                  onClick={() => onButtonClick?.('filter-type')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="filter-type"
+                label=""
+                size="sm"
+                active={getState('filter-type').active}
+                highlighted={isHighlighted('filter-type')}
+                onClick={() => onButtonClick?.('filter-type')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3033,22 +2889,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="param"
-                  label=""
-                  size="sm"
-                  active={getState('param').active}
-                  highlighted={isHighlighted('param')}
-                  onClick={() => onButtonClick?.('param')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="param"
+                label=""
+                size="sm"
+                active={getState('param').active}
+                highlighted={isHighlighted('param')}
+                onClick={() => onButtonClick?.('param')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3075,22 +2929,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="amp"
-                  label=""
-                  size="sm"
-                  active={getState('amp').active}
-                  highlighted={isHighlighted('amp')}
-                  onClick={() => onButtonClick?.('amp')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="amp"
+                label=""
+                size="sm"
+                active={getState('amp').active}
+                highlighted={isHighlighted('amp')}
+                onClick={() => onButtonClick?.('amp')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3117,22 +2969,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="fx"
-                  label=""
-                  size="sm"
-                  active={getState('fx').active}
-                  highlighted={isHighlighted('fx')}
-                  onClick={() => onButtonClick?.('fx')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="fx"
+                label=""
+                size="sm"
+                active={getState('fx').active}
+                highlighted={isHighlighted('fx')}
+                onClick={() => onButtonClick?.('fx')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3159,22 +3009,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="lfo"
-                  label=""
-                  size="sm"
-                  active={getState('lfo').active}
-                  highlighted={isHighlighted('lfo')}
-                  onClick={() => onButtonClick?.('lfo')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="lfo"
+                label=""
+                size="sm"
+                active={getState('lfo').active}
+                highlighted={isHighlighted('lfo')}
+                onClick={() => onButtonClick?.('lfo')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3201,22 +3049,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="pattern"
-                  label=""
-                  size="lg"
-                  active={getState('pattern').active}
-                  highlighted={isHighlighted('pattern')}
-                  onClick={() => onButtonClick?.('pattern')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="pattern"
+                label=""
+                size="lg"
+                active={getState('pattern').active}
+                highlighted={isHighlighted('pattern')}
+                onClick={() => onButtonClick?.('pattern')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3243,22 +3089,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="group"
-                  label=""
-                  size="lg"
-                  active={getState('group').active}
-                  highlighted={isHighlighted('group')}
-                  onClick={() => onButtonClick?.('group')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="group"
+                label=""
+                size="lg"
+                active={getState('group').active}
+                highlighted={isHighlighted('group')}
+                onClick={() => onButtonClick?.('group')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3285,22 +3129,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="song"
-                  label=""
-                  size="lg"
-                  active={getState('song').active}
-                  highlighted={isHighlighted('song')}
-                  onClick={() => onButtonClick?.('song')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="song"
+                label=""
+                size="lg"
+                active={getState('song').active}
+                highlighted={isHighlighted('song')}
+                onClick={() => onButtonClick?.('song')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3327,22 +3169,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tr-rec"
-                  label=""
-                  size="lg"
-                  active={getState('tr-rec').active}
-                  highlighted={isHighlighted('tr-rec')}
-                  onClick={() => onButtonClick?.('tr-rec')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tr-rec"
+                label=""
+                size="lg"
+                active={getState('tr-rec').active}
+                highlighted={isHighlighted('tr-rec')}
+                onClick={() => onButtonClick?.('tr-rec')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3369,22 +3209,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="rhythm-ptn"
-                  label=""
-                  size="lg"
-                  active={getState('rhythm-ptn').active}
-                  highlighted={isHighlighted('rhythm-ptn')}
-                  onClick={() => onButtonClick?.('rhythm-ptn')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="rhythm-ptn"
+                label=""
+                size="lg"
+                active={getState('rhythm-ptn').active}
+                highlighted={isHighlighted('rhythm-ptn')}
+                onClick={() => onButtonClick?.('rhythm-ptn')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3411,22 +3249,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="stop"
-                  label=""
-                  size="lg"
-                  active={getState('stop').active}
-                  highlighted={isHighlighted('stop')}
-                  onClick={() => onButtonClick?.('stop')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="stop"
+                label=""
+                size="lg"
+                active={getState('stop').active}
+                highlighted={isHighlighted('stop')}
+                onClick={() => onButtonClick?.('stop')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3453,22 +3289,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="play"
-                  label=""
-                  size="lg"
-                  active={getState('play').active}
-                  highlighted={isHighlighted('play')}
-                  onClick={() => onButtonClick?.('play')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="play"
+                label=""
+                size="lg"
+                active={getState('play').active}
+                highlighted={isHighlighted('play')}
+                onClick={() => onButtonClick?.('play')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3495,22 +3329,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="rec"
-                  label=""
-                  size="lg"
-                  active={getState('rec').active}
-                  highlighted={isHighlighted('rec')}
-                  onClick={() => onButtonClick?.('rec')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="rec"
+                label=""
+                size="lg"
+                active={getState('rec').active}
+                highlighted={isHighlighted('rec')}
+                onClick={() => onButtonClick?.('rec')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3537,22 +3369,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-1"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-1').active}
-                  highlighted={isHighlighted('tone-cat-1')}
-                  onClick={() => onButtonClick?.('tone-cat-1')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-1"
+                label=""
+                size="sm"
+                active={getState('tone-cat-1').active}
+                highlighted={isHighlighted('tone-cat-1')}
+                onClick={() => onButtonClick?.('tone-cat-1')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3579,22 +3409,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-2"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-2').active}
-                  highlighted={isHighlighted('tone-cat-2')}
-                  onClick={() => onButtonClick?.('tone-cat-2')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-2"
+                label=""
+                size="sm"
+                active={getState('tone-cat-2').active}
+                highlighted={isHighlighted('tone-cat-2')}
+                onClick={() => onButtonClick?.('tone-cat-2')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3621,22 +3449,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-3"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-3').active}
-                  highlighted={isHighlighted('tone-cat-3')}
-                  onClick={() => onButtonClick?.('tone-cat-3')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-3"
+                label=""
+                size="sm"
+                active={getState('tone-cat-3').active}
+                highlighted={isHighlighted('tone-cat-3')}
+                onClick={() => onButtonClick?.('tone-cat-3')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3663,22 +3489,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-4"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-4').active}
-                  highlighted={isHighlighted('tone-cat-4')}
-                  onClick={() => onButtonClick?.('tone-cat-4')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-4"
+                label=""
+                size="sm"
+                active={getState('tone-cat-4').active}
+                highlighted={isHighlighted('tone-cat-4')}
+                onClick={() => onButtonClick?.('tone-cat-4')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3705,22 +3529,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-5"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-5').active}
-                  highlighted={isHighlighted('tone-cat-5')}
-                  onClick={() => onButtonClick?.('tone-cat-5')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-5"
+                label=""
+                size="sm"
+                active={getState('tone-cat-5').active}
+                highlighted={isHighlighted('tone-cat-5')}
+                onClick={() => onButtonClick?.('tone-cat-5')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3747,22 +3569,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-6"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-6').active}
-                  highlighted={isHighlighted('tone-cat-6')}
-                  onClick={() => onButtonClick?.('tone-cat-6')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-6"
+                label=""
+                size="sm"
+                active={getState('tone-cat-6').active}
+                highlighted={isHighlighted('tone-cat-6')}
+                onClick={() => onButtonClick?.('tone-cat-6')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3789,22 +3609,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-7"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-7').active}
-                  highlighted={isHighlighted('tone-cat-7')}
-                  onClick={() => onButtonClick?.('tone-cat-7')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-7"
+                label=""
+                size="sm"
+                active={getState('tone-cat-7').active}
+                highlighted={isHighlighted('tone-cat-7')}
+                onClick={() => onButtonClick?.('tone-cat-7')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3831,22 +3649,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-8"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-8').active}
-                  highlighted={isHighlighted('tone-cat-8')}
-                  onClick={() => onButtonClick?.('tone-cat-8')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-8"
+                label=""
+                size="sm"
+                active={getState('tone-cat-8').active}
+                highlighted={isHighlighted('tone-cat-8')}
+                onClick={() => onButtonClick?.('tone-cat-8')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3873,22 +3689,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-9"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-9').active}
-                  highlighted={isHighlighted('tone-cat-9')}
-                  onClick={() => onButtonClick?.('tone-cat-9')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-9"
+                label=""
+                size="sm"
+                active={getState('tone-cat-9').active}
+                highlighted={isHighlighted('tone-cat-9')}
+                onClick={() => onButtonClick?.('tone-cat-9')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3915,22 +3729,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-10"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-10').active}
-                  highlighted={isHighlighted('tone-cat-10')}
-                  onClick={() => onButtonClick?.('tone-cat-10')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-10"
+                label=""
+                size="sm"
+                active={getState('tone-cat-10').active}
+                highlighted={isHighlighted('tone-cat-10')}
+                onClick={() => onButtonClick?.('tone-cat-10')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3957,22 +3769,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-11"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-11').active}
-                  highlighted={isHighlighted('tone-cat-11')}
-                  onClick={() => onButtonClick?.('tone-cat-11')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-11"
+                label=""
+                size="sm"
+                active={getState('tone-cat-11').active}
+                highlighted={isHighlighted('tone-cat-11')}
+                onClick={() => onButtonClick?.('tone-cat-11')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -3999,22 +3809,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-12"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-12').active}
-                  highlighted={isHighlighted('tone-cat-12')}
-                  onClick={() => onButtonClick?.('tone-cat-12')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-12"
+                label=""
+                size="sm"
+                active={getState('tone-cat-12').active}
+                highlighted={isHighlighted('tone-cat-12')}
+                onClick={() => onButtonClick?.('tone-cat-12')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4041,22 +3849,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-13"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-13').active}
-                  highlighted={isHighlighted('tone-cat-13')}
-                  onClick={() => onButtonClick?.('tone-cat-13')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-13"
+                label=""
+                size="sm"
+                active={getState('tone-cat-13').active}
+                highlighted={isHighlighted('tone-cat-13')}
+                onClick={() => onButtonClick?.('tone-cat-13')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4083,22 +3889,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-14"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-14').active}
-                  highlighted={isHighlighted('tone-cat-14')}
-                  onClick={() => onButtonClick?.('tone-cat-14')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-14"
+                label=""
+                size="sm"
+                active={getState('tone-cat-14').active}
+                highlighted={isHighlighted('tone-cat-14')}
+                onClick={() => onButtonClick?.('tone-cat-14')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4125,22 +3929,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-15"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-15').active}
-                  highlighted={isHighlighted('tone-cat-15')}
-                  onClick={() => onButtonClick?.('tone-cat-15')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-15"
+                label=""
+                size="sm"
+                active={getState('tone-cat-15').active}
+                highlighted={isHighlighted('tone-cat-15')}
+                onClick={() => onButtonClick?.('tone-cat-15')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4167,22 +3969,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="tone-cat-16"
-                  label=""
-                  size="sm"
-                  active={getState('tone-cat-16').active}
-                  highlighted={isHighlighted('tone-cat-16')}
-                  onClick={() => onButtonClick?.('tone-cat-16')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="tone-cat-16"
+                label=""
+                size="sm"
+                active={getState('tone-cat-16').active}
+                highlighted={isHighlighted('tone-cat-16')}
+                onClick={() => onButtonClick?.('tone-cat-16')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4209,22 +4009,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="sampling"
-                  label=""
-                  size="lg"
-                  active={getState('sampling').active}
-                  highlighted={isHighlighted('sampling')}
-                  onClick={() => onButtonClick?.('sampling')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="sampling"
+                label=""
+                size="lg"
+                active={getState('sampling').active}
+                highlighted={isHighlighted('sampling')}
+                onClick={() => onButtonClick?.('sampling')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4251,22 +4049,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="pad-mode"
-                  label=""
-                  size="lg"
-                  active={getState('pad-mode').active}
-                  highlighted={isHighlighted('pad-mode')}
-                  onClick={() => onButtonClick?.('pad-mode')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="pad-mode"
+                label=""
+                size="lg"
+                active={getState('pad-mode').active}
+                highlighted={isHighlighted('pad-mode')}
+                onClick={() => onButtonClick?.('pad-mode')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4293,22 +4089,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="clip-board"
-                  label=""
-                  size="lg"
-                  active={getState('clip-board').active}
-                  highlighted={isHighlighted('clip-board')}
-                  onClick={() => onButtonClick?.('clip-board')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="clip-board"
+                label=""
+                size="lg"
+                active={getState('clip-board').active}
+                highlighted={isHighlighted('clip-board')}
+                onClick={() => onButtonClick?.('clip-board')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4335,22 +4129,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="bank"
-                  label=""
-                  size="lg"
-                  active={getState('bank').active}
-                  highlighted={isHighlighted('bank')}
-                  onClick={() => onButtonClick?.('bank')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="bank"
+                label=""
+                size="lg"
+                active={getState('bank').active}
+                highlighted={isHighlighted('bank')}
+                onClick={() => onButtonClick?.('bank')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4377,22 +4169,20 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PanelButton
-                  id="hold"
-                  label=""
-                  size="lg"
-                  active={getState('hold').active}
-                  highlighted={isHighlighted('hold')}
-                  onClick={() => onButtonClick?.('hold')}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PanelButton
+                id="hold"
+                label=""
+                size="lg"
+                active={getState('hold').active}
+                highlighted={isHighlighted('hold')}
+                onClick={() => onButtonClick?.('hold')}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4419,23 +4209,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-1"
-                  label=""
-                  active={getState('pad-1').active}
-                  highlighted={isHighlighted('pad-1')}
-                  onClick={() => onButtonClick?.('pad-1')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-1"
+                label=""
+                active={getState('pad-1').active}
+                highlighted={isHighlighted('pad-1')}
+                onClick={() => onButtonClick?.('pad-1')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4462,23 +4250,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-2"
-                  label=""
-                  active={getState('pad-2').active}
-                  highlighted={isHighlighted('pad-2')}
-                  onClick={() => onButtonClick?.('pad-2')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-2"
+                label=""
+                active={getState('pad-2').active}
+                highlighted={isHighlighted('pad-2')}
+                onClick={() => onButtonClick?.('pad-2')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4505,23 +4291,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-3"
-                  label=""
-                  active={getState('pad-3').active}
-                  highlighted={isHighlighted('pad-3')}
-                  onClick={() => onButtonClick?.('pad-3')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-3"
+                label=""
+                active={getState('pad-3').active}
+                highlighted={isHighlighted('pad-3')}
+                onClick={() => onButtonClick?.('pad-3')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4548,23 +4332,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-4"
-                  label=""
-                  active={getState('pad-4').active}
-                  highlighted={isHighlighted('pad-4')}
-                  onClick={() => onButtonClick?.('pad-4')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-4"
+                label=""
+                active={getState('pad-4').active}
+                highlighted={isHighlighted('pad-4')}
+                onClick={() => onButtonClick?.('pad-4')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4591,23 +4373,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-5"
-                  label=""
-                  active={getState('pad-5').active}
-                  highlighted={isHighlighted('pad-5')}
-                  onClick={() => onButtonClick?.('pad-5')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-5"
+                label=""
+                active={getState('pad-5').active}
+                highlighted={isHighlighted('pad-5')}
+                onClick={() => onButtonClick?.('pad-5')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4634,23 +4414,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-6"
-                  label=""
-                  active={getState('pad-6').active}
-                  highlighted={isHighlighted('pad-6')}
-                  onClick={() => onButtonClick?.('pad-6')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-6"
+                label=""
+                active={getState('pad-6').active}
+                highlighted={isHighlighted('pad-6')}
+                onClick={() => onButtonClick?.('pad-6')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4677,23 +4455,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-7"
-                  label=""
-                  active={getState('pad-7').active}
-                  highlighted={isHighlighted('pad-7')}
-                  onClick={() => onButtonClick?.('pad-7')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-7"
+                label=""
+                active={getState('pad-7').active}
+                highlighted={isHighlighted('pad-7')}
+                onClick={() => onButtonClick?.('pad-7')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4720,23 +4496,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-8"
-                  label=""
-                  active={getState('pad-8').active}
-                  highlighted={isHighlighted('pad-8')}
-                  onClick={() => onButtonClick?.('pad-8')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-8"
+                label=""
+                active={getState('pad-8').active}
+                highlighted={isHighlighted('pad-8')}
+                onClick={() => onButtonClick?.('pad-8')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4763,23 +4537,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-9"
-                  label=""
-                  active={getState('pad-9').active}
-                  highlighted={isHighlighted('pad-9')}
-                  onClick={() => onButtonClick?.('pad-9')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-9"
+                label=""
+                active={getState('pad-9').active}
+                highlighted={isHighlighted('pad-9')}
+                onClick={() => onButtonClick?.('pad-9')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4806,23 +4578,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-10"
-                  label=""
-                  active={getState('pad-10').active}
-                  highlighted={isHighlighted('pad-10')}
-                  onClick={() => onButtonClick?.('pad-10')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-10"
+                label=""
+                active={getState('pad-10').active}
+                highlighted={isHighlighted('pad-10')}
+                onClick={() => onButtonClick?.('pad-10')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4849,23 +4619,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-11"
-                  label=""
-                  active={getState('pad-11').active}
-                  highlighted={isHighlighted('pad-11')}
-                  onClick={() => onButtonClick?.('pad-11')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-11"
+                label=""
+                active={getState('pad-11').active}
+                highlighted={isHighlighted('pad-11')}
+                onClick={() => onButtonClick?.('pad-11')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4892,23 +4660,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-12"
-                  label=""
-                  active={getState('pad-12').active}
-                  highlighted={isHighlighted('pad-12')}
-                  onClick={() => onButtonClick?.('pad-12')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-12"
+                label=""
+                active={getState('pad-12').active}
+                highlighted={isHighlighted('pad-12')}
+                onClick={() => onButtonClick?.('pad-12')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4935,23 +4701,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-13"
-                  label=""
-                  active={getState('pad-13').active}
-                  highlighted={isHighlighted('pad-13')}
-                  onClick={() => onButtonClick?.('pad-13')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-13"
+                label=""
+                active={getState('pad-13').active}
+                highlighted={isHighlighted('pad-13')}
+                onClick={() => onButtonClick?.('pad-13')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -4978,23 +4742,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-14"
-                  label=""
-                  active={getState('pad-14').active}
-                  highlighted={isHighlighted('pad-14')}
-                  onClick={() => onButtonClick?.('pad-14')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-14"
+                label=""
+                active={getState('pad-14').active}
+                highlighted={isHighlighted('pad-14')}
+                onClick={() => onButtonClick?.('pad-14')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -5021,23 +4783,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-15"
-                  label=""
-                  active={getState('pad-15').active}
-                  highlighted={isHighlighted('pad-15')}
-                  onClick={() => onButtonClick?.('pad-15')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-15"
+                label=""
+                active={getState('pad-15').active}
+                highlighted={isHighlighted('pad-15')}
+                onClick={() => onButtonClick?.('pad-15')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"
@@ -5064,23 +4824,21 @@ export default function FANTOM06Panel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
-            transform: 'scale(0.4)',
-            transformOrigin: 'center',
           }}
         >
-
-              <div>
-                <PadButton
-                  id="pad-16"
-                  label=""
-                  active={getState('pad-16').active}
-                  highlighted={isHighlighted('pad-16')}
-                  onClick={() => onButtonClick?.('pad-16')}
-                  width={30}
-                  height={28}
-                />
-              </div>
+          <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+            <div>
+              <PadButton
+                id="pad-16"
+                label=""
+                active={getState('pad-16').active}
+                highlighted={isHighlighted('pad-16')}
+                onClick={() => onButtonClick?.('pad-16')}
+                width={30}
+                height={28}
+              />
+            </div>
+          </div>
         </div>
         <div
           className="absolute pointer-events-none"

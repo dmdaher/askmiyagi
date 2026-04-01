@@ -1204,16 +1204,14 @@ function generateFlatPanel(
       // Compute pixel dimensions for component sizing
       const pxW = Math.round((ep.w / 100) * panelWidth);
       const pxH = Math.round((ep.h / 100) * panelHeight);
-      // Render control at full size — the inner transform will scale it down
-      const controlJsx = renderControl(ctrl.id, ctrl, '              ', controlMap, pxW, pxH);
+      // Render control at full size — the inner div scales it down
+      const controlJsx = renderControl(ctrl.id, ctrl, '            ', controlMap, pxW, pxH);
 
       const rotation = (ctrl as any).rotation as number | undefined;
-      const transforms: string[] = [];
-      if (controlScale < 1) transforms.push(`scale(${controlScale})`);
-      if (rotation) transforms.push(`rotate(${rotation}deg)`);
-      const transformStr = transforms.length > 0
-        ? `            transform: '${transforms.join(' ')}',\n            transformOrigin: 'center',\n`
-        : '';
+      // Build inner transform (scale + rotation) — applied to inner div, not outer
+      const innerTransforms: string[] = [];
+      if (controlScale < 1) innerTransforms.push(`scale(${controlScale})`);
+      if (rotation) innerTransforms.push(`rotate(${rotation}deg)`);
 
       const styleLines = [
         `            left: '${ep.x.toFixed(1)}%',`,
@@ -1223,12 +1221,7 @@ function generateFlatPanel(
         `            display: 'flex',`,
         `            alignItems: 'center',`,
         `            justifyContent: 'center',`,
-        `            overflow: 'hidden',`,
       ];
-      if (transforms.length > 0) {
-        styleLines.push(`            transform: '${transforms.join(' ')}',`);
-        styleLines.push(`            transformOrigin: 'center',`);
-      }
 
       const parts = [
         `        {/* ${ctrl.id} */}`,
@@ -1237,8 +1230,14 @@ function generateFlatPanel(
         `          style={{`,
         ...styleLines,
         `          }}`,
-        `        >`,,
+        `        >`,
+        innerTransforms.length > 0
+          ? `          <div style={{ transform: '${innerTransforms.join(' ')}', transformOrigin: 'center' }}>`
+          : null,
         controlJsx,
+        innerTransforms.length > 0
+          ? `          </div>`
+          : null,
         `        </div>`,
       ];
 
@@ -1272,7 +1271,7 @@ function generateFlatPanel(
         ].join('\n'));
       }
 
-      return parts.join('\n');
+      return parts.filter(Boolean).join('\n');
     })
     .filter(Boolean)
     .join('\n\n');
