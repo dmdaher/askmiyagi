@@ -238,3 +238,168 @@ Clean Up (Gap=0) remains as a conservative "align rows" tool. The new alignment 
 4. Done — no guessing, no surprises
 
 Clean Up can be kept for quick row-snapping or removed entirely in favor of these tools.
+
+---
+
+## Control Grouping (Cmd+G)
+
+Simplified grouping — no layout presets, no modals, no auto-arrange. Just "these controls move together."
+
+### Behavior
+
+| Action | Shortcut | What happens |
+|--------|----------|-------------|
+| Group | Cmd+G | Selected controls become a group |
+| Ungroup | Cmd+Shift+G | Dissolves the group, controls stay in place |
+| Click grouped control | Click | All group members get selected |
+| Drag grouped control | Drag | All group members move together |
+
+### Data Model
+
+Already prepared in undo stack prep — `controlGroups` field exists in store, snapshots, auto-save, and restore path.
+
+```typescript
+// In manifestSlice state (already declared as unknown[]):
+controlGroups: ControlGroup[]
+
+interface ControlGroup {
+  id: string;
+  controlIds: string[];
+}
+```
+
+### Store Actions
+
+**File:** `src/components/panel-editor/store/manifestSlice.ts`
+
+```typescript
+createGroup: () => void;
+// Takes selectedIds, creates { id: 'group-N', controlIds: [...selectedIds] }
+// Requires 2+ selected controls
+// A control can only be in one group
+
+ungroupControls: () => void;
+// Finds any group containing any of the selectedIds
+// Dissolves that group, removes from controlGroups array
+// Controls keep their positions
+```
+
+### Auto-Select Group Members
+
+**File:** `src/components/panel-editor/ControlNode.tsx`
+
+When a control is clicked and it belongs to a group, auto-select all group members:
+
+```typescript
+const handleClick = useCallback((e: React.MouseEvent) => {
+  const store = useEditorStore.getState();
+  // Find if this control is in a group
+  const group = store.controlGroups.find(
+    (g: any) => g.controlIds?.includes(controlId)
+  );
+
+  if (group && !e.shiftKey) {
+    // Select all group members
+    store.setSelectedIds(group.controlIds);
+  } else if (e.shiftKey) {
+    store.toggleSelected(controlId);
+  } else {
+    store.setSelectedIds([controlId]);
+  }
+}, [controlId]);
+```
+
+### Group-Aware Drag
+
+**File:** `src/components/panel-editor/ControlNode.tsx`
+
+When dragging a grouped control, move all group members:
+
+```typescript
+const handleDragStop = useCallback((...) => {
+  const store = useEditorStore.getState();
+  const group = store.controlGroups.find(
+    (g: any) => g.controlIds?.includes(controlId)
+  );
+
+  pushSnapshot();
+  if (group) {
+    // Move all group members by the same delta
+    for (const id of group.controlIds) {
+      if (id !== controlId) {
+        store.moveControl(id, dx, dy);
+      }
+    }
+  }
+  moveControl(controlId, dx, dy);
+}, [...]);
+```
+
+### Keyboard Shortcuts
+
+**File:** `src/components/panel-editor/hooks/useEditorKeyboard.ts`
+
+```typescript
+// Cmd+G: Group selected
+if (isMod && e.key === 'g') {
+  e.preventDefault();
+  store.pushSnapshot();
+  store.createGroup();
+  return;
+}
+
+// Cmd+Shift+G: Ungroup
+if (isMod && e.shiftKey && e.key === 'g') {
+  e.preventDefault();
+  store.pushSnapshot();
+  store.ungroupControls();
+  return;
+}
+```
+
+### Context Menu
+
+**File:** `src/components/panel-editor/ContextMenu.tsx`
+
+Add to menu when 2+ selected:
+```
+Group           Cmd+G
+Ungroup         Cmd+Shift+G
+```
+
+### Visual Indicator (nice-to-have)
+
+Thin dashed border around grouped controls so the contractor can see which controls are grouped. Rendered as an overlay in EditorWorkspace, not inside ControlNode (avoids coupling).
+
+---
+
+## Combined Workflow
+
+1. Select 6 zone knobs
+2. **Cmd+G** → grouped
+3. Click any knob → all 6 selected
+4. **Align Top** → all snap to same Y
+5. **Distribute H** → equal horizontal gaps
+6. Drag to reposition the whole row
+7. **Cmd+Shift+G** → ungroup when done
+
+---
+
+## Updated Implementation Order
+
+1. **Store actions** — `alignControls`, `distributeControls`, `createGroup`, `ungroupControls`
+2. **Group click/drag** — auto-select + group-move in ControlNode
+3. **Properties Panel** — alignment buttons + Group/Ungroup buttons
+4. **Keyboard shortcuts** — Shift+H/V, Cmd+Shift+H/V, Cmd+G, Cmd+Shift+G
+5. **Context menu** — alignment + group/ungroup
+6. **Playwright test** — group 3 knobs, align, distribute, ungroup
+
+## Updated Files Changed
+
+| File | Change |
+|------|--------|
+| `src/components/panel-editor/store/manifestSlice.ts` | Add `alignControls`, `distributeControls`, `createGroup`, `ungroupControls` |
+| `src/components/panel-editor/ControlNode.tsx` | Auto-select group members on click, group-move on drag |
+| `src/components/panel-editor/PropertiesPanel/index.tsx` | Alignment buttons + Group/Ungroup in multi-select view |
+| `src/components/panel-editor/hooks/useEditorKeyboard.ts` | Shortcuts: Shift+H/V, Cmd+Shift+H/V, Cmd+G, Cmd+Shift+G |
+| `src/components/panel-editor/ContextMenu.tsx` | Group/Ungroup + alignment menu items |
