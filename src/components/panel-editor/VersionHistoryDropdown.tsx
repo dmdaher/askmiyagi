@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useEditorStore } from './store';
-import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 
 interface Version {
   filename: string;
@@ -36,7 +34,7 @@ function formatTimestamp(timestamp: string): string {
   }
 }
 
-export default function VersionHistoryDropdown({ deviceId }: { deviceId: string }) {
+export default function VersionHistoryDropdown({ deviceId, onRestore }: { deviceId: string; onRestore?: () => void }) {
   const [open, setOpen] = useState(false);
   const [versions, setVersions] = useState<Version[]>([]);
   const [loading, setLoading] = useState(false);
@@ -79,9 +77,6 @@ export default function VersionHistoryDropdown({ deviceId }: { deviceId: string 
   const handleRestore = useCallback(async (filename: string) => {
     setRestoring(filename);
     try {
-      // Push current state to undo stack so Cmd+Z reverts the restore
-      useEditorStore.getState().pushSnapshot();
-
       const res = await fetch(`/api/pipeline/${deviceId}/versions/restore`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,49 +90,19 @@ export default function VersionHistoryDropdown({ deviceId }: { deviceId: string 
         return;
       }
 
-      const data = await res.json();
-
-      // Normalize arrays to Records (same as PanelEditor load path)
-      const sections = Array.isArray(data.sections)
-        ? Object.fromEntries(data.sections.map((s: any) => [s.id, {
-            ...s,
-            childIds: s.childIds ?? s.controls ?? [],
-          }]))
-        : (data.sections ?? {});
-
-      const controls = Array.isArray(data.controls)
-        ? Object.fromEntries(data.controls.map((c: any) => [c.id, c]))
-        : (data.controls ?? {});
-
-      // Load restored data into store — direct setState, no remount needed
-      useEditorStore.setState({
-        sections,
-        controls,
-        editorLabels: data.editorLabels ?? [],
-        controlGroups: data.controlGroups ?? [],
-        keyboard: data.keyboard ?? null,
-        canvasWidth: data.canvasWidth ?? 1200,
-        canvasHeight: data.canvasHeight ?? 1650,
-        controlScale: data.controlScale ?? 1.0,
-        zoom: data.zoom ?? 1,
-        cleanupGap: data.cleanupGap ?? 8,
-        panelScale: data.panelScale ?? 1.0,
-        _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
-        selectedIds: [],
-        lockedIds: [],
-        focusedSectionId: null,
-        future: [], // Clear redo — version jump invalidates it
-        hasUserEdited: false, // Block auto-save from overwriting restored data
-      });
-
       setOpen(false);
-      // Refresh version list
-      fetchVersions();
+
+      // Trigger PanelEditor to reload from disk (which now has the restored data).
+      // This goes through the normal fetch → load cycle, avoiding React hooks errors
+      // from direct setState with dramatically different data.
+      if (onRestore) {
+        onRestore();
+      }
     } catch (err) {
       console.error('Restore error:', err);
     }
     setRestoring(null);
-  }, [deviceId, fetchVersions]);
+  }, [deviceId, onRestore]);
 
   return (
     <div className="relative" ref={dropdownRef}>

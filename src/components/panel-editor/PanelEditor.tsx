@@ -20,7 +20,7 @@ interface PanelEditorProps {
 }
 
 /** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
-function EditorShell({ deviceId }: { deviceId: string }) {
+function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onRestoreVersion?: () => void }) {
   useEditorKeyboard();
   useAutoSave(deviceId);
 
@@ -130,6 +130,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
         onApproveAndBuild={handleApproveAndBuild}
         onCleanUp={handleCleanUp}
         onReportIssue={() => setShowIssueModal(true)}
+        onRestoreVersion={onRestoreVersion}
       />
 
       {/* Codegen error banner */}
@@ -211,13 +212,23 @@ function EditorShell({ deviceId }: { deviceId: string }) {
 export default function PanelEditor({ deviceId }: PanelEditorProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // Exposed for VersionHistoryDropdown to trigger a reload after restore
+  const forceReload = useCallback(() => {
+    // Push current state for undo before loading restored version
+    useEditorStore.getState().pushSnapshot();
+    setLoading(true);
+    setReloadKey((k) => k + 1);
+  }, []);
 
   useEffect(() => {
     // If the Zustand store already has data for this device (e.g., we switched
     // tabs and came back), skip the disk reload to preserve in-memory state
     // and undo history. Only fetch from disk on first load or device change.
+    // BUT: if reloadKey > 0, always reload (version restore triggered it).
     const currentStore = useEditorStore.getState();
-    if (currentStore.deviceId === deviceId && Object.keys(currentStore.controls).length > 0) {
+    if (reloadKey === 0 && currentStore.deviceId === deviceId && Object.keys(currentStore.controls).length > 0) {
       setLoading(false);
       return;
     }
@@ -304,7 +315,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
     return () => {
       cancelled = true;
     };
-  }, [deviceId]);
+  }, [deviceId, reloadKey]);
 
   if (loading) {
     return (
@@ -322,5 +333,5 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
     );
   }
 
-  return <EditorShell deviceId={deviceId} />;
+  return <EditorShell deviceId={deviceId} onRestoreVersion={forceReload} />;
 }

@@ -14,6 +14,7 @@ interface EditorToolbarProps {
   onApproveAndBuild: () => void;
   onCleanUp: () => void;
   onReportIssue?: () => void;
+  onRestoreVersion?: () => void;
 }
 
 export default function EditorToolbar({
@@ -23,6 +24,7 @@ export default function EditorToolbar({
   onApproveAndBuild,
   onCleanUp,
   onReportIssue,
+  onRestoreVersion,
 }: EditorToolbarProps) {
   const manufacturer = useEditorStore((s) => s.manufacturer);
   const deviceName = useEditorStore((s) => s.deviceName);
@@ -280,7 +282,7 @@ export default function EditorToolbar({
       <div className="flex-1" />
 
       {/* Version History */}
-      <VersionHistoryDropdown deviceId={deviceId} />
+      <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
 
       {/* Report Issue */}
       {onReportIssue && (

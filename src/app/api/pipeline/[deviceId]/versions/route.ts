@@ -42,7 +42,7 @@ export async function GET(
       .sort()
       .reverse();
 
-    for (const file of files.slice(0, 50)) {
+    for (const file of files.slice(0, 20)) {
       const fullPath = path.join(backupDir, file);
       try {
         const stat = fs.statSync(fullPath);
