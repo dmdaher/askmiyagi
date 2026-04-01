@@ -182,6 +182,7 @@ export interface ManifestSlice {
   toggleSelected: (id: string) => void;
   setFocusedSection: (id: string | null) => void;
   addControl: (sectionId: string, type: string, label: string) => void;
+  setAllLabelFontSize: (size: number | undefined) => void;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -872,5 +873,15 @@ export const createManifestSlice: StateCreator<
         },
       },
     }));
+  },
+
+  setAllLabelFontSize: (size) => {
+    set((s) => {
+      const updated: Record<string, ControlDef> = {};
+      for (const [id, ctrl] of Object.entries(s.controls)) {
+        updated[id] = { ...ctrl, labelFontSize: size };
+      }
+      return { controls: updated };
+    });
   },
 });

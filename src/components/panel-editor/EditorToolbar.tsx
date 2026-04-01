@@ -48,6 +48,8 @@ export default function EditorToolbar({
   const setCleanupGap = useEditorStore((s) => s.setCleanupGap);
   const panelScale = useEditorStore((s) => s.panelScale);
   const setPanelScale = useEditorStore((s) => s.setPanelScale);
+  const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
+  const setAllLabelFontSize = useEditorStore((s) => s.setAllLabelFontSize);
 
   const zoomPercent = Math.round(zoom * 100);
 
@@ -191,6 +193,31 @@ export default function EditorToolbar({
       >
         <span className="text-[10px]">Labels</span>
       </button>
+
+      {/* Label Size — set all labels to the same font size */}
+      {showLabels && (
+        <select
+          value=""
+          onChange={(e) => {
+            const val = e.target.value;
+            if (!val) return;
+            pushSnapshot();
+            setAllLabelFontSize(val === 'auto' ? undefined : Number(val));
+          }}
+          className="h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-400 outline-none focus:border-blue-500"
+          title="Set all label sizes"
+        >
+          <option value="">Size</option>
+          <option value="auto">Auto</option>
+          <option value="5">5px</option>
+          <option value="6">6px</option>
+          <option value="7">7px</option>
+          <option value="8">8px</option>
+          <option value="9">9px</option>
+          <option value="10">10px</option>
+          <option value="12">12px</option>
+        </select>
+      )}
 
       {/* Photo Overlay Toggle + Opacity */}
       <div className="flex items-center gap-1.5" data-tutorial="photo">
