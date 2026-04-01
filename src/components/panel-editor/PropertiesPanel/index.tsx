@@ -659,7 +659,7 @@ export default function PropertiesPanel() {
   }
 
   return (
-    <div className="w-72 border-l border-gray-800 bg-[#0d0d1a] flex-shrink-0">
+    <div className="w-72 border-l border-gray-800 bg-[#0d0d1a] flex-shrink-0 flex flex-col overflow-hidden">
       <div className="flex h-7 items-center justify-between border-b border-gray-800 px-3">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
           Properties
@@ -675,7 +675,7 @@ export default function PropertiesPanel() {
           </svg>
         </button>
       </div>
-      <div ref={panelRef} className="h-full overflow-y-auto p-3 text-gray-300">{content}</div>
+      <div ref={panelRef} className="flex-1 overflow-y-auto p-3 text-gray-300">{content}</div>
     </div>
   );
 }
