@@ -18,6 +18,17 @@ import DirectionSwitch from '@/components/controls/DirectionSwitch';
 import JogDisplay from '@/components/controls/JogDisplay';
 import { HARDWARE_ICONS } from '@/lib/hardware-icons';
 
+/** Render label text with \n as line breaks */
+function renderLabelText(text: string): React.ReactNode {
+  if (!text.includes('\n')) return text;
+  return text.split('\n').map((line, i) => (
+    <span key={i}>
+      {i > 0 && <br />}
+      {line}
+    </span>
+  ));
+}
+
 interface ControlNodeProps {
   controlId: string;
   sectionId: string;
@@ -111,7 +122,7 @@ function renderFloatingLabel(
           className="font-medium text-gray-400 uppercase leading-tight break-words"
           style={{ fontSize }}
         >
-          {primaryLabelText}
+          {renderLabelText(primaryLabelText)}
         </span>
         <span className="text-gray-600" style={{ fontSize: fontSize - 1 }}>/</span>
         <span
@@ -129,7 +140,7 @@ function renderFloatingLabel(
           className="font-medium text-gray-400 uppercase text-center leading-tight break-words w-full block"
           style={{ fontSize }}
         >
-          {control.label}
+          {renderLabelText(control.label)}
         </span>
       )}
       {secondaryLabel && (
@@ -400,7 +411,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
               }}
             />
             <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
-              {control.label}
+              {renderLabelText(control.label)}
             </span>
           </div>
         );
@@ -423,7 +434,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             }}
           />
           <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
-            {control.label}
+            {renderLabelText(control.label)}
           </span>
         </div>
       );
@@ -590,7 +601,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   // ── Inline label editing (component-local state) ──────────────────────────
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Control positions are absolute canvas coords in the store.
   // Inside a SectionFrame they render relative to the section origin.
@@ -693,13 +704,15 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   }, []);
 
   const handleEditKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       e.stopPropagation();
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
         commitEdit();
       } else if (e.key === 'Escape') {
         cancelEdit();
       }
+      // Shift+Enter inserts a newline (default textarea behavior)
     },
     [commitEdit, cancelEdit],
   );
@@ -808,15 +821,15 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
             pointerEvents: 'auto',
           }}
         >
-          <input
+          <textarea
             ref={inputRef}
-            type="text"
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={commitEdit}
             onKeyDown={handleEditKeyDown}
-            className="w-full bg-gray-900 border border-blue-500 text-[10px] text-white px-1 py-0.5 rounded text-center outline-none"
-            style={{ maxWidth: control.w }}
+            rows={Math.max(1, editValue.split('\n').length)}
+            className="w-full bg-gray-900 border border-blue-500 text-[10px] text-white px-1 py-0.5 rounded text-center outline-none resize-none"
+            style={{ maxWidth: Math.max(control.w, 80) }}
           />
         </div>
       )}
