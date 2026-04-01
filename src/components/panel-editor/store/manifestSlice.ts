@@ -158,6 +158,8 @@ export interface ManifestSlice {
   groupLabels: GroupLabel[];
   sections: Record<string, SectionDef>;
   controls: Record<string, ControlDef>;
+  editorLabels: unknown[];      // Future: EditorLabel[] for standalone labels
+  controlGroups: unknown[];     // Future: ControlGroup[] for sub-section grouping
   selectedIds: string[];
   lockedIds: string[];
   keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
@@ -240,6 +242,8 @@ export const createManifestSlice: StateCreator<
   groupLabels: [],
   sections: {},
   controls: {},
+  editorLabels: [],
+  controlGroups: [],
   selectedIds: [],
   lockedIds: [],
   keyboard: null,

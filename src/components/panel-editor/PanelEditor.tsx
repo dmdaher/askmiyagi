@@ -86,7 +86,7 @@ function EditorShell({ deviceId }: { deviceId: string }) {
       await fetch(`/api/pipeline/${deviceId}/manifest`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale }),
+        body: JSON.stringify({ sections, controls, editorLabels: (state as any).editorLabels ?? [], controlGroups: (state as any).controlGroups ?? [], canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale }),
       });
 
       // Trigger codegen directly — no cleanup, no inference.
@@ -276,6 +276,8 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
               manufacturer: data.manufacturer ?? '',
               sections,
               controls,
+              editorLabels: data.editorLabels ?? [],
+              controlGroups: data.controlGroups ?? [],
               selectedIds: [],
               lockedIds: [],
               keyboard: data.keyboard ?? null,

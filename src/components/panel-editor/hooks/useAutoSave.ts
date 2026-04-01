@@ -46,6 +46,8 @@ export function useAutoSave(deviceId: string) {
         if (
           state.sections === prevState.sections &&
           state.controls === prevState.controls &&
+          state.editorLabels === prevState.editorLabels &&
+          state.controlGroups === prevState.controlGroups &&
           state.controlScale === prevState.controlScale &&
           state.zoom === prevState.zoom &&
           state.cleanupGap === prevState.cleanupGap &&
@@ -75,11 +77,11 @@ export function useAutoSave(deviceId: string) {
         // Debounce the save
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
-          const { sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale } = useEditorStore.getState();
+          const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale } = useEditorStore.getState();
           fetch(`/api/pipeline/${deviceId}/manifest`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale }),
+            body: JSON.stringify({ sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale }),
           }).catch(() => {
             // Silent fail — auto-save is best-effort
           });
