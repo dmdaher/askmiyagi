@@ -87,7 +87,7 @@ function renderFloatingLabel(
         }}
       >
         <span
-          className="font-medium text-gray-500 uppercase text-center leading-tight truncate w-full block"
+          className="font-medium text-gray-500 uppercase text-center leading-tight break-words w-full block"
           style={{ fontSize: Math.max(fontSize - 2, 6) }}
         >
           {control.secondaryLabel}
@@ -108,14 +108,14 @@ function renderFloatingLabel(
     <>
       <div className="flex items-center gap-1 w-full justify-center">
         <span
-          className="font-medium text-gray-400 uppercase leading-tight truncate"
+          className="font-medium text-gray-400 uppercase leading-tight break-words"
           style={{ fontSize }}
         >
           {primaryLabelText}
         </span>
         <span className="text-gray-600" style={{ fontSize: fontSize - 1 }}>/</span>
         <span
-          className="font-medium text-gray-500 uppercase leading-tight truncate"
+          className="font-medium text-gray-500 uppercase leading-tight break-words"
           style={{ fontSize: fontSize - 1 }}
         >
           {secondaryLabel}
@@ -126,7 +126,7 @@ function renderFloatingLabel(
     <>
       {showPrimaryLabel && (
         <span
-          className="font-medium text-gray-400 uppercase text-center leading-tight truncate w-full block"
+          className="font-medium text-gray-400 uppercase text-center leading-tight break-words w-full block"
           style={{ fontSize }}
         >
           {control.label}
@@ -134,7 +134,7 @@ function renderFloatingLabel(
       )}
       {secondaryLabel && (
         <span
-          className="font-medium text-gray-500 uppercase text-center leading-tight truncate w-full block"
+          className="font-medium text-gray-500 uppercase text-center leading-tight break-words w-full block"
           style={{ fontSize: Math.max(fontSize - 1, 6) }}
         >
           {secondaryLabel}
@@ -399,7 +399,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
                 boxShadow: `0 0 6px ${ledColor}`,
               }}
             />
-            <span className="text-[7px] text-gray-400 uppercase truncate w-full text-center leading-tight">
+            <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
               {control.label}
             </span>
           </div>
@@ -422,7 +422,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
               boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.2)',
             }}
           />
-          <span className="text-[7px] text-gray-400 uppercase truncate w-full text-center leading-tight">
+          <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
             {control.label}
           </span>
         </div>

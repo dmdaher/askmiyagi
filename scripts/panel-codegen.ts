@@ -497,7 +497,7 @@ function renderFloatingLabel(
     `            textAlign: '${textAlign}',`,
     `          }}`,
     `        >`,
-    `          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: ${fontSize} }}>`,
+    `          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: ${fontSize} }}>`,
     `            ${escapeJsx(labelText)}`,
     `          </span>`,
   ];
