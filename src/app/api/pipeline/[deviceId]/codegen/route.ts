@@ -76,13 +76,27 @@ export async function POST(
             if (editorControl.type) control.type = editorControl.type;
           }
 
-          // Use editor positions directly (already cleaned by the editor on Approve)
+          // Use editor positions directly.
+          // When controlScale < 1, the contractor positioned using visual sizes
+          // (w * scale), not full container sizes. Scale w/h so the generated
+          // panel matches what they saw in the editor.
           if (editorControl) {
+            const scale = (editorData.controlScale as number) ?? 1;
+            // Visual size = container size × scale
+            const visualW = editorControl.w * scale;
+            const visualH = editorControl.h * scale;
+            // Visual center = container center (CSS transform-origin: center)
+            const centerX = editorControl.x + editorControl.w / 2;
+            const centerY = editorControl.y + editorControl.h / 2;
+            // Recompute position from visual center and visual size
+            const visualX = centerX - visualW / 2;
+            const visualY = centerY - visualH / 2;
+
             (control as any).editorPosition = {
-              x: Math.round((editorControl.x / canvasW) * 1000) / 10,
-              y: Math.round((editorControl.y / canvasH) * 1000) / 10,
-              w: Math.round((editorControl.w / canvasW) * 1000) / 10,
-              h: Math.round((editorControl.h / canvasH) * 1000) / 10,
+              x: Math.round((visualX / canvasW) * 1000) / 10,
+              y: Math.round((visualY / canvasH) * 1000) / 10,
+              w: Math.round((visualW / canvasW) * 1000) / 10,
+              h: Math.round((visualH / canvasH) * 1000) / 10,
             };
           }
         }
