@@ -202,9 +202,9 @@ export default function CommonSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '43.50%',
-              top: '13.60%',
-              width: '6.80%',
-              height: '14.60%',
+              top: '24.70%',
+              width: '11.30%',
+              height: '44.30%',
             }}
           >
             <TouchDisplay
@@ -212,8 +212,8 @@ export default function CommonSection({
               label=""
               variant="main"
               showMockContent
-              width={82}
-              height={53}
+              width={136}
+              height={160}
               highlighted={isHighlighted('display')}
             />
           </div>
@@ -221,8 +221,8 @@ export default function CommonSection({
           className="absolute pointer-events-none"
           style={{
             left: '43.5%',
-            top: '12.4%',
-            width: '6.8%',
+            top: '23.5%',
+            width: '11.3%',
             textAlign: 'center',
           }}
         >

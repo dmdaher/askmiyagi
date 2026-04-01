@@ -30,17 +30,17 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '88.20%',
-              top: '6.70%',
-              width: '1.40%',
-              height: '9.00%',
+              top: '12.20%',
+              width: '2.30%',
+              height: '27.20%',
             }}
           >
             <div>
               <PanelButton
                 id="sampling"
                 label=""
-                width={17}
-                height={32}
+                width={28}
+                height={98}
                 active={getState('sampling').active}
                 highlighted={isHighlighted('sampling')}
                 onClick={() => onButtonClick?.('sampling')}
@@ -51,8 +51,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '5.5%',
-            width: '1.4%',
+            top: '11.0%',
+            width: '2.3%',
             textAlign: 'center',
           }}
         >
@@ -64,17 +64,17 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '90.80%',
-              top: '6.60%',
-              width: '1.40%',
-              height: '9.00%',
+              top: '12.10%',
+              width: '2.30%',
+              height: '27.40%',
             }}
           >
             <div>
               <PanelButton
                 id="pad-mode"
                 label=""
-                width={17}
-                height={32}
+                width={28}
+                height={99}
                 active={getState('pad-mode').active}
                 highlighted={isHighlighted('pad-mode')}
                 onClick={() => onButtonClick?.('pad-mode')}
@@ -85,8 +85,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '90.8%',
-            top: '5.4%',
-            width: '1.4%',
+            top: '10.9%',
+            width: '2.3%',
             textAlign: 'center',
           }}
         >
@@ -98,17 +98,17 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '92.40%',
-              top: '6.60%',
-              width: '1.40%',
-              height: '9.00%',
+              top: '12.10%',
+              width: '2.30%',
+              height: '27.40%',
             }}
           >
             <div>
               <PanelButton
                 id="clip-board"
                 label=""
-                width={17}
-                height={32}
+                width={28}
+                height={99}
                 active={getState('clip-board').active}
                 highlighted={isHighlighted('clip-board')}
                 onClick={() => onButtonClick?.('clip-board')}
@@ -119,8 +119,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '92.4%',
-            top: '5.4%',
-            width: '1.4%',
+            top: '10.9%',
+            width: '2.3%',
             textAlign: 'center',
           }}
         >
@@ -132,17 +132,17 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '93.80%',
-              top: '6.60%',
-              width: '1.50%',
-              height: '9.00%',
+              top: '12.10%',
+              width: '2.50%',
+              height: '27.40%',
             }}
           >
             <div>
               <PanelButton
                 id="bank"
                 label=""
-                width={18}
-                height={32}
+                width={30}
+                height={99}
                 active={getState('bank').active}
                 highlighted={isHighlighted('bank')}
                 onClick={() => onButtonClick?.('bank')}
@@ -153,8 +153,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '5.4%',
-            width: '1.5%',
+            top: '10.9%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -166,17 +166,17 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '96.60%',
-              top: '6.60%',
-              width: '1.50%',
-              height: '9.00%',
+              top: '12.10%',
+              width: '2.50%',
+              height: '27.40%',
             }}
           >
             <div>
               <PanelButton
                 id="hold"
                 label=""
-                width={18}
-                height={32}
+                width={30}
+                height={99}
                 active={getState('hold').active}
                 highlighted={isHighlighted('hold')}
                 onClick={() => onButtonClick?.('hold')}
@@ -187,8 +187,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '5.4%',
-            width: '1.5%',
+            top: '10.9%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -200,9 +200,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '88.20%',
-              top: '28.80%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '52.40%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -212,8 +212,8 @@ export default function PadSection({
                 active={getState('pad-1').active}
                 highlighted={isHighlighted('pad-1')}
                 onClick={() => onButtonClick?.('pad-1')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -221,8 +221,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '27.6%',
-            width: '1.5%',
+            top: '51.2%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -234,9 +234,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '91.00%',
-              top: '28.80%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '52.40%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -246,8 +246,8 @@ export default function PadSection({
                 active={getState('pad-2').active}
                 highlighted={isHighlighted('pad-2')}
                 onClick={() => onButtonClick?.('pad-2')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -255,8 +255,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '27.6%',
-            width: '1.5%',
+            top: '51.2%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -268,9 +268,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '93.80%',
-              top: '28.80%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '52.40%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -280,8 +280,8 @@ export default function PadSection({
                 active={getState('pad-3').active}
                 highlighted={isHighlighted('pad-3')}
                 onClick={() => onButtonClick?.('pad-3')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -289,8 +289,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '27.6%',
-            width: '1.5%',
+            top: '51.2%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -302,9 +302,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '96.60%',
-              top: '28.80%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '52.40%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -314,8 +314,8 @@ export default function PadSection({
                 active={getState('pad-4').active}
                 highlighted={isHighlighted('pad-4')}
                 onClick={() => onButtonClick?.('pad-4')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -323,8 +323,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '27.6%',
-            width: '1.5%',
+            top: '51.2%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -336,9 +336,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '88.20%',
-              top: '34.30%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '62.50%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -348,8 +348,8 @@ export default function PadSection({
                 active={getState('pad-5').active}
                 highlighted={isHighlighted('pad-5')}
                 onClick={() => onButtonClick?.('pad-5')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -357,8 +357,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '33.1%',
-            width: '1.5%',
+            top: '61.3%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -370,9 +370,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '91.00%',
-              top: '34.30%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '62.50%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -382,8 +382,8 @@ export default function PadSection({
                 active={getState('pad-6').active}
                 highlighted={isHighlighted('pad-6')}
                 onClick={() => onButtonClick?.('pad-6')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -391,8 +391,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '33.1%',
-            width: '1.5%',
+            top: '61.3%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -404,9 +404,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '93.80%',
-              top: '34.30%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '62.50%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -416,8 +416,8 @@ export default function PadSection({
                 active={getState('pad-7').active}
                 highlighted={isHighlighted('pad-7')}
                 onClick={() => onButtonClick?.('pad-7')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -425,8 +425,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '33.1%',
-            width: '1.5%',
+            top: '61.3%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -438,9 +438,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '96.60%',
-              top: '34.30%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '62.50%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -450,8 +450,8 @@ export default function PadSection({
                 active={getState('pad-8').active}
                 highlighted={isHighlighted('pad-8')}
                 onClick={() => onButtonClick?.('pad-8')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -459,8 +459,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '33.1%',
-            width: '1.5%',
+            top: '61.3%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -472,9 +472,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '88.20%',
-              top: '39.90%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '72.50%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -484,8 +484,8 @@ export default function PadSection({
                 active={getState('pad-9').active}
                 highlighted={isHighlighted('pad-9')}
                 onClick={() => onButtonClick?.('pad-9')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -493,8 +493,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '38.7%',
-            width: '1.5%',
+            top: '71.3%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -506,9 +506,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '91.00%',
-              top: '39.90%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '72.50%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -518,8 +518,8 @@ export default function PadSection({
                 active={getState('pad-10').active}
                 highlighted={isHighlighted('pad-10')}
                 onClick={() => onButtonClick?.('pad-10')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -527,8 +527,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '38.7%',
-            width: '1.5%',
+            top: '71.3%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -540,9 +540,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '93.80%',
-              top: '39.90%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '72.50%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -552,8 +552,8 @@ export default function PadSection({
                 active={getState('pad-11').active}
                 highlighted={isHighlighted('pad-11')}
                 onClick={() => onButtonClick?.('pad-11')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -561,8 +561,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '38.7%',
-            width: '1.5%',
+            top: '71.3%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -574,9 +574,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '96.60%',
-              top: '39.90%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '72.50%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -586,8 +586,8 @@ export default function PadSection({
                 active={getState('pad-12').active}
                 highlighted={isHighlighted('pad-12')}
                 onClick={() => onButtonClick?.('pad-12')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -595,8 +595,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '38.7%',
-            width: '1.5%',
+            top: '71.3%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -608,9 +608,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '88.20%',
-              top: '45.40%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '82.60%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -620,8 +620,8 @@ export default function PadSection({
                 active={getState('pad-13').active}
                 highlighted={isHighlighted('pad-13')}
                 onClick={() => onButtonClick?.('pad-13')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -629,8 +629,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '88.2%',
-            top: '44.2%',
-            width: '1.5%',
+            top: '81.4%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -642,9 +642,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '91.00%',
-              top: '45.40%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '82.60%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -654,8 +654,8 @@ export default function PadSection({
                 active={getState('pad-14').active}
                 highlighted={isHighlighted('pad-14')}
                 onClick={() => onButtonClick?.('pad-14')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -663,8 +663,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '91.0%',
-            top: '44.2%',
-            width: '1.5%',
+            top: '81.4%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -676,9 +676,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '93.80%',
-              top: '45.40%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '82.60%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -688,8 +688,8 @@ export default function PadSection({
                 active={getState('pad-15').active}
                 highlighted={isHighlighted('pad-15')}
                 onClick={() => onButtonClick?.('pad-15')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -697,8 +697,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '93.8%',
-            top: '44.2%',
-            width: '1.5%',
+            top: '81.4%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >
@@ -710,9 +710,9 @@ export default function PadSection({
             className="absolute flex items-center justify-center"
             style={{
               left: '96.60%',
-              top: '45.40%',
-              width: '1.50%',
-              height: '4.70%',
+              top: '82.60%',
+              width: '2.50%',
+              height: '14.10%',
             }}
           >
             <div>
@@ -722,8 +722,8 @@ export default function PadSection({
                 active={getState('pad-16').active}
                 highlighted={isHighlighted('pad-16')}
                 onClick={() => onButtonClick?.('pad-16')}
-                width={18}
-                height={17}
+                width={30}
+                height={51}
               />
             </div>
           </div>
@@ -731,8 +731,8 @@ export default function PadSection({
           className="absolute pointer-events-none"
           style={{
             left: '96.6%',
-            top: '44.2%',
-            width: '1.5%',
+            top: '81.4%',
+            width: '2.5%',
             textAlign: 'center',
           }}
         >

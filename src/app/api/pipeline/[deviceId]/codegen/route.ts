@@ -76,16 +76,21 @@ export async function POST(
             if (editorControl.type) control.type = editorControl.type;
           }
 
-          // Positions pass through as-is. Sizes are scaled by controlScale
-          // because the editor's Rnd containers are now scaled (container = visual).
-          // The generated panel should render at the same visual size.
+          // Positions and sizes pass through as-is. controlScale is editor-only.
+          // CRITICAL: PanelShell wraps controls in a div that's panelHeightPercent%
+          // of the full panel height (for keyboard space). Control Y positions must
+          // be relative to that panel AREA, not the full canvas.
           if (editorControl) {
-            const scale = (editorData.controlScale as number) ?? 1;
+            const kb = (manifest as any).keyboard ?? (editorData as any).keyboard;
+            const panelHeightPct = kb?.panelHeightPercent ?? 100;
+            // Panel area height in canvas pixels
+            const panelAreaH = canvasH * (panelHeightPct / 100);
+
             (control as any).editorPosition = {
               x: Math.round((editorControl.x / canvasW) * 1000) / 10,
-              y: Math.round((editorControl.y / canvasH) * 1000) / 10,
-              w: Math.round((editorControl.w * scale / canvasW) * 1000) / 10,
-              h: Math.round((editorControl.h * scale / canvasH) * 1000) / 10,
+              y: Math.round((editorControl.y / panelAreaH) * 1000) / 10,
+              w: Math.round((editorControl.w / canvasW) * 1000) / 10,
+              h: Math.round((editorControl.h / panelAreaH) * 1000) / 10,
             };
           }
         }
