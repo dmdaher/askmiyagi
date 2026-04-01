@@ -76,40 +76,21 @@ export async function POST(
             if (editorControl.type) control.type = editorControl.type;
           }
 
-          // Use editor positions directly.
-          // When controlScale < 1, the contractor positioned using visual sizes
-          // (w * scale), not full container sizes. Scale w/h so the generated
-          // panel matches what they saw in the editor.
+          // Use editor positions directly — no transformations.
+          // Positions and sizes go through as-is from the editor.
           if (editorControl) {
-            const scale = (editorData.controlScale as number) ?? 1;
-            // Visual size = container size × scale
-            const visualW = editorControl.w * scale;
-            const visualH = editorControl.h * scale;
-            // Visual center = container center (CSS transform-origin: center)
-            const centerX = editorControl.x + editorControl.w / 2;
-            const centerY = editorControl.y + editorControl.h / 2;
-            // Recompute position from visual center and visual size
-            const visualX = centerX - visualW / 2;
-            const visualY = centerY - visualH / 2;
-
             (control as any).editorPosition = {
-              x: Math.round((visualX / canvasW) * 1000) / 10,
-              y: Math.round((visualY / canvasH) * 1000) / 10,
-              w: Math.round((visualW / canvasW) * 1000) / 10,
-              h: Math.round((visualH / canvasH) * 1000) / 10,
+              x: Math.round((editorControl.x / canvasW) * 1000) / 10,
+              y: Math.round((editorControl.y / canvasH) * 1000) / 10,
+              w: Math.round((editorControl.w / canvasW) * 1000) / 10,
+              h: Math.round((editorControl.h / canvasH) * 1000) / 10,
             };
           }
         }
 
-        // ── Step 3: De-overlap pass ──
-        // When the contractor positions at reduced scale (e.g., 40%), the visual
-        // controls are small but the containers are full-size. Adjacent controls
-        // whose visuals look fine at 40% can have overlapping containers at 100%.
-        // This pass pushes overlapping containers apart from their visual centers.
-        const controlScale = (editorData.controlScale as number) ?? 1;
-        if (controlScale < 1) {
-          deOverlapControls(manifest.controls, canvasW, canvasH);
-        }
+        // NOTE: De-overlap pass DISABLED. The user's editor positions are
+        // authoritative. The alignment/distribute tools (planned) handle spacing.
+        // Codegen should faithfully reproduce editor positions, not transform them.
 
         // ── Step 4: Backup manifest.json before overwriting ──
         const backupDir = path.join(pipelineDir, 'backups');
