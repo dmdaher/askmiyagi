@@ -795,10 +795,13 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
 
         {/* Control rendering — component only, no label */}
         <div
-          className="flex h-full w-full items-center justify-center pointer-events-none"
+          className="flex items-center justify-center pointer-events-none"
           style={{
-            transform: control.rotation ? `rotate(${control.rotation}deg)` : undefined,
-            transformOrigin: control.rotation ? 'center' : undefined,
+            transform: [
+              controlScale < 1 ? `scale(${controlScale})` : '',
+              control.rotation ? `rotate(${control.rotation}deg)` : '',
+            ].filter(Boolean).join(' ') || undefined,
+            transformOrigin: 'center',
           }}
         >
           {renderControl(control, isSelected, allControls)}
