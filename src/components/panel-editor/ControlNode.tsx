@@ -161,9 +161,11 @@ function renderFloatingLabel(
   // Compute position based on labelPosition
   const labelStyle: React.CSSProperties = { zIndex: 1 };
 
-  // Estimate label height for positioning (primary + optional secondary)
+  // Estimate label height — count actual lines (including \n in label text)
   const lineH = fontSize + 2;
-  const totalLabelH = secondaryLabel ? lineH * 2 : lineH;
+  const primaryLines = (control.label ?? '').split('\n').length;
+  const secondaryLines = secondaryLabel ? 1 : 0;
+  const totalLabelH = (primaryLines + secondaryLines) * lineH;
 
   switch (pos) {
     case 'above': {
