@@ -86,7 +86,7 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
       await fetch(`/api/pipeline/${deviceId}/manifest`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections, controls, editorLabels: (state as any).editorLabels ?? [], controlGroups: (state as any).controlGroups ?? [], canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale }),
+        body: JSON.stringify({ sections, controls, editorLabels: (state as any).editorLabels ?? [], controlGroups: (state as any).controlGroups ?? [], canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard: (state as any).keyboard }),
       });
 
       // Trigger codegen directly — no cleanup, no inference.

@@ -51,7 +51,8 @@ export function useAutoSave(deviceId: string) {
           state.controlScale === prevState.controlScale &&
           state.zoom === prevState.zoom &&
           state.cleanupGap === prevState.cleanupGap &&
-          state.panelScale === prevState.panelScale
+          state.panelScale === prevState.panelScale &&
+          state.keyboard === prevState.keyboard
         ) {
           return;
         }
@@ -69,7 +70,8 @@ export function useAutoSave(deviceId: string) {
         const canvasChanged = state.controlScale !== prevState.controlScale ||
           state.zoom !== prevState.zoom ||
           state.cleanupGap !== prevState.cleanupGap ||
-          state.panelScale !== prevState.panelScale;
+          state.panelScale !== prevState.panelScale ||
+          state.keyboard !== prevState.keyboard;
         if (!canvasChanged && !useEditorStore.getState().hasUserEdited) {
           return;
         }
@@ -77,11 +79,11 @@ export function useAutoSave(deviceId: string) {
         // Debounce the save
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
-          const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale } = useEditorStore.getState();
+          const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
           fetch(`/api/pipeline/${deviceId}/manifest`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale }),
+            body: JSON.stringify({ sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard }),
           }).catch(() => {
             // Silent fail — auto-save is best-effort
           });
