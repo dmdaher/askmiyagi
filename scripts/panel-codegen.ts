@@ -461,10 +461,14 @@ function renderFloatingLabel(
   const secFontSize = secondaryLabelFontSize(ctrl.sizeClass);
   const hasSecondary = ctrl.secondaryLabel && ctrl.secondaryLabel.length > 0;
 
-  // Compute label position in PIXELS (ep is now raw pixels).
-  const labelHeightPx = fontSize + 4; // approximate line height in pixels
+  // Compute label position in PIXELS — match editor's ControlNode math exactly.
+  const lineH = fontSize + 2;
+  // Count actual lines (including \n in label text)
+  const primaryLines = labelText.split(/\\n|\n/).length;
+  const secondaryLines = hasSecondary ? 1 : 0;
+  const totalLabelH = (primaryLines + secondaryLines) * lineH;
 
-  // Min label width 60px — prevents character-per-line wrapping at small scales
+  // Min label width 60px — prevents wrapping at small scales
   const minLabelW = 60;
   let labelWidth = Math.max(ep.w, minLabelW);
   // Center the label on the control
@@ -473,7 +477,7 @@ function renderFloatingLabel(
 
   switch (floatingPos) {
     case 'above':
-      labelTop = ep.y - labelHeightPx;
+      labelTop = ep.y - totalLabelH - 6;
       break;
     case 'below':
       labelTop = ep.y + ep.h + 6;
@@ -481,18 +485,18 @@ function renderFloatingLabel(
     case 'left':
       labelWidth = Math.max(ep.w * 1.5, minLabelW);
       labelLeft = ep.x - labelWidth - 4;
-      labelTop = ep.y + ep.h / 2 - labelHeightPx / 2;
+      labelTop = ep.y + ep.h / 2 - totalLabelH / 2;
       break;
     case 'right':
       labelWidth = Math.max(ep.w * 1.5, minLabelW);
       labelLeft = ep.x + ep.w + 4;
-      labelTop = ep.y + ep.h / 2 - labelHeightPx / 2;
+      labelTop = ep.y + ep.h / 2 - totalLabelH / 2;
       break;
     case 'icon-only':
-      labelTop = ep.y - labelHeightPx;
+      labelTop = ep.y - totalLabelH - 6;
       break;
     default:
-      labelTop = ep.y - labelHeightPx;
+      labelTop = ep.y - totalLabelH - 6;
       break;
   }
 
