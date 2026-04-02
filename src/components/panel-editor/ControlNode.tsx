@@ -95,9 +95,9 @@ function renderFloatingLabel(
       <div
         className="absolute pointer-events-none"
         style={{
-          left: relX,
+          left: relX + visW / 2 - Math.max(visW, 60) / 2,
           top: relY + visH + 2,
-          width: visW,
+          width: Math.max(visW, 60),
           zIndex: 1,
         }}
       >
@@ -166,19 +166,23 @@ function renderFloatingLabel(
   const totalLabelH = secondaryLabel ? lineH * 2 : lineH;
 
   switch (pos) {
-    case 'above':
-      labelStyle.left = relX;
+    case 'above': {
+      const labelW = Math.max(visW, 60);
+      labelStyle.left = relX + visW / 2 - labelW / 2;
       labelStyle.top = relY - totalLabelH - 2;
-      labelStyle.width = visW;
+      labelStyle.width = labelW;
       labelStyle.textAlign = 'center';
       break;
+    }
     case 'below':
-    default:
-      labelStyle.left = relX;
+    default: {
+      const labelW = Math.max(visW, 60);
+      labelStyle.left = relX + visW / 2 - labelW / 2;
       labelStyle.top = relY + visH + 2;
-      labelStyle.width = visW;
+      labelStyle.width = labelW;
       labelStyle.textAlign = 'center';
       break;
+    }
     case 'left':
       labelStyle.top = relY + (visH - totalLabelH) / 2;
       labelStyle.left = relX - 60;
