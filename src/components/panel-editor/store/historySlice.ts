@@ -4,7 +4,15 @@ import type { ControlDef, SectionDef } from './manifestSlice';
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 /** Placeholder types for future features — empty arrays until implemented */
-export type EditorLabel = Record<string, unknown>;
+export interface EditorLabel {
+  id: string;
+  controlId: string | null;  // linked control, or null for standalone
+  text: string;
+  x: number;
+  y: number;
+  fontSize: number;
+  align: 'left' | 'center' | 'right';
+}
 export type ControlGroup = Record<string, unknown> & { controlIds?: string[] };
 
 export interface ManifestSnapshot {

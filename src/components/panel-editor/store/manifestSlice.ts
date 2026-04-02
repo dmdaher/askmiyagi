@@ -1,5 +1,7 @@
 import { StateCreator } from 'zustand';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
+import { computeLabelPosition } from '@/lib/label-position';
+import type { EditorLabel } from './historySlice';
 import type {
   ManifestControl,
   ManifestSection,
@@ -158,7 +160,7 @@ export interface ManifestSlice {
   groupLabels: GroupLabel[];
   sections: Record<string, SectionDef>;
   controls: Record<string, ControlDef>;
-  editorLabels: unknown[];      // Future: EditorLabel[] for standalone labels
+  editorLabels: EditorLabel[];
   controlGroups: unknown[];     // Future: ControlGroup[] for sub-section grouping
   selectedIds: string[];
   lockedIds: string[];
@@ -187,6 +189,10 @@ export interface ManifestSlice {
   setAllLabelFontSize: (size: number | undefined) => void;
   resetAllSizes: () => void;
   scaleCanvas: (factor: number) => void;
+  moveLabel: (labelId: string, dx: number, dy: number) => void;
+  updateLabel: (labelId: string, updates: Partial<EditorLabel>) => void;
+  deleteLabel: (labelId: string) => void;
+  initLabelsFromControls: () => void;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -664,6 +670,10 @@ export const createManifestSlice: StateCreator<
         ...s.controls,
         [id]: { ...ctrl, x: ctrl.x + dx, y: ctrl.y + dy },
       },
+      // Move linked labels with the control
+      editorLabels: (s.editorLabels as EditorLabel[]).map(l =>
+        l.controlId === id ? { ...l, x: l.x + dx, y: l.y + dy } : l
+      ),
     }));
   },
 
@@ -809,11 +819,17 @@ export const createManifestSlice: StateCreator<
     // Also remove from lockedIds
     const lockedIds = get().lockedIds.filter((lid) => !deleteSet.has(lid));
 
+    // Delete linked labels for deleted controls
+    const updatedLabels = (get().editorLabels as EditorLabel[]).filter(
+      l => !l.controlId || !deleteSet.has(l.controlId)
+    );
+
     set({
       controls: updatedControls,
       sections: updatedSections,
       selectedIds: [],
       lockedIds,
+      editorLabels: updatedLabels,
     });
   },
 
@@ -930,12 +946,82 @@ export const createManifestSlice: StateCreator<
         };
       }
 
+      // Scale all label positions and font sizes
+      const updatedLabels = (s.editorLabels as EditorLabel[]).map(l => ({
+        ...l,
+        x: Math.round(l.x * factor),
+        y: Math.round(l.y * factor),
+        fontSize: Math.max(Math.round(l.fontSize * factor), 4),
+      }));
+
       return {
         controls: updatedControls,
         sections: updatedSections,
+        editorLabels: updatedLabels,
         canvasWidth: Math.round(s.canvasWidth * factor),
         canvasHeight: Math.round(s.canvasHeight * factor),
       };
     });
+  },
+
+  moveLabel: (labelId, dx, dy) => {
+    set((s) => ({
+      editorLabels: (s.editorLabels as EditorLabel[]).map(l =>
+        l.id === labelId ? { ...l, x: l.x + dx, y: l.y + dy } : l
+      ),
+    }));
+  },
+
+  updateLabel: (labelId, updates) => {
+    set((s) => ({
+      editorLabels: (s.editorLabels as EditorLabel[]).map(l =>
+        l.id === labelId ? { ...l, ...updates } : l
+      ),
+    }));
+  },
+
+  deleteLabel: (labelId) => {
+    set((s) => ({
+      editorLabels: (s.editorLabels as EditorLabel[]).filter(l => l.id !== labelId),
+    }));
+  },
+
+  initLabelsFromControls: () => {
+    const { controls, editorLabels } = get();
+    const controlScale = (get() as any).controlScale ?? 1;
+    // Only initialize if no labels exist yet (migration)
+    if ((editorLabels as EditorLabel[]).length > 0) return;
+
+    // computeLabelPosition imported at top of file
+    const labels: EditorLabel[] = [];
+
+    for (const ctrl of Object.values(controls)) {
+      const pos = ctrl.labelPosition;
+      if (pos === 'on-button' || pos === 'hidden') continue;
+      if (!ctrl.label) continue;
+
+      const visW = ctrl.w * controlScale;
+      const visH = ctrl.h * controlScale;
+      const fontSize = ctrl.labelFontSize
+        ?? (ctrl.sizeClass === 'xl' ? 11 : ctrl.sizeClass === 'lg' ? 10 : ctrl.sizeClass === 'sm' ? 7 : 8);
+
+      const lp = computeLabelPosition(
+        ctrl.x, ctrl.y, visW, visH,
+        pos, ctrl.label, fontSize, ctrl.secondaryLabel,
+      );
+      if (!lp) continue;
+
+      labels.push({
+        id: `label-${ctrl.id}`,
+        controlId: ctrl.id,
+        text: ctrl.label,
+        x: lp.x,
+        y: lp.y,
+        fontSize: lp.fontSize,
+        align: lp.align,
+      });
+    }
+
+    set({ editorLabels: labels });
   },
 });

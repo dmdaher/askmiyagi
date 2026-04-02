@@ -25,7 +25,7 @@ export type {
   MasterManifestInput,
 } from './manifestSlice';
 export { CANVAS_BASE_W, CANVAS_BASE_H } from './manifestSlice';
-export type { HistorySlice, ManifestSnapshot } from './historySlice';
+export type { HistorySlice, ManifestSnapshot, EditorLabel } from './historySlice';
 
 // Shared manifest types (canonical source of truth)
 export type {
