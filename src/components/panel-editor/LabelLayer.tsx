@@ -126,6 +126,7 @@ export default function LabelLayer() {
             >
               <span
                 className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move"
+                style={{ padding: '4px 6px', margin: '-4px -6px', display: 'inline-block' }}
                 onMouseDown={(e) => handleMouseDown(e, label)}
                 onDoubleClick={() => handleDoubleClick(label)}
               >
