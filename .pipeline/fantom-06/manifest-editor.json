@@ -2422,24 +2422,8 @@
   "canvasWidth": 1500,
   "canvasHeight": 451,
   "_manifestVersion": "e4e20cff",
-  "controlScale": 0.5,
+  "controlScale": 0.6,
   "zoom": 1.1,
   "cleanupGap": 0,
-  "panelScale": 1,
-  "deviceDimensions": {
-    "widthMm": 997,
-    "depthMm": 300,
-    "heightMm": 97
-  },
-  "keyboard": {
-    "keys": 61,
-    "startNote": "C2",
-    "type": "standard",
-    "panelHeightPercent": 55,
-    "leftPercent": 5,
-    "widthPercent": 93
-  },
-  "deviceName": "FANTOM-06",
-  "manufacturer": "Roland",
-  "_source": "editor"
+  "panelScale": 1
 }
