@@ -464,9 +464,12 @@ function renderFloatingLabel(
   // Compute label position in PIXELS (ep is now raw pixels).
   const labelHeightPx = fontSize + 4; // approximate line height in pixels
 
-  let labelLeft = ep.x;
+  // Min label width 60px — prevents character-per-line wrapping at small scales
+  const minLabelW = 60;
+  let labelWidth = Math.max(ep.w, minLabelW);
+  // Center the label on the control
+  let labelLeft = ep.x + ep.w / 2 - labelWidth / 2;
   let labelTop: number;
-  let labelWidth = ep.w;
 
   switch (floatingPos) {
     case 'above':
@@ -476,12 +479,12 @@ function renderFloatingLabel(
       labelTop = ep.y + ep.h + 2;
       break;
     case 'left':
-      labelWidth = ep.w * 1.5;
+      labelWidth = Math.max(ep.w * 1.5, minLabelW);
       labelLeft = ep.x - labelWidth - 4;
       labelTop = ep.y + ep.h / 2 - labelHeightPx / 2;
       break;
     case 'right':
-      labelWidth = ep.w * 1.5;
+      labelWidth = Math.max(ep.w * 1.5, minLabelW);
       labelLeft = ep.x + ep.w + 4;
       labelTop = ep.y + ep.h / 2 - labelHeightPx / 2;
       break;
@@ -1266,9 +1269,9 @@ function generateFlatPanel(
           `        <div`,
           `          className="absolute pointer-events-none text-center"`,
           `          style={{`,
-          `            left: ${ep.x},`,
+          `            left: ${Math.round(ep.x + ep.w / 2 - Math.max(ep.w, 60) / 2)},`,
           `            top: ${Math.round(secTop)},`,
-          `            width: ${ep.w},`,
+          `            width: ${Math.max(ep.w, 60)},`,
           `          }}`,
           `        >`,
           `          <span className="text-gray-500 uppercase" style={{ fontSize: ${secFontSize} }}>`,
