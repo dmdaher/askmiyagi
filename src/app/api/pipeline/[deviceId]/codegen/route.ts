@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import type { SectionDef, ControlDef } from '@/components/panel-editor/store/manifestSlice';
-import { computeLabelPosition } from '@/lib/label-position';
+// Labels now stored as editorLabels[] — no computation needed
 
 /**
  * POST /api/pipeline/{deviceId}/codegen
@@ -91,19 +91,7 @@ export async function POST(
               h: visH,
             };
 
-            // Compute label position using shared function (same as editor)
-            const labelPosDir = control.labelDisplay ?? editorControl.labelPosition ?? 'below';
-            const label = control.verbatimLabel ?? editorControl.label ?? '';
-            // Use editor's custom labelFontSize when set, same as ControlNode's labelFontSize()
-            const fontSize = (editorControl as any).labelFontSize
-              ?? ({ xs: 7, sm: 7, md: 8, lg: 10, xl: 11 }[control.sizeClass as string] ?? 8);
-            const lp = computeLabelPosition(
-              Math.round(editorControl.x), Math.round(editorControl.y),
-              visW, visH, labelPosDir, label, fontSize, control.secondaryLabel,
-            );
-            if (lp) {
-              (control as any)._labelPos = lp;
-            }
+            // Labels are now stored in editorLabels[] — no _labelPos computation needed
           } else {
             // Control not in editor manifest — clear any stale editorPosition
             // from a previous build (which may have been percentage-based)
@@ -114,6 +102,9 @@ export async function POST(
         // NOTE: De-overlap pass DISABLED. The user's editor positions are
         // authoritative. The alignment/distribute tools (planned) handle spacing.
         // Codegen should faithfully reproduce editor positions, not transform them.
+
+        // Pass editorLabels to manifest for codegen to render
+        (manifest as any).editorLabels = editorData.editorLabels ?? [];
 
         // ── Step 4: Backup manifest.json before overwriting ──
         const backupDir = path.join(pipelineDir, 'backups');

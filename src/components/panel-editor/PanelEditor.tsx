@@ -301,6 +301,8 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
             // First load — convert original pipeline manifest to editor format
             useEditorStore.getState().loadFromManifest(data as MasterManifestInput);
           }
+          // Initialize labels from controls if not yet done (migration)
+          useEditorStore.getState().initLabelsFromControls();
           setLoading(false);
         }
       } catch (err) {

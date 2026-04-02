@@ -3,6 +3,7 @@
 import { useEditorStore } from './store';
 import SectionFrame from './SectionFrame';
 import GroupLabelNode from './GroupLabelNode';
+import LabelLayer from './LabelLayer';
 import GridOverlay from './GridOverlay';
 import PhotoOverlay from './PhotoOverlay';
 import DragSelectRect from './DragSelectRect';
@@ -58,6 +59,9 @@ export default function PanCanvas() {
       {groupLabels.map((gl) => (
         <GroupLabelNode key={gl.id} groupLabel={gl} />
       ))}
+
+      {/* Floating labels — rendered above controls */}
+      <LabelLayer />
 
       {/* Keyboard section — draggable/resizable */}
       <KeyboardSection />

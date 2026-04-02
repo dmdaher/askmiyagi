@@ -1028,11 +1028,7 @@ function renderAbsolutePositioned(
       `          </div>`,
     ];
 
-    // Add floating label if applicable
-    const labelJsx = renderFloatingLabel(ctrl!, ep, pw, ph, controlScale);
-    if (labelJsx) {
-      parts.push(labelJsx);
-    }
+    // Labels rendered from editorLabels[] — not per-control
 
     return parts.join('\n');
   }).join('\n');
@@ -1284,35 +1280,7 @@ function generateFlatPanel(
         `        </div>`,
       ];
 
-      // Floating label for this control
-      const labelJsx = renderFloatingLabel(ctrl, ep, panelWidth, panelHeight, controlScale);
-      if (labelJsx) {
-        parts.push(labelJsx);
-      }
-
-      // On-button controls with a secondary label: render secondary as floating text below
-      if (
-        (ctrl.labelDisplay === 'on-button' || ctrl.labelDisplay === 'icon-only') &&
-        ctrl.secondaryLabel &&
-        ctrl.secondaryLabel.length > 0
-      ) {
-        const secFontSize = secondaryLabelFontSize(ctrl.sizeClass);
-        const secTop = ep.y + ep.h + 2;
-        parts.push([
-          `        <div`,
-          `          className="absolute pointer-events-none text-center"`,
-          `          style={{`,
-          `            left: ${Math.round(ep.x + ep.w / 2 - Math.max(ep.w, 60) / 2)},`,
-          `            top: ${Math.round(secTop)},`,
-          `            width: ${Math.max(ep.w, 60)},`,
-          `          }}`,
-          `        >`,
-          `          <span className="text-gray-500 uppercase" style={{ fontSize: ${secFontSize} }}>`,
-          `            ${escapeJsx(ctrl.secondaryLabel)}`,
-          `          </span>`,
-          `        </div>`,
-        ].join('\n'));
-      }
+      // Labels are rendered separately from editorLabels[] — not per-control
 
       return parts.filter(Boolean).join('\n');
     })
@@ -1323,6 +1291,36 @@ function generateFlatPanel(
   const groupLabelRenderings = manifest.groupLabels && manifest.groupLabels.length > 0
     ? renderGroupLabels(manifest.groupLabels, controlMap)
     : '';
+
+  // Render stored labels from editorLabels[] — pixel-identical to editor
+  const editorLabelsArr = ((manifest as any).editorLabels ?? []) as Array<{
+    id: string; text: string; x: number; y: number; fontSize: number; align: string;
+  }>;
+  const labelRenderings = editorLabelsArr.map(label => {
+    const textLines = label.text.split('\n');
+    const textJsx = textLines.length > 1
+      ? textLines.map((line, i) => i < textLines.length - 1
+          ? `${escapeJsx(line)}<br />`
+          : escapeJsx(line)
+        ).join('\n            ')
+      : escapeJsx(label.text);
+    return [
+      `        {/* label: ${escapeJsx(label.text.replace(/\n/g, ' '))} */}`,
+      `        <div`,
+      `          className="absolute pointer-events-none"`,
+      `          style={{`,
+      `            left: ${label.x},`,
+      `            top: ${label.y},`,
+      `            fontSize: ${label.fontSize},`,
+      `            textAlign: '${label.align}',`,
+      `          }}`,
+      `        >`,
+      `          <span className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">`,
+      `            ${textJsx}`,
+      `          </span>`,
+      `        </div>`,
+    ].join('\n');
+  }).join('\n\n');
 
   return `'use client';
 
@@ -1363,6 +1361,9 @@ ${controlRenderings}
 
         {/* Group labels */}
 ${groupLabelRenderings}
+
+        {/* Floating labels — stored positions from editor */}
+${labelRenderings}
     </PanelShell>
   );
 }

@@ -800,7 +800,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       </Rnd>
 
       {/* Floating label — rendered OUTSIDE the Rnd container */}
-      {showLabels && renderFloatingLabel(control, relX, relY, controlScale)}
+      {/* Labels rendered by LabelLayer — not inside ControlNode */}
 
       {/* Inline label editor — positioned near the floating label */}
       {isEditing && (
