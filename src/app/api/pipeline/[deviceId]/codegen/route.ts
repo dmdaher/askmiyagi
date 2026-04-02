@@ -76,14 +76,15 @@ export async function POST(
             if (editorControl.type) control.type = editorControl.type;
           }
 
-          // Pass editor pixel positions straight through — no conversion.
-          // PanelShell now renders in full space (no keyboard height split).
+          // Pass pixel positions. Sizes scaled by controlScale so the
+          // generated panel matches what the editor shows (container = visual).
           if (editorControl) {
+            const scale = (editorData.controlScale as number) ?? 1;
             (control as any).editorPosition = {
               x: Math.round(editorControl.x),
               y: Math.round(editorControl.y),
-              w: Math.round(editorControl.w),
-              h: Math.round(editorControl.h),
+              w: Math.round(editorControl.w * scale),
+              h: Math.round(editorControl.h * scale),
             };
           }
         }
