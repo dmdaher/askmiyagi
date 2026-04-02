@@ -103,7 +103,9 @@ export async function POST(
             // Compute label position using shared function (same as editor)
             const labelPosDir = control.labelDisplay ?? editorControl.labelPosition ?? 'below';
             const label = control.verbatimLabel ?? editorControl.label ?? '';
-            const fontSize = { xs: 7, sm: 7, md: 8, lg: 10, xl: 11 }[control.sizeClass as string] ?? 8;
+            // Use editor's custom labelFontSize when set, same as ControlNode's labelFontSize()
+            const fontSize = (editorControl as any).labelFontSize
+              ?? ({ xs: 7, sm: 7, md: 8, lg: 10, xl: 11 }[control.sizeClass as string] ?? 8);
             const lp = computeLabelPosition(
               Math.round(editorControl.x), Math.round(editorControl.y),
               visW, visH, labelPosDir, label, fontSize, control.secondaryLabel,

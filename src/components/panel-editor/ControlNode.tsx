@@ -89,13 +89,6 @@ function renderFloatingLabel(
   const fontSize = labelFontSize(control);
   const effectivePos = control.labelDisplay ?? pos;
 
-  // Use shared label position computation
-  const labelPos = computeLabelPosition(
-    relX, relY, visW, visH,
-    pos, control.label ?? '', fontSize, control.secondaryLabel,
-  );
-  if (!labelPos) return null;
-
   // on-button with secondary label — float the secondary label below the control
   if (pos === 'on-button') {
     return (
@@ -118,8 +111,14 @@ function renderFloatingLabel(
     );
   }
 
+  // Use shared label position computation (after on-button early return)
+  const labelPos = computeLabelPosition(
+    relX, relY, visW, visH,
+    pos, control.label ?? '', fontSize, control.secondaryLabel,
+  );
+  if (!labelPos) return null;
+
   // icon-only: the icon is on the button face, the text label floats outside
-  // (pos can't be 'on-button' here — that case early-returns above)
   const showPrimaryLabel = effectivePos !== 'icon-only' || pos !== 'hidden';
 
   // Build the label content
