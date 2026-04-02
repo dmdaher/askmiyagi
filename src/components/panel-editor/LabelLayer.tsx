@@ -33,9 +33,9 @@ export default function LabelLayer() {
     const ctrl = controls[label.controlId];
     if (!ctrl) return;
 
-    // Measure label width from the DOM
+    // Measure label text width from the DOM (subtract padding: 6px each side)
     const labelEl = document.querySelector(`[data-label-id="${labelId}"]`);
-    const labelW = labelEl ? labelEl.getBoundingClientRect().width / zoom : 60;
+    const labelW = labelEl ? (labelEl.getBoundingClientRect().width / zoom) - 12 : 60;
 
     const ctrlVisW = ctrl.w * controlScale;
     const ctrlCenterX = ctrl.x + ctrlVisW / 2;
