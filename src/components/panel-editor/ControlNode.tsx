@@ -243,7 +243,10 @@ function inferPortVariant(label: string): 'usb-a' | 'sd-card' | 'ethernet' | 'rc
 }
 
 /** Render the real hardware control component based on control type */
-function renderControl(control: ControlDef, isSelected: boolean, allControls: Record<string, ControlDef>) {
+function renderControl(control: ControlDef, isSelected: boolean, allControls: Record<string, ControlDef>, controlScale: number = 1) {
+  // Visual size = container size = stored w/h * controlScale
+  const visW = Math.round(control.w * controlScale);
+  const visH = Math.round(control.h * controlScale);
   // Skip controls that are nested inside another control (e.g., display nested in jog wheel)
   if (control.nestedIn && allControls[control.nestedIn]) {
     // This control is part of a composite — it will be rendered by the parent
@@ -295,9 +298,6 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         ? (HARDWARE_ICONS[control.icon] ?? control.icon)
         : undefined;
 
-      const btnSize: 'sm' | 'md' | 'lg' =
-        control.h <= 32 ? 'sm' : control.h <= 48 ? 'md' : 'lg';
-
       const buttonEl = (
         <div className="relative">
           {renderButtonLed(control)}
@@ -305,7 +305,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             id={control.id}
             label={control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
             highlighted={isSelected}
-            size={btnSize}
+            width={visW}
+            height={visH}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
             iconContent={iconContent}
@@ -318,13 +319,14 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       return buttonEl;
     }
     case 'knob': {
+      const knobSize = Math.min(visW, visH);
       return (
         <Knob
           id={control.id}
           label=""
           highlighted={isSelected}
-          outerSize={Math.min(control.w, control.h)}
-          innerSize={Math.min(control.w, control.h) * 0.7}
+          outerSize={knobSize}
+          innerSize={knobSize * 0.7}
         />
       );
     }
@@ -335,8 +337,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           id={control.id}
           label=""
           highlighted={isSelected}
-          trackHeight={control.h - 20}
-          trackWidth={control.w - 10}
+          trackHeight={Math.max(visH - 10, 20)}
+          trackWidth={Math.max(visW - 4, 8)}
         />
       );
     case 'led':
@@ -350,7 +352,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         return (
           <div
             className="flex flex-col rounded overflow-hidden"
-            style={{ width: Math.max(control.w, 48), border: '1px solid #333' }}
+            style={{ width: Math.max(visW, 48), border: '1px solid #333' }}
             data-control-id={control.id}
           >
             {/* Top mode */}
@@ -407,7 +409,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             <div
               className="rounded-sm"
               style={{
-                width: Math.max(control.w - 8, 16),
+                width: Math.max(visW - 8, 16),
                 height: 6,
                 backgroundColor: ledColor,
                 boxShadow: `0 0 6px ${ledColor}`,
@@ -455,7 +457,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             id={control.id}
             label=""
             highlighted={isSelected}
-            wheelSize={Math.min(control.w, control.h)}
+            wheelSize={Math.min(visW, visH)}
             displaySize={nestedDisplay ? Math.min(nestedDisplay.w, nestedDisplay.h, 60) : 60}
             ringColor={nestedRing?.ledColor ?? undefined}
           />
@@ -467,8 +469,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           id={control.id}
           label=""
           highlighted={isSelected}
-          width={control.w}
-          height={control.h}
+          width={visW}
+          height={visH}
         />
       );
     }
@@ -480,8 +482,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             id={control.id}
             label={control.labelPosition === 'on-button' ? control.label : ''}
             highlighted={isSelected}
-            width={control.w}
-            height={control.h}
+            width={visW}
+            height={visH}
           />
         </div>
       );
@@ -491,7 +493,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           id={control.id}
           label=""
           highlighted={isSelected}
-          outerSize={Math.min(control.w, control.h)}
+          outerSize={Math.min(visW, visH)}
           hasPush={control.encoderHasPush}
         />
       );
@@ -507,13 +509,13 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             positions={control.positionLabels ?? Array.from({ length: control.positions }, (_, i) => `${i + 1}`)}
             highlighted={isSelected}
             ledColor={control.ledColor ?? undefined}
-            width={control.w}
-            height={Math.min(control.h, 16)}
+            width={visW}
+            height={Math.min(visH, 16)}
           />
         );
       }
       // Lever default height is ~62px at scale=1. Derive scale from control height.
-      const leverScale = control.h / 62;
+      const leverScale = visH / 62;
       return (
         <Lever
           id={control.id}
@@ -532,8 +534,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           label=""
           variant={inferPortVariant(control.label)}
           highlighted={isSelected}
-          width={control.w}
-          height={control.h}
+          width={visW}
+          height={visH}
         />
       );
     case 'slot':
@@ -543,8 +545,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           label=""
           variant="sd-card"
           highlighted={isSelected}
-          width={control.w}
-          height={control.h}
+          width={visW}
+          height={visH}
         />
       );
     case 'screen':
@@ -558,7 +560,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           <JogDisplay
             id={control.id}
             label={control.labelPosition === 'on-button' ? control.label : undefined}
-            size={Math.min(control.w, control.h)}
+            size={Math.min(visW, visH)}
             highlighted={isSelected}
             showMockContent
           />
@@ -569,8 +571,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           id={control.id}
           label={control.labelPosition === 'on-button' ? control.label : undefined}
           highlighted={isSelected}
-          width={control.w}
-          height={control.h}
+          width={visW}
+          height={visH}
           showMockContent
         />
       );
@@ -793,18 +795,15 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
           </div>
         )}
 
-        {/* Control rendering — component only, no label */}
+        {/* Control rendering — fills the container (container = visual) */}
         <div
-          className="flex items-center justify-center pointer-events-none"
+          className="flex h-full w-full items-center justify-center pointer-events-none"
           style={{
-            transform: [
-              controlScale < 1 ? `scale(${controlScale})` : '',
-              control.rotation ? `rotate(${control.rotation}deg)` : '',
-            ].filter(Boolean).join(' ') || undefined,
-            transformOrigin: 'center',
+            transform: control.rotation ? `rotate(${control.rotation}deg)` : undefined,
+            transformOrigin: control.rotation ? 'center' : undefined,
           }}
         >
-          {renderControl(control, isSelected, allControls)}
+          {renderControl(control, isSelected, allControls, controlScale)}
         </div>
       </Rnd>
 
