@@ -31,18 +31,18 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 34.2,
-              top: 84,
-              width: 4.2,
-              height: 7.8,
+              left: 538,
+              top: 363,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="write"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('write').active}
                 highlighted={isHighlighted('write')}
                 onClick={() => onButtonClick?.('write')}
@@ -52,31 +52,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 6,
-            top: 72,
+            left: 520,
+            top: 384,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             WRITE
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 38.7,
-              top: 84,
-              width: 4.2,
-              height: 7.8,
+              left: 628,
+              top: 363,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="master-fx"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('master-fx').active}
                 highlighted={isHighlighted('master-fx')}
                 onClick={() => onButtonClick?.('master-fx')}
@@ -86,31 +86,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 11,
-            top: 72,
+            left: 610,
+            top: 384,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             MASTER FX
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 43.2,
-              top: 84,
-              width: 4.2,
-              height: 7.8,
+              left: 718,
+              top: 363,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="motional-pad"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('motional-pad').active}
                 highlighted={isHighlighted('motional-pad')}
                 onClick={() => onButtonClick?.('motional-pad')}
@@ -120,31 +120,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 15,
-            top: 72,
+            left: 700,
+            top: 384,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             MOTIONAL PAD
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 47.7,
-              top: 84,
-              width: 4.2,
-              height: 7.8,
+              left: 808,
+              top: 363,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="daw-ctrl"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('daw-ctrl').active}
                 highlighted={isHighlighted('daw-ctrl')}
                 onClick={() => onButtonClick?.('daw-ctrl')}
@@ -154,31 +154,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 20,
-            top: 72,
+            left: 790,
+            top: 384,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             DAW CTRL
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 52.2,
-              top: 84,
-              width: 4.2,
-              height: 7.8,
+              left: 898,
+              top: 363,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="menu"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('menu').active}
                 highlighted={isHighlighted('menu')}
                 onClick={() => onButtonClick?.('menu')}
@@ -188,23 +188,23 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 24,
-            top: 72,
+            left: 880,
+            top: 384,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             MENU
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 618,
-              top: 55,
-              width: 375,
-              height: 225,
+              left: 773,
+              top: 69,
+              width: 281,
+              height: 169,
             }}
           >
             <TouchDisplay
@@ -212,31 +212,31 @@ export default function CommonSection({
               label=""
               variant="main"
               showMockContent
-              width={375}
-              height={225}
+              width={281}
+              height={169}
               highlighted={isHighlighted('display')}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 618,
-            top: 43,
-            width: 375,
+            left: 773,
+            top: 244,
+            width: 281,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             Display
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 34.2,
-              top: 92.8,
-              width: 4.2,
-              height: 7.8,
+              left: 988,
+              top: 363,
+              width: 24,
+              height: 24,
             }}
           >
             <Knob
@@ -244,30 +244,30 @@ export default function CommonSection({
               label=""
               value={getState('e1').value ?? 64}
               highlighted={isHighlighted('e1')}
-              outerSize={4.2}
-              innerSize={3}
+              outerSize={24}
+              innerSize={17}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 6,
-            top: 103,
+            left: 970,
+            top: 393,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             E1
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 38.7,
-              top: 92.8,
-              width: 4.2,
-              height: 7.8,
+              left: 1078,
+              top: 363,
+              width: 24,
+              height: 24,
             }}
           >
             <Knob
@@ -275,30 +275,30 @@ export default function CommonSection({
               label=""
               value={getState('e2').value ?? 64}
               highlighted={isHighlighted('e2')}
-              outerSize={4.2}
-              innerSize={3}
+              outerSize={24}
+              innerSize={17}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 11,
-            top: 103,
+            left: 1060,
+            top: 393,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             E2
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 43.2,
-              top: 92.8,
-              width: 4.2,
-              height: 7.8,
+              left: 538,
+              top: 453,
+              width: 24,
+              height: 24,
             }}
           >
             <Knob
@@ -306,30 +306,30 @@ export default function CommonSection({
               label=""
               value={getState('e3').value ?? 64}
               highlighted={isHighlighted('e3')}
-              outerSize={4.2}
-              innerSize={3}
+              outerSize={24}
+              innerSize={17}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 15,
-            top: 103,
+            left: 520,
+            top: 483,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             E3
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 47.7,
-              top: 92.8,
-              width: 4.2,
-              height: 7.8,
+              left: 628,
+              top: 453,
+              width: 24,
+              height: 24,
             }}
           >
             <Knob
@@ -337,30 +337,30 @@ export default function CommonSection({
               label=""
               value={getState('e4').value ?? 64}
               highlighted={isHighlighted('e4')}
-              outerSize={4.2}
-              innerSize={3}
+              outerSize={24}
+              innerSize={17}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 20,
-            top: 103,
+            left: 610,
+            top: 483,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             E4
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 52.2,
-              top: 92.8,
-              width: 4.2,
-              height: 7.8,
+              left: 718,
+              top: 453,
+              width: 24,
+              height: 24,
             }}
           >
             <Knob
@@ -368,30 +368,30 @@ export default function CommonSection({
               label=""
               value={getState('e5').value ?? 64}
               highlighted={isHighlighted('e5')}
-              outerSize={4.2}
-              innerSize={3}
+              outerSize={24}
+              innerSize={17}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 24,
-            top: 103,
+            left: 700,
+            top: 483,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             E5
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 34.2,
-              top: 101.7,
-              width: 4.2,
-              height: 7.8,
+              left: 808,
+              top: 453,
+              width: 24,
+              height: 24,
             }}
           >
             <Knob
@@ -399,38 +399,38 @@ export default function CommonSection({
               label=""
               value={getState('e6').value ?? 64}
               highlighted={isHighlighted('e6')}
-              outerSize={4.2}
-              innerSize={3}
+              outerSize={24}
+              innerSize={17}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 6,
-            top: 112,
+            left: 790,
+            top: 483,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             E6
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 38.7,
-              top: 101.7,
-              width: 4.2,
-              height: 7.8,
+              left: 898,
+              top: 453,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="tempo"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('tempo').active}
                 highlighted={isHighlighted('tempo')}
                 onClick={() => onButtonClick?.('tempo')}
@@ -440,60 +440,60 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 11,
-            top: 90,
+            left: 880,
+            top: 474,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             TEMPO
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 43.2,
-              top: 101.7,
-              width: 4.2,
-              height: 7.8,
+              left: 988,
+              top: 453,
+              width: 24,
+              height: 24,
             }}
           >
             <ValueDial
               id="value-dial"
               label=""
-              outerSize={4.2}
+              outerSize={24}
               highlighted={isHighlighted('value-dial')}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 15,
-            top: 112,
+            left: 970,
+            top: 483,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             VALUE
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 47.7,
-              top: 101.7,
-              width: 4.2,
-              height: 7.8,
+              left: 1078,
+              top: 453,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="dec"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('dec').active}
                 highlighted={isHighlighted('dec')}
                 onClick={() => onButtonClick?.('dec')}
@@ -503,31 +503,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 20,
-            top: 90,
+            left: 1060,
+            top: 474,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             DEC
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 52.2,
-              top: 101.7,
-              width: 4.2,
-              height: 7.8,
+              left: 538,
+              top: 543,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="inc"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('inc').active}
                 highlighted={isHighlighted('inc')}
                 onClick={() => onButtonClick?.('inc')}
@@ -537,31 +537,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 24,
-            top: 90,
+            left: 520,
+            top: 564,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             INC
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 34.2,
-              top: 110.5,
-              width: 4.2,
-              height: 7.8,
+              left: 628,
+              top: 543,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="cursor-up"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('cursor-up').active}
                 highlighted={isHighlighted('cursor-up')}
                 onClick={() => onButtonClick?.('cursor-up')}
@@ -571,31 +571,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 6,
-            top: 99,
+            left: 610,
+            top: 564,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             CURSOR UP
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 47.7,
-              top: 110.5,
-              width: 4.2,
-              height: 7.8,
+              left: 718,
+              top: 543,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="cursor-down"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('cursor-down').active}
                 highlighted={isHighlighted('cursor-down')}
                 onClick={() => onButtonClick?.('cursor-down')}
@@ -605,31 +605,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 20,
-            top: 99,
+            left: 700,
+            top: 564,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             CURSOR DOWN
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 38.7,
-              top: 110.5,
-              width: 4.2,
-              height: 7.8,
+              left: 808,
+              top: 543,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="cursor-left"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('cursor-left').active}
                 highlighted={isHighlighted('cursor-left')}
                 onClick={() => onButtonClick?.('cursor-left')}
@@ -639,31 +639,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 11,
-            top: 99,
+            left: 790,
+            top: 564,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             CURSOR LEFT
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 43.2,
-              top: 110.5,
-              width: 4.2,
-              height: 7.8,
+              left: 898,
+              top: 543,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="cursor-right"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('cursor-right').active}
                 highlighted={isHighlighted('cursor-right')}
                 onClick={() => onButtonClick?.('cursor-right')}
@@ -673,31 +673,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 15,
-            top: 99,
+            left: 880,
+            top: 564,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             CURSOR RIGHT
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 52.2,
-              top: 110.5,
-              width: 4.2,
-              height: 7.8,
+              left: 988,
+              top: 543,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="shift"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('shift').active}
                 highlighted={isHighlighted('shift')}
                 onClick={() => onButtonClick?.('shift')}
@@ -707,31 +707,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 24,
-            top: 99,
+            left: 970,
+            top: 564,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             SHIFT
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 34.2,
-              top: 119.4,
-              width: 4.2,
-              height: 7.8,
+              left: 1078,
+              top: 543,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="exit"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('exit').active}
                 highlighted={isHighlighted('exit')}
                 onClick={() => onButtonClick?.('exit')}
@@ -741,31 +741,31 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 6,
-            top: 107,
+            left: 1060,
+            top: 564,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             EXIT
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 38.7,
-              top: 119.4,
-              width: 4.2,
-              height: 7.8,
+              left: 538,
+              top: 603,
+              width: 24,
+              height: 15,
             }}
           >
             <div>
               <PanelButton
                 id="enter"
                 label=""
-                width={4.2}
-                height={7.8}
+                width={24}
+                height={15}
                 active={getState('enter').active}
                 highlighted={isHighlighted('enter')}
                 onClick={() => onButtonClick?.('enter')}
@@ -775,13 +775,13 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 11,
-            top: 107,
+            left: 520,
+            top: 624,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 8 }}>
             ENTER
           </span>
         </div>

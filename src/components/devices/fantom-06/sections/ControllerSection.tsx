@@ -30,78 +30,78 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 103,
-              top: 83,
-              width: 19,
-              height: 100,
+              left: 129,
+              top: 104,
+              width: 14,
+              height: 75,
             }}
           >
             <Wheel
               id="wheel-1"
               label=""
-              width={19}
-              height={100}
+              width={14}
+              height={75}
               highlighted={isHighlighted('wheel-1')}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 83,
-            top: 71,
+            left: 106,
+            top: 185,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             WHEEL1
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 155,
-              top: 81,
-              width: 19,
-              height: 94,
+              left: 194,
+              top: 101,
+              width: 14,
+              height: 71,
             }}
           >
             <Wheel
               id="wheel-2"
               label=""
-              width={19}
-              height={94}
+              width={14}
+              height={71}
               highlighted={isHighlighted('wheel-2')}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 135,
-            top: 69,
+            left: 171,
+            top: 178,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             WHEEL2
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 93,
-              top: 290,
-              width: 25,
-              height: 19,
+              left: 116,
+              top: 363,
+              width: 19,
+              height: 14,
             }}
           >
             <div>
               <PanelButton
                 id="s1"
                 label=""
-                width={25}
-                height={19}
+                width={19}
+                height={14}
                 active={getState('s1').active}
                 highlighted={isHighlighted('s1')}
                 onClick={() => onButtonClick?.('s1')}
@@ -111,31 +111,31 @@ export default function ControllerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 76,
-            top: 278,
+            left: 96,
+            top: 347,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             S1
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 120,
-              top: 289,
-              width: 25,
-              height: 19,
+              left: 150,
+              top: 361,
+              width: 19,
+              height: 14,
             }}
           >
             <div>
               <PanelButton
                 id="s2"
                 label=""
-                width={25}
-                height={19}
+                width={19}
+                height={14}
                 active={getState('s2').active}
                 highlighted={isHighlighted('s2')}
                 onClick={() => onButtonClick?.('s2')}
@@ -145,23 +145,23 @@ export default function ControllerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 103,
-            top: 277,
+            left: 130,
+            top: 345,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             S2
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 109,
-              top: 328,
-              width: 82,
-              height: 82,
+              left: 136,
+              top: 410,
+              width: 61,
+              height: 61,
             }}
           >
             <DirectionSwitch
@@ -169,20 +169,20 @@ export default function ControllerSection({
               label=""
               positions={["FWD","REV","SLIP REV"]}
               highlighted={isHighlighted('pitch-bend-lever')}
-              width={82}
-              height={82}
+              width={61}
+              height={61}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 109,
-            top: 316,
-            width: 82,
+            left: 136,
+            top: 477,
+            width: 61,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             PITCH BEND/MOD
           </span>
         </div>

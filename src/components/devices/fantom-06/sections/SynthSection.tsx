@@ -29,10 +29,10 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 955,
-              top: 30,
-              width: 40,
-              height: 40,
+              left: 1194,
+              top: 38,
+              width: 30,
+              height: 30,
             }}
           >
             <Knob
@@ -40,30 +40,30 @@ export default function SynthSection({
               label=""
               value={getState('cutoff').value ?? 64}
               highlighted={isHighlighted('cutoff')}
-              outerSize={40}
-              innerSize={28}
+              outerSize={30}
+              innerSize={21}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 945,
-            top: 72,
+            left: 1179,
+            top: 74,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             CUTOFF
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1034,
-              top: 30,
-              width: 40,
-              height: 40,
+              left: 1293,
+              top: 38,
+              width: 30,
+              height: 30,
             }}
           >
             <Knob
@@ -71,38 +71,38 @@ export default function SynthSection({
               label=""
               value={getState('resonance').value ?? 64}
               highlighted={isHighlighted('resonance')}
-              outerSize={40}
-              innerSize={28}
+              outerSize={30}
+              innerSize={21}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 1024,
-            top: 72,
+            left: 1278,
+            top: 74,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             RESONANCE
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 966,
-              top: 90,
-              width: 40,
-              height: 25,
+              left: 1208,
+              top: 113,
+              width: 30,
+              height: 19,
             }}
           >
             <div>
               <PanelButton
                 id="osc"
                 label=""
-                width={40}
-                height={25}
+                width={30}
+                height={19}
                 active={getState('osc').active}
                 highlighted={isHighlighted('osc')}
                 onClick={() => onButtonClick?.('osc')}
@@ -112,31 +112,31 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 956,
-            top: 78,
+            left: 1193,
+            top: 97,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             OSC
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1006,
-              top: 90,
-              width: 40,
-              height: 25,
+              left: 1258,
+              top: 113,
+              width: 30,
+              height: 19,
             }}
           >
             <div>
               <PanelButton
                 id="filter-type"
                 label=""
-                width={40}
-                height={25}
+                width={30}
+                height={19}
                 active={getState('filter-type').active}
                 highlighted={isHighlighted('filter-type')}
                 onClick={() => onButtonClick?.('filter-type')}
@@ -146,31 +146,31 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 996,
-            top: 78,
+            left: 1243,
+            top: 97,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             FILTER TYPE
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1046,
-              top: 90,
-              width: 40,
-              height: 25,
+              left: 1308,
+              top: 113,
+              width: 30,
+              height: 19,
             }}
           >
             <div>
               <PanelButton
                 id="param"
                 label=""
-                width={40}
-                height={25}
+                width={30}
+                height={19}
                 active={getState('param').active}
                 highlighted={isHighlighted('param')}
                 onClick={() => onButtonClick?.('param')}
@@ -180,31 +180,31 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 1036,
-            top: 78,
+            left: 1293,
+            top: 97,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             PARAM
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 966,
-              top: 120,
-              width: 40,
-              height: 25,
+              left: 1208,
+              top: 150,
+              width: 30,
+              height: 19,
             }}
           >
             <div>
               <PanelButton
                 id="amp"
                 label=""
-                width={40}
-                height={25}
+                width={30}
+                height={19}
                 active={getState('amp').active}
                 highlighted={isHighlighted('amp')}
                 onClick={() => onButtonClick?.('amp')}
@@ -214,31 +214,31 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 956,
-            top: 108,
+            left: 1193,
+            top: 134,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             AMP
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1006,
-              top: 120,
-              width: 40,
-              height: 25,
+              left: 1258,
+              top: 150,
+              width: 30,
+              height: 19,
             }}
           >
             <div>
               <PanelButton
                 id="fx"
                 label=""
-                width={40}
-                height={25}
+                width={30}
+                height={19}
                 active={getState('fx').active}
                 highlighted={isHighlighted('fx')}
                 onClick={() => onButtonClick?.('fx')}
@@ -248,31 +248,31 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 996,
-            top: 108,
+            left: 1243,
+            top: 134,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             FX
           </span>
         </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1046,
-              top: 120,
-              width: 40,
-              height: 25,
+              left: 1308,
+              top: 150,
+              width: 30,
+              height: 19,
             }}
           >
             <div>
               <PanelButton
                 id="lfo"
                 label=""
-                width={40}
-                height={25}
+                width={30}
+                height={19}
                 active={getState('lfo').active}
                 highlighted={isHighlighted('lfo')}
                 onClick={() => onButtonClick?.('lfo')}
@@ -282,13 +282,13 @@ export default function SynthSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 1036,
-            top: 108,
+            left: 1293,
+            top: 134,
             width: 60,
             textAlign: 'center',
           }}
         >
-          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: 8 }}>
+          <span className="font-medium text-gray-400 uppercase tracking-wider" style={{ fontSize: 6 }}>
             LFO
           </span>
         </div>

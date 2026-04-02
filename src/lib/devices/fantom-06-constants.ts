@@ -2,8 +2,8 @@
 // Do not edit manually. Re-run: npx tsx scripts/panel-codegen.ts fantom-06
 
 export const FANTOM06_PANEL = {
-  width: 1500,
-  height: 451,
+  width: 1875,
+  height: 564,
   deviceId: 'fantom-06',
   deviceName: 'FANTOM-06',
   manufacturer: 'Roland',
