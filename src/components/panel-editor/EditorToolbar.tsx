@@ -55,6 +55,7 @@ export default function EditorToolbar({
   const setPanelScale = useEditorStore((s) => s.setPanelScale);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const setAllLabelFontSize = useEditorStore((s) => s.setAllLabelFontSize);
+  const resetAllSizes = useEditorStore((s) => s.resetAllSizes);
 
   const zoomPercent = Math.round(zoom * 100);
 
@@ -204,6 +205,14 @@ export default function EditorToolbar({
         className={iconBtn}
         title="Help"
       >?</button>
+
+      {/* Reset Sizes */}
+      <button
+        onClick={() => { pushSnapshot(); resetAllSizes(); }}
+        disabled={previewMode}
+        className="flex h-6 items-center rounded px-1.5 text-[9px] text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300 disabled:opacity-30 whitespace-nowrap"
+        title="Reset all controls to default sizes (undoable)"
+      >Reset Sizes</button>
 
       {divider}
 

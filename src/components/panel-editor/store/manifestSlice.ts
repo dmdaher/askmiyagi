@@ -185,6 +185,7 @@ export interface ManifestSlice {
   setFocusedSection: (id: string | null) => void;
   addControl: (sectionId: string, type: string, label: string) => void;
   setAllLabelFontSize: (size: number | undefined) => void;
+  resetAllSizes: () => void;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -884,6 +885,17 @@ export const createManifestSlice: StateCreator<
       const updated: Record<string, ControlDef> = {};
       for (const [id, ctrl] of Object.entries(s.controls)) {
         updated[id] = { ...ctrl, labelFontSize: size };
+      }
+      return { controls: updated };
+    });
+  },
+
+  resetAllSizes: () => {
+    set((s) => {
+      const updated: Record<string, ControlDef> = {};
+      for (const [id, ctrl] of Object.entries(s.controls)) {
+        const def = DEFAULT_SIZES[ctrl.type] ?? { w: 48, h: 32 };
+        updated[id] = { ...ctrl, w: def.w, h: def.h };
       }
       return { controls: updated };
     });
