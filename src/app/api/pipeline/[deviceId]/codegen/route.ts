@@ -86,6 +86,10 @@ export async function POST(
               w: Math.round(editorControl.w * scale),
               h: Math.round(editorControl.h * scale),
             };
+          } else {
+            // Control not in editor manifest — clear any stale editorPosition
+            // from a previous build (which may have been percentage-based)
+            delete (control as any).editorPosition;
           }
         }
 

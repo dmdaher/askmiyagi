@@ -96,13 +96,13 @@ function renderFloatingLabel(
         className="absolute pointer-events-none"
         style={{
           left: relX + visW / 2 - Math.max(visW, 60) / 2,
-          top: relY + visH + 2,
+          top: relY + visH + 6,
           width: Math.max(visW, 60),
           zIndex: 1,
         }}
       >
         <span
-          className="font-medium text-gray-500 uppercase text-center leading-tight break-words w-full block"
+          className="font-medium text-gray-500 uppercase text-center leading-tight whitespace-nowrap w-full block"
           style={{ fontSize: Math.max(fontSize - 2, 6) }}
         >
           {control.secondaryLabel}
@@ -123,14 +123,14 @@ function renderFloatingLabel(
     <>
       <div className="flex items-center gap-1 w-full justify-center">
         <span
-          className="font-medium text-gray-400 uppercase leading-tight break-words"
+          className="font-medium text-gray-400 uppercase leading-tight whitespace-nowrap"
           style={{ fontSize }}
         >
           {renderLabelText(primaryLabelText)}
         </span>
         <span className="text-gray-600" style={{ fontSize: fontSize - 1 }}>/</span>
         <span
-          className="font-medium text-gray-500 uppercase leading-tight break-words"
+          className="font-medium text-gray-500 uppercase leading-tight whitespace-nowrap"
           style={{ fontSize: fontSize - 1 }}
         >
           {secondaryLabel}
@@ -141,7 +141,7 @@ function renderFloatingLabel(
     <>
       {showPrimaryLabel && (
         <span
-          className="font-medium text-gray-400 uppercase text-center leading-tight break-words w-full block"
+          className="font-medium text-gray-400 uppercase text-center leading-tight whitespace-nowrap w-full block"
           style={{ fontSize }}
         >
           {renderLabelText(control.label)}
@@ -149,7 +149,7 @@ function renderFloatingLabel(
       )}
       {secondaryLabel && (
         <span
-          className="font-medium text-gray-500 uppercase text-center leading-tight break-words w-full block"
+          className="font-medium text-gray-500 uppercase text-center leading-tight whitespace-nowrap w-full block"
           style={{ fontSize: Math.max(fontSize - 1, 6) }}
         >
           {secondaryLabel}
@@ -169,7 +169,7 @@ function renderFloatingLabel(
     case 'above': {
       const labelW = Math.max(visW, 60);
       labelStyle.left = relX + visW / 2 - labelW / 2;
-      labelStyle.top = relY - totalLabelH - 2;
+      labelStyle.top = relY - totalLabelH - 6;
       labelStyle.width = labelW;
       labelStyle.textAlign = 'center';
       break;
@@ -178,7 +178,7 @@ function renderFloatingLabel(
     default: {
       const labelW = Math.max(visW, 60);
       labelStyle.left = relX + visW / 2 - labelW / 2;
-      labelStyle.top = relY + visH + 2;
+      labelStyle.top = relY + visH + 6;
       labelStyle.width = labelW;
       labelStyle.textAlign = 'center';
       break;

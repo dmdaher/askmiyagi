@@ -476,7 +476,7 @@ function renderFloatingLabel(
       labelTop = ep.y - labelHeightPx;
       break;
     case 'below':
-      labelTop = ep.y + ep.h + 2;
+      labelTop = ep.y + ep.h + 6;
       break;
     case 'left':
       labelWidth = Math.max(ep.w * 1.5, minLabelW);
@@ -510,7 +510,7 @@ function renderFloatingLabel(
     `            textAlign: '${textAlign}',`,
     `          }}`,
     `        >`,
-    `          <span className="font-medium text-gray-400 uppercase tracking-wider break-words" style={{ fontSize: ${fontSize} }}>`,
+    `          <span className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap" style={{ fontSize: ${fontSize} }}>`,
     `            ${escapeJsx(labelText)}`,
     `          </span>`,
   ];
