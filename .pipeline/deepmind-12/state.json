@@ -1,0 +1,168 @@
+{
+  "deviceId": "deepmind-12",
+  "deviceName": "Deepmind 12",
+  "manufacturer": "Behringer",
+  "manualPaths": [
+    "docs/Behringer/deepmind-12/DEEPMIND12_M_EN.pdf"
+  ],
+  "currentPhase": "phase-0-gatekeeper",
+  "status": "paused",
+  "branch": "feature/deepmind-12",
+  "createdAt": "2026-03-25T07:26:59.023Z",
+  "updatedAt": "2026-03-25T09:16:43.573Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-25T07:27:00.772Z",
+      "completedAt": "2026-03-25T07:33:26.325Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 0.86403645,
+      "tokens": {
+        "input": 293,
+        "output": 13989,
+        "cacheCreation": 90805,
+        "cacheRead": 1042679
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-25T07:53:24.480Z",
+      "completedAt": "2026-03-25T07:53:24.490Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 5.9164695,
+      "tokens": {
+        "input": 22,
+        "output": 44451,
+        "cacheCreation": 88110,
+        "cacheRead": 620168
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-25T09:12:07.929Z",
+      "completedAt": "2026-03-25T09:16:43.572Z",
+      "score": 7.5,
+      "status": "failed",
+      "costUsd": 11.31121725,
+      "tokens": {
+        "input": 74,
+        "output": 45376,
+        "cacheCreation": 190295,
+        "cacheRead": 2892584
+      }
+    }
+  ],
+  "sections": [],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774430203572-x871ce",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 7.5). Errors: Section \"display-center\" heightSplits auto-corrected from integers to decimals ({\"cluster\":0.6,\"anchor\":0.35,\"gap\":0.05}); 69/69 controls missing shape (100%); 69/69 controls missing sizeClass (100%)",
+      "createdAt": "2026-03-25T09:16:43.572Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774430203572-x871ce",
+  "totalCostUsd": 18.091723199999997,
+  "totalActualCostUsd": 8.49896945,
+  "totalTokens": {
+    "input": 389,
+    "output": 103816,
+    "cacheCreation": 369210,
+    "cacheRead": 4555431
+  },
+  "budgetCapUsd": 50,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:27:45.005Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:53:24.441Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:08:26.796Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:12:07.870Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:16:43.555Z"
+      }
+    ],
+    "lastUpdated": "2026-03-25T09:16:43.563Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.07798947610869748,
+    "costPerAgent": 1.4164949083333334,
+    "projectedBudgetExhaustedAt": "2026-03-25T18:08:51.740Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-25T07:27:45.006Z",
+        "cumulativeCost": 0.34920275
+      },
+      {
+        "timestamp": "2026-03-25T07:33:26.262Z",
+        "cumulativeCost": 2.1015827500000004
+      },
+      {
+        "timestamp": "2026-03-25T07:53:24.445Z",
+        "cumulativeCost": 4.073739250000001
+      },
+      {
+        "timestamp": "2026-03-25T09:08:26.799Z",
+        "cumulativeCost": 6.20845725
+      },
+      {
+        "timestamp": "2026-03-25T09:12:07.871Z",
+        "cumulativeCost": 7.0558682500000005
+      },
+      {
+        "timestamp": "2026-03-25T09:16:43.557Z",
+        "cumulativeCost": 8.49896945
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/deepmind-12",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "phase-0-gatekeeper",
+    "subStep": "start"
+  }
+}

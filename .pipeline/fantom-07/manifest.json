@@ -1,0 +1,2215 @@
+{
+  "deviceId": "fantom-07",
+  "deviceName": "FANTOM-07",
+  "manufacturer": "Roland",
+  "layoutType": "asymmetric",
+  "densityTargets": {
+    "vertical": "full-height sections (except Scene at 14% height), variable internal density",
+    "horizontal": "left-to-right section flow, widths 6.5%-33%, no dead space between sections",
+    "horizontalDeadSpaceMax": 0.02
+  },
+  "sections": [
+    {
+      "id": "controller",
+      "headerLabel": "Controller",
+      "archetype": "dual-column",
+      "panelBoundingBox": {
+        "x": 0,
+        "y": 0,
+        "w": 6.5,
+        "h": 100
+      },
+      "controls": [
+        "s1",
+        "s2",
+        "wheel1",
+        "wheel2",
+        "pitch-bend-lever"
+      ],
+      "widthPercent": 6.5,
+      "complexity": "LOW"
+    },
+    {
+      "id": "zone",
+      "headerLabel": "Zone",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 6.5,
+        "y": 0,
+        "w": 33,
+        "h": 100
+      },
+      "controls": [
+        "master-volume",
+        "pan-level",
+        "ctrl",
+        "assign",
+        "zone-9-16",
+        "zone-select",
+        "knob-1",
+        "knob-2",
+        "knob-3",
+        "knob-4",
+        "knob-5",
+        "knob-6",
+        "knob-7",
+        "knob-8",
+        "zone-int-ext-1",
+        "zone-int-ext-2",
+        "zone-int-ext-3",
+        "zone-int-ext-4",
+        "zone-int-ext-5",
+        "zone-int-ext-6",
+        "zone-int-ext-7",
+        "zone-int-ext-8",
+        "slider-1",
+        "slider-2",
+        "slider-3",
+        "slider-4",
+        "slider-5",
+        "slider-6",
+        "slider-7",
+        "slider-8",
+        "split",
+        "chord-memory",
+        "arpeggio",
+        "transpose",
+        "octave-down",
+        "octave-up"
+      ],
+      "containerAssignment": {
+        "row-1-function-select": {
+          "items": {
+            "controls": [
+              "master-volume",
+              "pan-level",
+              "ctrl",
+              "assign",
+              "zone-9-16",
+              "zone-select"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-2-knobs": {
+          "items": {
+            "controls": [
+              "knob-1",
+              "knob-2",
+              "knob-3",
+              "knob-4",
+              "knob-5",
+              "knob-6",
+              "knob-7",
+              "knob-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-3-zone-buttons": {
+          "items": {
+            "controls": [
+              "zone-int-ext-1",
+              "zone-int-ext-2",
+              "zone-int-ext-3",
+              "zone-int-ext-4",
+              "zone-int-ext-5",
+              "zone-int-ext-6",
+              "zone-int-ext-7",
+              "zone-int-ext-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-4-sliders": {
+          "items": {
+            "controls": [
+              "slider-1",
+              "slider-2",
+              "slider-3",
+              "slider-4",
+              "slider-5",
+              "slider-6",
+              "slider-7",
+              "slider-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-5-bottom-buttons": {
+          "items": {
+            "controls": [
+              "split",
+              "chord-memory",
+              "arpeggio",
+              "transpose",
+              "octave-down",
+              "octave-up"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "widthPercent": 33,
+      "complexity": "HIGH"
+    },
+    {
+      "id": "common",
+      "headerLabel": null,
+      "archetype": "anchor-layout",
+      "panelBoundingBox": {
+        "x": 39.5,
+        "y": 0,
+        "w": 26,
+        "h": 100
+      },
+      "controls": [
+        "write",
+        "master-fx",
+        "motional-pad",
+        "daw-ctrl",
+        "menu",
+        "display",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "tempo",
+        "value-dial",
+        "dec",
+        "inc",
+        "cursor-up",
+        "cursor-down",
+        "cursor-left",
+        "cursor-right",
+        "shift",
+        "exit",
+        "enter"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "write",
+          "master-fx",
+          "motional-pad",
+          "daw-ctrl",
+          "menu"
+        ],
+        "anchor": [
+          "display"
+        ],
+        "below-anchor": {
+          "function-knobs": {
+            "controls": [
+              "e1",
+              "e2",
+              "e3",
+              "e4",
+              "e5",
+              "e6"
+            ],
+            "direction": "row"
+          }
+        },
+        "right-nav": {
+          "tempo-row": [
+            "tempo"
+          ],
+          "value-dial": [
+            "value-dial"
+          ],
+          "dec-inc-row": {
+            "controls": [
+              "dec",
+              "inc"
+            ],
+            "direction": "row"
+          },
+          "cursor-pad": [
+            "cursor-up",
+            "cursor-left",
+            "cursor-right",
+            "cursor-down"
+          ],
+          "bottom-row": {
+            "controls": [
+              "shift",
+              "exit",
+              "enter"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "heightSplits": {
+        "cluster": 0.2,
+        "anchor": 0.55,
+        "gap": 0.1
+      },
+      "widthPercent": 26,
+      "complexity": "HIGH"
+    },
+    {
+      "id": "scene",
+      "headerLabel": "Scene",
+      "archetype": "single-row",
+      "panelBoundingBox": {
+        "x": 39.5,
+        "y": 0,
+        "w": 10,
+        "h": 14
+      },
+      "controls": [
+        "scene-select",
+        "chain",
+        "zone-view",
+        "single-tone"
+      ],
+      "widthPercent": 10,
+      "complexity": "LOW"
+    },
+    {
+      "id": "synth-control",
+      "headerLabel": "SYNTH CTRL",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 65.5,
+        "y": 0,
+        "w": 10,
+        "h": 100
+      },
+      "controls": [
+        "osc",
+        "cutoff",
+        "resonance",
+        "filter-type",
+        "param",
+        "amp",
+        "fx",
+        "lfo"
+      ],
+      "containerAssignment": {
+        "row-1-osc": {
+          "items": {
+            "controls": [
+              "osc"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-2-knobs": {
+          "items": {
+            "controls": [
+              "cutoff",
+              "resonance"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-3-filter-param": {
+          "items": {
+            "controls": [
+              "filter-type",
+              "param"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-4-amp-fx-lfo": {
+          "items": {
+            "controls": [
+              "amp",
+              "fx",
+              "lfo"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "widthPercent": 10,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "sequencer",
+      "headerLabel": "Sequencer",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 75.5,
+        "y": 0,
+        "w": 10.5,
+        "h": 100
+      },
+      "controls": [
+        "pattern",
+        "group",
+        "song",
+        "tr-rec",
+        "rhythm-ptn",
+        "stop",
+        "play",
+        "rec",
+        "tone-cat-1",
+        "tone-cat-2",
+        "tone-cat-3",
+        "tone-cat-4",
+        "tone-cat-5",
+        "tone-cat-6",
+        "tone-cat-7",
+        "tone-cat-8",
+        "tone-cat-9",
+        "tone-cat-10",
+        "tone-cat-11",
+        "tone-cat-12",
+        "tone-cat-13",
+        "tone-cat-14",
+        "tone-cat-15",
+        "tone-cat-16"
+      ],
+      "containerAssignment": {
+        "row-1-mode": {
+          "items": {
+            "controls": [
+              "pattern",
+              "group",
+              "song"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-2-rec-rhythm": {
+          "items": {
+            "controls": [
+              "tr-rec",
+              "rhythm-ptn"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-3-transport": {
+          "items": {
+            "controls": [
+              "stop",
+              "play",
+              "rec"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-4-tone-1-8": {
+          "items": {
+            "controls": [
+              "tone-cat-1",
+              "tone-cat-2",
+              "tone-cat-3",
+              "tone-cat-4",
+              "tone-cat-5",
+              "tone-cat-6",
+              "tone-cat-7",
+              "tone-cat-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-5-tone-9-16": {
+          "items": {
+            "controls": [
+              "tone-cat-9",
+              "tone-cat-10",
+              "tone-cat-11",
+              "tone-cat-12",
+              "tone-cat-13",
+              "tone-cat-14",
+              "tone-cat-15",
+              "tone-cat-16"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "widthPercent": 10.5,
+      "complexity": "HIGH"
+    },
+    {
+      "id": "pad",
+      "headerLabel": "Pad",
+      "archetype": "cluster-above-anchor",
+      "panelBoundingBox": {
+        "x": 86,
+        "y": 0,
+        "w": 14,
+        "h": 100
+      },
+      "gridRows": 4,
+      "gridCols": 4,
+      "controls": [
+        "sampling",
+        "pad-mode",
+        "clip-board",
+        "bank",
+        "hold",
+        "pad-13",
+        "pad-14",
+        "pad-15",
+        "pad-16",
+        "pad-9",
+        "pad-10",
+        "pad-11",
+        "pad-12",
+        "pad-5",
+        "pad-6",
+        "pad-7",
+        "pad-8",
+        "pad-1",
+        "pad-2",
+        "pad-3",
+        "pad-4"
+      ],
+      "containerAssignment": {
+        "cluster": {
+          "items": {
+            "controls": [
+              "sampling",
+              "pad-mode",
+              "clip-board",
+              "bank",
+              "hold"
+            ],
+            "direction": "row"
+          }
+        },
+        "anchor": {
+          "row-1": {
+            "controls": [
+              "pad-13",
+              "pad-14",
+              "pad-15",
+              "pad-16"
+            ],
+            "direction": "row"
+          },
+          "row-2": {
+            "controls": [
+              "pad-9",
+              "pad-10",
+              "pad-11",
+              "pad-12"
+            ],
+            "direction": "row"
+          },
+          "row-3": {
+            "controls": [
+              "pad-5",
+              "pad-6",
+              "pad-7",
+              "pad-8"
+            ],
+            "direction": "row"
+          },
+          "row-4": {
+            "controls": [
+              "pad-1",
+              "pad-2",
+              "pad-3",
+              "pad-4"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "heightSplits": {
+        "cluster": 0.12,
+        "anchor": 0.82,
+        "gap": 0.06
+      },
+      "widthPercent": 14,
+      "complexity": "HIGH"
+    }
+  ],
+  "controls": [
+    {
+      "id": "s1",
+      "verbatimLabel": "S1",
+      "type": "button",
+      "section": "controller",
+      "functionalGroup": "performance-controllers",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "wheel1",
+        "left": null,
+        "right": "s2"
+      }
+    },
+    {
+      "id": "s2",
+      "verbatimLabel": "S2",
+      "type": "button",
+      "section": "controller",
+      "functionalGroup": "performance-controllers",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "wheel2",
+        "left": "s1",
+        "right": null
+      }
+    },
+    {
+      "id": "wheel1",
+      "verbatimLabel": "WHEEL1",
+      "type": "wheel",
+      "section": "controller",
+      "functionalGroup": "performance-controllers",
+      "spatialNeighbors": {
+        "above": "s1",
+        "below": "pitch-bend-lever",
+        "left": null,
+        "right": "wheel2"
+      }
+    },
+    {
+      "id": "wheel2",
+      "verbatimLabel": "WHEEL2",
+      "type": "wheel",
+      "section": "controller",
+      "functionalGroup": "performance-controllers",
+      "spatialNeighbors": {
+        "above": "s2",
+        "below": "pitch-bend-lever",
+        "left": "wheel1",
+        "right": null
+      }
+    },
+    {
+      "id": "pitch-bend-lever",
+      "verbatimLabel": "Pitch bend/modulation lever",
+      "type": "wheel",
+      "section": "controller",
+      "functionalGroup": "performance-controllers",
+      "spatialNeighbors": {
+        "above": "wheel1",
+        "below": null,
+        "left": null,
+        "right": null
+      }
+    },
+    {
+      "id": "master-volume",
+      "verbatimLabel": "MASTER VOLUME",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-master",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-1",
+        "left": null,
+        "right": "pan-level"
+      }
+    },
+    {
+      "id": "pan-level",
+      "verbatimLabel": "PAN/LEVEL",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-function-select",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-2",
+        "left": "master-volume",
+        "right": "ctrl"
+      }
+    },
+    {
+      "id": "ctrl",
+      "verbatimLabel": "CTRL",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-function-select",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-2",
+        "left": "pan-level",
+        "right": "assign"
+      }
+    },
+    {
+      "id": "assign",
+      "verbatimLabel": "ASSIGN",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-function-select",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-3",
+        "left": "ctrl",
+        "right": null
+      }
+    },
+    {
+      "id": "zone-9-16",
+      "verbatimLabel": "ZONE 9-16",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-7",
+        "left": null,
+        "right": "zone-select"
+      }
+    },
+    {
+      "id": "zone-select",
+      "verbatimLabel": "ZONE SELECT",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-8",
+        "left": "zone-9-16",
+        "right": null
+      }
+    },
+    {
+      "id": "knob-1",
+      "verbatimLabel": "Control knob 1",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-control-knobs",
+      "spatialNeighbors": {
+        "above": "master-volume",
+        "below": "zone-int-ext-1",
+        "left": null,
+        "right": "knob-2"
+      }
+    },
+    {
+      "id": "knob-2",
+      "verbatimLabel": "Control knob 2",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-control-knobs",
+      "spatialNeighbors": {
+        "above": "pan-level",
+        "below": "zone-int-ext-2",
+        "left": "knob-1",
+        "right": "knob-3"
+      }
+    },
+    {
+      "id": "knob-3",
+      "verbatimLabel": "Control knob 3",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-control-knobs",
+      "spatialNeighbors": {
+        "above": "assign",
+        "below": "zone-int-ext-3",
+        "left": "knob-2",
+        "right": "knob-4"
+      }
+    },
+    {
+      "id": "knob-4",
+      "verbatimLabel": "Control knob 4",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-control-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-4",
+        "left": "knob-3",
+        "right": "knob-5"
+      }
+    },
+    {
+      "id": "knob-5",
+      "verbatimLabel": "Control knob 5",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-control-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-5",
+        "left": "knob-4",
+        "right": "knob-6"
+      }
+    },
+    {
+      "id": "knob-6",
+      "verbatimLabel": "Control knob 6",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-control-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-6",
+        "left": "knob-5",
+        "right": "knob-7"
+      }
+    },
+    {
+      "id": "knob-7",
+      "verbatimLabel": "Control knob 7",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-control-knobs",
+      "spatialNeighbors": {
+        "above": "zone-9-16",
+        "below": "zone-int-ext-7",
+        "left": "knob-6",
+        "right": "knob-8"
+      }
+    },
+    {
+      "id": "knob-8",
+      "verbatimLabel": "Control knob 8",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "zone-control-knobs",
+      "spatialNeighbors": {
+        "above": "zone-select",
+        "below": "zone-int-ext-8",
+        "left": "knob-7",
+        "right": null
+      }
+    },
+    {
+      "id": "zone-int-ext-1",
+      "verbatimLabel": "ZONE INT/EXT 1",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-1",
+        "below": "slider-1",
+        "left": null,
+        "right": "zone-int-ext-2"
+      }
+    },
+    {
+      "id": "zone-int-ext-2",
+      "verbatimLabel": "ZONE INT/EXT 2",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-2",
+        "below": "slider-2",
+        "left": "zone-int-ext-1",
+        "right": "zone-int-ext-3"
+      }
+    },
+    {
+      "id": "zone-int-ext-3",
+      "verbatimLabel": "ZONE INT/EXT 3",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-3",
+        "below": "slider-3",
+        "left": "zone-int-ext-2",
+        "right": "zone-int-ext-4"
+      }
+    },
+    {
+      "id": "zone-int-ext-4",
+      "verbatimLabel": "ZONE INT/EXT 4",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-4",
+        "below": "slider-4",
+        "left": "zone-int-ext-3",
+        "right": "zone-int-ext-5"
+      }
+    },
+    {
+      "id": "zone-int-ext-5",
+      "verbatimLabel": "ZONE INT/EXT 5",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-5",
+        "below": "slider-5",
+        "left": "zone-int-ext-4",
+        "right": "zone-int-ext-6"
+      }
+    },
+    {
+      "id": "zone-int-ext-6",
+      "verbatimLabel": "ZONE INT/EXT 6",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-6",
+        "below": "slider-6",
+        "left": "zone-int-ext-5",
+        "right": "zone-int-ext-7"
+      }
+    },
+    {
+      "id": "zone-int-ext-7",
+      "verbatimLabel": "ZONE INT/EXT 7",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-7",
+        "below": "slider-7",
+        "left": "zone-int-ext-6",
+        "right": "zone-int-ext-8"
+      }
+    },
+    {
+      "id": "zone-int-ext-8",
+      "verbatimLabel": "ZONE INT/EXT 8",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-8",
+        "below": "slider-8",
+        "left": "zone-int-ext-7",
+        "right": null
+      }
+    },
+    {
+      "id": "slider-1",
+      "verbatimLabel": "Slider 1",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-1",
+        "below": "split",
+        "left": null,
+        "right": "slider-2"
+      }
+    },
+    {
+      "id": "slider-2",
+      "verbatimLabel": "Slider 2",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-2",
+        "below": "chord-memory",
+        "left": "slider-1",
+        "right": "slider-3"
+      }
+    },
+    {
+      "id": "slider-3",
+      "verbatimLabel": "Slider 3",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-3",
+        "below": "arpeggio",
+        "left": "slider-2",
+        "right": "slider-4"
+      }
+    },
+    {
+      "id": "slider-4",
+      "verbatimLabel": "Slider 4",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-4",
+        "below": "transpose",
+        "left": "slider-3",
+        "right": "slider-5"
+      }
+    },
+    {
+      "id": "slider-5",
+      "verbatimLabel": "Slider 5",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-5",
+        "below": "transpose",
+        "left": "slider-4",
+        "right": "slider-6"
+      }
+    },
+    {
+      "id": "slider-6",
+      "verbatimLabel": "Slider 6",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-6",
+        "below": "octave-down",
+        "left": "slider-5",
+        "right": "slider-7"
+      }
+    },
+    {
+      "id": "slider-7",
+      "verbatimLabel": "Slider 7",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-7",
+        "below": "octave-up",
+        "left": "slider-6",
+        "right": "slider-8"
+      }
+    },
+    {
+      "id": "slider-8",
+      "verbatimLabel": "Slider 8",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-8",
+        "below": null,
+        "left": "slider-7",
+        "right": null
+      }
+    },
+    {
+      "id": "split",
+      "verbatimLabel": "SPLIT",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-1",
+        "below": null,
+        "left": null,
+        "right": "chord-memory"
+      }
+    },
+    {
+      "id": "chord-memory",
+      "verbatimLabel": "CHORD MEMORY",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-2",
+        "below": null,
+        "left": "split",
+        "right": "arpeggio"
+      }
+    },
+    {
+      "id": "arpeggio",
+      "verbatimLabel": "ARPEGGIO",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-3",
+        "below": null,
+        "left": "chord-memory",
+        "right": "transpose"
+      }
+    },
+    {
+      "id": "transpose",
+      "verbatimLabel": "TRANSPOSE",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-5",
+        "below": null,
+        "left": "arpeggio",
+        "right": "octave-down"
+      }
+    },
+    {
+      "id": "octave-down",
+      "verbatimLabel": "OCTAVE DOWN",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-6",
+        "below": null,
+        "left": "transpose",
+        "right": "octave-up"
+      }
+    },
+    {
+      "id": "octave-up",
+      "verbatimLabel": "OCTAVE UP",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-7",
+        "below": null,
+        "left": "octave-down",
+        "right": null
+      }
+    },
+    {
+      "id": "write",
+      "verbatimLabel": "WRITE",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-mode-select",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "master-fx",
+        "left": null,
+        "right": "display"
+      }
+    },
+    {
+      "id": "master-fx",
+      "verbatimLabel": "MASTER FX",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-mode-select",
+      "spatialNeighbors": {
+        "above": "write",
+        "below": "motional-pad",
+        "left": null,
+        "right": "display"
+      }
+    },
+    {
+      "id": "motional-pad",
+      "verbatimLabel": "MOTIONAL PAD",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-mode-select",
+      "spatialNeighbors": {
+        "above": "master-fx",
+        "below": "daw-ctrl",
+        "left": null,
+        "right": "display"
+      }
+    },
+    {
+      "id": "daw-ctrl",
+      "verbatimLabel": "DAW CTRL",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-mode-select",
+      "spatialNeighbors": {
+        "above": "motional-pad",
+        "below": "menu",
+        "left": null,
+        "right": "display"
+      }
+    },
+    {
+      "id": "menu",
+      "verbatimLabel": "MENU",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-mode-select",
+      "spatialNeighbors": {
+        "above": "daw-ctrl",
+        "below": "e1",
+        "left": null,
+        "right": "display"
+      }
+    },
+    {
+      "id": "display",
+      "verbatimLabel": "Display",
+      "type": "screen",
+      "section": "common",
+      "functionalGroup": "display",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "e3",
+        "left": "master-fx",
+        "right": "value-dial"
+      }
+    },
+    {
+      "id": "e1",
+      "verbatimLabel": "FUNCTION knob E1",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": {
+        "above": "display",
+        "below": null,
+        "left": "menu",
+        "right": "e2"
+      }
+    },
+    {
+      "id": "e2",
+      "verbatimLabel": "FUNCTION knob E2",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": {
+        "above": "display",
+        "below": null,
+        "left": "e1",
+        "right": "e3"
+      }
+    },
+    {
+      "id": "e3",
+      "verbatimLabel": "FUNCTION knob E3",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": {
+        "above": "display",
+        "below": null,
+        "left": "e2",
+        "right": "e4"
+      }
+    },
+    {
+      "id": "e4",
+      "verbatimLabel": "FUNCTION knob E4",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": {
+        "above": "display",
+        "below": null,
+        "left": "e3",
+        "right": "e5"
+      }
+    },
+    {
+      "id": "e5",
+      "verbatimLabel": "FUNCTION knob E5",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": {
+        "above": "display",
+        "below": null,
+        "left": "e4",
+        "right": "e6"
+      }
+    },
+    {
+      "id": "e6",
+      "verbatimLabel": "FUNCTION knob E6",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": {
+        "above": "display",
+        "below": null,
+        "left": "e5",
+        "right": "shift"
+      }
+    },
+    {
+      "id": "tempo",
+      "verbatimLabel": "TEMPO",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "value-dial",
+        "left": "display",
+        "right": null
+      }
+    },
+    {
+      "id": "value-dial",
+      "verbatimLabel": "VALUE",
+      "type": "encoder",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "tempo",
+        "below": "dec",
+        "left": "display",
+        "right": null
+      }
+    },
+    {
+      "id": "dec",
+      "verbatimLabel": "DEC",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "value-dial",
+        "below": "cursor-left",
+        "left": "display",
+        "right": "inc"
+      }
+    },
+    {
+      "id": "inc",
+      "verbatimLabel": "INC",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "value-dial",
+        "below": "cursor-right",
+        "left": "dec",
+        "right": null
+      }
+    },
+    {
+      "id": "cursor-up",
+      "verbatimLabel": "Cursor UP",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "dec",
+        "below": "cursor-down",
+        "left": null,
+        "right": null
+      }
+    },
+    {
+      "id": "cursor-down",
+      "verbatimLabel": "Cursor DOWN",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "cursor-up",
+        "below": "exit",
+        "left": null,
+        "right": null
+      }
+    },
+    {
+      "id": "cursor-left",
+      "verbatimLabel": "Cursor LEFT",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "dec",
+        "below": "shift",
+        "left": null,
+        "right": "cursor-right"
+      }
+    },
+    {
+      "id": "cursor-right",
+      "verbatimLabel": "Cursor RIGHT",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "inc",
+        "below": "enter",
+        "left": "cursor-left",
+        "right": null
+      }
+    },
+    {
+      "id": "shift",
+      "verbatimLabel": "SHIFT",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "cursor-left",
+        "below": null,
+        "left": "e6",
+        "right": "exit"
+      }
+    },
+    {
+      "id": "exit",
+      "verbatimLabel": "EXIT",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "cursor-down",
+        "below": null,
+        "left": "shift",
+        "right": "enter"
+      }
+    },
+    {
+      "id": "enter",
+      "verbatimLabel": "ENTER",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "common-navigation",
+      "spatialNeighbors": {
+        "above": "cursor-right",
+        "below": null,
+        "left": "exit",
+        "right": null
+      }
+    },
+    {
+      "id": "scene-select",
+      "verbatimLabel": "SCENE SELECT",
+      "type": "button",
+      "section": "scene",
+      "functionalGroup": "scene-select",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "chain"
+      }
+    },
+    {
+      "id": "chain",
+      "verbatimLabel": "CHAIN",
+      "type": "button",
+      "section": "scene",
+      "functionalGroup": "scene-select",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "scene-select",
+        "right": "zone-view"
+      }
+    },
+    {
+      "id": "zone-view",
+      "verbatimLabel": "ZONE VIEW",
+      "type": "button",
+      "section": "scene",
+      "functionalGroup": "scene-select",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "chain",
+        "right": "single-tone"
+      }
+    },
+    {
+      "id": "single-tone",
+      "verbatimLabel": "SINGLE TONE",
+      "type": "button",
+      "section": "scene",
+      "functionalGroup": "scene-select",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "zone-view",
+        "right": null
+      }
+    },
+    {
+      "id": "osc",
+      "verbatimLabel": "OSC",
+      "type": "button",
+      "section": "synth-control",
+      "functionalGroup": "synth-control",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "cutoff",
+        "left": null,
+        "right": null
+      }
+    },
+    {
+      "id": "cutoff",
+      "verbatimLabel": "CUTOFF",
+      "type": "knob",
+      "section": "synth-control",
+      "functionalGroup": "synth-control",
+      "spatialNeighbors": {
+        "above": "osc",
+        "below": "filter-type",
+        "left": null,
+        "right": "resonance"
+      }
+    },
+    {
+      "id": "resonance",
+      "verbatimLabel": "RESONANCE",
+      "type": "knob",
+      "section": "synth-control",
+      "functionalGroup": "synth-control",
+      "spatialNeighbors": {
+        "above": "osc",
+        "below": "filter-type",
+        "left": "cutoff",
+        "right": null
+      }
+    },
+    {
+      "id": "filter-type",
+      "verbatimLabel": "FILTER TYPE",
+      "type": "button",
+      "section": "synth-control",
+      "functionalGroup": "synth-control",
+      "spatialNeighbors": {
+        "above": "cutoff",
+        "below": "param",
+        "left": null,
+        "right": null
+      }
+    },
+    {
+      "id": "param",
+      "verbatimLabel": "PARAM",
+      "type": "button",
+      "section": "synth-control",
+      "functionalGroup": "synth-control",
+      "spatialNeighbors": {
+        "above": "filter-type",
+        "below": "fx",
+        "left": null,
+        "right": null
+      }
+    },
+    {
+      "id": "amp",
+      "verbatimLabel": "AMP",
+      "type": "button",
+      "section": "synth-control",
+      "functionalGroup": "synth-control",
+      "spatialNeighbors": {
+        "above": "param",
+        "below": null,
+        "left": null,
+        "right": "fx"
+      }
+    },
+    {
+      "id": "fx",
+      "verbatimLabel": "FX",
+      "type": "button",
+      "section": "synth-control",
+      "functionalGroup": "synth-control",
+      "spatialNeighbors": {
+        "above": "param",
+        "below": null,
+        "left": "amp",
+        "right": "lfo"
+      }
+    },
+    {
+      "id": "lfo",
+      "verbatimLabel": "LFO",
+      "type": "button",
+      "section": "synth-control",
+      "functionalGroup": "synth-control",
+      "spatialNeighbors": {
+        "above": "param",
+        "below": null,
+        "left": "fx",
+        "right": null
+      }
+    },
+    {
+      "id": "pattern",
+      "verbatimLabel": "PATTERN",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-mode",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tr-rec",
+        "left": null,
+        "right": "group"
+      }
+    },
+    {
+      "id": "group",
+      "verbatimLabel": "GROUP",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-mode",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tr-rec",
+        "left": "pattern",
+        "right": "song"
+      }
+    },
+    {
+      "id": "song",
+      "verbatimLabel": "SONG",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-mode",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "rhythm-ptn",
+        "left": "group",
+        "right": null
+      }
+    },
+    {
+      "id": "tr-rec",
+      "verbatimLabel": "TR-REC",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-mode",
+      "spatialNeighbors": {
+        "above": "pattern",
+        "below": "stop",
+        "left": null,
+        "right": "rhythm-ptn"
+      }
+    },
+    {
+      "id": "rhythm-ptn",
+      "verbatimLabel": "RHYTHM PTN",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-mode",
+      "spatialNeighbors": {
+        "above": "song",
+        "below": "play",
+        "left": "tr-rec",
+        "right": null
+      }
+    },
+    {
+      "id": "stop",
+      "verbatimLabel": "STOP",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-transport",
+      "spatialNeighbors": {
+        "above": "tr-rec",
+        "below": "tone-cat-1",
+        "left": null,
+        "right": "play"
+      }
+    },
+    {
+      "id": "play",
+      "verbatimLabel": "PLAY",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-transport",
+      "spatialNeighbors": {
+        "above": "tr-rec",
+        "below": "tone-cat-4",
+        "left": "stop",
+        "right": "rec"
+      }
+    },
+    {
+      "id": "rec",
+      "verbatimLabel": "REC",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-transport",
+      "spatialNeighbors": {
+        "above": "rhythm-ptn",
+        "below": "tone-cat-7",
+        "left": "play",
+        "right": null
+      }
+    },
+    {
+      "id": "tone-cat-1",
+      "verbatimLabel": "Tone category 1",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "stop",
+        "below": "tone-cat-9",
+        "left": null,
+        "right": "tone-cat-2"
+      }
+    },
+    {
+      "id": "tone-cat-2",
+      "verbatimLabel": "Tone category 2",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "stop",
+        "below": "tone-cat-10",
+        "left": "tone-cat-1",
+        "right": "tone-cat-3"
+      }
+    },
+    {
+      "id": "tone-cat-3",
+      "verbatimLabel": "Tone category 3",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "stop",
+        "below": "tone-cat-11",
+        "left": "tone-cat-2",
+        "right": "tone-cat-4"
+      }
+    },
+    {
+      "id": "tone-cat-4",
+      "verbatimLabel": "Tone category 4",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "play",
+        "below": "tone-cat-12",
+        "left": "tone-cat-3",
+        "right": "tone-cat-5"
+      }
+    },
+    {
+      "id": "tone-cat-5",
+      "verbatimLabel": "Tone category 5",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "play",
+        "below": "tone-cat-13",
+        "left": "tone-cat-4",
+        "right": "tone-cat-6"
+      }
+    },
+    {
+      "id": "tone-cat-6",
+      "verbatimLabel": "Tone category 6",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "rec",
+        "below": "tone-cat-14",
+        "left": "tone-cat-5",
+        "right": "tone-cat-7"
+      }
+    },
+    {
+      "id": "tone-cat-7",
+      "verbatimLabel": "Tone category 7",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "rec",
+        "below": "tone-cat-15",
+        "left": "tone-cat-6",
+        "right": "tone-cat-8"
+      }
+    },
+    {
+      "id": "tone-cat-8",
+      "verbatimLabel": "Tone category 8",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "rec",
+        "below": "tone-cat-16",
+        "left": "tone-cat-7",
+        "right": null
+      }
+    },
+    {
+      "id": "tone-cat-9",
+      "verbatimLabel": "Tone category 9",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-1",
+        "below": null,
+        "left": null,
+        "right": "tone-cat-10"
+      }
+    },
+    {
+      "id": "tone-cat-10",
+      "verbatimLabel": "Tone category 10",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-2",
+        "below": null,
+        "left": "tone-cat-9",
+        "right": "tone-cat-11"
+      }
+    },
+    {
+      "id": "tone-cat-11",
+      "verbatimLabel": "Tone category 11",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-3",
+        "below": null,
+        "left": "tone-cat-10",
+        "right": "tone-cat-12"
+      }
+    },
+    {
+      "id": "tone-cat-12",
+      "verbatimLabel": "Tone category 12",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-4",
+        "below": null,
+        "left": "tone-cat-11",
+        "right": "tone-cat-13"
+      }
+    },
+    {
+      "id": "tone-cat-13",
+      "verbatimLabel": "Tone category 13",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-5",
+        "below": null,
+        "left": "tone-cat-12",
+        "right": "tone-cat-14"
+      }
+    },
+    {
+      "id": "tone-cat-14",
+      "verbatimLabel": "Tone category 14",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-6",
+        "below": null,
+        "left": "tone-cat-13",
+        "right": "tone-cat-15"
+      }
+    },
+    {
+      "id": "tone-cat-15",
+      "verbatimLabel": "Tone category 15",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-7",
+        "below": null,
+        "left": "tone-cat-14",
+        "right": "tone-cat-16"
+      }
+    },
+    {
+      "id": "tone-cat-16",
+      "verbatimLabel": "Tone category 16",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-8",
+        "below": null,
+        "left": "tone-cat-15",
+        "right": null
+      }
+    },
+    {
+      "id": "sampling",
+      "verbatimLabel": "SAMPLING",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-function",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-13",
+        "left": null,
+        "right": "pad-mode"
+      }
+    },
+    {
+      "id": "pad-mode",
+      "verbatimLabel": "PAD MODE",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-function",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-13",
+        "left": "sampling",
+        "right": "clip-board"
+      }
+    },
+    {
+      "id": "clip-board",
+      "verbatimLabel": "CLIP BOARD",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-function",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-14",
+        "left": "pad-mode",
+        "right": "bank"
+      }
+    },
+    {
+      "id": "bank",
+      "verbatimLabel": "BANK",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-function",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-15",
+        "left": "clip-board",
+        "right": "hold"
+      }
+    },
+    {
+      "id": "hold",
+      "verbatimLabel": "HOLD",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-function",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-16",
+        "left": "bank",
+        "right": null
+      }
+    },
+    {
+      "id": "pad-13",
+      "verbatimLabel": "Pad 13",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "sampling",
+        "below": "pad-9",
+        "left": null,
+        "right": "pad-14"
+      }
+    },
+    {
+      "id": "pad-14",
+      "verbatimLabel": "Pad 14",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "clip-board",
+        "below": "pad-10",
+        "left": "pad-13",
+        "right": "pad-15"
+      }
+    },
+    {
+      "id": "pad-15",
+      "verbatimLabel": "Pad 15",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "bank",
+        "below": "pad-11",
+        "left": "pad-14",
+        "right": "pad-16"
+      }
+    },
+    {
+      "id": "pad-16",
+      "verbatimLabel": "Pad 16",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "hold",
+        "below": "pad-12",
+        "left": "pad-15",
+        "right": null
+      }
+    },
+    {
+      "id": "pad-9",
+      "verbatimLabel": "Pad 9",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-13",
+        "below": "pad-5",
+        "left": null,
+        "right": "pad-10"
+      }
+    },
+    {
+      "id": "pad-10",
+      "verbatimLabel": "Pad 10",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-14",
+        "below": "pad-6",
+        "left": "pad-9",
+        "right": "pad-11"
+      }
+    },
+    {
+      "id": "pad-11",
+      "verbatimLabel": "Pad 11",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-15",
+        "below": "pad-7",
+        "left": "pad-10",
+        "right": "pad-12"
+      }
+    },
+    {
+      "id": "pad-12",
+      "verbatimLabel": "Pad 12",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-16",
+        "below": "pad-8",
+        "left": "pad-11",
+        "right": null
+      }
+    },
+    {
+      "id": "pad-5",
+      "verbatimLabel": "Pad 5",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-9",
+        "below": "pad-1",
+        "left": null,
+        "right": "pad-6"
+      }
+    },
+    {
+      "id": "pad-6",
+      "verbatimLabel": "Pad 6",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-10",
+        "below": "pad-2",
+        "left": "pad-5",
+        "right": "pad-7"
+      }
+    },
+    {
+      "id": "pad-7",
+      "verbatimLabel": "Pad 7",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-11",
+        "below": "pad-3",
+        "left": "pad-6",
+        "right": "pad-8"
+      }
+    },
+    {
+      "id": "pad-8",
+      "verbatimLabel": "Pad 8",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-12",
+        "below": "pad-4",
+        "left": "pad-7",
+        "right": null
+      }
+    },
+    {
+      "id": "pad-1",
+      "verbatimLabel": "Pad 1",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-5",
+        "below": null,
+        "left": null,
+        "right": "pad-2"
+      }
+    },
+    {
+      "id": "pad-2",
+      "verbatimLabel": "Pad 2",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-6",
+        "below": null,
+        "left": "pad-1",
+        "right": "pad-3"
+      }
+    },
+    {
+      "id": "pad-3",
+      "verbatimLabel": "Pad 3",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-7",
+        "below": null,
+        "left": "pad-2",
+        "right": "pad-4"
+      }
+    },
+    {
+      "id": "pad-4",
+      "verbatimLabel": "Pad 4",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pad-grid",
+      "spatialNeighbors": {
+        "above": "pad-8",
+        "below": null,
+        "left": "pad-3",
+        "right": null
+      }
+    }
+  ],
+  "sharedElements": [],
+  "alignmentAnchors": [
+    {
+      "sourceId": "knob-1",
+      "targetId": "zone-int-ext-1",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "zone-int-ext-1",
+      "targetId": "slider-1",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-2",
+      "targetId": "zone-int-ext-2",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "zone-int-ext-2",
+      "targetId": "slider-2",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-3",
+      "targetId": "zone-int-ext-3",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "zone-int-ext-3",
+      "targetId": "slider-3",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-4",
+      "targetId": "zone-int-ext-4",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "zone-int-ext-4",
+      "targetId": "slider-4",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-5",
+      "targetId": "zone-int-ext-5",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "zone-int-ext-5",
+      "targetId": "slider-5",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-6",
+      "targetId": "zone-int-ext-6",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "zone-int-ext-6",
+      "targetId": "slider-6",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-7",
+      "targetId": "zone-int-ext-7",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "zone-int-ext-7",
+      "targetId": "slider-7",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-8",
+      "targetId": "zone-int-ext-8",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "zone-int-ext-8",
+      "targetId": "slider-8",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "e1",
+      "targetId": "e6",
+      "axis": "y",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "cutoff",
+      "targetId": "resonance",
+      "axis": "y",
+      "tolerancePx": 4
+    }
+  ]
+}

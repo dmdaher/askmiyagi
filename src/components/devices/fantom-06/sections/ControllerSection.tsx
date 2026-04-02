@@ -30,26 +30,26 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 71,
-              top: 24,
-              width: 36,
-              height: 148,
+              left: 103,
+              top: 83,
+              width: 19,
+              height: 100,
             }}
           >
             <Wheel
               id="wheel-1"
               label=""
-              width={36}
-              height={148}
+              width={19}
+              height={100}
               highlighted={isHighlighted('wheel-1')}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 71,
-            top: 12,
-            width: 36,
+            left: 83,
+            top: 71,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -60,26 +60,26 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 112,
-              top: 23,
-              width: 36,
-              height: 148,
+              left: 155,
+              top: 81,
+              width: 19,
+              height: 94,
             }}
           >
             <Wheel
               id="wheel-2"
               label=""
-              width={36}
-              height={148}
+              width={19}
+              height={94}
               highlighted={isHighlighted('wheel-2')}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 112,
-            top: 11,
-            width: 36,
+            left: 135,
+            top: 69,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -90,18 +90,18 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 51,
-              top: 235,
-              width: 60,
-              height: 16,
+              left: 93,
+              top: 290,
+              width: 25,
+              height: 19,
             }}
           >
             <div>
               <PanelButton
                 id="s1"
                 label=""
-                width={60}
-                height={16}
+                width={25}
+                height={19}
                 active={getState('s1').active}
                 highlighted={isHighlighted('s1')}
                 onClick={() => onButtonClick?.('s1')}
@@ -111,8 +111,8 @@ export default function ControllerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 51,
-            top: 223,
+            left: 76,
+            top: 278,
             width: 60,
             textAlign: 'center',
           }}
@@ -124,18 +124,18 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 70,
-              top: 234,
-              width: 60,
-              height: 16,
+              left: 120,
+              top: 289,
+              width: 25,
+              height: 19,
             }}
           >
             <div>
               <PanelButton
                 id="s2"
                 label=""
-                width={60}
-                height={16}
+                width={25}
+                height={19}
                 active={getState('s2').active}
                 highlighted={isHighlighted('s2')}
                 onClick={() => onButtonClick?.('s2')}
@@ -145,8 +145,8 @@ export default function ControllerSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 70,
-            top: 222,
+            left: 103,
+            top: 277,
             width: 60,
             textAlign: 'center',
           }}
@@ -158,10 +158,10 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 85,
-              top: 260,
-              width: 56,
-              height: 64,
+              left: 109,
+              top: 328,
+              width: 82,
+              height: 82,
             }}
           >
             <DirectionSwitch
@@ -169,16 +169,16 @@ export default function ControllerSection({
               label=""
               positions={["FWD","REV","SLIP REV"]}
               highlighted={isHighlighted('pitch-bend-lever')}
-              width={56}
-              height={64}
+              width={82}
+              height={82}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 85,
-            top: 248,
-            width: 56,
+            left: 109,
+            top: 316,
+            width: 82,
             textAlign: 'center',
           }}
         >

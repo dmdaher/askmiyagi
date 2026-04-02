@@ -1,0 +1,169 @@
+{
+  "deviceId": "rc-505-mk2",
+  "deviceName": "rc-505 mk2",
+  "manufacturer": "BOSS",
+  "manualPaths": [
+    "docs/BOSS/rc-505-mk2/RC-505mk2_Parameter_eng02_W.pdf",
+    "docs/BOSS/rc-505-mk2/RC-505mk2_eng02_W.pdf"
+  ],
+  "currentPhase": "phase-0-gatekeeper",
+  "status": "paused",
+  "branch": "feature/rc-505-mk2",
+  "createdAt": "2026-03-25T07:21:56.499Z",
+  "updatedAt": "2026-03-25T08:57:35.589Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-25T07:21:58.439Z",
+      "completedAt": "2026-03-25T07:26:57.319Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 0.63551325,
+      "tokens": {
+        "input": 287,
+        "output": 9160,
+        "cacheCreation": 78381,
+        "cacheRead": 677745
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-25T07:37:47.658Z",
+      "completedAt": "2026-03-25T07:37:47.667Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 3.994635,
+      "tokens": {
+        "input": 17,
+        "output": 28960,
+        "cacheCreation": 71470,
+        "cacheRead": 321545
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-25T08:53:28.819Z",
+      "completedAt": "2026-03-25T08:57:35.586Z",
+      "score": 8,
+      "status": "failed",
+      "costUsd": 12.78705,
+      "tokens": {
+        "input": 57,
+        "output": 57116,
+        "cacheCreation": 208400,
+        "cacheRead": 3063330
+      }
+    }
+  ],
+  "sections": [],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774429055587-nvi0hg",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 8.0). Errors: 65/65 controls missing shape (100%); 65/65 controls missing sizeClass (100%); 65/65 controls missing labelDisplay (100%)",
+      "createdAt": "2026-03-25T08:57:35.587Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774429055587-nvi0hg",
+  "totalCostUsd": 17.417198250000002,
+  "totalActualCostUsd": 8.441559,
+  "totalTokens": {
+    "input": 361,
+    "output": 95236,
+    "cacheCreation": 358251,
+    "cacheRead": 4062620
+  },
+  "budgetCapUsd": 50,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:24:35.010Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:37:47.611Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T08:52:26.399Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T08:53:28.774Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T08:57:35.513Z"
+      }
+    ],
+    "lastUpdated": "2026-03-25T08:57:35.569Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.09076125382223542,
+    "costPerAgent": 1.4069265,
+    "projectedBudgetExhaustedAt": "2026-03-25T16:35:28.817Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-25T07:24:35.011Z",
+        "cumulativeCost": 0.964106
+      },
+      {
+        "timestamp": "2026-03-25T07:26:57.262Z",
+        "cumulativeCost": 1.74844225
+      },
+      {
+        "timestamp": "2026-03-25T07:37:47.615Z",
+        "cumulativeCost": 3.56063475
+      },
+      {
+        "timestamp": "2026-03-25T08:52:26.405Z",
+        "cumulativeCost": 6.80764425
+      },
+      {
+        "timestamp": "2026-03-25T08:53:28.775Z",
+        "cumulativeCost": 7.2952390000000005
+      },
+      {
+        "timestamp": "2026-03-25T08:57:35.515Z",
+        "cumulativeCost": 8.441559
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/rc-505-mk2",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "phase-0-gatekeeper",
+    "subStep": "start"
+  }
+}

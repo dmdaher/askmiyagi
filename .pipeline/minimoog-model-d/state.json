@@ -1,0 +1,182 @@
+{
+  "deviceId": "minimoog-model-d",
+  "deviceName": "Minimoog Model D",
+  "manufacturer": "Moog",
+  "manualPaths": [
+    "docs/Moog/minimoog-model-d/Minimoog_Model_D_Manual.pdf",
+    "docs/Moog/minimoog-model-d/minimoog-model-d-service-manual.pdf",
+    "docs/Moog/minimoog-model-d/minimoog-owners-manual-original.pdf"
+  ],
+  "currentPhase": "phase-0-gatekeeper",
+  "status": "paused",
+  "branch": "feature/minimoog-model-d",
+  "createdAt": "2026-03-25T07:29:47.367Z",
+  "updatedAt": "2026-03-25T10:02:39.371Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-25T07:29:49.184Z",
+      "completedAt": "2026-03-25T07:39:17.687Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 1.2322426499999999,
+      "tokens": {
+        "input": 756,
+        "output": 20553,
+        "cacheCreation": 93037,
+        "cacheRead": 1909303
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-25T09:42:00.627Z",
+      "completedAt": "2026-03-25T09:42:00.679Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 7.26663975,
+      "tokens": {
+        "input": 63,
+        "output": 39318,
+        "cacheCreation": 150125,
+        "cacheRead": 1001334
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-25T10:00:25.413Z",
+      "completedAt": "2026-03-25T10:02:39.370Z",
+      "score": 6,
+      "status": "failed",
+      "costUsd": 15.35421525,
+      "tokens": {
+        "input": 760,
+        "output": 69886,
+        "cacheCreation": 299175,
+        "cacheRead": 2994556
+      }
+    }
+  ],
+  "sections": [],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774432959370-h7g41t",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 6.0). Errors: Section \"controllers\" heightSplits auto-corrected from integers to decimals ({\"cluster\":0.55,\"anchor\":0.4,\"gap\":0.05}); Section \"left-hand-keyboard-panel\" heightSplits auto-corrected from integers to decimals ({\"cluster\":0.4,\"anchor\":0.55,\"gap\":0.05}); 52/52 controls missing shape (100%)",
+      "createdAt": "2026-03-25T10:02:39.370Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774432959370-h7g41t",
+  "totalCostUsd": 23.85309765,
+  "totalActualCostUsd": 10.322730250000001,
+  "totalTokens": {
+    "input": 1579,
+    "output": 129757,
+    "cacheCreation": 542337,
+    "cacheRead": 5905193
+  },
+  "budgetCapUsd": 50,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:34:37.008Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:31:59.090Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:42:00.612Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:58:09.435Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T10:00:25.392Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T10:02:39.356Z"
+      }
+    ],
+    "lastUpdated": "2026-03-25T10:02:39.363Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.0697297241158027,
+    "costPerAgent": 1.47467575,
+    "projectedBudgetExhaustedAt": "2026-03-25T19:31:40.272Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-25T07:34:37.009Z",
+        "cumulativeCost": 1.4793415000000003
+      },
+      {
+        "timestamp": "2026-03-25T07:39:17.647Z",
+        "cumulativeCost": 2.7824452500000003
+      },
+      {
+        "timestamp": "2026-03-25T09:31:59.097Z",
+        "cumulativeCost": 3.26765
+      },
+      {
+        "timestamp": "2026-03-25T09:42:00.616Z",
+        "cumulativeCost": 5.2046585
+      },
+      {
+        "timestamp": "2026-03-25T09:58:09.441Z",
+        "cumulativeCost": 8.80211075
+      },
+      {
+        "timestamp": "2026-03-25T10:00:25.394Z",
+        "cumulativeCost": 9.519725750000001
+      },
+      {
+        "timestamp": "2026-03-25T10:02:39.359Z",
+        "cumulativeCost": 10.322730250000001
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/minimoog-model-d",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "phase-0-gatekeeper",
+    "subStep": "start"
+  }
+}

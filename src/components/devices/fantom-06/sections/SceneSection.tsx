@@ -28,18 +28,18 @@ export default function SceneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 680,
-              top: 27,
-              width: 64,
-              height: 28,
+              left: 850,
+              top: 33,
+              width: 40,
+              height: 25,
             }}
           >
             <div>
               <PanelButton
                 id="scene-select"
                 label=""
-                width={64}
-                height={28}
+                width={40}
+                height={25}
                 active={getState('scene-select').active}
                 highlighted={isHighlighted('scene-select')}
                 onClick={() => onButtonClick?.('scene-select')}
@@ -49,9 +49,9 @@ export default function SceneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 680,
-            top: 15,
-            width: 64,
+            left: 840,
+            top: 21,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -62,18 +62,18 @@ export default function SceneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 680,
-              top: 67,
-              width: 64,
-              height: 28,
+              left: 850,
+              top: 83,
+              width: 40,
+              height: 25,
             }}
           >
             <div>
               <PanelButton
                 id="scene-chain"
                 label=""
-                width={64}
-                height={28}
+                width={40}
+                height={25}
                 active={getState('scene-chain').active}
                 highlighted={isHighlighted('scene-chain')}
                 onClick={() => onButtonClick?.('scene-chain')}
@@ -83,9 +83,9 @@ export default function SceneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 680,
-            top: 55,
-            width: 64,
+            left: 840,
+            top: 71,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -96,18 +96,18 @@ export default function SceneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 680,
-              top: 91,
-              width: 64,
-              height: 28,
+              left: 850,
+              top: 114,
+              width: 40,
+              height: 25,
             }}
           >
             <div>
               <PanelButton
                 id="zone-view"
                 label=""
-                width={64}
-                height={28}
+                width={40}
+                height={25}
                 active={getState('zone-view').active}
                 highlighted={isHighlighted('zone-view')}
                 onClick={() => onButtonClick?.('zone-view')}
@@ -117,9 +117,9 @@ export default function SceneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 680,
-            top: 79,
-            width: 64,
+            left: 840,
+            top: 102,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -130,18 +130,18 @@ export default function SceneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 680,
-              top: 123,
-              width: 64,
-              height: 28,
+              left: 850,
+              top: 154,
+              width: 40,
+              height: 25,
             }}
           >
             <div>
               <PanelButton
                 id="single-tone"
                 label=""
-                width={64}
-                height={28}
+                width={40}
+                height={25}
                 active={getState('single-tone').active}
                 highlighted={isHighlighted('single-tone')}
                 onClick={() => onButtonClick?.('single-tone')}
@@ -151,9 +151,9 @@ export default function SceneSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 680,
-            top: 111,
-            width: 64,
+            left: 840,
+            top: 142,
+            width: 60,
             textAlign: 'center',
           }}
         >

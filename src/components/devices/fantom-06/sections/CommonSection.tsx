@@ -52,9 +52,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 34,
+            left: 6,
             top: 72,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -86,9 +86,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 39,
+            left: 11,
             top: 72,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -120,9 +120,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 43,
+            left: 15,
             top: 72,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -154,9 +154,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 48,
+            left: 20,
             top: 72,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -188,9 +188,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 52,
+            left: 24,
             top: 72,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -201,10 +201,10 @@ export default function CommonSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 522,
-              top: 49,
-              width: 136,
-              height: 88,
+              left: 618,
+              top: 55,
+              width: 375,
+              height: 225,
             }}
           >
             <TouchDisplay
@@ -212,17 +212,17 @@ export default function CommonSection({
               label=""
               variant="main"
               showMockContent
-              width={136}
-              height={88}
+              width={375}
+              height={225}
               highlighted={isHighlighted('display')}
             />
           </div>
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 522,
-            top: 37,
-            width: 136,
+            left: 618,
+            top: 43,
+            width: 375,
             textAlign: 'center',
           }}
         >
@@ -251,9 +251,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 34,
+            left: 6,
             top: 103,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -282,9 +282,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 39,
+            left: 11,
             top: 103,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -313,9 +313,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 43,
+            left: 15,
             top: 103,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -344,9 +344,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 48,
+            left: 20,
             top: 103,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -375,9 +375,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 52,
+            left: 24,
             top: 103,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -406,9 +406,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 34,
+            left: 6,
             top: 112,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -440,9 +440,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 39,
+            left: 11,
             top: 90,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -469,9 +469,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 43,
+            left: 15,
             top: 112,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -503,9 +503,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 48,
+            left: 20,
             top: 90,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -537,9 +537,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 52,
+            left: 24,
             top: 90,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -571,9 +571,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 34,
+            left: 6,
             top: 99,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -605,9 +605,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 48,
+            left: 20,
             top: 99,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -639,9 +639,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 39,
+            left: 11,
             top: 99,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -673,9 +673,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 43,
+            left: 15,
             top: 99,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -707,9 +707,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 52,
+            left: 24,
             top: 99,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -741,9 +741,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 34,
+            left: 6,
             top: 107,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
@@ -775,9 +775,9 @@ export default function CommonSection({
         <div
           className="absolute pointer-events-none"
           style={{
-            left: 39,
+            left: 11,
             top: 107,
-            width: 4,
+            width: 60,
             textAlign: 'center',
           }}
         >
