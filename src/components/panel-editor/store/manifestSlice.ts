@@ -894,7 +894,9 @@ export const createManifestSlice: StateCreator<
     set((s) => {
       const updated: Record<string, ControlDef> = {};
       for (const [id, ctrl] of Object.entries(s.controls)) {
-        const def = DEFAULT_SIZES[ctrl.type] ?? { w: 48, h: 32 };
+        // Use sizeClass from pipeline when available, fall back to type defaults
+        const sizeClassDef = ctrl.sizeClass ? SIZE_CLASS_DIMS[ctrl.sizeClass] : undefined;
+        const def = sizeClassDef ?? DEFAULT_SIZES[ctrl.type] ?? { w: 48, h: 32 };
         updated[id] = { ...ctrl, w: def.w, h: def.h };
       }
       return { controls: updated };

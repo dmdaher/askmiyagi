@@ -756,6 +756,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         scale={zoom}
         dragGrid={[snapGrid, snapGrid]}
         resizeGrid={[snapGrid, snapGrid]}
+        lockAspectRatio
         disableDragging={isLocked}
         enableResizing={!isLocked}
         resizeHandleStyles={isSelected ? {
