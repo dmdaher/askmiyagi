@@ -1224,7 +1224,7 @@ function generateFlatPanel(
   const imports = collectImports(manifest.controls, controlMap);
   // Add shared shell components
   imports.set('PanelShell', '@/components/controls/PanelShell');
-  imports.set('SectionContainer', '@/components/controls/SectionContainer');
+  // SectionContainer NOT imported for flat panel — sections are editor-only grouping
   const importLines = Array.from(imports.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([component, importPath]) => `import ${component} from '${importPath}';`)
@@ -1236,18 +1236,9 @@ function generateFlatPanel(
     ? `{ keys: ${kb.keys}, startNote: '${kb.startNote}', panelHeightPercent: ${kb.panelHeightPercent}${kb.leftPercent != null ? `, leftPercent: ${kb.leftPercent}` : ''}${kb.widthPercent != null ? `, widthPercent: ${kb.widthPercent}` : ''} }`
     : 'null';
 
-  // Section backgrounds — using SectionContainer component
-  const sectionBackgrounds = sections
-    .filter(s => s.panelBoundingBox)
-    .map(s => {
-      const bb = s.panelBoundingBox!;
-      const label = s.headerLabel ? ` headerLabel="${escapeJsx(s.headerLabel)}"` : '';
-      return [
-        `        {/* ${s.headerLabel ?? s.id} background */}`,
-        `        <SectionContainer id="${s.id}" x={${bb.x}} y={${bb.y}} w={${bb.w}} h={${bb.h}}${label} />`,
-      ].join('\n');
-    })
-    .join('\n\n');
+  // Section backgrounds removed — sections are editor-only grouping.
+  // Section titles will be added as standalone text labels in a future feature.
+  const sectionBackgrounds = '';
 
   // All controls positioned directly on the panel using editorPosition percentages
   // Each control is followed by its floating label (if applicable)

@@ -17,6 +17,7 @@ import JogWheelAssembly from '@/components/controls/JogWheelAssembly';
 import DirectionSwitch from '@/components/controls/DirectionSwitch';
 import JogDisplay from '@/components/controls/JogDisplay';
 import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import { computeLabelPosition } from '@/lib/label-position';
 
 /** Render label text with \n as line breaks */
 function renderLabelText(text: string): React.ReactNode {
@@ -82,12 +83,18 @@ function renderFloatingLabel(
 ): React.ReactNode {
   if (!shouldShowFloatingLabel(control)) return null;
 
-  // Use visual dimensions (scaled) for label positioning
   const visW = control.w * scale;
   const visH = control.h * scale;
   const pos = control.labelPosition;
   const fontSize = labelFontSize(control);
   const effectivePos = control.labelDisplay ?? pos;
+
+  // Use shared label position computation
+  const labelPos = computeLabelPosition(
+    relX, relY, visW, visH,
+    pos, control.label ?? '', fontSize, control.secondaryLabel,
+  );
+  if (!labelPos) return null;
 
   // on-button with secondary label — float the secondary label below the control
   if (pos === 'on-button') {
@@ -158,46 +165,14 @@ function renderFloatingLabel(
     </>
   );
 
-  // Compute position based on labelPosition
-  const labelStyle: React.CSSProperties = { zIndex: 1 };
-
-  // Estimate label height — count actual lines (including \n in label text)
-  const lineH = fontSize + 2;
-  const primaryLines = (control.label ?? '').split('\n').length;
-  const secondaryLines = secondaryLabel ? 1 : 0;
-  const totalLabelH = (primaryLines + secondaryLines) * lineH;
-
-  switch (pos) {
-    case 'above': {
-      const labelW = Math.max(visW, 60);
-      labelStyle.left = relX + visW / 2 - labelW / 2;
-      labelStyle.top = relY - totalLabelH - 6;
-      labelStyle.width = labelW;
-      labelStyle.textAlign = 'center';
-      break;
-    }
-    case 'below':
-    default: {
-      const labelW = Math.max(visW, 60);
-      labelStyle.left = relX + visW / 2 - labelW / 2;
-      labelStyle.top = relY + visH + 6;
-      labelStyle.width = labelW;
-      labelStyle.textAlign = 'center';
-      break;
-    }
-    case 'left':
-      labelStyle.top = relY + (visH - totalLabelH) / 2;
-      labelStyle.left = relX - 60;
-      labelStyle.width = 56;
-      labelStyle.textAlign = 'right';
-      break;
-    case 'right':
-      labelStyle.left = relX + visW + 4;
-      labelStyle.top = relY + (visH - totalLabelH) / 2;
-      labelStyle.width = 56;
-      labelStyle.textAlign = 'left';
-      break;
-  }
+  // Use shared label position (single source of truth)
+  const labelStyle: React.CSSProperties = {
+    zIndex: 1,
+    left: labelPos.x,
+    top: labelPos.y,
+    width: labelPos.w,
+    textAlign: labelPos.align,
+  };
 
   return (
     <div

@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import type { SectionDef, ControlDef } from '@/components/panel-editor/store/manifestSlice';
+import { computeLabelPosition } from '@/lib/label-position';
 
 /**
  * POST /api/pipeline/{deviceId}/codegen
@@ -99,51 +100,16 @@ export async function POST(
               h: visH,
             };
 
-            // Compute label position using the SAME math as the editor's
-            // ControlNode renderFloatingLabel — single source of truth.
-            const labelPos = control.labelDisplay ?? editorControl.labelPosition ?? 'below';
-            if (labelPos !== 'on-button' && labelPos !== 'hidden') {
-              const label = control.verbatimLabel ?? editorControl.label ?? '';
-              const fontSize = { xs: 7, sm: 7, md: 8, lg: 10, xl: 11 }[control.sizeClass as string] ?? 8;
-              const lineH = fontSize + 2;
-              const primaryLines = label.split('\n').length;
-              const hasSecondary = control.secondaryLabel && control.secondaryLabel.length > 0;
-              const totalLabelH = (primaryLines + (hasSecondary ? 1 : 0)) * lineH;
-              const minLabelW = 60;
-              const ctrlX = Math.round(editorControl.x);
-              const ctrlY = Math.round(editorControl.y);
-
-              let labelX: number, labelY: number, labelW: number;
-              switch (labelPos) {
-                case 'above':
-                default:
-                  labelW = Math.max(visW, minLabelW);
-                  labelX = ctrlX + visW / 2 - labelW / 2;
-                  labelY = ctrlY - totalLabelH - 6;
-                  break;
-                case 'below':
-                  labelW = Math.max(visW, minLabelW);
-                  labelX = ctrlX + visW / 2 - labelW / 2;
-                  labelY = ctrlY + visH + 6;
-                  break;
-                case 'left':
-                  labelW = Math.max(visW * 1.5, minLabelW);
-                  labelX = ctrlX - labelW - 4;
-                  labelY = ctrlY + visH / 2 - totalLabelH / 2;
-                  break;
-                case 'right':
-                  labelW = Math.max(visW * 1.5, minLabelW);
-                  labelX = ctrlX + visW + 4;
-                  labelY = ctrlY + visH / 2 - totalLabelH / 2;
-                  break;
-              }
-              (control as any)._labelPos = {
-                x: Math.round(labelX!),
-                y: Math.round(labelY!),
-                w: Math.round(labelW!),
-                align: (labelPos === 'left') ? 'right' : (labelPos === 'right') ? 'left' : 'center',
-                fontSize,
-              };
+            // Compute label position using shared function (same as editor)
+            const labelPosDir = control.labelDisplay ?? editorControl.labelPosition ?? 'below';
+            const label = control.verbatimLabel ?? editorControl.label ?? '';
+            const fontSize = { xs: 7, sm: 7, md: 8, lg: 10, xl: 11 }[control.sizeClass as string] ?? 8;
+            const lp = computeLabelPosition(
+              Math.round(editorControl.x), Math.round(editorControl.y),
+              visW, visH, labelPosDir, label, fontSize, control.secondaryLabel,
+            );
+            if (lp) {
+              (control as any)._labelPos = lp;
             }
           } else {
             // Control not in editor manifest — clear any stale editorPosition
