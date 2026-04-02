@@ -110,23 +110,25 @@ export default function LabelLayer() {
           {/* Label text */}
           {editing !== label.id && (
             <div
-              className="absolute pointer-events-auto cursor-move select-none"
+              className="absolute pointer-events-none select-none"
               style={{
                 left: label.x,
                 top: label.y,
                 fontSize: label.fontSize,
                 textAlign: label.align,
-                zIndex: dragging === label.id ? 50 : selectedLabel === label.id ? 10 : 5,
+                zIndex: dragging === label.id ? 200 : selectedLabel === label.id ? 100 : 60,
                 opacity: dragging === label.id ? 0.7 : 1,
                 outline: selectedLabel === label.id ? '1px solid rgba(59,130,246,0.8)' : 'none',
                 outlineOffset: 2,
                 borderRadius: 2,
                 padding: '1px 3px',
               }}
-              onMouseDown={(e) => handleMouseDown(e, label)}
-              onDoubleClick={() => handleDoubleClick(label)}
             >
-              <span className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
+              <span
+                className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move"
+                onMouseDown={(e) => handleMouseDown(e, label)}
+                onDoubleClick={() => handleDoubleClick(label)}
+              >
                 {label.text.split('\n').map((line, i) => (
                   <span key={i}>
                     {i > 0 && <br />}
