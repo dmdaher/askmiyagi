@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import { computeLabelPosition } from '@/lib/label-position';
-import type { EditorLabel } from './historySlice';
+import type { EditorLabel, ControlGroup } from './historySlice';
 import type {
   ManifestControl,
   ManifestSection,
@@ -161,7 +161,7 @@ export interface ManifestSlice {
   sections: Record<string, SectionDef>;
   controls: Record<string, ControlDef>;
   editorLabels: EditorLabel[];
-  controlGroups: unknown[];     // Future: ControlGroup[] for sub-section grouping
+  controlGroups: ControlGroup[];
   selectedIds: string[];
   lockedIds: string[];
   keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
@@ -193,6 +193,10 @@ export interface ManifestSlice {
   updateLabel: (labelId: string, updates: Partial<EditorLabel>) => void;
   deleteLabel: (labelId: string) => void;
   initLabelsFromControls: () => void;
+  alignControls: (mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom') => void;
+  distributeControls: (axis: 'horizontal' | 'vertical') => void;
+  createGroup: (name: string) => void;
+  ungroupControls: () => void;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -984,6 +988,158 @@ export const createManifestSlice: StateCreator<
     set((s) => ({
       editorLabels: (s.editorLabels as EditorLabel[]).filter(l => l.id !== labelId),
     }));
+  },
+
+  alignControls: (mode) => {
+    const { selectedIds, lockedIds, controls } = get();
+    const lockedSet = new Set(lockedIds);
+    const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
+    if (movable.length < 2) return;
+
+    const ctrls = movable.map(id => controls[id]);
+
+    let target: number;
+    switch (mode) {
+      case 'left':
+        target = Math.min(...ctrls.map(c => c.x));
+        break;
+      case 'right':
+        target = Math.max(...ctrls.map(c => c.x + c.w));
+        break;
+      case 'center-x': {
+        const sum = ctrls.reduce((acc, c) => acc + (c.x + c.w / 2), 0);
+        target = Math.round(sum / ctrls.length);
+        break;
+      }
+      case 'top':
+        target = Math.min(...ctrls.map(c => c.y));
+        break;
+      case 'bottom':
+        target = Math.max(...ctrls.map(c => c.y + c.h));
+        break;
+      case 'center-y': {
+        const sum = ctrls.reduce((acc, c) => acc + (c.y + c.h / 2), 0);
+        target = Math.round(sum / ctrls.length);
+        break;
+      }
+    }
+
+    const updated = { ...controls };
+    for (const id of movable) {
+      const c = updated[id];
+      switch (mode) {
+        case 'left':
+          updated[id] = { ...c, x: target };
+          break;
+        case 'right':
+          updated[id] = { ...c, x: target - c.w };
+          break;
+        case 'center-x':
+          updated[id] = { ...c, x: target - c.w / 2 };
+          break;
+        case 'top':
+          updated[id] = { ...c, y: target };
+          break;
+        case 'bottom':
+          updated[id] = { ...c, y: target - c.h };
+          break;
+        case 'center-y':
+          updated[id] = { ...c, y: target - c.h / 2 };
+          break;
+      }
+    }
+    set({ controls: updated });
+  },
+
+  distributeControls: (axis) => {
+    const { selectedIds, lockedIds, controls } = get();
+    const lockedSet = new Set(lockedIds);
+    const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
+    if (movable.length < 3) return;
+
+    const isH = axis === 'horizontal';
+    // Sort by position on the given axis
+    const sorted = [...movable].sort((a, b) => {
+      const ca = controls[a];
+      const cb = controls[b];
+      return isH ? ca.x - cb.x : ca.y - cb.y;
+    });
+
+    const first = controls[sorted[0]];
+    const last = controls[sorted[sorted.length - 1]];
+
+    // Total span from leading edge of first to trailing edge of last
+    const totalSpan = isH
+      ? (last.x + last.w) - first.x
+      : (last.y + last.h) - first.y;
+
+    // Sum of all control sizes along the axis
+    const totalSize = sorted.reduce((acc, id) => {
+      const c = controls[id];
+      return acc + (isH ? c.w : c.h);
+    }, 0);
+
+    const gap = (totalSpan - totalSize) / (sorted.length - 1);
+    const updated = { ...controls };
+
+    let cursor = isH ? first.x : first.y;
+    for (let i = 0; i < sorted.length; i++) {
+      const id = sorted[i];
+      const c = updated[id];
+      if (i === 0) {
+        // First anchor stays
+        cursor += isH ? c.w + gap : c.h + gap;
+        continue;
+      }
+      if (i === sorted.length - 1) {
+        // Last anchor stays
+        break;
+      }
+      if (isH) {
+        updated[id] = { ...c, x: cursor };
+      } else {
+        updated[id] = { ...c, y: cursor };
+      }
+      cursor += (isH ? c.w : c.h) + gap;
+    }
+    set({ controls: updated });
+  },
+
+  createGroup: (name) => {
+    const { selectedIds, controlGroups } = get();
+    if (selectedIds.length < 2) return;
+
+    const selectedSet = new Set(selectedIds);
+
+    // Remove selected controls from any existing groups
+    let updated = (controlGroups as ControlGroup[]).map(g => ({
+      ...g,
+      controlIds: g.controlIds.filter(id => !selectedSet.has(id)),
+    }));
+
+    // Dissolve groups that dropped below 2 members
+    updated = updated.filter(g => g.controlIds.length >= 2);
+
+    // Create new group
+    const newGroup: ControlGroup = {
+      id: `group-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name,
+      controlIds: [...selectedIds],
+    };
+
+    set({ controlGroups: [...updated, newGroup] });
+  },
+
+  ungroupControls: () => {
+    const { selectedIds, controlGroups } = get();
+    const selectedSet = new Set(selectedIds);
+
+    // Remove any group that contains any selected control
+    const updated = (controlGroups as ControlGroup[]).filter(
+      g => !g.controlIds.some(id => selectedSet.has(id))
+    );
+
+    set({ controlGroups: updated });
   },
 
   initLabelsFromControls: () => {

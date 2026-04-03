@@ -14,7 +14,11 @@ export interface EditorLabel {
   fontSize: number;
   align: 'left' | 'center' | 'right';
 }
-export type ControlGroup = Record<string, unknown> & { controlIds?: string[] };
+export interface ControlGroup {
+  id: string;
+  name: string;
+  controlIds: string[];
+}
 
 export interface ManifestSnapshot {
   sections: Record<string, SectionDef>;
@@ -58,7 +62,7 @@ function cloneSnapshot(snapshot: ManifestSnapshot): ManifestSnapshot {
     editorLabels: snapshot.editorLabels?.map((l) => ({ ...l })) ?? [],
     controlGroups: snapshot.controlGroups?.map((g) => ({
       ...g,
-      controlIds: g.controlIds ? [...g.controlIds] : [],
+      controlIds: [...g.controlIds],
     })) ?? [],
     canvasWidth: snapshot.canvasWidth,
     canvasHeight: snapshot.canvasHeight,
