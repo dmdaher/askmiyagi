@@ -57,6 +57,57 @@ export function useEditorKeyboard() {
         return;
       }
 
+      // ── Align center-x: Shift+H (no Cmd/Ctrl) ───────────────────────────
+      if (!isMod && e.shiftKey && e.key === 'H') {
+        e.preventDefault();
+        store.pushSnapshot();
+        store.alignControls('center-x');
+        return;
+      }
+
+      // ── Align center-y: Shift+V (no Cmd/Ctrl) ───────────────────────────
+      if (!isMod && e.shiftKey && e.key === 'V') {
+        e.preventDefault();
+        store.pushSnapshot();
+        store.alignControls('center-y');
+        return;
+      }
+
+      // ── Distribute horizontal: Cmd/Ctrl+Shift+H ─────────────────────────
+      if (isMod && e.shiftKey && e.key === 'H') {
+        e.preventDefault();
+        store.pushSnapshot();
+        store.distributeControls('horizontal');
+        return;
+      }
+
+      // ── Distribute vertical: Cmd/Ctrl+Shift+V ───────────────────────────
+      if (isMod && e.shiftKey && e.key === 'V') {
+        e.preventDefault();
+        store.pushSnapshot();
+        store.distributeControls('vertical');
+        return;
+      }
+
+      // ── Group: Cmd/Ctrl+G ────────────────────────────────────────────────
+      if (isMod && !e.shiftKey && e.key === 'g') {
+        const selectedIds = store.selectedIds;
+        if (selectedIds.length >= 2) {
+          e.preventDefault();
+          store.pushSnapshot();
+          store.createGroup('Group ' + Date.now());
+        }
+        return;
+      }
+
+      // ── Ungroup: Cmd/Ctrl+Shift+G ────────────────────────────────────────
+      if (isMod && e.shiftKey && e.key === 'G') {
+        e.preventDefault();
+        store.pushSnapshot();
+        store.ungroupControls();
+        return;
+      }
+
       // ── Zoom in: Cmd/Ctrl+= ──────────────────────────────────────────────
       if (isMod && (e.key === '=' || e.key === '+')) {
         e.preventDefault();
