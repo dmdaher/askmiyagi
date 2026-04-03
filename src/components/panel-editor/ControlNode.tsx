@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { useEditorStore } from './store';
 import type { ControlDef } from './store';
+import type { ControlGroup } from './store/historySlice';
 import PanelButton from '@/components/controls/PanelButton';
 import Knob from '@/components/controls/Knob';
 import Slider from '@/components/controls/Slider';
@@ -591,6 +592,9 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   const setFocusedSection = useEditorStore((s) => s.setFocusedSection);
   const updateControlProp = useEditorStore((s) => s.updateControlProp);
 
+  const controlGroups = useEditorStore((s) => s.controlGroups) as ControlGroup[];
+  const isGrouped = controlGroups.some((g) => g.controlIds.includes(controlId));
+
   const isSelected = selectedIds.includes(controlId);
   const isMultiSelected = isSelected && selectedIds.length > 1;
 
@@ -663,10 +667,20 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       e.stopPropagation();
       // Focus the parent section so it raises above other sections
       setFocusedSection(sectionId);
+
       if (e.shiftKey || e.metaKey) {
+        // Modifier click: always toggle individual (deep-select / multi-select)
         toggleSelected(controlId);
       } else {
-        setSelectedIds([controlId]);
+        // Check if this control is in a group
+        const groups = useEditorStore.getState().controlGroups as ControlGroup[];
+        const group = groups.find((g) => g.controlIds.includes(controlId));
+        if (group) {
+          // Single click on grouped control: select entire group
+          setSelectedIds(group.controlIds);
+        } else {
+          setSelectedIds([controlId]);
+        }
       }
     },
     [controlId, sectionId, toggleSelected, setSelectedIds, setFocusedSection],
@@ -676,6 +690,17 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
     (e: React.MouseEvent) => {
       e.stopPropagation();
       if (!control) return;
+
+      // If this control is in a group and the whole group is selected,
+      // deep-select just this control instead of opening label editor
+      const groups = useEditorStore.getState().controlGroups as ControlGroup[];
+      const group = groups.find((g) => g.controlIds.includes(controlId));
+      if (group && selectedIds.length > 1 && group.controlIds.every((id) => selectedIds.includes(id))) {
+        setSelectedIds([controlId]);
+        return;
+      }
+
+      // Original behavior: open inline label editor
       setEditValue(control.label);
       setIsEditing(true);
       // Focus the input after React renders it
@@ -684,7 +709,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         inputRef.current?.select();
       });
     },
-    [control],
+    [control, controlId, selectedIds, setSelectedIds],
   );
 
   const commitEdit = useCallback(() => {
@@ -764,7 +789,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
             : 'none',
           outlineOffset: 1,
           borderRadius: 2,
-          zIndex: isSelected ? 50 : 1,
+          zIndex: isSelected ? 50 : isGrouped ? 10 : 5,
           boxShadow: isSelected
             ? '0 0 8px 2px rgba(59,130,246,0.3)'
             : 'none',
