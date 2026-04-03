@@ -208,3 +208,46 @@ describe('ungroupControls', () => {
     expect(after.c.y).toBe(before.c.y);
   });
 });
+
+// ─── deleteSelected group cleanup ──────────────────────────────────────────
+
+describe('deleteSelected cleans up controlGroups', () => {
+  beforeEach(() => {
+    resetStore();
+    // Add sections so deleteSelected can find childIds
+    useEditorStore.setState({
+      sections: {
+        s1: { id: 's1', x: 0, y: 0, w: 500, h: 500, archetype: 'single-row', childIds: ['a', 'b', 'c', 'locked'], headerLabel: 'S1' },
+      },
+    } as any);
+  });
+
+  it('removes deleted controls from groups', () => {
+    useEditorStore.getState().createGroup('TestGroup');
+    const group = useEditorStore.getState().controlGroups[0];
+    expect(group.controlIds).toContain('a');
+
+    // Delete control 'a'
+    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.getState().deleteSelected();
+
+    const groups = useEditorStore.getState().controlGroups;
+    // Group should still exist with b and c
+    expect(groups).toHaveLength(1);
+    expect(groups[0].controlIds).not.toContain('a');
+    expect(groups[0].controlIds).toContain('b');
+    expect(groups[0].controlIds).toContain('c');
+  });
+
+  it('dissolves group when it drops below 2 members after delete', () => {
+    // Create group with just a and b
+    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.getState().createGroup('SmallGroup');
+    expect(useEditorStore.getState().controlGroups).toHaveLength(1);
+
+    // Delete both — group should dissolve
+    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.getState().deleteSelected();
+    expect(useEditorStore.getState().controlGroups).toHaveLength(0);
+  });
+});

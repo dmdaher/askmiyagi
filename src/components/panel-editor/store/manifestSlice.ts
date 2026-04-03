@@ -831,12 +831,18 @@ export const createManifestSlice: StateCreator<
       l => !l.controlId || !deleteSet.has(l.controlId)
     );
 
+    // Clean up groups — remove deleted IDs and dissolve groups under 2 members
+    const updatedGroups = (get().controlGroups as ControlGroup[])
+      .map(g => ({ ...g, controlIds: g.controlIds.filter(id => !deleteSet.has(id)) }))
+      .filter(g => g.controlIds.length >= 2);
+
     set({
       controls: updatedControls,
       sections: updatedSections,
       selectedIds: [],
       lockedIds,
       editorLabels: updatedLabels,
+      controlGroups: updatedGroups,
     });
   },
 
@@ -1038,7 +1044,7 @@ export const createManifestSlice: StateCreator<
           updated[id] = { ...c, x: target - c.w };
           break;
         case 'center-x':
-          updated[id] = { ...c, x: target - c.w / 2 };
+          updated[id] = { ...c, x: Math.round(target - c.w / 2) };
           break;
         case 'top':
           updated[id] = { ...c, y: target };
@@ -1047,7 +1053,7 @@ export const createManifestSlice: StateCreator<
           updated[id] = { ...c, y: target - c.h };
           break;
         case 'center-y':
-          updated[id] = { ...c, y: target - c.h / 2 };
+          updated[id] = { ...c, y: Math.round(target - c.h / 2) };
           break;
       }
     }
@@ -1099,9 +1105,9 @@ export const createManifestSlice: StateCreator<
         break;
       }
       if (isH) {
-        updated[id] = { ...c, x: cursor };
+        updated[id] = { ...c, x: Math.round(cursor) };
       } else {
-        updated[id] = { ...c, y: cursor };
+        updated[id] = { ...c, y: Math.round(cursor) };
       }
       cursor += (isH ? c.w : c.h) + gap;
     }

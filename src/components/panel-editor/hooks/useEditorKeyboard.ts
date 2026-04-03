@@ -95,7 +95,7 @@ export function useEditorKeyboard() {
         if (selectedIds.length >= 2) {
           e.preventDefault();
           store.pushSnapshot();
-          store.createGroup('Group ' + Date.now());
+          store.createGroup('Group ' + ((store.controlGroups as unknown[]).length + 1));
         }
         return;
       }

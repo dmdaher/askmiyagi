@@ -94,7 +94,7 @@ export default function ContextMenu() {
     const store = useEditorStore.getState();
     if (store.selectedIds.length >= 2) {
       store.pushSnapshot();
-      store.createGroup(`Group ${Date.now()}`);
+      store.createGroup(`Group ${(store.controlGroups as unknown[]).length + 1}`);
     }
     setMenu(null);
   }, []);
