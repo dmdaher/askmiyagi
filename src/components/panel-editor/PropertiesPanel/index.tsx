@@ -60,7 +60,9 @@ function GapInput({
 
   const commit = useCallback(() => {
     const parsed = parseInt(localValue, 10);
-    if (!isNaN(parsed) && parsed >= 0 && parsed !== value) {
+    // Allow negative gaps (overlapping controls — common in hardware panels
+    // where knobs/buttons physically overlap at their bounding boxes)
+    if (!isNaN(parsed) && parsed !== value) {
       onCommit(parsed);
     } else {
       // Revert to current value on invalid input
@@ -441,6 +443,7 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
   const controlGroups = useEditorStore((s) => s.controlGroups) as ControlGroup[];
   const distributeWithGap = useEditorStore((s) => s.distributeWithGap);
   const alignColumns = useEditorStore((s) => s.alignColumns);
+  const alignRows = useEditorStore((s) => s.alignRows);
 
   const ids = useMemo(() => controls.map((c) => c.id), [controls]);
 
@@ -471,23 +474,28 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
     g.controlIds.some((id) => ids.includes(id))
   );
 
-  // Detect rows in selection by Y-clustering (for Align Columns feature)
-  const rowCount = useMemo(() => {
-    if (controls.length < 2) return 0;
-    const sorted = [...controls].sort((a, b) => (a.y + a.h / 2) - (b.y + b.h / 2));
-    const rows: ControlDef[][] = [];
+  // Detect rows/columns in selection by clustering
+  const { rowCount, columnCount } = useMemo(() => {
+    if (controls.length < 2) return { rowCount: 0, columnCount: 0 };
     const tolerance = 20;
-    for (const c of sorted) {
-      const cy = c.y + c.h / 2;
-      const targetRow = rows.find((row) => {
-        const rowCenter = row.reduce((acc, rc) => acc + rc.y + rc.h / 2, 0) / row.length;
-        return Math.abs(cy - rowCenter) <= tolerance;
-      });
-      if (targetRow) targetRow.push(c);
-      else rows.push([c]);
-    }
-    // Only count rows with 2+ items (single items don't form a column)
-    return rows.filter((r) => r.length >= 2).length;
+    const clusterBy = (axis: 'x' | 'y', size: 'w' | 'h') => {
+      const sorted = [...controls].sort((a, b) => (a[axis] + a[size] / 2) - (b[axis] + b[size] / 2));
+      const clusters: ControlDef[][] = [];
+      for (const c of sorted) {
+        const center = c[axis] + c[size] / 2;
+        const target = clusters.find((cluster) => {
+          const cCenter = cluster.reduce((acc, rc) => acc + rc[axis] + rc[size] / 2, 0) / cluster.length;
+          return Math.abs(center - cCenter) <= tolerance;
+        });
+        if (target) target.push(c);
+        else clusters.push([c]);
+      }
+      return clusters.filter((c) => c.length >= 2).length;
+    };
+    return {
+      rowCount: clusterBy('y', 'h'),
+      columnCount: clusterBy('x', 'w'),
+    };
   }, [controls]);
 
   const types = controls.map((c) => c.type);
@@ -738,29 +746,48 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         </>
       )}
 
-      {/* ── Align Columns ──────────────────────────────────────────── */}
-      {rowCount >= 2 && (
+      {/* ── Cross-Row / Cross-Column Alignment ───────────────────── */}
+      {(rowCount >= 2 || columnCount >= 2) && (
         <>
           <div className="h-px bg-gray-800" />
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase tracking-wide text-gray-500">
-              Cross-Row
+              Grid Alignment
             </label>
-            <button
-              onClick={() => { pushSnapshot(); alignColumns(); }}
-              className="w-full flex h-7 items-center justify-center gap-1.5 rounded border border-violet-600/30 bg-violet-600/10 text-[10px] text-violet-400 hover:bg-violet-600/20 hover:text-violet-300 transition-colors"
-              title={`Snap ${rowCount} rows to shared columns (uses topmost row as template)`}
-            >
-              <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <line x1="3" y1="1" x2="3" y2="11" />
-                <line x1="9" y1="1" x2="9" y2="11" />
-                <rect x="1" y="2" width="4" height="2.5" rx="0.5" fill="currentColor" stroke="none" />
-                <rect x="7" y="2" width="4" height="2.5" rx="0.5" fill="currentColor" stroke="none" />
-                <rect x="1" y="7.5" width="4" height="2.5" rx="0.5" fill="currentColor" stroke="none" />
-                <rect x="7" y="7.5" width="4" height="2.5" rx="0.5" fill="currentColor" stroke="none" />
-              </svg>
-              Align Columns ({rowCount} rows)
-            </button>
+            {rowCount >= 2 && (
+              <button
+                onClick={() => { pushSnapshot(); alignColumns(); }}
+                className="w-full flex h-7 items-center justify-center gap-1.5 rounded border border-violet-600/30 bg-violet-600/10 text-[10px] text-violet-400 hover:bg-violet-600/20 hover:text-violet-300 transition-colors"
+                title={`Snap ${rowCount} rows to shared columns (uses topmost row as template)`}
+              >
+                <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <line x1="3" y1="1" x2="3" y2="11" />
+                  <line x1="9" y1="1" x2="9" y2="11" />
+                  <rect x="1" y="2" width="4" height="2.5" rx="0.5" fill="currentColor" stroke="none" />
+                  <rect x="7" y="2" width="4" height="2.5" rx="0.5" fill="currentColor" stroke="none" />
+                  <rect x="1" y="7.5" width="4" height="2.5" rx="0.5" fill="currentColor" stroke="none" />
+                  <rect x="7" y="7.5" width="4" height="2.5" rx="0.5" fill="currentColor" stroke="none" />
+                </svg>
+                Align Columns ({rowCount} rows)
+              </button>
+            )}
+            {columnCount >= 2 && (
+              <button
+                onClick={() => { pushSnapshot(); alignRows(); }}
+                className="w-full flex h-7 items-center justify-center gap-1.5 rounded border border-violet-600/30 bg-violet-600/10 text-[10px] text-violet-400 hover:bg-violet-600/20 hover:text-violet-300 transition-colors"
+                title={`Snap ${columnCount} columns to shared rows (uses leftmost column as template)`}
+              >
+                <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <line x1="1" y1="3" x2="11" y2="3" />
+                  <line x1="1" y1="9" x2="11" y2="9" />
+                  <rect x="2" y="1" width="2.5" height="4" rx="0.5" fill="currentColor" stroke="none" />
+                  <rect x="2" y="7" width="2.5" height="4" rx="0.5" fill="currentColor" stroke="none" />
+                  <rect x="7.5" y="1" width="2.5" height="4" rx="0.5" fill="currentColor" stroke="none" />
+                  <rect x="7.5" y="7" width="2.5" height="4" rx="0.5" fill="currentColor" stroke="none" />
+                </svg>
+                Align Rows ({columnCount} cols)
+              </button>
+            )}
           </div>
         </>
       )}
