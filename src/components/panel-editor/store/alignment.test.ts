@@ -91,6 +91,38 @@ describe('alignControls', () => {
     const { controls } = useEditorStore.getState();
     expect(controls.a.x).toBe(10); // unchanged
   });
+
+  it('centers linked labels on their controls after alignment', () => {
+    // Add labels linked to controls a and b
+    useEditorStore.setState({
+      editorLabels: [
+        { id: 'la', controlId: 'a', text: 'Label A', x: 5, y: 10, w: 40, fontSize: 8, align: 'left' },
+        { id: 'lb', controlId: 'b', text: 'Label B', x: 90, y: 40, w: 40, fontSize: 8, align: 'left' },
+        { id: 'ls', controlId: null, text: 'Standalone', x: 200, y: 200, w: 60, fontSize: 8, align: 'center' },
+      ],
+      controlScale: 1,
+    } as any);
+
+    useEditorStore.getState().alignControls('left');
+    const { controls, editorLabels } = useEditorStore.getState();
+
+    // All controls aligned left to x=10, w=40 → center at 30, label width = max(40,60) = 60
+    // Label x should be centered: 30 - 30 = 0
+    const la = (editorLabels as any[]).find((l: any) => l.id === 'la');
+    const lb = (editorLabels as any[]).find((l: any) => l.id === 'lb');
+    const ls = (editorLabels as any[]).find((l: any) => l.id === 'ls');
+
+    expect(la.align).toBe('center');
+    expect(la.w).toBe(60); // max(40, 60)
+    expect(la.x).toBe(0);  // centerX(10+20) - 30 = 0
+
+    // b also moved to x=10, same centering
+    expect(lb.x).toBe(0);
+    expect(lb.align).toBe('center');
+
+    // Standalone label unchanged
+    expect(ls.x).toBe(200);
+  });
 });
 
 // ─── distributeControls ─────────────────────────────────────────────────────

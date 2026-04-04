@@ -228,6 +228,28 @@ function defaultSize(type: string, sizeClass?: SizeClass): { w: number; h: numbe
 
 let addCounter = 0;
 
+/**
+ * Re-center labels that are linked to the given controls.
+ * Used after align/distribute to keep labels centered on their controls.
+ */
+function centerLinkedLabels(
+  labels: EditorLabel[],
+  controls: Record<string, ControlDef>,
+  controlIds: string[],
+  controlScale: number,
+): EditorLabel[] {
+  const idSet = new Set(controlIds);
+  return labels.map((l) => {
+    if (!l.controlId || !idSet.has(l.controlId)) return l;
+    const ctrl = controls[l.controlId];
+    if (!ctrl) return l;
+    const ctrlVisW = ctrl.w * controlScale;
+    const ctrlCenterX = ctrl.x + ctrlVisW / 2;
+    const labelW = Math.max(ctrlVisW, 60);
+    return { ...l, x: Math.round(ctrlCenterX - labelW / 2), w: Math.round(labelW), align: 'center' as const };
+  });
+}
+
 // ─── Combined state shape for cross-slice access ──────────────────────────
 // The manifest slice needs to write canvasWidth/canvasHeight from the canvas
 // slice when deviceDimensions are present.
@@ -1057,7 +1079,11 @@ export const createManifestSlice: StateCreator<
           break;
       }
     }
-    set({ controls: updated });
+    const controlScale = (get() as any).controlScale ?? 1;
+    const updatedLabels = centerLinkedLabels(
+      get().editorLabels as EditorLabel[], updated, movable, controlScale,
+    );
+    set({ controls: updated, editorLabels: updatedLabels });
   },
 
   distributeControls: (axis) => {
@@ -1111,7 +1137,11 @@ export const createManifestSlice: StateCreator<
       }
       cursor += (isH ? c.w : c.h) + gap;
     }
-    set({ controls: updated });
+    const controlScale = (get() as any).controlScale ?? 1;
+    const updatedLabels = centerLinkedLabels(
+      get().editorLabels as EditorLabel[], updated, sorted, controlScale,
+    );
+    set({ controls: updated, editorLabels: updatedLabels });
   },
 
   createGroup: (name) => {
