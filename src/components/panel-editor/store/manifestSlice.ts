@@ -196,6 +196,7 @@ export interface ManifestSlice {
   initLabelsFromControls: () => void;
   alignControls: (mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom') => void;
   distributeControls: (axis: 'horizontal' | 'vertical') => void;
+  distributeWithGap: (axis: 'horizontal' | 'vertical', gap: number) => void;
   createGroup: (name: string) => void;
   ungroupControls: () => void;
   setHoveredGroup: (id: string | null) => void;
@@ -1177,6 +1178,41 @@ export const createManifestSlice: StateCreator<
       }
       cursor += (isH ? c.w : c.h) + gap;
     }
+    const controlScale = (get() as any).controlScale ?? 1;
+    const updatedLabels = alignLinkedLabels(
+      get().editorLabels as EditorLabel[], updated, sorted, controlScale,
+    );
+    set({ controls: updated, editorLabels: updatedLabels });
+  },
+
+  distributeWithGap: (axis, gap) => {
+    const { selectedIds, lockedIds, controls } = get();
+    const lockedSet = new Set(lockedIds);
+    const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
+    if (movable.length < 2) return;
+
+    const isH = axis === 'horizontal';
+    const sorted = [...movable].sort((a, b) => {
+      const ca = controls[a];
+      const cb = controls[b];
+      return isH ? ca.x - cb.x : ca.y - cb.y;
+    });
+
+    const updated = { ...controls };
+    let cursor = isH ? controls[sorted[0]].x : controls[sorted[0]].y;
+
+    for (let i = 0; i < sorted.length; i++) {
+      const id = sorted[i];
+      const c = updated[id];
+      if (isH) {
+        updated[id] = { ...c, x: Math.round(cursor) };
+        cursor += c.w + gap;
+      } else {
+        updated[id] = { ...c, y: Math.round(cursor) };
+        cursor += c.h + gap;
+      }
+    }
+
     const controlScale = (get() as any).controlScale ?? 1;
     const updatedLabels = alignLinkedLabels(
       get().editorLabels as EditorLabel[], updated, sorted, controlScale,

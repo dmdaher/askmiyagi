@@ -145,6 +145,53 @@ describe('alignControls', () => {
   });
 });
 
+// ─── distributeWithGap ──────────────────────────────────────────────────────
+
+describe('distributeWithGap', () => {
+  beforeEach(resetStore);
+
+  it('distributes horizontally with exact gap from leftmost anchor', () => {
+    // a(x=10,w=40), c(x=60,w=40), b(x=100,w=40)
+    useEditorStore.getState().distributeWithGap('horizontal', 10);
+    const { controls } = useEditorStore.getState();
+    // sorted: a(10), c(60), b(100) → a stays at 10
+    expect(controls.a.x).toBe(10);   // anchor
+    expect(controls.c.x).toBe(60);   // 10 + 40 + 10
+    expect(controls.b.x).toBe(110);  // 60 + 40 + 10
+  });
+
+  it('distributes vertically with exact gap from topmost anchor', () => {
+    useEditorStore.getState().distributeWithGap('vertical', 5);
+    const { controls } = useEditorStore.getState();
+    // sorted by y: a(20), b(50), c(80) → a stays at 20
+    expect(controls.a.y).toBe(20);   // anchor
+    expect(controls.b.y).toBe(55);   // 20 + 30 + 5
+    expect(controls.c.y).toBe(90);   // 55 + 30 + 5
+  });
+
+  it('works with 2 controls', () => {
+    useEditorStore.setState({ selectedIds: ['a', 'b'] } as any);
+    useEditorStore.getState().distributeWithGap('horizontal', 20);
+    const { controls } = useEditorStore.getState();
+    expect(controls.a.x).toBe(10);   // anchor
+    expect(controls.b.x).toBe(70);   // 10 + 40 + 20
+  });
+
+  it('works with zero gap', () => {
+    useEditorStore.getState().distributeWithGap('horizontal', 0);
+    const { controls } = useEditorStore.getState();
+    expect(controls.a.x).toBe(10);
+    expect(controls.c.x).toBe(50);   // 10 + 40 + 0
+    expect(controls.b.x).toBe(90);   // 50 + 40 + 0
+  });
+
+  it('skips locked controls', () => {
+    useEditorStore.setState({ selectedIds: ['a', 'locked'] } as any);
+    useEditorStore.getState().distributeWithGap('horizontal', 10);
+    expect(useEditorStore.getState().controls.locked.x).toBe(200); // unchanged
+  });
+});
+
 // ─── distributeControls ─────────────────────────────────────────────────────
 
 describe('distributeControls', () => {
