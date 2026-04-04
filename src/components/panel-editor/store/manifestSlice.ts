@@ -839,6 +839,7 @@ export const createManifestSlice: StateCreator<
     const section = get().sections[id];
     if (!section) return;
     const controls = { ...get().controls };
+    const childSet = new Set(section.childIds);
 
     // Move section + all child controls
     for (const childId of section.childIds) {
@@ -848,12 +849,20 @@ export const createManifestSlice: StateCreator<
       }
     }
 
+    // Move linked labels for any child control that was moved
+    const updatedLabels = (get().editorLabels as EditorLabel[]).map((l) =>
+      l.controlId && childSet.has(l.controlId)
+        ? { ...l, x: l.x + dx, y: l.y + dy }
+        : l
+    );
+
     set({
       sections: {
         ...get().sections,
         [id]: { ...section, x: section.x + dx, y: section.y + dy },
       },
       controls,
+      editorLabels: updatedLabels,
     });
   },
 
@@ -1099,11 +1108,12 @@ export const createManifestSlice: StateCreator<
         };
       }
 
-      // Scale all label positions and font sizes
+      // Scale all label positions, widths, and font sizes
       const updatedLabels = (s.editorLabels as EditorLabel[]).map(l => ({
         ...l,
         x: Math.round(l.x * factor),
         y: Math.round(l.y * factor),
+        w: l.w != null ? Math.round(l.w * factor) : l.w,
         fontSize: Math.max(Math.round(l.fontSize * factor), 4),
       }));
 
