@@ -192,6 +192,132 @@ describe('distributeWithGap', () => {
   });
 });
 
+// ─── alignColumns ────────────────────────────────────────────────────────────
+
+describe('alignColumns', () => {
+  it('snaps second row to first row column centers', () => {
+    // Row 1: 3 knobs (w=100) at y=100 with gap 20 → centers at 50, 170, 290
+    // Row 2: 3 buttons (w=80) at y=200, slightly offset in X
+    useEditorStore.setState({
+      controls: {
+        k1: { id: 'k1', x: 0, y: 100, w: 100, h: 50, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        k2: { id: 'k2', x: 120, y: 100, w: 100, h: 50, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        k3: { id: 'k3', x: 240, y: 100, w: 100, h: 50, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        b1: { id: 'b1', x: 5, y: 200, w: 80, h: 40, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
+        b2: { id: 'b2', x: 130, y: 200, w: 80, h: 40, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
+        b3: { id: 'b3', x: 250, y: 200, w: 80, h: 40, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
+      },
+      selectedIds: ['k1', 'k2', 'k3', 'b1', 'b2', 'b3'],
+      lockedIds: [],
+      editorLabels: [],
+    } as any);
+
+    useEditorStore.getState().alignColumns();
+    const { controls } = useEditorStore.getState();
+
+    // Knobs stay (reference row). Centers at: 50, 170, 290
+    expect(controls.k1.x).toBe(0);
+    expect(controls.k2.x).toBe(120);
+    expect(controls.k3.x).toBe(240);
+
+    // Buttons snap so centers align with knob centers.
+    // button w=80, so center=50 means x=10, center=170 means x=130, center=290 means x=250
+    expect(controls.b1.x).toBe(10);  // center 50 - 40 = 10
+    expect(controls.b2.x).toBe(130); // center 170 - 40 = 130
+    expect(controls.b3.x).toBe(250); // center 290 - 40 = 250
+  });
+
+  it('handles 3 rows (all follow first row)', () => {
+    useEditorStore.setState({
+      controls: {
+        r1a: { id: 'r1a', x: 0, y: 0, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        r1b: { id: 'r1b', x: 100, y: 0, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        r2a: { id: 'r2a', x: 10, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
+        r2b: { id: 'r2b', x: 105, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
+        r3a: { id: 'r3a', x: 20, y: 200, w: 50, h: 30, sectionId: 's1', label: '', type: 'slider', labelPosition: 'above', locked: false },
+        r3b: { id: 'r3b', x: 110, y: 200, w: 50, h: 30, sectionId: 's1', label: '', type: 'slider', labelPosition: 'above', locked: false },
+      },
+      selectedIds: ['r1a', 'r1b', 'r2a', 'r2b', 'r3a', 'r3b'],
+      lockedIds: [],
+      editorLabels: [],
+    } as any);
+
+    useEditorStore.getState().alignColumns();
+    const { controls } = useEditorStore.getState();
+
+    // Row 1 stays (reference). Centers: 25, 125
+    // All subsequent rows snap to x=0 and x=100 (since all have w=50)
+    expect(controls.r1a.x).toBe(0);
+    expect(controls.r1b.x).toBe(100);
+    expect(controls.r2a.x).toBe(0);
+    expect(controls.r2b.x).toBe(100);
+    expect(controls.r3a.x).toBe(0);
+    expect(controls.r3b.x).toBe(100);
+  });
+
+  it('no-ops when only 1 row detected', () => {
+    useEditorStore.setState({
+      controls: {
+        a: { id: 'a', x: 0, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        b: { id: 'b', x: 100, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        c: { id: 'c', x: 200, y: 105, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+      },
+      selectedIds: ['a', 'b', 'c'],
+      lockedIds: [],
+      editorLabels: [],
+    } as any);
+
+    useEditorStore.getState().alignColumns();
+    const { controls } = useEditorStore.getState();
+    // All unchanged
+    expect(controls.a.x).toBe(0);
+    expect(controls.b.x).toBe(100);
+    expect(controls.c.x).toBe(200);
+  });
+
+  it('pairs by index when rows have different item counts', () => {
+    useEditorStore.setState({
+      controls: {
+        k1: { id: 'k1', x: 0, y: 0, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        k2: { id: 'k2', x: 100, y: 0, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        k3: { id: 'k3', x: 200, y: 0, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        b1: { id: 'b1', x: 5, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
+        b2: { id: 'b2', x: 105, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
+      },
+      selectedIds: ['k1', 'k2', 'k3', 'b1', 'b2'],
+      lockedIds: [],
+      editorLabels: [],
+    } as any);
+
+    useEditorStore.getState().alignColumns();
+    const { controls } = useEditorStore.getState();
+    // Row 1 (knobs) stays. Row 2 (buttons) has 2 items → snap to first 2 columns
+    expect(controls.b1.x).toBe(0);   // center 25 - 25 = 0
+    expect(controls.b2.x).toBe(100); // center 125 - 25 = 100
+  });
+
+  it('skips locked controls', () => {
+    useEditorStore.setState({
+      controls: {
+        k1: { id: 'k1', x: 0, y: 0, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        k2: { id: 'k2', x: 100, y: 0, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
+        b1: { id: 'b1', x: 5, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: true },
+        b2: { id: 'b2', x: 105, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
+      },
+      selectedIds: ['k1', 'k2', 'b1', 'b2'],
+      lockedIds: ['b1'],
+      editorLabels: [],
+    } as any);
+
+    useEditorStore.getState().alignColumns();
+    const { controls } = useEditorStore.getState();
+    // b1 is locked, stays at 5. b2 snaps to column 1 (center 25 - 25 = 0)
+    // Wait — b1 is locked and skipped, so row 2 only has b2. b2 pairs with column 1
+    expect(controls.b1.x).toBe(5); // unchanged
+    expect(controls.b2.x).toBe(0); // snapped to first column
+  });
+});
+
 // ─── distributeControls ─────────────────────────────────────────────────────
 
 describe('distributeControls', () => {

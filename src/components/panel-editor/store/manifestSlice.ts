@@ -197,6 +197,7 @@ export interface ManifestSlice {
   alignControls: (mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom') => void;
   distributeControls: (axis: 'horizontal' | 'vertical') => void;
   distributeWithGap: (axis: 'horizontal' | 'vertical', gap: number) => void;
+  alignColumns: () => void;
   createGroup: (name: string) => void;
   ungroupControls: () => void;
   setHoveredGroup: (id: string | null) => void;
@@ -289,6 +290,39 @@ function alignLinkedLabels(
   }
 
   return result;
+}
+
+/**
+ * Cluster controls into rows by Y position.
+ * Two controls are in the same row if their Y centers are within `tolerance` px.
+ * Returns rows sorted top-to-bottom.
+ */
+export function clusterControlsIntoRows(
+  controls: ControlDef[],
+  tolerance = 20,
+): ControlDef[][] {
+  if (controls.length === 0) return [];
+  // Sort by Y-center
+  const sorted = [...controls].sort(
+    (a, b) => (a.y + a.h / 2) - (b.y + b.h / 2),
+  );
+  const rows: ControlDef[][] = [];
+  for (const c of sorted) {
+    const cy = c.y + c.h / 2;
+    // Try to add to existing row (compare to row's average Y-center)
+    const targetRow = rows.find((row) => {
+      const rowCenter = row.reduce((acc, rc) => acc + rc.y + rc.h / 2, 0) / row.length;
+      return Math.abs(cy - rowCenter) <= tolerance;
+    });
+    if (targetRow) {
+      targetRow.push(c);
+    } else {
+      rows.push([c]);
+    }
+  }
+  // Sort each row left-to-right
+  rows.forEach((row) => row.sort((a, b) => a.x - b.x));
+  return rows;
 }
 
 // ─── Combined state shape for cross-slice access ──────────────────────────
@@ -1216,6 +1250,46 @@ export const createManifestSlice: StateCreator<
     const controlScale = (get() as any).controlScale ?? 1;
     const updatedLabels = alignLinkedLabels(
       get().editorLabels as EditorLabel[], updated, sorted, controlScale,
+    );
+    set({ controls: updated, editorLabels: updatedLabels });
+  },
+
+  alignColumns: () => {
+    const { selectedIds, lockedIds, controls } = get();
+    const lockedSet = new Set(lockedIds);
+    const movable = selectedIds
+      .map((id) => controls[id])
+      .filter((c): c is ControlDef => !!c && !lockedSet.has(c.id));
+    if (movable.length < 2) return;
+
+    // Cluster selected controls into rows by Y position
+    const rows = clusterControlsIntoRows(movable, 20);
+    if (rows.length < 2) return; // Need at least 2 rows
+
+    // Reference row = topmost row, using its center-X positions as columns
+    const referenceRow = rows[0];
+    const columnCenterXs = referenceRow.map((c) => c.x + c.w / 2);
+
+    // For each other row, pair items by index (sorted left-to-right) and snap
+    // each item's center-X to the matching column's center-X
+    const updated = { ...controls };
+    const movedIds: string[] = [];
+    for (let rowIdx = 1; rowIdx < rows.length; rowIdx++) {
+      const row = rows[rowIdx];
+      const pairCount = Math.min(row.length, columnCenterXs.length);
+      for (let i = 0; i < pairCount; i++) {
+        const item = row[i];
+        const targetCenterX = columnCenterXs[i];
+        const newX = Math.round(targetCenterX - item.w / 2);
+        updated[item.id] = { ...item, x: newX };
+        movedIds.push(item.id);
+      }
+    }
+
+    // Re-center linked labels on the moved controls
+    const controlScale = (get() as any).controlScale ?? 1;
+    const updatedLabels = alignLinkedLabels(
+      get().editorLabels as EditorLabel[], updated, movedIds, controlScale,
     );
     set({ controls: updated, editorLabels: updatedLabels });
   },
