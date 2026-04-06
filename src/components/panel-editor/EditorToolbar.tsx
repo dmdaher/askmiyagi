@@ -13,6 +13,7 @@ interface EditorToolbarProps {
   buildStatus: 'idle' | 'building' | 'approved';
   onApproveAndBuild: () => void;
   onCleanUp: () => void;
+  onTogglePreview: () => void;
   onReportIssue?: () => void;
   onRestoreVersion?: () => void;
 }
@@ -23,6 +24,7 @@ export default function EditorToolbar({
   buildStatus,
   onApproveAndBuild,
   onCleanUp,
+  onTogglePreview,
   onReportIssue,
   onRestoreVersion,
 }: EditorToolbarProps) {
@@ -130,9 +132,11 @@ export default function EditorToolbar({
 
       {/* ── MIDDLE: Overlays ───────────────────────────────────── */}
 
-      <button data-tutorial="grid" onClick={toggleGrid} className={toggleBtn(showGrid)} title="Grid (G)">Grid</button>
+      <button onClick={onTogglePreview} className={toggleBtn(previewMode)} title="Preview — clean panel view">Preview</button>
 
-      <button onClick={toggleLabels} className={toggleBtn(showLabels)} title="Labels (T)">Labels</button>
+      <button data-tutorial="grid" onClick={toggleGrid} className={toggleBtn(showGrid)} title="Grid (G)" disabled={previewMode}>Grid</button>
+
+      <button onClick={toggleLabels} className={toggleBtn(showLabels)} title="Labels (T)" disabled={previewMode}>Labels</button>
 
       {/* Add standalone label */}
       <button

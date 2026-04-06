@@ -129,6 +129,16 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
         buildStatus={buildStatus}
         onApproveAndBuild={handleApproveAndBuild}
         onCleanUp={handleCleanUp}
+        onTogglePreview={() => {
+          setPreviewMode((p) => {
+            if (!p) {
+              // Entering preview — clear selection so no outlines show
+              useEditorStore.getState().setSelectedIds([]);
+              useEditorStore.getState().setSelectedLabel(null);
+            }
+            return !p;
+          });
+        }}
         onReportIssue={() => setShowIssueModal(true)}
         onRestoreVersion={onRestoreVersion}
       />
@@ -153,41 +163,24 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
         <div className="flex h-10 items-center justify-between border-b border-amber-700/40 bg-amber-900/20 px-4">
           <span className="text-sm text-amber-300">
             {buildStatus === 'approved'
-              ? '✓ Panel generated and registered! It\'s live.'
-              : 'Preview Mode — Reviewing generated panel'}
+              ? '✓ Panel generated and registered!'
+              : 'Preview Mode — clean panel view (click Preview to exit)'}
           </span>
           <div className="flex items-center gap-2">
-            {buildStatus === 'approved' ? (
-              <>
-                <button
-                  onClick={handleBackToEditor}
-                  className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
-                >
-                  Continue Editing
-                </button>
-                <a
-                  href={`/admin/${deviceId}/preview`}
-                  className="rounded border border-green-600 bg-green-700/30 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-700/50"
-                >
-                  View Live Panel →
-                </a>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={handleBackToEditor}
-                  className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
-                >
-                  Back to Editor
-                </button>
-                <button
-                  onClick={handleLooksGood}
-                  className="rounded border border-green-600 bg-green-700/30 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-700/50"
-                >
-                  Looks Good
-                </button>
-              </>
+            {buildStatus === 'approved' && (
+              <a
+                href={`/admin/${deviceId}/preview`}
+                className="rounded border border-green-600 bg-green-700/30 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-700/50"
+              >
+                View Live Panel →
+              </a>
             )}
+            <button
+              onClick={() => setPreviewMode(false)}
+              className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
+            >
+              Back to Editor
+            </button>
           </div>
         </div>
       )}
