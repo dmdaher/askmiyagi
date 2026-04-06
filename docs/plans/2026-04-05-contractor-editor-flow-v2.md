@@ -379,26 +379,37 @@ The admin dashboard button calls `POST /api/pipeline/{deviceId}/send-to-hosted` 
 
 ## Local admin: "Build Tutorials" button
 
-Appears when hosted status = "approved". On click:
+Appears when hosted status = "approved". On click, calls a LOCAL API route (same CORS-safe pattern as "Send to Contractor"):
 
+**New route: `src/app/api/pipeline/[deviceId]/pull-from-hosted/route.ts`**
 ```typescript
-async function handleBuildTutorials() {
-  // 1. Pull approved manifest from hosted Blob
-  const manifest = await fetch(`https://askmiyagi.vercel.app/api/hosted/panels/${deviceId}`).then(r => r.json());
+import { list } from '@vercel/blob';
+import fs from 'fs';
+import path from 'path';
+
+export async function POST(req, { params }) {
+  const { deviceId } = await params;
+  const hostedUrl = process.env.NEXT_PUBLIC_HOSTED_URL || 'https://askmiyagi.vercel.app';
+
+  // 1. Fetch approved manifest from hosted Blob (server-side, no CORS)
+  const { blobs } = await list({ prefix: `devices/${deviceId}/state.json` });
+  const stateBlob = blobs[0];
+  if (!stateBlob) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  const state = await fetch(stateBlob.url).then(r => r.json());
 
   // 2. Write to local manifest-editor.json
-  await fetch(`/api/pipeline/${deviceId}/manifest`, {
-    method: 'PUT',
-    body: JSON.stringify(manifest),
-  });
+  const editorPath = path.join('.pipeline', deviceId, 'manifest-editor.json');
+  fs.writeFileSync(editorPath, JSON.stringify(state.manifest, null, 2));
 
   // 3. Export manifest JSON for production
-  await fetch(`/api/pipeline/${deviceId}/export-manifest`, { method: 'POST' });
+  // (calls the existing export-manifest route logic)
+  // ... or inline the export logic here
 
-  // 4. Start tutorial pipeline (existing mechanism)
-  // ... pipeline runner handles the rest
+  return NextResponse.json({ ok: true });
 }
 ```
+
+The admin dashboard button calls `POST /api/pipeline/{deviceId}/pull-from-hosted` → local route fetches from Blob server-side → writes locally → then the existing tutorial pipeline can proceed.
 
 ---
 
@@ -491,6 +502,23 @@ async function handleBuildTutorials() {
 
 ---
 
+## UX polish (from final audit)
+
+**Contractor UX:**
+- `/signin` defaults to `role=contractor` when no param. Redirects to `/editor` after login (admin → `/admin/review`)
+- Hide canvas W×H and canvas scale +/- in hosted mode (contractor doesn't resize canvas)
+- Submit confirmation dialog: "Submit panel for review? You won't be able to edit until the owner responds."
+- After submit: success banner + editor enters read-only mode. Redirect to list or show "Submitted" state
+- "Submitted" panels openable in read-only mode so contractor can verify what they submitted
+
+**Owner UX:**
+- Review page hides editing-only toolbar items (Clean Up, Gap, Reset Sizes, canvas scale) — only zoom/pan/preview visible
+- "Send to Contractor" shows spinner during upload
+- "Build Tutorials" uses local API route (same CORS fix as Send) — `POST /api/pipeline/{id}/pull-from-hosted`
+- Use `NEXT_PUBLIC_HOSTED_URL` env var for hosted API URL (not hardcoded `https://askmiyagi.vercel.app`)
+
+---
+
 ## Audit findings (addressed in this plan)
 
 The following issues were caught by code review and incorporated above:
@@ -509,6 +537,34 @@ The following issues were caught by code review and incorporated above:
 | `isHosted` propagation unclear (prop vs import) | Moderate | Direct import, no prop drilling |
 | `useAutoSave` API base URL not specified | Moderate | Added code sample |
 | Blob `put()` overwrite semantics unclear | Low | Added verification item to checklist |
+| CORS: "Build Tutorials" also fetches cross-origin | Critical | Create local API route `pull-from-hosted`, same pattern as send-to-hosted |
+| No submit confirmation dialog | Medium | Added confirmation before PATCH |
+| No feedback after submit | Medium | Success banner + read-only mode |
+| Review page shows full editing toolbar | Medium | Hide editing-only items in review |
+| Hardcoded Vercel URL in "Build Tutorials" | Medium | Use `NEXT_PUBLIC_HOSTED_URL` env var |
+
+---
+
+## PanelRenderer capability (TSX removal validation)
+
+Removing codegen TSX limits NOTHING for the contractor editor flow. Full audit:
+
+| Feature | Status | Notes |
+|---|---|---|
+| Highlighting (highlightedControls) | **PASS** | Wired to every control via `isHighlighted(id)` |
+| Panel state (active/LED/values) | **PASS** | `getState(id)` reads panelState per control |
+| Click interaction (onButtonClick) | **PASS** | Wired to buttons + pads |
+| PanelShell styling (bezel, branding) | **PASS** | Same PanelShell component |
+| All leaf components | **PASS** | Same imports as handcrafted panels |
+| CSS zoom | **PASS** | Parent can `transform: scale(...)` |
+| Keyboard | **PASS** | PanelShell renders at correct position |
+| Labels with icons | **PASS** | editorLabels + HARDWARE_ICONS |
+| Section backgrounds | **PASS** | SectionContainer with dark styling |
+| Group labels | **PASS** | Computed from member control positions |
+| displayState (rich screens) | **Not yet** | Add before first tutorial batch on manifest-based device |
+| zones (keyboard coloring) | **Partial** | Keyboard component supports it, needs prop threading |
+
+Fantom-08 (handcrafted panel, 59 tutorials) is completely unaffected.
 
 ---
 
