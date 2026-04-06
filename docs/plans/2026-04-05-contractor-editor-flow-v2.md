@@ -506,7 +506,7 @@ The admin dashboard button calls `POST /api/pipeline/{deviceId}/pull-from-hosted
 
 **Contractor UX:**
 - `/signin` defaults to `role=contractor` when no param. Redirects to `/editor` after login (admin → `/admin/review`)
-- Hide canvas W×H and canvas scale +/- in hosted mode (contractor doesn't resize canvas)
+- Keep canvas W×H inputs visible (contractor may need to adjust canvas size to fit controls)
 - Submit confirmation dialog: "Submit panel for review? You won't be able to edit until the owner responds."
 - After submit: success banner + editor enters read-only mode. Redirect to list or show "Submitted" state
 - "Submitted" panels openable in read-only mode so contractor can verify what they submitted
