@@ -1,0 +1,2361 @@
+{
+  "deviceId": "fantom-06",
+  "deviceName": "FANTOM-06",
+  "manufacturer": "Roland",
+  "panelWidth": 2344,
+  "panelHeight": 705,
+  "controlScale": 0.3,
+  "keyboard": {
+    "keys": 61,
+    "startNote": "C2",
+    "type": "standard",
+    "panelHeightPercent": 51.8,
+    "leftPercent": 9.5,
+    "widthPercent": 90.3
+  },
+  "editorSections": [
+    {
+      "id": "controller",
+      "headerLabel": null,
+      "x": -2,
+      "y": 1,
+      "w": 220,
+      "h": 700
+    },
+    {
+      "id": "zone",
+      "headerLabel": "ZONE",
+      "x": 218,
+      "y": -1,
+      "w": 623,
+      "h": 366
+    },
+    {
+      "id": "common",
+      "headerLabel": null,
+      "x": 844.0000268554687,
+      "y": -0.9999914550781248,
+      "w": 468,
+      "h": 364
+    },
+    {
+      "id": "scene",
+      "headerLabel": "SCENE CTRL",
+      "x": 1313,
+      "y": -1,
+      "w": 156,
+      "h": 275
+    },
+    {
+      "id": "synth",
+      "headerLabel": "SYNTH CTRL",
+      "x": 1474,
+      "y": -1,
+      "w": 248,
+      "h": 226
+    },
+    {
+      "id": "sequencer",
+      "headerLabel": "SEQUENCER",
+      "x": 1719,
+      "y": -1,
+      "w": 350,
+      "h": 360
+    },
+    {
+      "id": "pad",
+      "headerLabel": "PAD",
+      "x": 2069,
+      "y": -1,
+      "w": 288,
+      "h": 360
+    }
+  ],
+  "controls": [
+    {
+      "id": "wheel-1",
+      "type": "wheel",
+      "label": "WHEEL1",
+      "editorPosition": {
+        "x": 73,
+        "y": 108,
+        "w": 85,
+        "h": 416
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "wheel-2",
+      "type": "wheel",
+      "label": "WHEEL2",
+      "editorPosition": {
+        "x": 149,
+        "y": 108,
+        "w": 85,
+        "h": 416
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "s1",
+      "type": "button",
+      "label": "S1",
+      "editorPosition": {
+        "x": 51,
+        "y": 423,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "s2",
+      "type": "button",
+      "label": "S2",
+      "editorPosition": {
+        "x": 108,
+        "y": 423,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "pitch-bend-lever",
+      "type": "lever",
+      "label": "PITCH BEND/MOD",
+      "editorPosition": {
+        "x": 73,
+        "y": 474,
+        "w": 360,
+        "h": 360
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "split",
+      "type": "button",
+      "label": "SPLIT",
+      "editorPosition": {
+        "x": 255,
+        "y": 241,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "chord-memory",
+      "type": "button",
+      "label": "CHORD\nMEMORY",
+      "editorPosition": {
+        "x": 305,
+        "y": 241,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "arpeggio",
+      "type": "button",
+      "label": "ARPEGGIO",
+      "editorPosition": {
+        "x": 354,
+        "y": 243,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "transpose",
+      "type": "button",
+      "label": "TRANSPOSE",
+      "editorPosition": {
+        "x": 255,
+        "y": 294,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "octave-down",
+      "type": "button",
+      "label": "DOWN",
+      "editorPosition": {
+        "x": 305,
+        "y": 294,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "octave-up",
+      "type": "button",
+      "label": "UP",
+      "editorPosition": {
+        "x": 354,
+        "y": 294,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "knob-1",
+      "type": "knob",
+      "label": "1",
+      "editorPosition": {
+        "x": 419,
+        "y": 85,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "knob-2",
+      "type": "knob",
+      "label": "2",
+      "editorPosition": {
+        "x": 470,
+        "y": 85,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "knob-3",
+      "type": "knob",
+      "label": "3",
+      "editorPosition": {
+        "x": 524,
+        "y": 85,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "knob-4",
+      "type": "knob",
+      "label": "4",
+      "editorPosition": {
+        "x": 575,
+        "y": 85,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "knob-5",
+      "type": "knob",
+      "label": "5",
+      "editorPosition": {
+        "x": 630,
+        "y": 85,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "knob-6",
+      "type": "knob",
+      "label": "6",
+      "editorPosition": {
+        "x": 681,
+        "y": 85,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "knob-7",
+      "type": "knob",
+      "label": "7",
+      "editorPosition": {
+        "x": 735,
+        "y": 85,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "knob-8",
+      "type": "knob",
+      "label": "8",
+      "editorPosition": {
+        "x": 786,
+        "y": 85,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "master-volume",
+      "type": "knob",
+      "label": "MASTER VOLUME",
+      "editorPosition": {
+        "x": 248,
+        "y": 135,
+        "w": 163,
+        "h": 135
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "slider-1",
+      "type": "slider",
+      "label": "1",
+      "editorPosition": {
+        "x": 424,
+        "y": 224,
+        "w": 75,
+        "h": 313
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "slider-2",
+      "type": "slider",
+      "label": "2",
+      "editorPosition": {
+        "x": 476,
+        "y": 224,
+        "w": 75,
+        "h": 313
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "slider-3",
+      "type": "slider",
+      "label": "3",
+      "editorPosition": {
+        "x": 530,
+        "y": 224,
+        "w": 75,
+        "h": 313
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "slider-4",
+      "type": "slider",
+      "label": "4",
+      "editorPosition": {
+        "x": 583,
+        "y": 224,
+        "w": 75,
+        "h": 313
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "slider-5",
+      "type": "slider",
+      "label": "5",
+      "editorPosition": {
+        "x": 638,
+        "y": 224,
+        "w": 75,
+        "h": 313
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "slider-6",
+      "type": "slider",
+      "label": "6",
+      "editorPosition": {
+        "x": 688,
+        "y": 224,
+        "w": 75,
+        "h": 313
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "slider-7",
+      "type": "slider",
+      "label": "7",
+      "editorPosition": {
+        "x": 741,
+        "y": 224,
+        "w": 75,
+        "h": 313
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "slider-8",
+      "type": "slider",
+      "label": "8",
+      "editorPosition": {
+        "x": 794,
+        "y": 224,
+        "w": 75,
+        "h": 313
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "pan-level",
+      "type": "button",
+      "label": "PAN/\nLEVEL",
+      "editorPosition": {
+        "x": 306,
+        "y": 91,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "ctrl",
+      "type": "button",
+      "label": "CTRL",
+      "editorPosition": {
+        "x": 354,
+        "y": 91,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "assign",
+      "type": "button",
+      "label": "ASSIGN",
+      "editorPosition": {
+        "x": 354,
+        "y": 141,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-9-16",
+      "type": "button",
+      "label": "ZONE 9-16",
+      "editorPosition": {
+        "x": 305,
+        "y": 193,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-select",
+      "type": "button",
+      "label": "ZONE\nSELECT",
+      "editorPosition": {
+        "x": 354,
+        "y": 193,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-int-ext-1",
+      "type": "button",
+      "label": "1",
+      "editorPosition": {
+        "x": 416,
+        "y": 161,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-int-ext-2",
+      "type": "button",
+      "label": "2",
+      "editorPosition": {
+        "x": 468,
+        "y": 161,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-int-ext-3",
+      "type": "button",
+      "label": "3",
+      "editorPosition": {
+        "x": 520,
+        "y": 161,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-int-ext-4",
+      "type": "button",
+      "label": "4",
+      "editorPosition": {
+        "x": 575,
+        "y": 161,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-int-ext-5",
+      "type": "button",
+      "label": "5",
+      "editorPosition": {
+        "x": 625,
+        "y": 161,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-int-ext-6",
+      "type": "button",
+      "label": "6",
+      "editorPosition": {
+        "x": 679,
+        "y": 161,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-int-ext-7",
+      "type": "button",
+      "label": "7",
+      "editorPosition": {
+        "x": 731,
+        "y": 161,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-int-ext-8",
+      "type": "button",
+      "label": "8",
+      "editorPosition": {
+        "x": 783,
+        "y": 161,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "display",
+      "type": "screen",
+      "label": "Display",
+      "editorPosition": {
+        "x": 919,
+        "y": 55,
+        "w": 1173,
+        "h": 700
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "scene-select",
+      "type": "button",
+      "label": "SCENE SELECT",
+      "editorPosition": {
+        "x": 1287,
+        "y": 79,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "scene-chain",
+      "type": "button",
+      "label": "SCENE CHAIN",
+      "editorPosition": {
+        "x": 1287,
+        "y": 134,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "zone-view",
+      "type": "button",
+      "label": "ZONE VIEW",
+      "editorPosition": {
+        "x": 1287,
+        "y": 189,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "single-tone",
+      "type": "button",
+      "label": "SINGLE TONE",
+      "editorPosition": {
+        "x": 1287,
+        "y": 243,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "cutoff",
+      "type": "knob",
+      "label": "CUTOFF",
+      "editorPosition": {
+        "x": 1530,
+        "y": 60,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "resonance",
+      "type": "knob",
+      "label": "RESONANCE",
+      "editorPosition": {
+        "x": 1595,
+        "y": 63,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "osc",
+      "type": "button",
+      "label": "OSC",
+      "editorPosition": {
+        "x": 1508,
+        "y": 110,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "filter-type",
+      "type": "button",
+      "label": "FILTER TYPE",
+      "editorPosition": {
+        "x": 1570,
+        "y": 110,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "param",
+      "type": "button",
+      "label": "PARAM",
+      "editorPosition": {
+        "x": 1633,
+        "y": 110,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "amp",
+      "type": "button",
+      "label": "AMP",
+      "editorPosition": {
+        "x": 1508,
+        "y": 155,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "fx",
+      "type": "button",
+      "label": "FX",
+      "editorPosition": {
+        "x": 1570,
+        "y": 155,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "lfo",
+      "type": "button",
+      "label": "LFO",
+      "editorPosition": {
+        "x": 1633,
+        "y": 155,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "pattern",
+      "type": "button",
+      "label": "PATTERN",
+      "editorPosition": {
+        "x": 1817.9182550603693,
+        "y": 75.28182123357597,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "group",
+      "type": "button",
+      "label": "GROUP",
+      "editorPosition": {
+        "x": 1756,
+        "y": 75,
+        "w": 118,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "song",
+      "type": "button",
+      "label": "SONG",
+      "editorPosition": {
+        "x": 1933.1909090909091,
+        "y": 75.281821233576,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tr-rec",
+      "type": "button",
+      "label": "TR-REC",
+      "editorPosition": {
+        "x": 1890.6545454545455,
+        "y": 72.74546064897015,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "rhythm-ptn",
+      "type": "button",
+      "label": "RHYTHM PTN",
+      "editorPosition": {
+        "x": 1981.8273947975852,
+        "y": 71.64545759721234,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "stop",
+      "type": "button",
+      "label": "STOP",
+      "editorPosition": {
+        "x": 1936.1001220703124,
+        "y": 111.64545759721236,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "play",
+      "type": "button",
+      "label": "PLAY",
+      "editorPosition": {
+        "x": 1964.1001220703124,
+        "y": 111.64545759721236,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "rec",
+      "type": "button",
+      "label": "REC",
+      "editorPosition": {
+        "x": 1999.1001220703124,
+        "y": 111.64545759721236,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-1",
+      "type": "button",
+      "label": "A.PIANO",
+      "editorPosition": {
+        "x": 1560,
+        "y": 338,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-2",
+      "type": "button",
+      "label": "E.PIANO",
+      "editorPosition": {
+        "x": 1623,
+        "y": 338,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-3",
+      "type": "button",
+      "label": "ORGAN",
+      "editorPosition": {
+        "x": 1685,
+        "y": 338,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-4",
+      "type": "button",
+      "label": "GUITAR/BASS",
+      "editorPosition": {
+        "x": 1748,
+        "y": 338,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-5",
+      "type": "button",
+      "label": "STRINGS",
+      "editorPosition": {
+        "x": 1735,
+        "y": 211,
+        "w": 118,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-6",
+      "type": "button",
+      "label": "BRASS",
+      "editorPosition": {
+        "x": 1810,
+        "y": 211,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-7",
+      "type": "button",
+      "label": "SYNTH LEAD",
+      "editorPosition": {
+        "x": 1888,
+        "y": 211,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-8",
+      "type": "button",
+      "label": "SYNTH PAD",
+      "editorPosition": {
+        "x": 1963,
+        "y": 211,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-9",
+      "type": "button",
+      "label": "BELL/MALLET",
+      "editorPosition": {
+        "x": 1735,
+        "y": 249,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-10",
+      "type": "button",
+      "label": "HIT/OTHER",
+      "editorPosition": {
+        "x": 1810,
+        "y": 249,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-11",
+      "type": "button",
+      "label": "RHYTHM",
+      "editorPosition": {
+        "x": 1888,
+        "y": 249,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-12",
+      "type": "button",
+      "label": "S.N. ACOUSTIC",
+      "editorPosition": {
+        "x": 1963,
+        "y": 249,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-13",
+      "type": "button",
+      "label": "S.N.S",
+      "editorPosition": {
+        "x": 1735,
+        "y": 288,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-14",
+      "type": "button",
+      "label": "VTW",
+      "editorPosition": {
+        "x": 1810,
+        "y": 288,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-15",
+      "type": "button",
+      "label": "MODEL",
+      "editorPosition": {
+        "x": 1888,
+        "y": 288,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "tone-cat-16",
+      "type": "button",
+      "label": "DRUM",
+      "editorPosition": {
+        "x": 1963,
+        "y": 288,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "sampling",
+      "type": "button",
+      "label": "SAMPLING",
+      "editorPosition": {
+        "x": 2087.1,
+        "y": 78.91818486993964,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "pad-mode",
+      "type": "button",
+      "label": "PAD MODE",
+      "editorPosition": {
+        "x": 2149.1,
+        "y": 78.91818486993964,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "clip-board",
+      "type": "button",
+      "label": "CLIP BOARD",
+      "editorPosition": {
+        "x": 2186.1,
+        "y": 78.91818486993964,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "bank",
+      "type": "button",
+      "label": "BANK",
+      "editorPosition": {
+        "x": 2217.1,
+        "y": 78.91818486993964,
+        "w": 125,
+        "h": 79
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "hold",
+      "type": "button",
+      "label": "HOLD",
+      "editorPosition": {
+        "x": 2284.1,
+        "y": 78.91818486993964,
+        "w": 123,
+        "h": 77
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "pad-1",
+      "type": "pad",
+      "label": "1",
+      "editorPosition": {
+        "x": 2086,
+        "y": 173,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-2",
+      "type": "pad",
+      "label": "2",
+      "editorPosition": {
+        "x": 2154,
+        "y": 173,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-3",
+      "type": "pad",
+      "label": "3",
+      "editorPosition": {
+        "x": 2218,
+        "y": 173,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-4",
+      "type": "pad",
+      "label": "4",
+      "editorPosition": {
+        "x": 2283,
+        "y": 173,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-5",
+      "type": "pad",
+      "label": "5",
+      "editorPosition": {
+        "x": 2086,
+        "y": 211,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-6",
+      "type": "pad",
+      "label": "6",
+      "editorPosition": {
+        "x": 2154,
+        "y": 211,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-7",
+      "type": "pad",
+      "label": "7",
+      "editorPosition": {
+        "x": 2218,
+        "y": 211,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-8",
+      "type": "pad",
+      "label": "8",
+      "editorPosition": {
+        "x": 2283,
+        "y": 211,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-9",
+      "type": "pad",
+      "label": "9",
+      "editorPosition": {
+        "x": 2086,
+        "y": 249,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-10",
+      "type": "pad",
+      "label": "10",
+      "editorPosition": {
+        "x": 2154,
+        "y": 249,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-11",
+      "type": "pad",
+      "label": "11",
+      "editorPosition": {
+        "x": 2218,
+        "y": 249,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-12",
+      "type": "pad",
+      "label": "12",
+      "editorPosition": {
+        "x": 2283,
+        "y": 249,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-13",
+      "type": "pad",
+      "label": "13",
+      "editorPosition": {
+        "x": 2086,
+        "y": 288,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-14",
+      "type": "pad",
+      "label": "14",
+      "editorPosition": {
+        "x": 2154,
+        "y": 288,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-15",
+      "type": "pad",
+      "label": "15",
+      "editorPosition": {
+        "x": 2218,
+        "y": 288,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "pad-16",
+      "type": "pad",
+      "label": "16",
+      "editorPosition": {
+        "x": 2283,
+        "y": 288,
+        "w": 125,
+        "h": 125
+      },
+      "labelPosition": "on-button"
+    },
+    {
+      "id": "write",
+      "type": "button",
+      "label": "WRITE",
+      "editorPosition": {
+        "x": 863,
+        "y": 79,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "master-fx",
+      "type": "button",
+      "label": "MASTER FX",
+      "editorPosition": {
+        "x": 863,
+        "y": 133,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "motional-pad",
+      "type": "button",
+      "label": "MOTIONAL PAD",
+      "editorPosition": {
+        "x": 863,
+        "y": 189,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "daw-ctrl",
+      "type": "button",
+      "label": "DAW CTRL",
+      "editorPosition": {
+        "x": 863,
+        "y": 244,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "menu",
+      "type": "button",
+      "label": "MENU",
+      "editorPosition": {
+        "x": 863,
+        "y": 299,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "e1",
+      "type": "knob",
+      "label": "E1",
+      "editorPosition": {
+        "x": 950,
+        "y": 283,
+        "w": 131,
+        "h": 131
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "e2",
+      "type": "knob",
+      "label": "E2",
+      "editorPosition": {
+        "x": 999,
+        "y": 283,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "e3",
+      "type": "knob",
+      "label": "E3",
+      "editorPosition": {
+        "x": 1049,
+        "y": 283,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "e4",
+      "type": "knob",
+      "label": "E4",
+      "editorPosition": {
+        "x": 1099,
+        "y": 283,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "e5",
+      "type": "knob",
+      "label": "E5",
+      "editorPosition": {
+        "x": 1149,
+        "y": 283,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "e6",
+      "type": "knob",
+      "label": "E6",
+      "editorPosition": {
+        "x": 1200,
+        "y": 283,
+        "w": 135,
+        "h": 135
+      },
+      "labelPosition": "hidden"
+    },
+    {
+      "id": "tempo",
+      "type": "button",
+      "label": "TEMPO",
+      "editorPosition": {
+        "x": 1287,
+        "y": 298,
+        "w": 135,
+        "h": 85
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "value-dial",
+      "type": "encoder",
+      "label": "VALUE",
+      "editorPosition": {
+        "x": 1341,
+        "y": 41,
+        "w": 301,
+        "h": 301
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "dec",
+      "type": "button",
+      "label": "DEC",
+      "editorPosition": {
+        "x": 1514,
+        "y": 200,
+        "w": 100,
+        "h": 68
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "inc",
+      "type": "button",
+      "label": "INC",
+      "editorPosition": {
+        "x": 1413,
+        "y": 195,
+        "w": 100,
+        "h": 63
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "cursor-up",
+      "type": "button",
+      "label": "",
+      "editorPosition": {
+        "x": 1376,
+        "y": 200,
+        "w": 100,
+        "h": 68
+      },
+      "labelPosition": "above"
+    },
+    {
+      "id": "cursor-down",
+      "type": "button",
+      "label": "CURSOR DOWN",
+      "editorPosition": {
+        "x": 1368,
+        "y": 241,
+        "w": 100,
+        "h": 68
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "cursor-left",
+      "type": "button",
+      "label": "CURSOR LEFT",
+      "editorPosition": {
+        "x": 1333,
+        "y": 241,
+        "w": 100,
+        "h": 63
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "cursor-right",
+      "type": "button",
+      "label": "CURSOR RIGHT",
+      "editorPosition": {
+        "x": 1413,
+        "y": 241,
+        "w": 100,
+        "h": 63
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "shift",
+      "type": "button",
+      "label": "SHIFT",
+      "editorPosition": {
+        "x": 1329,
+        "y": 286,
+        "w": 100,
+        "h": 63
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "exit",
+      "type": "button",
+      "label": "EXIT",
+      "editorPosition": {
+        "x": 1374,
+        "y": 288,
+        "w": 100,
+        "h": 63
+      },
+      "labelPosition": "below"
+    },
+    {
+      "id": "enter",
+      "type": "button",
+      "label": "ENTER",
+      "editorPosition": {
+        "x": 1413,
+        "y": 288,
+        "w": 100,
+        "h": 63
+      },
+      "labelPosition": "below"
+    }
+  ],
+  "editorLabels": [
+    {
+      "id": "label-wheel-1",
+      "controlId": "wheel-1",
+      "text": "WHEEL1",
+      "x": 48,
+      "y": 235,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-wheel-2",
+      "controlId": "wheel-2",
+      "text": "WHEEL2",
+      "x": 124,
+      "y": 235,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-s1",
+      "controlId": "s1",
+      "text": "S1",
+      "x": 36,
+      "y": 408,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-s2",
+      "controlId": "s2",
+      "text": "S2",
+      "x": 91,
+      "y": 408,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-pitch-bend-lever",
+      "controlId": "pitch-bend-lever",
+      "text": "PITCH BEND/MOD",
+      "x": 73,
+      "y": 585,
+      "fontSize": 8,
+      "align": "center",
+      "w": 108
+    },
+    {
+      "id": "label-split",
+      "controlId": "split",
+      "text": "SPLIT",
+      "x": 236,
+      "y": 229,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-chord-memory",
+      "controlId": "chord-memory",
+      "text": "CHORD\nMEMORY",
+      "x": 288,
+      "y": 218,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-arpeggio",
+      "controlId": "arpeggio",
+      "text": "ARPEGGIO",
+      "x": 336,
+      "y": 229,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-transpose",
+      "controlId": "transpose",
+      "text": "TRANSPOSE",
+      "x": 236,
+      "y": 279,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-octave-down",
+      "controlId": "octave-down",
+      "text": "DOWN",
+      "x": 288,
+      "y": 279,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-octave-up",
+      "controlId": "octave-up",
+      "text": "UP",
+      "x": 336,
+      "y": 279,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-master-volume",
+      "controlId": "master-volume",
+      "text": "MASTER\nVOLUME",
+      "x": 233,
+      "y": 110,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-pan-level",
+      "controlId": "pan-level",
+      "text": "PAN/\nLEVEL",
+      "x": 289,
+      "y": 68,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-ctrl",
+      "controlId": "ctrl",
+      "text": "CTRL",
+      "x": 336,
+      "y": 79,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-assign",
+      "controlId": "assign",
+      "text": "ASSIGN",
+      "x": 336,
+      "y": 130,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-9-16",
+      "controlId": "zone-9-16",
+      "text": "ZONE 9-16",
+      "x": 288,
+      "y": 179,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-select",
+      "controlId": "zone-select",
+      "text": "ZONE\nSELECT",
+      "x": 336,
+      "y": 169,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-int-ext-1",
+      "controlId": "zone-int-ext-1",
+      "text": "1",
+      "x": 399,
+      "y": 148,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-int-ext-2",
+      "controlId": "zone-int-ext-2",
+      "text": "2",
+      "x": 450,
+      "y": 148,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-int-ext-3",
+      "controlId": "zone-int-ext-3",
+      "text": "3",
+      "x": 505,
+      "y": 148,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-int-ext-4",
+      "controlId": "zone-int-ext-4",
+      "text": "4",
+      "x": 555,
+      "y": 148,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-int-ext-5",
+      "controlId": "zone-int-ext-5",
+      "text": "5",
+      "x": 608,
+      "y": 148,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-int-ext-6",
+      "controlId": "zone-int-ext-6",
+      "text": "6",
+      "x": 661,
+      "y": 148,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-int-ext-7",
+      "controlId": "zone-int-ext-7",
+      "text": "7",
+      "x": 713,
+      "y": 148,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-zone-int-ext-8",
+      "controlId": "zone-int-ext-8",
+      "text": "8",
+      "x": 768,
+      "y": 148,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-scene-select",
+      "controlId": "scene-select",
+      "text": "SCENE SELECT",
+      "x": 1277,
+      "y": 64,
+      "fontSize": 8,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-scene-chain",
+      "controlId": "scene-chain",
+      "text": "SCENE CHAIN",
+      "x": 1277,
+      "y": 124,
+      "fontSize": 8,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-view",
+      "controlId": "zone-view",
+      "text": "ZONE VIEW",
+      "x": 1277,
+      "y": 177,
+      "fontSize": 8,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-single-tone",
+      "controlId": "single-tone",
+      "text": "SINGLE TONE",
+      "x": 1277,
+      "y": 231,
+      "fontSize": 8,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cutoff",
+      "controlId": "cutoff",
+      "text": "CUTOFF",
+      "x": 1513,
+      "y": 100,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-resonance",
+      "controlId": "resonance",
+      "text": "RESONANCE",
+      "x": 1579,
+      "y": 104,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-osc",
+      "controlId": "osc",
+      "text": "OSC",
+      "x": 1489,
+      "y": 99,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-filter-type",
+      "controlId": "filter-type",
+      "text": "FILTER TYPE",
+      "x": 1551,
+      "y": 99,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-param",
+      "controlId": "param",
+      "text": "PARAM",
+      "x": 1614,
+      "y": 99,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-amp",
+      "controlId": "amp",
+      "text": "AMP",
+      "x": 1489,
+      "y": 145,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-fx",
+      "controlId": "fx",
+      "text": "FX",
+      "x": 1551,
+      "y": 145,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-lfo",
+      "controlId": "lfo",
+      "text": "LFO",
+      "x": 1614,
+      "y": 145,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-pattern",
+      "controlId": "pattern",
+      "text": "PATTERN",
+      "x": 1798,
+      "y": 64,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-group",
+      "controlId": "group",
+      "text": "GROUP",
+      "x": 1736,
+      "y": 63,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-song",
+      "controlId": "song",
+      "text": "SONG",
+      "x": 1914,
+      "y": 64,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tr-rec",
+      "controlId": "tr-rec",
+      "text": "TR-REC",
+      "x": 1872,
+      "y": 61,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-rhythm-ptn",
+      "controlId": "rhythm-ptn",
+      "text": "RHYTHM PTN",
+      "x": 1964,
+      "y": 61,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-stop",
+      "controlId": "stop",
+      "text": "STOP",
+      "x": 1915,
+      "y": 101,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-play",
+      "controlId": "play",
+      "text": "PLAY",
+      "x": 1946,
+      "y": 101,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-rec",
+      "controlId": "rec",
+      "text": "REC",
+      "x": 1980,
+      "y": 101,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-1",
+      "controlId": "tone-cat-1",
+      "text": "A.PIANO",
+      "x": 1539,
+      "y": 325,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-2",
+      "controlId": "tone-cat-2",
+      "text": "E.PIANO",
+      "x": 1601,
+      "y": 325,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-3",
+      "controlId": "tone-cat-3",
+      "text": "ORGAN",
+      "x": 1664,
+      "y": 325,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-4",
+      "controlId": "tone-cat-4",
+      "text": "GUITAR/BASS",
+      "x": 1726,
+      "y": 325,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-5",
+      "controlId": "tone-cat-5",
+      "text": "STRINGS",
+      "x": 1716,
+      "y": 198,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-6",
+      "controlId": "tone-cat-6",
+      "text": "BRASS",
+      "x": 1791,
+      "y": 198,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-7",
+      "controlId": "tone-cat-7",
+      "text": "SYNTH LEAD",
+      "x": 1868,
+      "y": 198,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-8",
+      "controlId": "tone-cat-8",
+      "text": "SYNTH PAD",
+      "x": 1944,
+      "y": 198,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-9",
+      "controlId": "tone-cat-9",
+      "text": "BELL/MALLET",
+      "x": 1716,
+      "y": 236,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-10",
+      "controlId": "tone-cat-10",
+      "text": "HIT/OTHER",
+      "x": 1791,
+      "y": 236,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-11",
+      "controlId": "tone-cat-11",
+      "text": "RHYTHM",
+      "x": 1868,
+      "y": 236,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-12",
+      "controlId": "tone-cat-12",
+      "text": "S.N. ACOUSTIC",
+      "x": 1944,
+      "y": 236,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-13",
+      "controlId": "tone-cat-13",
+      "text": "S.N.S",
+      "x": 1716,
+      "y": 275,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-14",
+      "controlId": "tone-cat-14",
+      "text": "VTW",
+      "x": 1791,
+      "y": 275,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-15",
+      "controlId": "tone-cat-15",
+      "text": "MODEL",
+      "x": 1868,
+      "y": 275,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-tone-cat-16",
+      "controlId": "tone-cat-16",
+      "text": "DRUM",
+      "x": 1944,
+      "y": 275,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-sampling",
+      "controlId": "sampling",
+      "text": "SAMPLING",
+      "x": 2080,
+      "y": 63,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-pad-mode",
+      "controlId": "pad-mode",
+      "text": "PAD MODE",
+      "x": 2131,
+      "y": 68,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-clip-board",
+      "controlId": "clip-board",
+      "text": "CLIP BOARD",
+      "x": 2167,
+      "y": 68,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-bank",
+      "controlId": "bank",
+      "text": "BANK",
+      "x": 2199,
+      "y": 68,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-hold",
+      "controlId": "hold",
+      "text": "HOLD",
+      "x": 2265,
+      "y": 68,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-write",
+      "controlId": "write",
+      "text": "WRITE",
+      "x": 836,
+      "y": 68,
+      "fontSize": 8,
+      "align": "center",
+      "w": 94
+    },
+    {
+      "id": "label-motional-pad",
+      "controlId": "motional-pad",
+      "text": "MOTIONAL\nPAD",
+      "x": 836,
+      "y": 164,
+      "fontSize": 8,
+      "align": "center",
+      "w": 94
+    },
+    {
+      "id": "label-daw-ctrl",
+      "controlId": "daw-ctrl",
+      "text": "DAW CTRL",
+      "x": 836,
+      "y": 233,
+      "fontSize": 8,
+      "align": "center",
+      "w": 94
+    },
+    {
+      "id": "label-tempo",
+      "controlId": "tempo",
+      "text": "TEMPO",
+      "x": 1277,
+      "y": 323,
+      "fontSize": 8,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-inc",
+      "controlId": "inc",
+      "text": "INC",
+      "x": 1391,
+      "y": 219,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-cursor-up",
+      "controlId": "cursor-up",
+      "text": "CURSOR UP",
+      "x": 1354,
+      "y": 224,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-cursor-down",
+      "controlId": "cursor-down",
+      "text": "CURSOR DOWN",
+      "x": 1349,
+      "y": 264,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-cursor-left",
+      "controlId": "cursor-left",
+      "text": "CURSOR LEFT",
+      "x": 1310,
+      "y": 264,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-cursor-right",
+      "controlId": "cursor-right",
+      "text": "CURSOR RIGHT",
+      "x": 1391,
+      "y": 264,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-shift",
+      "controlId": "shift",
+      "text": "SHIFT",
+      "x": 1306,
+      "y": 310,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-exit",
+      "controlId": "exit",
+      "text": "EXIT",
+      "x": 1354,
+      "y": 311,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-enter",
+      "controlId": "enter",
+      "text": "ENTER",
+      "x": 1389,
+      "y": 274,
+      "fontSize": 8,
+      "align": "center",
+      "w": 75
+    },
+    {
+      "id": "label-master-fx",
+      "controlId": "master-fx",
+      "text": "MASTER FX",
+      "x": 836,
+      "y": 123,
+      "fontSize": 8,
+      "align": "center",
+      "w": 94
+    },
+    {
+      "id": "label-menu",
+      "controlId": "menu",
+      "text": "MENU",
+      "x": 836,
+      "y": 288,
+      "fontSize": 8,
+      "align": "center",
+      "w": 94
+    },
+    {
+      "id": "label-dec",
+      "controlId": "dec",
+      "text": "DEC",
+      "x": 1493,
+      "y": 224,
+      "w": 75,
+      "fontSize": 8,
+      "align": "center"
+    },
+    {
+      "id": "label-value-dial",
+      "controlId": "value-dial",
+      "text": "VALUE",
+      "x": 1341,
+      "y": 135,
+      "w": 91,
+      "fontSize": 8,
+      "align": "center"
+    },
+    {
+      "id": "label-display",
+      "controlId": "display",
+      "text": "Display",
+      "x": 919,
+      "y": 268,
+      "w": 352,
+      "fontSize": 5,
+      "align": "center"
+    }
+  ],
+  "groupLabels": []
+}

@@ -350,13 +350,13 @@ export default function EditorToolbar({
                 ? 'border border-gray-600 bg-gray-800 text-gray-400 cursor-wait'
                 : 'border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50'
           }`}
-          title="Approve & Build Panel"
+          title="Export panel manifest for production"
         >
           {buildStatus === 'building'
-            ? 'Building...'
-            : previewMode
-              ? 'Preview'
-              : 'Approve & Build'}
+            ? 'Exporting...'
+            : buildStatus === 'approved'
+              ? 'Exported ✓'
+              : 'Export Panel'}
         </button>
       </div>
     </div>

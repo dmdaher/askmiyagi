@@ -90,20 +90,16 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
         body: JSON.stringify({ sections, controls, editorLabels: (state as any).editorLabels ?? [], controlGroups: (state as any).controlGroups ?? [], canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard: (state as any).keyboard }),
       });
 
-      // Trigger codegen directly — no cleanup, no inference.
-      // Contractor's positions and sizes are used as-is.
-      const codegenRes = await fetch(`/api/pipeline/${deviceId}/codegen`, { method: 'POST' });
-      if (!codegenRes.ok) {
-        const body = await codegenRes.json().catch(() => ({}));
-        throw new Error(
-          body.error
-            ? `${body.error}: ${body.stderr || body.details || ''}`
-            : 'Codegen failed'
-        );
+      // Export manifest JSON — replaces codegen TSX generation.
+      // Writes src/data/manifests/{deviceId}.json for production.
+      const exportRes = await fetch(`/api/pipeline/${deviceId}/export-manifest`, { method: 'POST' });
+      if (!exportRes.ok) {
+        const body = await exportRes.json().catch(() => ({}));
+        throw new Error(body.error ? `${body.error}: ${body.details || ''}` : 'Export failed');
       }
 
       setPreviewMode(true);
-      setBuildStatus('idle');
+      setBuildStatus('approved');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       setCodegenError(message);
@@ -167,14 +163,6 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
               : 'Preview Mode — clean panel view (click Preview to exit)'}
           </span>
           <div className="flex items-center gap-2">
-            {buildStatus === 'approved' && (
-              <a
-                href={`/admin/${deviceId}/preview`}
-                className="rounded border border-green-600 bg-green-700/30 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-700/50"
-              >
-                View Live Panel →
-              </a>
-            )}
             <button
               onClick={() => { setPreviewMode(false); setBuildStatus('idle'); }}
               className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"

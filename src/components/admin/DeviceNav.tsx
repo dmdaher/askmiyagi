@@ -33,13 +33,7 @@ export default function DeviceNav({ deviceId }: DeviceNavProps) {
       enabled: gatekeeperPassed,
       tooltip: 'Waiting for gatekeeper to identify controls...',
     },
-    {
-      id: 'preview',
-      label: 'Preview',
-      href: `/admin/${deviceId}/preview`,
-      enabled: codegenCompleted,
-      tooltip: 'Run Approve & Build in the Editor first',
-    },
+    // Preview removed — use toolbar Preview button in the editor instead
   ];
 
   const isActive = (href: string) => {
