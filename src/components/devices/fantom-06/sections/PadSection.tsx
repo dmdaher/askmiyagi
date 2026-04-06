@@ -29,8 +29,8 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 2086,
-              top: 16,
+              left: 2087,
+              top: 79,
               width: 38,
               height: 24,
             }}
@@ -50,8 +50,8 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 2148,
-              top: 16,
+              left: 2149,
+              top: 79,
               width: 38,
               height: 24,
             }}
@@ -71,8 +71,8 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 2185,
-              top: 16,
+              left: 2186,
+              top: 79,
               width: 38,
               height: 24,
             }}
@@ -92,8 +92,8 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 2216,
-              top: 16,
+              left: 2217,
+              top: 79,
               width: 38,
               height: 24,
             }}
@@ -113,18 +113,18 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 2283,
-              top: 16,
-              width: 38,
-              height: 24,
+              left: 2284,
+              top: 79,
+              width: 37,
+              height: 23,
             }}
           >
             <div>
               <PanelButton
                 id="hold"
                 label=""
-                width={38}
-                height={24}
+                width={37}
+                height={23}
                 active={getState('hold').active}
                 highlighted={isHighlighted('hold')}
                 onClick={() => onButtonClick?.('hold')}

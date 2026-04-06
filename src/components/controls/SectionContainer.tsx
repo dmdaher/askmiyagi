@@ -40,11 +40,11 @@ export default function SectionContainer({
     >
       {headerLabel && (
         <div
-          className="absolute -top-4 left-2 pointer-events-none"
-          style={{ zIndex: 30 }}
+          className="absolute top-0 left-0 right-0 flex items-center px-2 pointer-events-none"
+          style={{ height: 20, backgroundColor: 'rgba(0,0,0,0.15)', borderRadius: '8px 8px 0 0' }}
         >
           <span
-            className="text-[8px] font-medium uppercase"
+            className="text-[8px] font-medium uppercase truncate"
             style={{ color: '#666', letterSpacing: '0.15em' }}
           >
             {headerLabel}

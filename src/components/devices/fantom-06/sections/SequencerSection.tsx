@@ -28,8 +28,8 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1755,
-              top: 16,
+              left: 1818,
+              top: 75,
               width: 38,
               height: 24,
             }}
@@ -70,8 +70,8 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1823,
-              top: 16,
+              left: 1933,
+              top: 75,
               width: 38,
               height: 24,
             }}
@@ -91,8 +91,8 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1823,
-              top: 16,
+              left: 1891,
+              top: 73,
               width: 38,
               height: 24,
             }}
@@ -112,8 +112,8 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1868,
-              top: 16,
+              left: 1982,
+              top: 72,
               width: 38,
               height: 24,
             }}
@@ -133,8 +133,8 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1935,
-              top: 16,
+              left: 1936,
+              top: 112,
               width: 38,
               height: 24,
             }}
@@ -154,8 +154,8 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1963,
-              top: 16,
+              left: 1964,
+              top: 112,
               width: 38,
               height: 24,
             }}
@@ -175,8 +175,8 @@ export default function SequencerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1998,
-              top: 16,
+              left: 1999,
+              top: 112,
               width: 38,
               height: 24,
             }}
