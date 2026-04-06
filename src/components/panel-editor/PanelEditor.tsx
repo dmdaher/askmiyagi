@@ -30,6 +30,7 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
     'idle' | 'building' | 'approved'
   >('idle');
   const [codegenError, setCodegenError] = useState<string | null>(null);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [showIssueModal, setShowIssueModal] = useState(false);
 
   // ── Clean Up: optional inference pass (snap rows, equalize spacing) ──────
@@ -93,11 +94,12 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
       // Export manifest JSON — replaces codegen TSX generation.
       // Writes src/data/manifests/{deviceId}.json for production.
       const exportRes = await fetch(`/api/pipeline/${deviceId}/export-manifest`, { method: 'POST' });
+      const exportBody = await exportRes.json().catch(() => ({}));
       if (!exportRes.ok) {
-        const body = await exportRes.json().catch(() => ({}));
-        throw new Error(body.error ? `${body.error}: ${body.details || ''}` : 'Export failed');
+        throw new Error(exportBody.error ? `${exportBody.error}: ${exportBody.details || ''}` : 'Export failed');
       }
 
+      setExportMessage(exportBody.output ?? 'Manifest exported successfully');
       setPreviewMode(true);
       setBuildStatus('approved');
     } catch (err) {
@@ -157,14 +159,16 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
       {/* Preview mode banner */}
       {previewMode && (
         <div className="flex h-10 items-center justify-between border-b border-amber-700/40 bg-amber-900/20 px-4">
-          <span className="text-sm text-amber-300">
-            {buildStatus === 'approved'
-              ? '✓ Panel generated and registered!'
-              : 'Preview Mode — clean panel view (click Preview to exit)'}
+          <span className="text-sm text-amber-300 truncate">
+            {buildStatus === 'approved' && exportMessage
+              ? `✓ ${exportMessage}`
+              : buildStatus === 'approved'
+                ? '✓ Panel exported'
+                : 'Preview Mode — clean panel view (click Preview to exit)'}
           </span>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => { setPreviewMode(false); setBuildStatus('idle'); }}
+              onClick={() => { setPreviewMode(false); setBuildStatus('idle'); setExportMessage(null); }}
               className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
             >
               Back to Editor
