@@ -15,7 +15,7 @@ export default function ControlLayer() {
   const topLevelControls = Object.values(controls).filter((c) => !c.nestedIn);
 
   return (
-    <div className="absolute inset-0" style={{ zIndex: 40, pointerEvents: 'none' }}>
+    <div className="absolute inset-0" style={{ zIndex: 200, pointerEvents: 'none' }}>
       {topLevelControls.map((control) => (
         <ControlNode key={control.id} controlId={control.id} sectionId={control.sectionId} />
       ))}

@@ -814,6 +814,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
             : 'none',
           opacity: isLocked ? 0.5 : controlScale < 1 ? (isSelected ? 1 : 0.7) : 1,
           cursor: isLocked ? 'not-allowed' : 'move',
+          pointerEvents: 'auto',
         }}
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
