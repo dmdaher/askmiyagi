@@ -30,8 +30,8 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
     (_e: unknown, d: { x: number; y: number }) => {
       const dx = d.x - sx;
       const dy = d.y - sy;
-      // Ignore micro-movements — prevents snap-grid correction on click
-      if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return;
+      // Ignore zero-movement clicks (not actual drags)
+      if (dx === 0 && dy === 0) return;
       pushSnapshot();
       moveSection(sectionId, dx, dy);
     },

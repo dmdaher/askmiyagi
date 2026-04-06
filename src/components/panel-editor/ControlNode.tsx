@@ -623,9 +623,8 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
     (_e: unknown, d: { x: number; y: number }) => {
       const dx = d.x - dragStartRef.current.x;
       const dy = d.y - dragStartRef.current.y;
-      // Ignore micro-movements (< 2px on either axis) — prevents accidental
-      // position shifts from click tremor or snap-grid correction by react-rnd
-      if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return;
+      // Ignore zero-movement clicks (not actual drags)
+      if (dx === 0 && dy === 0) return;
 
       // Snapshot BEFORE mutation so undo restores the previous state
       pushSnapshot();
