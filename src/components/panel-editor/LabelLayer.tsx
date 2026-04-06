@@ -168,20 +168,22 @@ export default function LabelLayer() {
             >
               <span
                 className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move"
-                style={{ padding: '4px 6px', margin: '-4px -6px', display: 'inline-block' }}
+                style={{ padding: '4px 6px', margin: '-4px -6px', display: 'inline-block', minWidth: 16, minHeight: label.fontSize + 4 }}
                 data-label-id={label.id}
                 onMouseDown={(e) => handleMouseDown(e, label)}
                 onDoubleClick={() => handleDoubleClick(label)}
               >
                 {label.icon && HARDWARE_ICONS[label.icon] && (
-                  <span style={{ marginRight: 3 }}>{HARDWARE_ICONS[label.icon]}</span>
+                  <span style={{ marginRight: label.text ? 3 : 0 }}>{HARDWARE_ICONS[label.icon]}</span>
                 )}
-                {label.text.split('\n').map((line, i) => (
+                {label.text ? label.text.split('\n').map((line, i) => (
                   <span key={i}>
                     {i > 0 && <br />}
                     {line}
                   </span>
-                ))}
+                )) : !label.icon && (
+                  <span className="text-gray-600 italic" style={{ fontSize: Math.max(label.fontSize - 1, 6) }}>empty</span>
+                )}
               </span>
             </div>
           )}

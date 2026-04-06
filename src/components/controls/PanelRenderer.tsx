@@ -444,9 +444,9 @@ export default function PanelRenderer({
           }}>
           <span className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
             {label.icon && HARDWARE_ICONS[label.icon] && (
-              <span style={{ marginRight: 3 }}>{HARDWARE_ICONS[label.icon]}</span>
+              <span style={{ marginRight: label.text ? 3 : 0 }}>{HARDWARE_ICONS[label.icon]}</span>
             )}
-            {renderLabelText(label.text)}
+            {label.text && renderLabelText(label.text)}
           </span>
         </div>
       ))}
