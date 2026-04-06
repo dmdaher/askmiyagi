@@ -505,17 +505,27 @@ The admin dashboard button calls `POST /api/pipeline/{deviceId}/pull-from-hosted
 ## UX polish (from final audit)
 
 **Contractor UX:**
+- Text contractor with `askmiyagi.vercel.app/editor` (not root URL — root shows main app)
 - `/signin` defaults to `role=contractor` when no param. Redirects to `/editor` after login (admin → `/admin/review`)
+- Empty panel list shows "No panels available yet" message
 - Keep canvas W×H inputs visible (contractor may need to adjust canvas size to fit controls)
+- Add small "Saved" indicator in toolbar (timestamp or checkmark) so contractor knows auto-save works
 - Submit confirmation dialog: "Submit panel for review? You won't be able to edit until the owner responds."
 - After submit: success banner + editor enters read-only mode. Redirect to list or show "Submitted" state
 - "Submitted" panels openable in read-only mode so contractor can verify what they submitted
 
 **Owner UX:**
-- Review page hides editing-only toolbar items (Clean Up, Gap, Reset Sizes, canvas scale) — only zoom/pan/preview visible
-- "Send to Contractor" shows spinner during upload
-- "Build Tutorials" uses local API route (same CORS fix as Send) — `POST /api/pipeline/{id}/pull-from-hosted`
-- Use `NEXT_PUBLIC_HOSTED_URL` env var for hosted API URL (not hardcoded `https://askmiyagi.vercel.app`)
+- Review page hides editing-only toolbar items (Clean Up, Gap, Reset Sizes) — but keeps zoom/pan/Preview visible (Preview shows PanelShell production view, useful for review)
+- "Send to Contractor" shows spinner during upload + "Sent ✓" after success
+- "Request Changes" opens a text input for feedback note. Note stored in Blob state, contractor sees it as banner on editor page
+- "Build Tutorials" button: always visible (no status gating needed — owner knows when contractor is done). Label: "Pull & Build Tutorials". Pulls from Blob + exports + runs pipeline
+- Uses local API route (same CORS fix as Send) — `POST /api/pipeline/{id}/pull-from-hosted`
+- Use `NEXT_PUBLIC_HOSTED_URL` env var for hosted API URL (not hardcoded)
+
+**Data flow note:**
+- PUT (auto-save) receives FLAT manifest from editor → hosted route WRAPS into `{ deviceId, status, manifest: <body>, updatedAt }` before writing to Blob
+- GET reads from Blob → UNWRAPS: returns `{ ...state.manifest, _source: 'hosted', _status: state.status, _updatedAt: state.updatedAt }`
+- This keeps the editor's deserialization logic identical between local and hosted
 
 ---
 
