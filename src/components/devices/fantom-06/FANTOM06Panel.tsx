@@ -6,6 +6,7 @@ import Knob from '@/components/controls/Knob';
 import PadButton from '@/components/controls/PadButton';
 import PanelButton from '@/components/controls/PanelButton';
 import PanelShell from '@/components/controls/PanelShell';
+import SectionContainer from '@/components/controls/SectionContainer';
 import Slider from '@/components/controls/Slider';
 import TouchDisplay from '@/components/controls/TouchDisplay';
 import ValueDial from '@/components/controls/ValueDial';
@@ -38,46 +39,13 @@ export default function FANTOM06Panel({
       keyboard={{ keys: 61, startNote: 'C2', panelHeightPercent: 51.8, leftPercent: 9.5, widthPercent: 90.3 }}
     >
         {/* Section backgrounds — decorative only */}
-        <div
-          className="absolute rounded border border-white/10 bg-white/[0.02]"
-          style={{ left: -2, top: 1, width: 220, height: 700, zIndex: 0 }}
-        >
-        </div>
-        <div
-          className="absolute rounded border border-white/10 bg-white/[0.02]"
-          style={{ left: 218, top: -1, width: 623, height: 366, zIndex: 0 }}
-        >
-          <div className="absolute -top-0 left-0 right-0 h-7 flex items-center px-2 bg-white/[0.05] border-b border-white/10 rounded-t"><span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider truncate">ZONE</span></div>
-        </div>
-        <div
-          className="absolute rounded border border-white/10 bg-white/[0.02]"
-          style={{ left: 844, top: -1, width: 469, height: 281, zIndex: 0 }}
-        >
-        </div>
-        <div
-          className="absolute rounded border border-white/10 bg-white/[0.02]"
-          style={{ left: 1313, top: -1, width: 156, height: 275, zIndex: 0 }}
-        >
-          <div className="absolute -top-0 left-0 right-0 h-7 flex items-center px-2 bg-white/[0.05] border-b border-white/10 rounded-t"><span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider truncate">SCENE CTRL</span></div>
-        </div>
-        <div
-          className="absolute rounded border border-white/10 bg-white/[0.02]"
-          style={{ left: 1474, top: -1, width: 248, height: 226, zIndex: 0 }}
-        >
-          <div className="absolute -top-0 left-0 right-0 h-7 flex items-center px-2 bg-white/[0.05] border-b border-white/10 rounded-t"><span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider truncate">SYNTH CTRL</span></div>
-        </div>
-        <div
-          className="absolute rounded border border-white/10 bg-white/[0.02]"
-          style={{ left: 1719, top: -1, width: 350, height: 360, zIndex: 0 }}
-        >
-          <div className="absolute -top-0 left-0 right-0 h-7 flex items-center px-2 bg-white/[0.05] border-b border-white/10 rounded-t"><span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider truncate">SEQUENCER</span></div>
-        </div>
-        <div
-          className="absolute rounded border border-white/10 bg-white/[0.02]"
-          style={{ left: 2069, top: -1, width: 288, height: 360, zIndex: 0 }}
-        >
-          <div className="absolute -top-0 left-0 right-0 h-7 flex items-center px-2 bg-white/[0.05] border-b border-white/10 rounded-t"><span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider truncate">PAD</span></div>
-        </div>
+        <SectionContainer id="controller" x={-2} y={1} w={220} h={700} />
+        <SectionContainer id="zone" x={218} y={-1} w={623} h={366} headerLabel="ZONE" />
+        <SectionContainer id="common" x={844} y={-1} w={469} h={281} />
+        <SectionContainer id="scene" x={1313} y={-1} w={156} h={275} headerLabel="SCENE CTRL" />
+        <SectionContainer id="synth" x={1474} y={-1} w={248} h={226} headerLabel="SYNTH CTRL" />
+        <SectionContainer id="sequencer" x={1719} y={-1} w={350} h={360} headerLabel="SEQUENCER" />
+        <SectionContainer id="pad" x={2069} y={-1} w={288} h={360} headerLabel="PAD" />
 
         {/* All controls — panel-level percentage positioning */}
         {/* wheel-1 */}

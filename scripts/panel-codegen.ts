@@ -1050,7 +1050,10 @@ function generateFlatPanel(
   const imports = collectImports(manifest.controls, controlMap);
   // Add shared shell components
   imports.set('PanelShell', '@/components/controls/PanelShell');
-  // SectionContainer NOT imported for flat panel — sections are editor-only grouping
+  // SectionContainer for visual section backgrounds (darker panel areas)
+  if (((manifest as any).editorSections ?? []).length > 0) {
+    imports.set('SectionContainer', '@/components/controls/SectionContainer');
+  }
   const importLines = Array.from(imports.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([component, importPath]) => `import ${component} from '${importPath}';`)
@@ -1062,9 +1065,18 @@ function generateFlatPanel(
     ? `{ keys: ${kb.keys}, startNote: '${kb.startNote}', panelHeightPercent: ${kb.panelHeightPercent}${kb.leftPercent != null ? `, leftPercent: ${kb.leftPercent}` : ''}${kb.widthPercent != null ? `, widthPercent: ${kb.widthPercent}` : ''} }`
     : 'null';
 
-  // Section backgrounds removed — sections are editor-only grouping.
-  // Section titles will be added as standalone text labels in a future feature.
-  const sectionBackgrounds = '';
+  // Render editor section boxes as visual containers (z-index 0, behind controls).
+  // editorSections is passed from the codegen API route with pixel-precise bounds
+  // from the editor's live state.
+  const editorSectionsArr = ((manifest as any).editorSections ?? []) as Array<{
+    id: string; headerLabel?: string; x: number; y: number; w: number; h: number;
+  }>;
+  const sectionBackgrounds = editorSectionsArr
+    .map((s) => {
+      const label = s.headerLabel ? ` headerLabel="${escapeJsx(s.headerLabel)}"` : '';
+      return `        <SectionContainer id="${escapeJsx(s.id)}" x={${Math.round(s.x)}} y={${Math.round(s.y)}} w={${Math.round(s.w)}} h={${Math.round(s.h)}}${label} />`;
+    })
+    .join('\n');
 
   // All controls positioned directly on the panel using editorPosition percentages
   // Each control is followed by its floating label (if applicable)
