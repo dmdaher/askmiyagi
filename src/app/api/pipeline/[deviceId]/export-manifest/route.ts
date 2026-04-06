@@ -90,6 +90,16 @@ export async function POST(
     const outputPath = path.join(outputDir, `${deviceId}.json`);
     fs.writeFileSync(outputPath, JSON.stringify(manifest, null, 2));
 
+    // Mark export as completed in pipeline state (for nav gating + pipeline continuation)
+    try {
+      const { readState, writeState } = await import('@/lib/pipeline/state-machine');
+      const pState = readState(deviceId);
+      if (pState) {
+        (pState as any).codegenCompleted = true;
+        writeState(deviceId, pState);
+      }
+    } catch { /* best effort */ }
+
     return NextResponse.json({
       ok: true,
       output: `Exported manifest to src/data/manifests/${deviceId}.json (${(controlList as any[]).length} controls, ${(sectionList as any[]).length} sections, ${manifest.editorLabels.length} labels)`,
