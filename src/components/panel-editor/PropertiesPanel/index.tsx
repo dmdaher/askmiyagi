@@ -101,6 +101,7 @@ function SectionProperties({ section }: { section: SectionDef }) {
   const snapGrid = useEditorStore((s) => s.snapGrid);
   const moveSection = useEditorStore((s) => s.moveSection);
   const resizeSection = useEditorStore((s) => s.resizeSection);
+  const setSectionLabel = useEditorStore((s) => s.setSectionLabel);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
 
   const handleXChange = useCallback(
@@ -142,14 +143,39 @@ function SectionProperties({ section }: { section: SectionDef }) {
         <p className="text-xs text-gray-500 mt-0.5">{section.id}</p>
       </div>
 
-      {/* Header label */}
+      {/* Header label — toggle + editable text */}
       <div className="space-y-1">
-        <label className="text-[10px] uppercase tracking-wide text-gray-500">
-          Header
-        </label>
-        <div className="text-xs text-gray-300">
-          {section.headerLabel ?? '(none)'}
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] uppercase tracking-wide text-gray-500">
+            Section Label
+          </label>
+          <button
+            onClick={() => {
+              pushSnapshot();
+              setSectionLabel(
+                section.id,
+                section.headerLabel ? null : section.id.toUpperCase(),
+              );
+            }}
+            className={`text-[9px] px-1.5 py-0.5 rounded transition-colors ${
+              section.headerLabel
+                ? 'bg-blue-600/30 text-blue-300 border border-blue-600'
+                : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
+            }`}
+          >
+            {section.headerLabel ? 'On' : 'Off'}
+          </button>
         </div>
+        {section.headerLabel !== null && section.headerLabel !== undefined && (
+          <input
+            type="text"
+            value={section.headerLabel}
+            onChange={(e) => setSectionLabel(section.id, e.target.value || null)}
+            onBlur={() => { pushSnapshot(); }}
+            className="w-full h-6 rounded border border-gray-700 bg-gray-900 px-2 text-[10px] text-gray-300 outline-none focus:border-blue-500"
+            placeholder="Section label text"
+          />
+        )}
       </div>
 
       {/* Divider */}

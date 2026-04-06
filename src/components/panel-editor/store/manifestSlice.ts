@@ -180,6 +180,7 @@ export interface ManifestSlice {
   moveSection: (id: string, dx: number, dy: number) => void;
   resizeSection: (id: string, w: number, h: number) => void;
   setSectionPosition: (id: string, x: number, y: number) => void;
+  setSectionLabel: (id: string, label: string | null) => void;
   moveSelectedControls: (dx: number, dy: number) => void;
   updateControlProp: (ids: string[], field: string, value: unknown) => void;
   duplicateSelected: () => void;
@@ -890,6 +891,17 @@ export const createManifestSlice: StateCreator<
       sections: {
         ...s.sections,
         [id]: { ...section, x, y },
+      },
+    }));
+  },
+
+  setSectionLabel: (id, label) => {
+    const section = get().sections[id];
+    if (!section) return;
+    set((s) => ({
+      sections: {
+        ...s.sections,
+        [id]: { ...section, headerLabel: label },
       },
     }));
   },
