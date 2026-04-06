@@ -567,7 +567,6 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
 export default function ControlNode({ controlId, sectionId }: ControlNodeProps) {
   const control = useEditorStore((s) => s.controls[controlId]);
   const allControls = useEditorStore((s) => s.controls);
-  const section = useEditorStore((s) => s.sections[sectionId]);
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const [shiftHeld, setShiftHeld] = useState(false);
 
@@ -603,10 +602,10 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   const [editValue, setEditValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Control positions are absolute canvas coords in the store.
-  // Inside a SectionFrame they render relative to the section origin.
-  const relX = control ? control.x - section.x : 0;
-  const relY = control ? control.y - section.y : 0;
+  // Control positions are absolute canvas coords — rendered in the flat
+  // ControlLayer above all sections, not inside a section's DOM.
+  const relX = control?.x ?? 0;
+  const relY = control?.y ?? 0;
 
   // Track drag start position for multi-select delta computation
   const dragStartRef = useRef({ x: 0, y: 0 });
@@ -774,7 +773,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
     [controlId, isSelected, setSelectedIds],
   );
 
-  if (!control || !section) return null;
+  if (!control) return null;
 
   // Skip rendering for controls nested inside another (rendered by composite parent)
   if (control.nestedIn && allControls[control.nestedIn]) return null;

@@ -3,7 +3,6 @@
 import { useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { useEditorStore } from './store';
-import ControlNode from './ControlNode';
 
 interface SectionFrameProps {
   sectionId: string;
@@ -114,10 +113,7 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
         <span className="text-[10px] text-gray-500 ml-auto">{(section.childIds ?? []).length}</span>
       </div>
 
-      {/* Child controls */}
-      {(section.childIds ?? []).map((id) => (
-        <ControlNode key={id} controlId={id} sectionId={sectionId} />
-      ))}
+      {/* Controls rendered in flat ControlLayer above all sections */}
     </Rnd>
   );
 }

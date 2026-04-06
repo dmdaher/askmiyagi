@@ -2,6 +2,7 @@
 
 import { useEditorStore } from './store';
 import SectionFrame from './SectionFrame';
+import ControlLayer from './ControlLayer';
 import GroupLabelNode from './GroupLabelNode';
 import LabelLayer from './LabelLayer';
 import GroupOverlay from './GroupOverlay';
@@ -51,10 +52,13 @@ export default function PanCanvas() {
       {/* Drag-select rubber band (behind sections, above grid) */}
       <DragSelectRect />
 
-      {/* Section frames with real controls */}
+      {/* Section frames — visual boxes + banners only (no child controls) */}
       {sectionEntries.map((section, index) => (
         <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
       ))}
+
+      {/* All controls — flat layer above sections, never blocked by overlap */}
+      <ControlLayer />
 
       {/* Group bounding-box overlays (hovered / selected) */}
       <GroupOverlay />
