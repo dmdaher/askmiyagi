@@ -223,6 +223,26 @@ Then switch to local admin dashboard (`localhost:3000/admin/pipeline`):
 
 ---
 
+## Editor Preview toggle (Option A — ship now)
+
+Add a "Preview" toggle to the editor toolbar. When flipped:
+- Selection outlines, drag handles, resize dots, section banners, GroupOverlay all hide
+- Editor enters readOnly mode
+- Contractor sees the clean panel as it would appear in production
+- Flip back to continue editing
+
+**Contractor workflow:** Edit → Preview → looks right? → Submit
+
+**~30 LOC** (boolean flag + conditional rendering).
+
+This gives the contractor confidence that what they see = what ships, without running codegen.
+
+### Future upgrade: PanelRenderer (Option B — defer)
+
+If drift between Preview and the actual generated panel ever causes problems, build a single `<PanelRenderer manifest={...} />` component (~300 LOC) used in editor preview, admin review, AND production. Same component + same data = zero drift by construction. Codegen becomes "commit JSON" instead of "generate TSX". See `memory/project_panelrenderer_future.md` for details.
+
+---
+
 ## Non-goals (explicitly out of scope)
 
 - Hosting pipeline runners on Vercel (requires API rewrite, incompatible with current architecture)
