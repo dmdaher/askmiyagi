@@ -170,7 +170,26 @@ Reads all `devices/*/state.json` blobs. Returns array of `{ deviceId, deviceName
 
 ### GET `/api/hosted/panels/[deviceId]` — get manifest
 
-Reads `devices/{deviceId}/state.json` blob. Returns the full manifest for the editor to load.
+Reads `devices/{deviceId}/state.json` blob. **Returns the manifest in the SAME flat format as the local `/api/pipeline/{id}/manifest` endpoint** — NOT nested inside a `manifest` key. The `status` and `updatedAt` fields are added as top-level fields alongside the manifest data, plus `_source: 'hosted'`. This avoids branching in `PanelEditor.tsx` deserialization.
+
+```typescript
+// Response shape (must match local endpoint format):
+{
+  deviceId: "fantom-06",
+  deviceName: "Fantom-06",
+  manufacturer: "Roland",
+  sections: {...},
+  controls: {...},
+  editorLabels: [...],
+  keyboard: {...},
+  canvasWidth: 1875,
+  canvasHeight: 564,
+  // hosted-only fields:
+  _source: "hosted",
+  _status: "in-progress",
+  _updatedAt: "2026-04-05T..."
+}
+```
 
 ### PUT `/api/hosted/panels/[deviceId]` — save manifest (auto-save)
 
@@ -207,21 +226,55 @@ export const isHosted = process.env.NEXT_PUBLIC_EDITOR_MODE === 'hosted';
 | "Clean Up" button | Visible | Visible |
 | Pipeline controls (start, diagnostics) | Visible | Hidden |
 
-### How to switch data source
+### `isHosted` propagation strategy: direct import (no prop drilling)
 
-The editor's `PanelEditor.tsx` currently loads manifest from:
+Use the module-level constant via direct import in each file that needs it. Do NOT pass `isHosted` as a prop through the component tree. It's a compile-time constant (`NEXT_PUBLIC_*`), tree-shaking removes dead code in the non-matching mode.
+
 ```typescript
-const res = await fetch(`/api/pipeline/${deviceId}/manifest`);
+// Import directly in any file that needs it:
+import { isHosted } from '@/lib/env';
 ```
 
-In hosted mode, change to:
+### Files that need `isHosted` URL switching
+
+**`PanelEditor.tsx`** — manifest load (GET) + force-save (PUT) + export:
 ```typescript
+import { isHosted } from '@/lib/env';
 const apiBase = isHosted ? '/api/hosted/panels' : '/api/pipeline';
 const res = await fetch(`${apiBase}/${deviceId}/manifest`);
 // same for PUT auto-save
 ```
 
-Alternatively, add a `useManifestApi(deviceId)` hook that returns the correct base URL.
+**`useAutoSave.ts`** — auto-save PUT endpoint:
+```typescript
+import { isHosted } from '@/lib/env';
+const apiBase = isHosted ? '/api/hosted/panels' : '/api/pipeline';
+fetch(`${apiBase}/${deviceId}/manifest`, { method: 'PUT', ... });
+```
+
+**`EditorWorkspace.tsx`** — photo loading (IMPORTANT: has its own separate fetch, easy to miss):
+```typescript
+import { isHosted } from '@/lib/env';
+const photoBase = isHosted ? '/api/hosted/panels' : '/api/pipeline';
+const res = await fetch(`${photoBase}/${deviceId}/photos`);
+// and the photo URL:
+setPhotoUrl(`${photoBase}/${deviceId}/photos?file=${encodeURIComponent(chosen.name)}`);
+```
+
+**`EditorToolbar.tsx`** — hide/show buttons:
+```typescript
+import { isHosted } from '@/lib/env';
+// Hide "Export Panel" in hosted mode
+// Show "Submit for Review" in hosted mode
+```
+
+### Auto-save debounce for hosted mode
+
+Increase debounce from 800ms to 2500ms when `isHosted` is true. Blob writes are network calls (not local filesystem) and aggressive writes could hit rate limits.
+
+```typescript
+const DEBOUNCE_MS = isHosted ? 2500 : 800;
+```
 
 ---
 
@@ -265,39 +318,62 @@ Two buttons:
 
 Reuses the existing editor component — just different data source + readOnly mode.
 
+### Fix existing `/admin/review/page.tsx` (review list page)
+
+The existing scaffold at `src/app/admin/review/page.tsx` has two issues:
+1. It fetches from `/api/pipeline` (filesystem) — works locally but fails on Vercel serverless
+2. It has **dead links to `/admin/{id}/preview`** (deleted this session, lines 72 and 91)
+
+**Fix:** Update this page to fetch from `/api/hosted/panels` when deployed, and replace preview links with links to `/admin/review/{deviceId}`.
+
+### Middleware scope note
+
+Adding middleware to `/admin/review/*` is an **intentional behavioral change** — the review page currently has no auth. In the hosted deployment, the owner must enter admin password to see contractor submissions. The existing `/admin` dashboard and `/admin/[deviceId]` pages are NOT behind middleware (they're local-only tools with filesystem dependencies).
+
 ---
 
 ## Local admin: "Send to Contractor" button
 
-On the pipeline device card (when pipeline is complete), new button:
+On the pipeline device card (when pipeline is complete), new button.
 
+**IMPORTANT: This must be a LOCAL API route** that uses `@vercel/blob` SDK server-side. Do NOT make cross-origin fetch calls from the browser (localhost → vercel.app = CORS failure). Instead, create a local-only route:
+
+**New route: `src/app/api/pipeline/[deviceId]/send-to-hosted/route.ts`**
 ```typescript
-async function handleSendToContractor() {
-  // 1. Read local manifest-editor.json
-  const manifest = await fetch(`/api/pipeline/${deviceId}/manifest`).then(r => r.json());
+import { put } from '@vercel/blob';
+import fs from 'fs';
+import path from 'path';
 
-  // 2. Read local photos
-  const photos = await fetch(`/api/pipeline/${deviceId}/photos`).then(r => r.json());
+export async function POST(req, { params }) {
+  const { deviceId } = await params;
+  // 1. Read local manifest-editor.json from filesystem
+  const editorPath = path.join('.pipeline', deviceId, 'manifest-editor.json');
+  const manifest = JSON.parse(fs.readFileSync(editorPath, 'utf-8'));
 
-  // 3. Upload manifest to hosted Blob
-  await fetch(`/api/hosted/panels/${deviceId}`, {
-    method: 'PUT',
-    body: JSON.stringify({ ...manifest, status: 'ready' }),
+  // 2. Build state.json with status=ready
+  const state = { deviceId, deviceName: manifest.deviceName, manufacturer: manifest.manufacturer,
+    status: 'ready', manifest, updatedAt: new Date().toISOString() };
+
+  // 3. Upload to Blob (server-side, no CORS)
+  await put(`devices/${deviceId}/state.json`, JSON.stringify(state), {
+    access: 'public', contentType: 'application/json', addRandomSuffix: false,
   });
 
-  // 4. Upload photos to hosted Blob (foreach photo)
-  for (const photo of photos) {
-    const photoBlob = await fetch(`/api/pipeline/${deviceId}/photos?file=${photo.name}`).then(r => r.blob());
-    await fetch(`/api/hosted/panels/${deviceId}/photos`, {
-      method: 'POST',
-      body: photoBlob,
-      headers: { 'X-Filename': photo.name },
-    });
+  // 4. Upload photos to Blob
+  const photosDir = path.join('.pipeline', deviceId, 'input', 'photos');
+  if (fs.existsSync(photosDir)) {
+    for (const file of fs.readdirSync(photosDir)) {
+      const data = fs.readFileSync(path.join(photosDir, file));
+      await put(`devices/${deviceId}/photos/${file}`, data, {
+        access: 'public', addRandomSuffix: false,
+      });
+    }
   }
+  return NextResponse.json({ ok: true });
 }
 ```
 
-This is a local-only button — it reads from local filesystem and writes to hosted Blob.
+The admin dashboard button calls `POST /api/pipeline/{deviceId}/send-to-hosted` — a local route that reads filesystem and writes to Blob server-side. No CORS issue.
 
 ---
 
@@ -347,20 +423,42 @@ async function handleBuildTutorials() {
 
 ## Testing checklist
 
-- [ ] Contractor can sign in with password at `/signin`
+### Auth
+- [ ] Contractor can sign in with password at `/signin?role=contractor`
+- [ ] Admin can sign in with password at `/signin?role=admin`
+- [ ] Public pages (`/`, `/tutorial/*`) remain accessible without password
+- [ ] `/editor/*` redirects to signin without contractor cookie
+- [ ] `/admin/review/*` redirects to signin without admin cookie
+
+### Hosted editor (contractor flow)
 - [ ] `/editor` lists devices from Blob
 - [ ] Clicking "Edit" opens the editor with manifest loaded from Blob
 - [ ] Auto-save writes to Blob (check blob store in Vercel dashboard)
+- [ ] **Reload editor page — verify saved state loads correctly from Blob (round-trip)**
 - [ ] Status changes to "in-progress" on first edit
 - [ ] "Submit for Review" sets status to "submitted"
+- [ ] Preview toggle works in hosted editor (PanelRenderer renders correctly)
+- [ ] Labels, icons, section labels all persist through Blob save/load cycle
+- [ ] Photo side-by-side loads from Blob URLs
+
+### Review flow
 - [ ] `/admin/review/{id}` shows panel in readOnly mode
 - [ ] "Approve" sets status to "approved"
 - [ ] "Request Changes" sets status back to "in-progress"
+- [ ] Review list page (`/admin/review`) loads devices from Blob (no dead links)
+
+### Local admin buttons
 - [ ] "Send to Contractor" uploads manifest + photos to Blob from local
 - [ ] "Build Tutorials" pulls manifest from Blob, writes locally, runs export
-- [ ] Public pages (`/`, `/tutorial`, `/devices/*`) remain accessible without password
-- [ ] Preview toggle works in hosted editor (PanelRenderer renders correctly)
-- [ ] Labels, icons, section labels all persist through Blob save/load cycle
+
+### Regression
+- [ ] **Local editor workflow still works when `NEXT_PUBLIC_EDITOR_MODE` is unset** (load, edit, auto-save, export, preview)
+- [ ] Local pipeline routes (`/api/pipeline/*`) unchanged and functional
+- [ ] Existing Fantom-08 tutorials + panel unaffected
+
+### Blob specifics
+- [ ] Verify `put()` with `addRandomSuffix: false` overwrites existing blob (not accumulating duplicates)
+- [ ] Auto-save debounce is 2500ms in hosted mode (not 800ms)
 
 ---
 
@@ -390,6 +488,27 @@ async function handleBuildTutorials() {
 - Hosted API routes (`/api/hosted/*`) are Vercel-safe — they use Blob SDK, no filesystem
 - The contractor is NOT an engineer — no git, terminal, or dev tools
 - One editor at a time per device — no concurrent editing conflict resolution
+
+---
+
+## Audit findings (addressed in this plan)
+
+The following issues were caught by code review and incorporated above:
+
+| Issue | Severity | Resolution |
+|---|---|---|
+| CORS: "Send to Contractor" can't fetch cross-origin localhost→Vercel | Critical | Use local API route with Blob SDK server-side (no browser fetch) |
+| Hosted GET response shape must match local format | Important | Returns flat manifest with `_source: 'hosted'`, not nested |
+| `EditorWorkspace.tsx` has its own photo fetch needing URL swap | Important | Added to files-to-modify list with code sample |
+| `/admin/review/page.tsx` has dead links to deleted preview page | Important | Fix links to `/admin/review/{id}` |
+| `/admin/review/page.tsx` fetches from filesystem (fails on Vercel) | Important | Fetch from `/api/hosted/panels` in hosted mode |
+| Middleware on `/admin/review/*` is a behavioral change | Important | Documented as intentional |
+| Missing round-trip test (save to Blob → reload → verify) | Important | Added to testing checklist |
+| Missing local regression test | Important | Added to testing checklist |
+| Auto-save 800ms too aggressive for Blob network writes | Moderate | Increase to 2500ms in hosted mode |
+| `isHosted` propagation unclear (prop vs import) | Moderate | Direct import, no prop drilling |
+| `useAutoSave` API base URL not specified | Moderate | Added code sample |
+| Blob `put()` overwrite semantics unclear | Low | Added verification item to checklist |
 
 ---
 
