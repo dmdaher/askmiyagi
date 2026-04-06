@@ -74,6 +74,7 @@ export async function POST(
       editorLabels: (editorData.editorLabels ?? []).map((l: any) => ({
         id: l.id,
         text: l.text,
+        icon: l.icon ?? undefined,
         x: l.x, y: l.y,
         w: l.w,
         fontSize: l.fontSize,

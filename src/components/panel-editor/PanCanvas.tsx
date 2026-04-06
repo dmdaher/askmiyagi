@@ -61,6 +61,7 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
     editorLabels: (state.editorLabels ?? []).map((l: any) => ({
       id: l.id,
       text: l.text,
+      icon: l.icon,
       x: l.x,
       y: l.y,
       w: l.w,

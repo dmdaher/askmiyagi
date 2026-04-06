@@ -46,6 +46,7 @@ interface ManifestControl {
 interface ManifestLabel {
   id: string;
   text: string;
+  icon?: string;
   x: number;
   y: number;
   w?: number;
@@ -442,6 +443,9 @@ export default function PanelRenderer({
             lineHeight: `${label.lineHeight ?? label.fontSize + 2}px`,
           }}>
           <span className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
+            {label.icon && HARDWARE_ICONS[label.icon] && (
+              <span style={{ marginRight: 3 }}>{HARDWARE_ICONS[label.icon]}</span>
+            )}
             {renderLabelText(label.text)}
           </span>
         </div>

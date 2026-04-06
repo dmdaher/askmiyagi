@@ -1035,6 +1035,35 @@ function LabelProperties({ label }: { label: any }) {
         <p className="text-[9px] text-gray-600">Shift+Enter for new line</p>
       </div>
 
+      {/* Icon */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Icon</label>
+        <select
+          value={label.icon ?? ''}
+          onChange={(e) => {
+            pushSnapshot();
+            updateLabel(label.id, { icon: e.target.value || undefined });
+          }}
+          className="w-full h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none focus:border-blue-500"
+        >
+          <option value="">None</option>
+          <option value="arrow-up">▲ Arrow Up</option>
+          <option value="arrow-down">▼ Arrow Down</option>
+          <option value="arrow-left">◀ Arrow Left</option>
+          <option value="arrow-right">▶ Arrow Right</option>
+          <option value="triangle-up">△ Triangle Up</option>
+          <option value="triangle-down">▽ Triangle Down</option>
+          <option value="triangle-left">◁ Triangle Left</option>
+          <option value="triangle-right">▷ Triangle Right</option>
+          <option value="plus">+ Plus</option>
+          <option value="minus">− Minus</option>
+          <option value="play">▶ Play</option>
+          <option value="stop">■ Stop</option>
+          <option value="record">● Record</option>
+          <option value="settings-gear">⚙ Gear</option>
+        </select>
+      </div>
+
       {/* Font size */}
       <div className="space-y-1">
         <label className="text-[10px] uppercase tracking-wide text-gray-500">Font Size</label>

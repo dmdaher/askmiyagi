@@ -8,6 +8,7 @@ export interface EditorLabel {
   id: string;
   controlId: string | null;  // linked control, or null for standalone
   text: string;
+  icon?: string;  // optional icon key from HARDWARE_ICONS (rendered before text)
   x: number;
   y: number;
   w?: number;  // optional width for text centering
