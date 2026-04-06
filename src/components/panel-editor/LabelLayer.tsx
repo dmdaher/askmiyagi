@@ -53,6 +53,10 @@ export default function LabelLayer() {
   useEffect(() => {
     if (!selectedLabel || editing) return;
     const handler = (e: KeyboardEvent) => {
+      // Don't intercept keys when focus is inside an input/textarea (e.g., Properties panel)
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
       if (e.key === 'Backspace' || e.key === 'Delete') {
         e.preventDefault();
         pushSnapshot();
