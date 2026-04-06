@@ -10,6 +10,7 @@ import GridOverlay from './GridOverlay';
 import PhotoOverlay from './PhotoOverlay';
 import DragSelectRect from './DragSelectRect';
 import KeyboardSection from './KeyboardSection';
+import SectionContainer from '@/components/controls/SectionContainer';
 
 export default function PanCanvas() {
   const zoom = useEditorStore((s) => s.zoom);
@@ -20,6 +21,7 @@ export default function PanCanvas() {
   const sections = useEditorStore((s) => s.sections);
   const groupLabels = useEditorStore((s) => s.groupLabels);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
+  const previewMode = useEditorStore((s) => s.previewMode);
   // Sort sections by area: largest first (rendered at bottom), smallest last (on top).
   // This ensures smaller sections in overlapping areas are always clickable.
   const sectionEntries = Object.values(sections).sort(
@@ -43,36 +45,66 @@ export default function PanCanvas() {
         style={{ backgroundColor: '#111122' }}
       />
 
-      {/* Photo overlay (behind everything) */}
-      <PhotoOverlay />
+      {previewMode ? (
+        <>
+          {/* Preview mode — clean panel view matching generated output */}
+          {/* Section backgrounds (dark areas like SectionContainer in generated panel) */}
+          {sectionEntries.map((section) => (
+            <SectionContainer
+              key={section.id}
+              id={section.id}
+              x={section.x}
+              y={section.y}
+              w={section.w}
+              h={section.h}
+              headerLabel={section.headerLabel ?? undefined}
+            />
+          ))}
 
-      {/* Grid overlay */}
-      <GridOverlay />
+          {/* Controls (flat layer, no edit affordances) */}
+          <ControlLayer />
 
-      {/* Drag-select rubber band (behind sections, above grid) */}
-      <DragSelectRect />
+          {/* Labels */}
+          <LabelLayer />
 
-      {/* Section frames — visual boxes + banners only (no child controls) */}
-      {sectionEntries.map((section, index) => (
-        <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
-      ))}
+          {/* Keyboard */}
+          <KeyboardSection />
+        </>
+      ) : (
+        <>
+          {/* Edit mode — full editor chrome */}
+          {/* Photo overlay (behind everything) */}
+          <PhotoOverlay />
 
-      {/* All controls — flat layer above sections, never blocked by overlap */}
-      <ControlLayer />
+          {/* Grid overlay */}
+          <GridOverlay />
 
-      {/* Group bounding-box overlays (hovered / selected) */}
-      <GroupOverlay />
+          {/* Drag-select rubber band (behind sections, above grid) */}
+          <DragSelectRect />
 
-      {/* Group labels (spanning across controls) */}
-      {groupLabels.map((gl) => (
-        <GroupLabelNode key={gl.id} groupLabel={gl} />
-      ))}
+          {/* Section frames — visual boxes + banners only (no child controls) */}
+          {sectionEntries.map((section, index) => (
+            <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
+          ))}
 
-      {/* Floating labels — rendered above controls */}
-      <LabelLayer />
+          {/* All controls — flat layer above sections, never blocked by overlap */}
+          <ControlLayer />
 
-      {/* Keyboard section — draggable/resizable */}
-      <KeyboardSection />
+          {/* Group bounding-box overlays (hovered / selected) */}
+          <GroupOverlay />
+
+          {/* Group labels (spanning across controls) */}
+          {groupLabels.map((gl) => (
+            <GroupLabelNode key={gl.id} groupLabel={gl} />
+          ))}
+
+          {/* Floating labels — rendered above controls */}
+          <LabelLayer />
+
+          {/* Keyboard section — draggable/resizable */}
+          <KeyboardSection />
+        </>
+      )}
     </div>
   );
 }

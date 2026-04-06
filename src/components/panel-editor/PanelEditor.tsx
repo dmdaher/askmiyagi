@@ -24,7 +24,8 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
   useEditorKeyboard();
   useAutoSave(deviceId);
 
-  const [previewMode, setPreviewMode] = useState(false);
+  const previewMode = useEditorStore((s) => s.previewMode);
+  const setPreviewMode = useEditorStore((s) => s.setPreviewMode);
   const [buildStatus, setBuildStatus] = useState<
     'idle' | 'building' | 'approved'
   >('idle');
@@ -130,14 +131,13 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
         onApproveAndBuild={handleApproveAndBuild}
         onCleanUp={handleCleanUp}
         onTogglePreview={() => {
-          setPreviewMode((p) => {
-            if (!p) {
-              // Entering preview — clear selection so no outlines show
-              useEditorStore.getState().setSelectedIds([]);
-              useEditorStore.getState().setSelectedLabel(null);
-            }
-            return !p;
-          });
+          const next = !previewMode;
+          if (next) {
+            // Entering preview — clear selection so no outlines show
+            useEditorStore.getState().setSelectedIds([]);
+            useEditorStore.getState().setSelectedLabel(null);
+          }
+          setPreviewMode(next);
         }}
         onReportIssue={() => setShowIssueModal(true)}
         onRestoreVersion={onRestoreVersion}
@@ -176,7 +176,7 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
               </a>
             )}
             <button
-              onClick={() => setPreviewMode(false)}
+              onClick={() => { setPreviewMode(false); setBuildStatus('idle'); }}
               className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
             >
               Back to Editor
