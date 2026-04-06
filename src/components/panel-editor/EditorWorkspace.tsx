@@ -82,10 +82,8 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
               src={photoUrl}
               alt="Hardware reference"
               style={{
-                transformOrigin: 'top center',
-                transform: `scale(${photoZoom})`,
+                width: `${100 * photoZoom}%`,
                 maxWidth: 'none',
-                width: '100%',
               }}
             />
             <div className="sticky bottom-1 left-1 text-[9px] text-gray-600 bg-gray-900/80 rounded px-1 py-0.5 inline-block">
