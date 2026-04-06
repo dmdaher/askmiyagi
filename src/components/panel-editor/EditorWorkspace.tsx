@@ -71,6 +71,8 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
             className="overflow-auto bg-[#0a0a14] p-2"
             style={{ width: `${photoWidth}%`, minWidth: 200 }}
             onWheel={(e) => {
+              // Only zoom on vertical scroll — let horizontal scroll pan the photo
+              if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
               e.stopPropagation();
               const delta = e.deltaY < 0 ? 0.1 : -0.1;
               setPhotoZoom(z => Math.max(0.3, Math.min(5, z + delta)));
