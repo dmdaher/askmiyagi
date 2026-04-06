@@ -29,18 +29,18 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1654,
-              top: 38,
-              width: 30,
-              height: 19,
+              left: 2086,
+              top: 16,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="sampling"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('sampling').active}
                 highlighted={isHighlighted('sampling')}
                 onClick={() => onButtonClick?.('sampling')}
@@ -50,18 +50,18 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1704,
-              top: 38,
-              width: 30,
-              height: 19,
+              left: 2148,
+              top: 16,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="pad-mode"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('pad-mode').active}
                 highlighted={isHighlighted('pad-mode')}
                 onClick={() => onButtonClick?.('pad-mode')}
@@ -71,18 +71,18 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1733,
-              top: 38,
-              width: 30,
-              height: 19,
+              left: 2185,
+              top: 16,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="clip-board"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('clip-board').active}
                 highlighted={isHighlighted('clip-board')}
                 onClick={() => onButtonClick?.('clip-board')}
@@ -92,18 +92,18 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1758,
-              top: 38,
-              width: 30,
-              height: 19,
+              left: 2216,
+              top: 16,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="bank"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('bank').active}
                 highlighted={isHighlighted('bank')}
                 onClick={() => onButtonClick?.('bank')}
@@ -113,18 +113,18 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1811,
-              top: 38,
-              width: 30,
-              height: 19,
+              left: 2283,
+              top: 16,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="hold"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('hold').active}
                 highlighted={isHighlighted('hold')}
                 onClick={() => onButtonClick?.('hold')}
@@ -134,10 +134,10 @@ export default function PadSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1654,
-              top: 163,
-              width: 30,
-              height: 30,
+              left: 2086,
+              top: 173,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -147,18 +147,18 @@ export default function PadSection({
                 active={getState('pad-1').active}
                 highlighted={isHighlighted('pad-1')}
                 onClick={() => onButtonClick?.('pad-1')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1706,
-              top: 163,
-              width: 30,
-              height: 30,
+              left: 2154,
+              top: 173,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -168,18 +168,18 @@ export default function PadSection({
                 active={getState('pad-2').active}
                 highlighted={isHighlighted('pad-2')}
                 onClick={() => onButtonClick?.('pad-2')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1760,
-              top: 163,
-              width: 30,
-              height: 30,
+              left: 2218,
+              top: 173,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -189,18 +189,18 @@ export default function PadSection({
                 active={getState('pad-3').active}
                 highlighted={isHighlighted('pad-3')}
                 onClick={() => onButtonClick?.('pad-3')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1811,
-              top: 163,
-              width: 30,
-              height: 30,
+              left: 2283,
+              top: 173,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -210,18 +210,18 @@ export default function PadSection({
                 active={getState('pad-4').active}
                 highlighted={isHighlighted('pad-4')}
                 onClick={() => onButtonClick?.('pad-4')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1654,
-              top: 194,
-              width: 30,
-              height: 30,
+              left: 2086,
+              top: 211,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -231,18 +231,18 @@ export default function PadSection({
                 active={getState('pad-5').active}
                 highlighted={isHighlighted('pad-5')}
                 onClick={() => onButtonClick?.('pad-5')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1706,
-              top: 194,
-              width: 30,
-              height: 30,
+              left: 2154,
+              top: 211,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -252,18 +252,18 @@ export default function PadSection({
                 active={getState('pad-6').active}
                 highlighted={isHighlighted('pad-6')}
                 onClick={() => onButtonClick?.('pad-6')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1760,
-              top: 194,
-              width: 30,
-              height: 30,
+              left: 2218,
+              top: 211,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -273,18 +273,18 @@ export default function PadSection({
                 active={getState('pad-7').active}
                 highlighted={isHighlighted('pad-7')}
                 onClick={() => onButtonClick?.('pad-7')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1811,
-              top: 194,
-              width: 30,
-              height: 30,
+              left: 2283,
+              top: 211,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -294,18 +294,18 @@ export default function PadSection({
                 active={getState('pad-8').active}
                 highlighted={isHighlighted('pad-8')}
                 onClick={() => onButtonClick?.('pad-8')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1654,
-              top: 225,
-              width: 30,
-              height: 30,
+              left: 2086,
+              top: 249,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -315,18 +315,18 @@ export default function PadSection({
                 active={getState('pad-9').active}
                 highlighted={isHighlighted('pad-9')}
                 onClick={() => onButtonClick?.('pad-9')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1706,
-              top: 225,
-              width: 30,
-              height: 30,
+              left: 2154,
+              top: 249,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -336,18 +336,18 @@ export default function PadSection({
                 active={getState('pad-10').active}
                 highlighted={isHighlighted('pad-10')}
                 onClick={() => onButtonClick?.('pad-10')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1760,
-              top: 225,
-              width: 30,
-              height: 30,
+              left: 2218,
+              top: 249,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -357,18 +357,18 @@ export default function PadSection({
                 active={getState('pad-11').active}
                 highlighted={isHighlighted('pad-11')}
                 onClick={() => onButtonClick?.('pad-11')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1811,
-              top: 225,
-              width: 30,
-              height: 30,
+              left: 2283,
+              top: 249,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -378,18 +378,18 @@ export default function PadSection({
                 active={getState('pad-12').active}
                 highlighted={isHighlighted('pad-12')}
                 onClick={() => onButtonClick?.('pad-12')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1654,
-              top: 256,
-              width: 30,
-              height: 30,
+              left: 2086,
+              top: 288,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -399,18 +399,18 @@ export default function PadSection({
                 active={getState('pad-13').active}
                 highlighted={isHighlighted('pad-13')}
                 onClick={() => onButtonClick?.('pad-13')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1706,
-              top: 256,
-              width: 30,
-              height: 30,
+              left: 2154,
+              top: 288,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -420,18 +420,18 @@ export default function PadSection({
                 active={getState('pad-14').active}
                 highlighted={isHighlighted('pad-14')}
                 onClick={() => onButtonClick?.('pad-14')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1760,
-              top: 256,
-              width: 30,
-              height: 30,
+              left: 2218,
+              top: 288,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -441,18 +441,18 @@ export default function PadSection({
                 active={getState('pad-15').active}
                 highlighted={isHighlighted('pad-15')}
                 onClick={() => onButtonClick?.('pad-15')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1811,
-              top: 256,
-              width: 30,
-              height: 30,
+              left: 2283,
+              top: 288,
+              width: 38,
+              height: 38,
             }}
           >
             <div>
@@ -462,8 +462,8 @@ export default function PadSection({
                 active={getState('pad-16').active}
                 highlighted={isHighlighted('pad-16')}
                 onClick={() => onButtonClick?.('pad-16')}
-                width={30}
-                height={30}
+                width={38}
+                height={38}
               />
             </div>
           </div>

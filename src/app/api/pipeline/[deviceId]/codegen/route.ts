@@ -106,6 +106,27 @@ export async function POST(
         // Pass editorLabels to manifest for codegen to render
         (manifest as any).editorLabels = editorData.editorLabels ?? [];
 
+        // Merge editor's keyboard state (position/width adjusted by contractor)
+        // into manifest so codegen generates matching dimensions.
+        if (editorData.keyboard) {
+          (manifest as any).keyboard = {
+            ...((manifest as any).keyboard ?? {}),
+            ...editorData.keyboard,
+          };
+        }
+
+        // Pass editor section positions (pixel bounds) for visual section boxes
+        // in the generated panel. These come from the editor's live state,
+        // distinct from manifest.sections' panelBoundingBox (gatekeeper percentages).
+        (manifest as any).editorSections = Object.values(editorSections).map((s: any) => ({
+          id: s.id,
+          headerLabel: s.headerLabel,
+          x: s.x,
+          y: s.y,
+          w: s.w,
+          h: s.h,
+        }));
+
         // ── Step 4: Backup manifest.json before overwriting ──
         const backupDir = path.join(pipelineDir, 'backups');
         if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });

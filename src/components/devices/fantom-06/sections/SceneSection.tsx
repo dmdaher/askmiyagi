@@ -28,18 +28,18 @@ export default function SceneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1110,
-              top: 16,
-              width: 30,
-              height: 19,
+              left: 1287,
+              top: 79,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="scene-select"
                 label=""
-                width={30}
-                height={19}
+                width={41}
+                height={26}
                 active={getState('scene-select').active}
                 highlighted={isHighlighted('scene-select')}
                 onClick={() => onButtonClick?.('scene-select')}
@@ -49,18 +49,18 @@ export default function SceneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1110,
-              top: 79,
-              width: 30,
-              height: 19,
+              left: 1287,
+              top: 134,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="scene-chain"
                 label=""
-                width={30}
-                height={19}
+                width={41}
+                height={26}
                 active={getState('scene-chain').active}
                 highlighted={isHighlighted('scene-chain')}
                 onClick={() => onButtonClick?.('scene-chain')}
@@ -70,18 +70,18 @@ export default function SceneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1110,
-              top: 118,
-              width: 30,
-              height: 19,
+              left: 1287,
+              top: 189,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-view"
                 label=""
-                width={30}
-                height={19}
+                width={41}
+                height={26}
                 active={getState('zone-view').active}
                 highlighted={isHighlighted('zone-view')}
                 onClick={() => onButtonClick?.('zone-view')}
@@ -91,18 +91,18 @@ export default function SceneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1110,
-              top: 168,
-              width: 30,
-              height: 19,
+              left: 1287,
+              top: 243,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="single-tone"
                 label=""
-                width={30}
-                height={19}
+                width={41}
+                height={26}
                 active={getState('single-tone').active}
                 highlighted={isHighlighted('single-tone')}
                 onClick={() => onButtonClick?.('single-tone')}

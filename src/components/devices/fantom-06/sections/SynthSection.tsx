@@ -29,10 +29,10 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1238,
-              top: 16,
-              width: 30,
-              height: 30,
+              left: 1530,
+              top: 60,
+              width: 38,
+              height: 38,
             }}
           >
             <Knob
@@ -40,17 +40,17 @@ export default function SynthSection({
               label=""
               value={getState('cutoff').value ?? 64}
               highlighted={isHighlighted('cutoff')}
-              outerSize={30}
-              innerSize={21}
+              outerSize={38}
+              innerSize={27}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1337,
-              top: 16,
-              width: 30,
-              height: 30,
+              left: 1595,
+              top: 63,
+              width: 38,
+              height: 38,
             }}
           >
             <Knob
@@ -58,25 +58,25 @@ export default function SynthSection({
               label=""
               value={getState('resonance').value ?? 64}
               highlighted={isHighlighted('resonance')}
-              outerSize={30}
-              innerSize={21}
+              outerSize={38}
+              innerSize={27}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1252,
-              top: 91,
-              width: 30,
-              height: 19,
+              left: 1508,
+              top: 110,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="osc"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('osc').active}
                 highlighted={isHighlighted('osc')}
                 onClick={() => onButtonClick?.('osc')}
@@ -86,18 +86,18 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1302,
-              top: 91,
-              width: 30,
-              height: 19,
+              left: 1570,
+              top: 110,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="filter-type"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('filter-type').active}
                 highlighted={isHighlighted('filter-type')}
                 onClick={() => onButtonClick?.('filter-type')}
@@ -107,18 +107,18 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1352,
-              top: 91,
-              width: 30,
-              height: 19,
+              left: 1633,
+              top: 110,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="param"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('param').active}
                 highlighted={isHighlighted('param')}
                 onClick={() => onButtonClick?.('param')}
@@ -128,18 +128,18 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1252,
-              top: 128,
-              width: 30,
-              height: 19,
+              left: 1508,
+              top: 155,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="amp"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('amp').active}
                 highlighted={isHighlighted('amp')}
                 onClick={() => onButtonClick?.('amp')}
@@ -149,18 +149,18 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1302,
-              top: 128,
-              width: 30,
-              height: 19,
+              left: 1570,
+              top: 155,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="fx"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('fx').active}
                 highlighted={isHighlighted('fx')}
                 onClick={() => onButtonClick?.('fx')}
@@ -170,18 +170,18 @@ export default function SynthSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 1352,
-              top: 128,
-              width: 30,
-              height: 19,
+              left: 1633,
+              top: 155,
+              width: 38,
+              height: 24,
             }}
           >
             <div>
               <PanelButton
                 id="lfo"
                 label=""
-                width={30}
-                height={19}
+                width={38}
+                height={24}
                 active={getState('lfo').active}
                 highlighted={isHighlighted('lfo')}
                 onClick={() => onButtonClick?.('lfo')}

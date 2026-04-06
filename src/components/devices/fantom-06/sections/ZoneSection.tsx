@@ -30,10 +30,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 265,
-              top: 118,
-              width: 39,
-              height: 32,
+              left: 248,
+              top: 135,
+              width: 49,
+              height: 41,
             }}
           >
             <Knob
@@ -41,25 +41,25 @@ export default function ZoneSection({
               label=""
               value={getState('master-volume').value ?? 64}
               highlighted={isHighlighted('master-volume')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 312,
-              top: 81,
-              width: 32,
-              height: 20,
+              left: 306,
+              top: 91,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="pan-level"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('pan-level').active}
                 highlighted={isHighlighted('pan-level')}
                 onClick={() => onButtonClick?.('pan-level')}
@@ -69,18 +69,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 351,
-              top: 83,
-              width: 32,
-              height: 20,
+              left: 354,
+              top: 91,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="ctrl"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('ctrl').active}
                 highlighted={isHighlighted('ctrl')}
                 onClick={() => onButtonClick?.('ctrl')}
@@ -90,18 +90,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 351,
-              top: 124,
-              width: 32,
-              height: 20,
+              left: 354,
+              top: 141,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="assign"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('assign').active}
                 highlighted={isHighlighted('assign')}
                 onClick={() => onButtonClick?.('assign')}
@@ -111,18 +111,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 312,
-              top: 165,
-              width: 32,
-              height: 20,
+              left: 305,
+              top: 193,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-9-16"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-9-16').active}
                 highlighted={isHighlighted('zone-9-16')}
                 onClick={() => onButtonClick?.('zone-9-16')}
@@ -132,18 +132,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 351,
-              top: 164,
-              width: 32,
-              height: 20,
+              left: 354,
+              top: 193,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-select"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-select').active}
                 highlighted={isHighlighted('zone-select')}
                 onClick={() => onButtonClick?.('zone-select')}
@@ -153,10 +153,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 402,
-              top: 77,
-              width: 32,
-              height: 32,
+              left: 419,
+              top: 85,
+              width: 41,
+              height: 41,
             }}
           >
             <Knob
@@ -164,17 +164,17 @@ export default function ZoneSection({
               label=""
               value={getState('knob-1').value ?? 64}
               highlighted={isHighlighted('knob-1')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 445,
-              top: 77,
-              width: 32,
-              height: 32,
+              left: 470,
+              top: 85,
+              width: 41,
+              height: 41,
             }}
           >
             <Knob
@@ -182,17 +182,17 @@ export default function ZoneSection({
               label=""
               value={getState('knob-2').value ?? 64}
               highlighted={isHighlighted('knob-2')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 487,
-              top: 77,
-              width: 32,
-              height: 32,
+              left: 524,
+              top: 85,
+              width: 41,
+              height: 41,
             }}
           >
             <Knob
@@ -200,17 +200,17 @@ export default function ZoneSection({
               label=""
               value={getState('knob-3').value ?? 64}
               highlighted={isHighlighted('knob-3')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 529,
-              top: 77,
-              width: 32,
-              height: 32,
+              left: 575,
+              top: 85,
+              width: 41,
+              height: 41,
             }}
           >
             <Knob
@@ -218,17 +218,17 @@ export default function ZoneSection({
               label=""
               value={getState('knob-4').value ?? 64}
               highlighted={isHighlighted('knob-4')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 572,
-              top: 77,
-              width: 32,
-              height: 32,
+              left: 630,
+              top: 85,
+              width: 41,
+              height: 41,
             }}
           >
             <Knob
@@ -236,17 +236,17 @@ export default function ZoneSection({
               label=""
               value={getState('knob-5').value ?? 64}
               highlighted={isHighlighted('knob-5')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 614,
-              top: 77,
-              width: 32,
-              height: 32,
+              left: 681,
+              top: 85,
+              width: 41,
+              height: 41,
             }}
           >
             <Knob
@@ -254,17 +254,17 @@ export default function ZoneSection({
               label=""
               value={getState('knob-6').value ?? 64}
               highlighted={isHighlighted('knob-6')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 656,
-              top: 77,
-              width: 32,
-              height: 32,
+              left: 735,
+              top: 85,
+              width: 41,
+              height: 41,
             }}
           >
             <Knob
@@ -272,17 +272,17 @@ export default function ZoneSection({
               label=""
               value={getState('knob-7').value ?? 64}
               highlighted={isHighlighted('knob-7')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 698,
-              top: 77,
-              width: 32,
-              height: 32,
+              left: 786,
+              top: 85,
+              width: 41,
+              height: 41,
             }}
           >
             <Knob
@@ -290,25 +290,25 @@ export default function ZoneSection({
               label=""
               value={getState('knob-8').value ?? 64}
               highlighted={isHighlighted('knob-8')}
-              outerSize={32}
-              innerSize={22}
+              outerSize={41}
+              innerSize={29}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 400,
-              top: 139,
-              width: 32,
-              height: 20,
+              left: 416,
+              top: 161,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-1"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-int-ext-1').active}
                 highlighted={isHighlighted('zone-int-ext-1')}
                 onClick={() => onButtonClick?.('zone-int-ext-1')}
@@ -318,18 +318,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 443,
-              top: 139,
-              width: 32,
-              height: 20,
+              left: 468,
+              top: 161,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-2"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-int-ext-2').active}
                 highlighted={isHighlighted('zone-int-ext-2')}
                 onClick={() => onButtonClick?.('zone-int-ext-2')}
@@ -339,18 +339,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 484,
-              top: 139,
-              width: 32,
-              height: 20,
+              left: 520,
+              top: 161,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-3"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-int-ext-3').active}
                 highlighted={isHighlighted('zone-int-ext-3')}
                 onClick={() => onButtonClick?.('zone-int-ext-3')}
@@ -360,18 +360,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 527,
-              top: 139,
-              width: 32,
-              height: 20,
+              left: 575,
+              top: 161,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-4"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-int-ext-4').active}
                 highlighted={isHighlighted('zone-int-ext-4')}
                 onClick={() => onButtonClick?.('zone-int-ext-4')}
@@ -381,18 +381,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 568,
-              top: 139,
-              width: 32,
-              height: 20,
+              left: 625,
+              top: 161,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-5"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-int-ext-5').active}
                 highlighted={isHighlighted('zone-int-ext-5')}
                 onClick={() => onButtonClick?.('zone-int-ext-5')}
@@ -402,18 +402,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 611,
-              top: 139,
-              width: 32,
-              height: 20,
+              left: 679,
+              top: 161,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-6"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-int-ext-6').active}
                 highlighted={isHighlighted('zone-int-ext-6')}
                 onClick={() => onButtonClick?.('zone-int-ext-6')}
@@ -423,18 +423,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 652,
-              top: 139,
-              width: 32,
-              height: 20,
+              left: 731,
+              top: 161,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-7"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-int-ext-7').active}
                 highlighted={isHighlighted('zone-int-ext-7')}
                 onClick={() => onButtonClick?.('zone-int-ext-7')}
@@ -444,18 +444,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 695,
-              top: 139,
-              width: 32,
-              height: 20,
+              left: 783,
+              top: 161,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="zone-int-ext-8"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('zone-int-ext-8').active}
                 highlighted={isHighlighted('zone-int-ext-8')}
                 onClick={() => onButtonClick?.('zone-int-ext-8')}
@@ -465,10 +465,10 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 408,
-              top: 187,
-              width: 18,
-              height: 75,
+              left: 424,
+              top: 224,
+              width: 23,
+              height: 94,
             }}
           >
             <Slider
@@ -476,17 +476,17 @@ export default function ZoneSection({
               label=""
               value={getState('slider-1').value ?? 64}
               highlighted={isHighlighted('slider-1')}
-              trackHeight={55}
-              trackWidth={8}
+              trackHeight={74}
+              trackWidth={13}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 449,
-              top: 187,
-              width: 19,
-              height: 75,
+              left: 476,
+              top: 224,
+              width: 23,
+              height: 94,
             }}
           >
             <Slider
@@ -494,17 +494,17 @@ export default function ZoneSection({
               label=""
               value={getState('slider-2').value ?? 64}
               highlighted={isHighlighted('slider-2')}
-              trackHeight={55}
-              trackWidth={9}
+              trackHeight={74}
+              trackWidth={13}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 490,
-              top: 187,
-              width: 19,
-              height: 75,
+              left: 530,
+              top: 224,
+              width: 23,
+              height: 94,
             }}
           >
             <Slider
@@ -512,17 +512,17 @@ export default function ZoneSection({
               label=""
               value={getState('slider-3').value ?? 64}
               highlighted={isHighlighted('slider-3')}
-              trackHeight={55}
-              trackWidth={9}
+              trackHeight={74}
+              trackWidth={13}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 533,
-              top: 187,
-              width: 19,
-              height: 75,
+              left: 583,
+              top: 224,
+              width: 23,
+              height: 94,
             }}
           >
             <Slider
@@ -530,17 +530,17 @@ export default function ZoneSection({
               label=""
               value={getState('slider-4').value ?? 64}
               highlighted={isHighlighted('slider-4')}
-              trackHeight={55}
-              trackWidth={9}
+              trackHeight={74}
+              trackWidth={13}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 576,
-              top: 187,
-              width: 18,
-              height: 75,
+              left: 638,
+              top: 224,
+              width: 23,
+              height: 94,
             }}
           >
             <Slider
@@ -548,17 +548,17 @@ export default function ZoneSection({
               label=""
               value={getState('slider-5').value ?? 64}
               highlighted={isHighlighted('slider-5')}
-              trackHeight={55}
-              trackWidth={8}
+              trackHeight={74}
+              trackWidth={13}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 617,
-              top: 187,
-              width: 19,
-              height: 75,
+              left: 688,
+              top: 224,
+              width: 23,
+              height: 94,
             }}
           >
             <Slider
@@ -566,17 +566,17 @@ export default function ZoneSection({
               label=""
               value={getState('slider-6').value ?? 64}
               highlighted={isHighlighted('slider-6')}
-              trackHeight={55}
-              trackWidth={9}
+              trackHeight={74}
+              trackWidth={13}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 660,
-              top: 187,
-              width: 18,
-              height: 75,
+              left: 741,
+              top: 224,
+              width: 23,
+              height: 94,
             }}
           >
             <Slider
@@ -584,17 +584,17 @@ export default function ZoneSection({
               label=""
               value={getState('slider-7').value ?? 64}
               highlighted={isHighlighted('slider-7')}
-              trackHeight={55}
-              trackWidth={8}
+              trackHeight={74}
+              trackWidth={13}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 703,
-              top: 187,
-              width: 18,
-              height: 75,
+              left: 794,
+              top: 224,
+              width: 23,
+              height: 94,
             }}
           >
             <Slider
@@ -602,25 +602,25 @@ export default function ZoneSection({
               label=""
               value={getState('slider-8').value ?? 64}
               highlighted={isHighlighted('slider-8')}
-              trackHeight={55}
-              trackWidth={8}
+              trackHeight={74}
+              trackWidth={13}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 271,
-              top: 204,
-              width: 32,
-              height: 20,
+              left: 255,
+              top: 241,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="split"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('split').active}
                 highlighted={isHighlighted('split')}
                 onClick={() => onButtonClick?.('split')}
@@ -630,18 +630,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 312,
-              top: 204,
-              width: 32,
-              height: 20,
+              left: 305,
+              top: 241,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="chord-memory"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('chord-memory').active}
                 highlighted={isHighlighted('chord-memory')}
                 onClick={() => onButtonClick?.('chord-memory')}
@@ -651,18 +651,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 351,
-              top: 205,
-              width: 32,
-              height: 20,
+              left: 354,
+              top: 243,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="arpeggio"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('arpeggio').active}
                 highlighted={isHighlighted('arpeggio')}
                 onClick={() => onButtonClick?.('arpeggio')}
@@ -672,18 +672,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 271,
-              top: 245,
-              width: 32,
-              height: 20,
+              left: 255,
+              top: 294,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="transpose"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('transpose').active}
                 highlighted={isHighlighted('transpose')}
                 onClick={() => onButtonClick?.('transpose')}
@@ -693,18 +693,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 312,
-              top: 245,
-              width: 32,
-              height: 20,
+              left: 305,
+              top: 294,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="octave-down"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('octave-down').active}
                 highlighted={isHighlighted('octave-down')}
                 onClick={() => onButtonClick?.('octave-down')}
@@ -714,18 +714,18 @@ export default function ZoneSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 351,
-              top: 245,
-              width: 32,
-              height: 20,
+              left: 354,
+              top: 294,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="octave-up"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('octave-up').active}
                 highlighted={isHighlighted('octave-up')}
                 onClick={() => onButtonClick?.('octave-up')}

@@ -30,52 +30,52 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 126,
-              top: 107,
-              width: 20,
-              height: 100,
+              left: 73,
+              top: 108,
+              width: 26,
+              height: 125,
             }}
           >
             <Wheel
               id="wheel-1"
               label=""
-              width={20}
-              height={100}
+              width={26}
+              height={125}
               highlighted={isHighlighted('wheel-1')}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 188,
-              top: 107,
-              width: 20,
-              height: 100,
+              left: 149,
+              top: 108,
+              width: 26,
+              height: 125,
             }}
           >
             <Wheel
               id="wheel-2"
               label=""
-              width={20}
-              height={100}
+              width={26}
+              height={125}
               highlighted={isHighlighted('wheel-2')}
             />
           </div>
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 110,
-              top: 359,
-              width: 32,
-              height: 20,
+              left: 51,
+              top: 423,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="s1"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('s1').active}
                 highlighted={isHighlighted('s1')}
                 onClick={() => onButtonClick?.('s1')}
@@ -85,18 +85,18 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 155,
-              top: 359,
-              width: 32,
-              height: 20,
+              left: 108,
+              top: 423,
+              width: 41,
+              height: 26,
             }}
           >
             <div>
               <PanelButton
                 id="s2"
                 label=""
-                width={32}
-                height={20}
+                width={41}
+                height={26}
                 active={getState('s2').active}
                 highlighted={isHighlighted('s2')}
                 onClick={() => onButtonClick?.('s2')}
@@ -106,10 +106,10 @@ export default function ControllerSection({
           <div
             className="absolute flex items-center justify-center"
             style={{
-              left: 126,
-              top: 400,
-              width: 86,
-              height: 86,
+              left: 73,
+              top: 474,
+              width: 108,
+              height: 108,
             }}
           >
             <DirectionSwitch
@@ -117,8 +117,8 @@ export default function ControllerSection({
               label=""
               positions={["FWD","REV","SLIP REV"]}
               highlighted={isHighlighted('pitch-bend-lever')}
-              width={86}
-              height={86}
+              width={108}
+              height={108}
             />
           </div>
       </div>
