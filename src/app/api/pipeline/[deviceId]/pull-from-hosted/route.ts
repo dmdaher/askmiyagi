@@ -6,10 +6,11 @@ import path from 'path';
 /**
  * POST /api/pipeline/{deviceId}/pull-from-hosted
  *
- * Local-only route: pulls the contractor's approved manifest from
- * hosted Blob and writes it to local manifest-editor.json.
- * Then the existing export-manifest + tutorial pipeline can proceed.
+ * Local-only route: pulls contractor's manifest from hosted Blob,
+ * writes to local manifest-editor.json, then runs export-manifest.
  * Server-side Blob SDK calls — no CORS issues.
+ *
+ * Response shape: { ok, output?, error?, status? } — consumed by PipelineDetail.ContractorActions
  */
 export async function POST(
   _request: NextRequest,
@@ -31,17 +32,19 @@ export async function POST(
     const editorPath = path.join(pipelineDir, 'manifest-editor.json');
     fs.writeFileSync(editorPath, JSON.stringify(state.manifest, null, 2));
 
-    // Also run export-manifest to write production JSON
-    const exportRes = await fetch(`http://localhost:3000/api/pipeline/${deviceId}/export-manifest`, {
-      method: 'POST',
-    });
-    const exportOk = exportRes.ok;
+    // Run export-manifest to write production JSON
+    let exported = false;
+    try {
+      const exportRes = await fetch(`http://localhost:3000/api/pipeline/${deviceId}/export-manifest`, {
+        method: 'POST',
+      });
+      exported = exportRes.ok;
+    } catch { /* export is best-effort */ }
 
     return NextResponse.json({
       ok: true,
       status: state.status,
-      exported: exportOk,
-      output: `Pulled manifest from hosted (status: ${state.status}). Local manifest-editor.json updated.${exportOk ? ' Production manifest exported.' : ''}`,
+      output: `Pulled manifest from hosted (status: ${state.status}). Local manifest-editor.json updated.${exported ? ' Production manifest exported.' : ''}`,
     });
   } catch (err) {
     return NextResponse.json(
