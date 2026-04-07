@@ -222,11 +222,40 @@ Everything else: Undo/Redo, Snap, Zoom, Grid, Labels, +L, Sz, Photo, Canvas scal
 
 ---
 
+## Critical findings from audit (must address in rewrite)
+
+### 1. CRITICAL: proxy.ts is dead code — middleware not wired
+`src/proxy.ts` exports a `proxy()` function but Next.js 16 needs it exported as `middleware` from `src/middleware.ts` OR the function must be properly wired. Currently auth does NOT run on any request. The rewrite MUST either:
+- Rename to `src/middleware.ts` and export as `middleware`
+- Or verify Next.js 16 proxy.ts convention is correctly wired (check `next.config.ts`)
+
+### 2. IMPORTANT: /admin/review/ pages are orphaned
+`src/app/admin/review/page.tsx` and `src/app/admin/review/[deviceId]/page.tsx` exist but are NOT in the rewrite plan. They duplicate ContractorSubmissions functionality. **Decision: DELETE these pages** — the admin reviews from ContractorSubmissions on the dashboard (pulls Blob → opens local editor). The hosted review pages are unnecessary.
+
+### 3. IMPORTANT: No state transition enforcement on PATCH
+The status PATCH endpoint accepts any valid status regardless of current state. Admin could approve a `ready` panel (skipping contractor entirely). **Fix: validate transitions:**
+- `ready` → only `in-progress` (via auto-save)
+- `in-progress` → only `submitted` (via contractor submit)
+- `submitted` → only `approved` or `in-progress` (via admin action)
+- `approved` → only `in-progress` (if admin sends back)
+
+### 4. IMPORTANT: Preserve response shape for PipelineDetail
+`PipelineDetail.tsx` has `ContractorActions` that reads `data.ok`, `data.output`, `data.error` from `send-to-hosted` and `pull-from-hosted`. This component is NOT in the rewrite list but depends on two routes that ARE. Response shape must stay `{ ok, output?, error? }`.
+
+### 5. LOW: /preview page must remain public
+If middleware gets wired, `/preview` and `/legal` must be excluded from auth checks.
+
+### 6. LOW: Two-tab editing is last-write-wins
+Acceptable for single contractor but should be documented.
+
+---
+
 ## Files to rewrite
 
 | File | What to rewrite |
 |---|---|
 | `src/lib/hosted-storage.ts` | Clean rewrite — all reads with no-store, all writes with allowOverwrite |
+| `src/middleware.ts` | NEW — properly wired Next.js middleware (rename/replace proxy.ts) |
 | `src/app/api/hosted/panels/route.ts` | List endpoint |
 | `src/app/api/hosted/panels/[deviceId]/route.ts` | GET (flat manifest) + PUT (with 403 guard) |
 | `src/app/api/hosted/panels/[deviceId]/status/route.ts` | PATCH status + reviewNote |
@@ -246,6 +275,17 @@ Everything else: Undo/Redo, Snap, Zoom, Grid, Labels, +L, Sz, Photo, Canvas scal
 
 ---
 
+## Files to delete
+
+| File | Why |
+|---|---|
+| `src/app/admin/review/page.tsx` | Redundant — admin reviews from ContractorSubmissions on dashboard |
+| `src/app/admin/review/[deviceId]/page.tsx` | Redundant — admin opens local editor via "Review →" button |
+| `src/proxy.ts` | Replaced by `src/middleware.ts` |
+| `src/app/api/debug-auth/route.ts` | Already deleted — verify it stays gone |
+
+---
+
 ## Verification checklist
 
 ### Blob reads (every fetch must have cache:'no-store')
@@ -259,7 +299,9 @@ Everything else: Undo/Redo, Snap, Zoom, Grid, Labels, +L, Sz, Photo, Canvas scal
 - [ ] send-to-hosted route: state.json put
 - [ ] send-to-hosted route: photo puts
 
-### State transitions
+### State transitions (with enforcement)
+- [ ] PATCH validates transitions: ready→in-progress, in-progress→submitted, submitted→approved/in-progress, approved→in-progress
+- [ ] PATCH rejects invalid transitions (e.g., ready→approved returns 400)
 - [ ] send-to-hosted → status=ready
 - [ ] First auto-save → ready becomes in-progress
 - [ ] Submit for Review → status=submitted
@@ -283,14 +325,30 @@ Everything else: Undo/Redo, Snap, Zoom, Grid, Labels, +L, Sz, Photo, Canvas scal
 - [ ] Page refresh: checks _status, re-locks if submitted/approved
 - [ ] Admin sends changes back: contractor page refresh unlocks editor
 
-### Auth
+### Middleware (auth)
+- [ ] middleware.ts properly wired (not dead code like proxy.ts was)
 - [ ] /editor/* requires contractor cookie
 - [ ] /admin/* requires admin cookie
-- [ ] / and /tutorial/* are public
+- [ ] / and /tutorial/* and /preview and /legal are public
 - [ ] /signin is public
+- [ ] /api/* passes through (no auth on API routes)
 - [ ] Signin redirect includes original path
 - [ ] Wrong password shows error
 - [ ] Sign out clears cookie
+
+### Deleted files
+- [ ] /admin/review/page.tsx deleted (orphaned)
+- [ ] /admin/review/[deviceId]/page.tsx deleted (orphaned)
+- [ ] proxy.ts deleted (replaced by middleware.ts)
+- [ ] debug-auth route stays deleted
+
+### No regressions
+- [ ] Home page (/) loads correctly
+- [ ] Tutorial pages load correctly
+- [ ] Fantom-06 panel renders via PanelRenderer in device registry
+- [ ] Local editor (/admin/{id}/editor) works with filesystem
+- [ ] PipelineDetail ContractorActions buttons still work (response shape preserved)
+- [ ] Existing tests still pass
 
 ### UI
 - [ ] Contractor list: correct buttons per status
