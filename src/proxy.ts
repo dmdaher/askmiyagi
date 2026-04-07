@@ -6,16 +6,16 @@ const PUBLIC_PATHS = ['/preview', '/legal'];
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Editor pages: accessible by contractor OR admin
+  // Contractor editor: contractor password only
   if (pathname.startsWith('/editor')) {
-    const contractorOk = process.env.CONTRACTOR_PASSWORD && request.cookies.get('contractor_access')?.value === process.env.CONTRACTOR_PASSWORD;
-    const adminOk = process.env.ADMIN_PASSWORD && request.cookies.get('admin_access')?.value === process.env.ADMIN_PASSWORD;
-    if (!contractorOk && !adminOk) {
+    const expected = process.env.CONTRACTOR_PASSWORD;
+    const cookie = request.cookies.get('contractor_access')?.value;
+    if (!expected || cookie !== expected) {
       return NextResponse.redirect(new URL('/signin?role=contractor', request.url));
     }
   }
 
-  // Admin review detail: admin only
+  // Admin review: admin password only
   if (pathname.startsWith('/admin/review')) {
     const expected = process.env.ADMIN_PASSWORD;
     const cookie = request.cookies.get('admin_access')?.value;
