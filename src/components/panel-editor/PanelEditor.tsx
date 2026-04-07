@@ -234,7 +234,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
         }
         const data = await res.json();
         if (!cancelled) {
-          if (data._source === 'editor' && data.sections && data.controls) {
+          if ((data._source === 'editor' || data._source === 'hosted') && data.sections && data.controls) {
             // Restore previously saved editor state (flat sections/controls)
             // API normalizes to arrays — convert back to Record<id, Def> if needed
             const sections = Array.isArray(data.sections)
