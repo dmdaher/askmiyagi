@@ -33,7 +33,7 @@ function SignInForm() {
   return (
     <form onSubmit={handleSubmit} className="w-80 rounded-lg border border-gray-800 bg-[#111122] p-6">
       <h1 className="text-lg font-semibold text-gray-200 mb-1">
-        {role === 'admin' ? 'Admin Review' : 'Panel Editor'}
+        {role === 'admin' ? 'Admin Review' : 'Instrument Editor'}
       </h1>
       <p className="text-sm text-gray-500 mb-4">Enter your password to continue</p>
 

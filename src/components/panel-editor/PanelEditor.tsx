@@ -142,8 +142,8 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
         onRestoreVersion={onRestoreVersion}
       />
 
-      {/* Codegen error banner */}
-      {codegenError && (
+      {/* Codegen error banner — local only */}
+      {!isHosted && codegenError && (
         <div className="flex h-10 items-center justify-between border-b border-red-700/40 bg-red-900/20 px-4">
           <span className="text-sm text-red-300 truncate flex-1 mr-4">
             Codegen error: {codegenError}
@@ -161,11 +161,13 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
       {previewMode && (
         <div className="flex h-10 items-center justify-between border-b border-amber-700/40 bg-amber-900/20 px-4">
           <span className="text-sm text-amber-300 truncate">
-            {buildStatus === 'approved' && exportMessage
-              ? `✓ ${exportMessage}`
-              : buildStatus === 'approved'
-                ? '✓ Panel exported'
-                : 'Preview Mode — clean panel view (click Preview to exit)'}
+            {isHosted && (typeof window !== 'undefined' && (window as any).__submittedForReview)
+              ? '✓ Submitted for review — the owner will be notified'
+              : buildStatus === 'approved' && exportMessage
+                ? `✓ ${exportMessage}`
+                : buildStatus === 'approved'
+                  ? '✓ Panel exported'
+                  : 'Preview Mode — clean panel view (click Preview to exit)'}
           </span>
           <div className="flex items-center gap-2">
             <button
