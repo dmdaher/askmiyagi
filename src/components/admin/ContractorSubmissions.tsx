@@ -9,14 +9,24 @@ interface DeviceState {
   manufacturer: string;
   status: string;
   updatedAt: string;
+  reviewNote?: string;
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  ready: { bg: 'bg-green-600/10', text: 'text-green-400', label: 'Ready — contractor can edit' },
-  'in-progress': { bg: 'bg-blue-600/10', text: 'text-blue-400', label: 'Contractor editing' },
-  submitted: { bg: 'bg-amber-600/10', text: 'text-amber-400', label: 'Submitted — needs your review' },
-  approved: { bg: 'bg-green-600/10', text: 'text-green-400', label: 'Approved ✓' },
+const STATUS_STYLES: Record<string, { text: string; dot: string }> = {
+  ready: { text: 'text-green-400', dot: 'bg-green-400' },
+  'in-progress': { text: 'text-blue-400', dot: 'bg-blue-400' },
+  submitted: { text: 'text-amber-400', dot: 'bg-amber-400' },
+  approved: { text: 'text-green-400', dot: 'bg-green-400' },
 };
+
+function getStatusLabel(d: DeviceState): string {
+  if (d.status === 'ready') return 'Sent to contractor — waiting for edits';
+  if (d.status === 'in-progress' && d.reviewNote) return 'Changes requested — contractor revising';
+  if (d.status === 'in-progress') return 'Contractor editing';
+  if (d.status === 'submitted') return 'Submitted — needs your review';
+  if (d.status === 'approved') return 'Approved ✓';
+  return d.status;
+}
 
 export default function ContractorSubmissions() {
   const [devices, setDevices] = useState<DeviceState[]>([]);
@@ -90,6 +100,7 @@ export default function ContractorSubmissions() {
           const style = STATUS_STYLES[d.status] ?? STATUS_STYLES.ready;
           const isSubmitted = d.status === 'submitted';
           const isApproved = d.status === 'approved';
+          const label = getStatusLabel(d);
 
           return (
             <div
@@ -101,12 +112,15 @@ export default function ContractorSubmissions() {
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full ${isSubmitted ? 'bg-amber-400' : isApproved ? 'bg-green-400' : 'bg-blue-400'}`} />
+                <div className={`w-2 h-2 rounded-full ${style.dot}`} />
                 <div>
                   <span className="text-sm font-medium text-gray-200">
                     {d.manufacturer} {d.deviceName}
                   </span>
-                  <p className={`text-[10px] ${style.text}`}>{style.label}</p>
+                  <p className={`text-[10px] ${style.text}`}>{label}</p>
+                  {d.reviewNote && d.status === 'in-progress' && (
+                    <p className="text-[9px] text-amber-400/60 mt-0.5">Note: {d.reviewNote}</p>
+                  )}
                 </div>
               </div>
 
