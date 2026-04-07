@@ -8,16 +8,18 @@ export function proxy(request: NextRequest) {
 
   // Contractor editor: password-protected
   if (pathname.startsWith('/editor')) {
+    const expected = process.env.CONTRACTOR_PASSWORD;
     const cookie = request.cookies.get('contractor_access')?.value;
-    if (cookie !== process.env.CONTRACTOR_PASSWORD) {
+    if (!expected || cookie !== expected) {
       return NextResponse.redirect(new URL('/signin?role=contractor', request.url));
     }
   }
 
   // Admin review: password-protected
   if (pathname.startsWith('/admin/review')) {
+    const expected = process.env.ADMIN_PASSWORD;
     const cookie = request.cookies.get('admin_access')?.value;
-    if (cookie !== process.env.ADMIN_PASSWORD) {
+    if (!expected || cookie !== expected) {
       return NextResponse.redirect(new URL('/signin?role=admin', request.url));
     }
   }
