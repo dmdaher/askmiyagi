@@ -262,25 +262,7 @@ export default function EditorToolbar({
 
       {divider}
 
-      {/* Gap + Clean Up — hidden from contractor (power-user tools) */}
-      {!isHosted && <div className="flex items-center gap-1 flex-shrink-0">
-        <label className="text-[9px] text-gray-500">Gap</label>
-        <input
-          type="number" min={0} max={32}
-          value={cleanupGap}
-          onChange={(e) => setCleanupGap(Number(e.target.value))}
-          className="h-6 w-8 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none focus:border-blue-500"
-          title="Gap px (used by Clean Up)"
-        />
-        <button
-          onClick={onCleanUp}
-          disabled={previewMode || buildStatus === 'building'}
-          className="flex h-7 items-center rounded px-2 text-[10px] font-medium whitespace-nowrap transition-colors border border-blue-600 bg-blue-700/30 text-blue-300 hover:bg-blue-700/50 disabled:opacity-30"
-          title="Clean Up — snap rows, equalize spacing (Cmd+Z to undo)"
-        >Clean Up</button>
-      </div>}
-
-      {/* Preview — visible to everyone */}
+      {/* Preview */}
       <button
         onClick={onTogglePreview}
         className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors ${
@@ -295,7 +277,6 @@ export default function EditorToolbar({
 
       {/* Canvas Scale + Export/Submit */}
       <div className="flex items-center gap-1 flex-shrink-0">
-        {!isHosted && <>
         <button
           onClick={() => { pushSnapshot(); scaleCanvas(0.8); }}
           disabled={previewMode}
@@ -310,7 +291,7 @@ export default function EditorToolbar({
           title="Scale canvas up 125%"
         >+</button>
 
-        {/* Manual canvas W/H inputs (independent of proportional scale) */}
+        {/* Canvas W/H inputs — available to contractor too */}
         <div className="flex items-center gap-0.5 ml-1">
           <input
             type="number"
@@ -326,7 +307,7 @@ export default function EditorToolbar({
             onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
             disabled={previewMode}
             className="w-12 h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 text-center outline-none focus:border-blue-500 disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            title="Canvas width (px) — widens canvas without scaling controls"
+            title="Canvas width (px)"
           />
           <span className="text-[9px] text-gray-600">×</span>
           <input
@@ -343,10 +324,9 @@ export default function EditorToolbar({
             onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
             disabled={previewMode}
             className="w-12 h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 text-center outline-none focus:border-blue-500 disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            title="Canvas height (px) — heightens canvas without scaling controls"
+            title="Canvas height (px)"
           />
         </div>
-        </>}
 
         {isHosted ? (
           <button
