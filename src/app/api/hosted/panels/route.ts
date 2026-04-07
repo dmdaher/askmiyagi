@@ -7,6 +7,9 @@ export async function GET() {
     const devices = await listDevices();
     return NextResponse.json(devices);
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to list devices', details: (err as Error).message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to list devices', details: (err as Error).message },
+      { status: 500 },
+    );
   }
 }

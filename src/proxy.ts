@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PUBLIC_PATHS = ['/preview', '/legal'];
-
+/**
+ * Next.js 16 proxy — auth gate for editor and admin routes.
+ *
+ * /editor/*       → contractor password
+ * /admin/*        → admin password
+ * Everything else → public (/, /tutorial/*, /preview, /legal, /signin, /api/*)
+ */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Contractor editor: contractor password only
+  // Contractor editor: requires contractor password
   if (pathname.startsWith('/editor')) {
     const expected = process.env.CONTRACTOR_PASSWORD;
     const cookie = request.cookies.get('contractor_access')?.value;
@@ -18,7 +23,7 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  // Admin pages: admin password only (review + pipeline dashboard)
+  // Admin pages: requires admin password
   if (pathname.startsWith('/admin')) {
     const expected = process.env.ADMIN_PASSWORD;
     const cookie = request.cookies.get('admin_access')?.value;

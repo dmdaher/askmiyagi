@@ -9,6 +9,8 @@ import path from 'path';
  * Local-only route: reads manifest + photos from local filesystem,
  * uploads to Vercel Blob for the hosted contractor editor.
  * Server-side Blob SDK calls — no CORS issues.
+ *
+ * Response shape: { ok, output?, error? } — consumed by PipelineDetail.ContractorActions
  */
 export async function POST(
   _request: NextRequest,
@@ -25,7 +27,6 @@ export async function POST(
   try {
     const manifest = JSON.parse(fs.readFileSync(editorPath, 'utf-8'));
 
-    // Build state.json for hosted Blob
     const state = {
       deviceId,
       deviceName: manifest.deviceName ?? deviceId,
@@ -35,7 +36,7 @@ export async function POST(
       updatedAt: new Date().toISOString(),
     };
 
-    // Upload state to Blob
+    // Upload state — allowOverwrite required
     await put(`devices/${deviceId}/state.json`, JSON.stringify(state), {
       access: 'public',
       contentType: 'application/json',
@@ -43,7 +44,7 @@ export async function POST(
       allowOverwrite: true,
     });
 
-    // Upload photos to Blob
+    // Upload photos — allowOverwrite required
     let photoCount = 0;
     const photosDir = path.join(pipelineDir, 'input', 'photos');
     if (fs.existsSync(photosDir)) {
@@ -54,15 +55,19 @@ export async function POST(
         await put(`devices/${deviceId}/photos/${file}`, data as any, {
           access: 'public',
           addRandomSuffix: false,
-      allowOverwrite: true,
+          allowOverwrite: true,
         });
         photoCount++;
       }
     }
 
+    const controlCount = typeof manifest.controls === 'object'
+      ? Object.keys(manifest.controls).length
+      : Array.isArray(manifest.controls) ? manifest.controls.length : 0;
+
     return NextResponse.json({
       ok: true,
-      output: `Sent to contractor: ${deviceId} (${Object.keys(manifest.controls ?? {}).length} controls, ${photoCount} photos)`,
+      output: `Sent to contractor: ${deviceId} (${controlCount} controls, ${photoCount} photos)`,
     });
   } catch (err) {
     return NextResponse.json(

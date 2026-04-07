@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDeviceState, putDeviceState } from '@/lib/hosted-storage';
+import { getDeviceState, putDeviceState, isValidTransition, type DeviceStatus } from '@/lib/hosted-storage';
 
-/** PATCH /api/hosted/panels/{deviceId}/status — update status + optional review note */
+const VALID_STATUSES: DeviceStatus[] = ['ready', 'in-progress', 'submitted', 'approved'];
+
+/**
+ * PATCH /api/hosted/panels/{deviceId}/status
+ * Change status + optional reviewNote. Enforces state machine transitions.
+ */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ deviceId: string }> }
@@ -10,8 +15,8 @@ export async function PATCH(
   const body = await request.json();
   const { status, reviewNote } = body;
 
-  if (!['ready', 'in-progress', 'submitted', 'approved'].includes(status)) {
-    return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+  if (!VALID_STATUSES.includes(status)) {
+    return NextResponse.json({ error: `Invalid status: ${status}` }, { status: 400 });
   }
 
   const existing = await getDeviceState(deviceId);
@@ -19,10 +24,19 @@ export async function PATCH(
     return NextResponse.json({ error: 'Device not found' }, { status: 404 });
   }
 
+  // Enforce state machine transitions
+  if (!isValidTransition(existing.status, status)) {
+    return NextResponse.json(
+      { error: `Invalid transition: ${existing.status} → ${status}` },
+      { status: 400 },
+    );
+  }
+
   await putDeviceState(deviceId, {
     ...existing,
     status,
-    reviewNote: reviewNote ?? existing.reviewNote,
+    // Clear reviewNote when submitting or approving; set when requesting changes
+    reviewNote: status === 'in-progress' ? (reviewNote ?? existing.reviewNote) : undefined,
     updatedAt: new Date().toISOString(),
   });
 
