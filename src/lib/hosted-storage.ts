@@ -21,7 +21,7 @@ function statePath(deviceId: string) {
 export async function getDeviceState(deviceId: string): Promise<DeviceState | null> {
   try {
     const meta = await head(statePath(deviceId));
-    const res = await fetch(meta.url);
+    const res = await fetch(meta.url, { cache: 'no-store' });
     if (!res.ok) return null;
     return await res.json();
   } catch {

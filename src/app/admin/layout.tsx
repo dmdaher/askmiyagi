@@ -19,10 +19,10 @@ export default function AdminLayout({
           </Link>
           <div className="flex items-center gap-4">
             <Link
-              href="/admin/review"
+              href="/admin"
               className="text-sm text-gray-400 transition-colors hover:text-gray-200"
             >
-              Review
+              Dashboard
             </Link>
             <Link
               href="/"
