@@ -60,12 +60,26 @@ export default function EditorListPage() {
   return (
     <div className="min-h-screen bg-[#0d0d1a] p-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-200 mb-1">
-          {isAdmin ? 'Panel Review' : 'Instrument Editor'}
-        </h1>
-        <p className="text-sm text-gray-500 mb-6">
-          {isAdmin ? 'Review and approve contractor submissions' : 'Select an instrument to edit'}
-        </p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-200 mb-1">
+              {isAdmin ? 'Panel Review' : 'Instrument Editor'}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {isAdmin ? 'Review and approve contractor submissions' : 'Select an instrument to edit'}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              document.cookie = 'contractor_access=; path=/; max-age=0';
+              document.cookie = 'admin_access=; path=/; max-age=0';
+              window.location.href = '/signin';
+            }}
+            className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
 
         {loading ? (
           <div className="text-gray-500 text-sm">Loading...</div>
