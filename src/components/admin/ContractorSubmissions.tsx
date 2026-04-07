@@ -33,6 +33,8 @@ export default function ContractorSubmissions() {
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState<string | null>(null);
   const [result, setResult] = useState<Record<string, string>>({});
+  const [feedbackFor, setFeedbackFor] = useState<string | null>(null);
+  const [feedbackText, setFeedbackText] = useState('');
 
   const fetchDevices = useCallback(() => {
     fetch('/api/hosted/panels')
@@ -58,18 +60,31 @@ export default function ContractorSubmissions() {
         });
         setResult(prev => ({ ...prev, [deviceId]: '✓ Approved' }));
       } else if (action === 'request-changes') {
-        const note = prompt('Feedback for contractor (optional):');
-        await fetch(`/api/hosted/panels/${deviceId}/status`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: 'in-progress', reviewNote: note ?? undefined }),
-        });
-        setResult(prev => ({ ...prev, [deviceId]: '↩ Sent back for changes' }));
+        // Handled by feedback modal — this is called from the modal's Send button
+        return;
       } else if (action === 'pull-build') {
         const res = await fetch(`/api/pipeline/${deviceId}/pull-from-hosted`, { method: 'POST' });
         const data = await res.json();
         setResult(prev => ({ ...prev, [deviceId]: data.ok ? '✓ Pulled + exported' : `✗ ${data.error}` }));
       }
+      fetchDevices();
+    } catch (err) {
+      setResult(prev => ({ ...prev, [deviceId]: `✗ ${(err as Error).message}` }));
+    }
+    setActing(null);
+  };
+
+  const sendFeedback = async (deviceId: string) => {
+    setActing(deviceId);
+    try {
+      await fetch(`/api/hosted/panels/${deviceId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'in-progress', reviewNote: feedbackText }),
+      });
+      setResult(prev => ({ ...prev, [deviceId]: '↩ Sent back with feedback' }));
+      setFeedbackFor(null);
+      setFeedbackText('');
       fetchDevices();
     } catch (err) {
       setResult(prev => ({ ...prev, [deviceId]: `✗ ${(err as Error).message}` }));
@@ -181,11 +196,11 @@ export default function ContractorSubmissions() {
                       Approve
                     </button>
                     <button
-                      onClick={() => handleAction(d.deviceId, 'request-changes')}
+                      onClick={() => { setFeedbackFor(d.deviceId); setFeedbackText(''); }}
                       disabled={acting === d.deviceId}
                       className="rounded border border-gray-600 bg-gray-800 px-3 py-1.5 text-[10px] font-medium text-gray-400 hover:bg-gray-700 transition-colors disabled:opacity-50"
                     >
-                      Changes
+                      Request Changes
                     </button>
                   </>
                 )}
@@ -205,6 +220,45 @@ export default function ContractorSubmissions() {
           );
         })}
       </div>
+      {/* Feedback modal */}
+      {feedbackFor && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60" onClick={() => setFeedbackFor(null)}>
+          <div
+            className="w-full max-w-lg rounded-xl border border-gray-700 bg-[#111122] p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold text-gray-200 mb-1">Request Changes</h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Describe what the contractor needs to fix — be specific about controls, alignment, labels, or any issues.
+            </p>
+
+            <textarea
+              value={feedbackText}
+              onChange={(e) => setFeedbackText(e.target.value)}
+              placeholder={"Example:\n- Zone buttons aren't aligned horizontally\n- SCENE CTRL label should be hidden\n- Cursor up/down need arrow icons\n- Value dial is too far right, move closer to cursor buttons"}
+              rows={8}
+              autoFocus
+              className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-200 outline-none focus:border-blue-500 placeholder:text-gray-600 resize-none"
+            />
+
+            <div className="flex items-center justify-between mt-4">
+              <button
+                onClick={() => setFeedbackFor(null)}
+                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => sendFeedback(feedbackFor)}
+                disabled={!feedbackText.trim() || acting === feedbackFor}
+                className="rounded bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500 transition-colors disabled:opacity-50"
+              >
+                {acting === feedbackFor ? 'Sending...' : 'Send Feedback'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
