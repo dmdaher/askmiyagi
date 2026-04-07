@@ -344,7 +344,7 @@ export default function EditorToolbar({
                 if (typeof window !== 'undefined') {
                   (window as any).__submittedForReview = true;
                 }
-              } catch { /* silent */ }
+              } catch { alert('Failed to submit — please try again.'); }
             }}
             disabled={previewMode}
             className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"

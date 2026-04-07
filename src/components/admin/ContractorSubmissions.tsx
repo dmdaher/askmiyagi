@@ -80,7 +80,7 @@ export default function ContractorSubmissions() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.2 }}
-      className="mt-8"
+      className="mb-10"
     >
       <h2 className="text-lg font-semibold text-gray-200 mb-1">Contractor Submissions</h2>
       <p className="text-xs text-gray-500 mb-4">Instruments sent to contractor for editing</p>
@@ -117,21 +117,29 @@ export default function ContractorSubmissions() {
                   </span>
                 )}
 
+                {/* Open in editor — always available for any status */}
+                <button
+                  onClick={async () => {
+                    setActing(d.deviceId);
+                    try {
+                      await fetch(`/api/pipeline/${d.deviceId}/pull-from-hosted`, { method: 'POST' });
+                    } catch { /* pull failed — open editor with local state */ }
+                    setActing(null);
+                    window.open(`/admin/${d.deviceId}/editor`, '_blank');
+                  }}
+                  disabled={acting === d.deviceId}
+                  className={`rounded px-3 py-1.5 text-[10px] font-medium transition-colors disabled:opacity-50 ${
+                    isSubmitted
+                      ? 'border border-amber-600 bg-amber-700/30 text-amber-300 hover:bg-amber-700/50'
+                      : 'border border-gray-600 bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  }`}
+                >
+                  {acting === d.deviceId ? 'Loading...' : isSubmitted ? 'Review →' : 'Open →'}
+                </button>
+
+                {/* Approve / Changes — only for submitted */}
                 {isSubmitted && (
                   <>
-                    <button
-                      onClick={async () => {
-                        setActing(d.deviceId);
-                        // Pull contractor's work from Blob → local, then open editor
-                        await fetch(`/api/pipeline/${d.deviceId}/pull-from-hosted`, { method: 'POST' });
-                        setActing(null);
-                        window.open(`/admin/${d.deviceId}/editor`, '_blank');
-                      }}
-                      disabled={acting === d.deviceId}
-                      className="rounded border border-amber-600 bg-amber-700/30 px-3 py-1.5 text-[10px] font-medium text-amber-300 hover:bg-amber-700/50 transition-colors disabled:opacity-50"
-                    >
-                      {acting === d.deviceId ? 'Loading...' : 'Review →'}
-                    </button>
                     <button
                       onClick={() => handleAction(d.deviceId, 'approve')}
                       disabled={acting === d.deviceId}
@@ -149,6 +157,7 @@ export default function ContractorSubmissions() {
                   </>
                 )}
 
+                {/* Pull & Build — only for approved */}
                 {isApproved && (
                   <button
                     onClick={() => handleAction(d.deviceId, 'pull-build')}

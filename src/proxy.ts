@@ -15,8 +15,8 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  // Admin review: admin password only
-  if (pathname.startsWith('/admin/review')) {
+  // Admin pages: admin password only (review + pipeline dashboard)
+  if (pathname.startsWith('/admin')) {
     const expected = process.env.ADMIN_PASSWORD;
     const cookie = request.cookies.get('admin_access')?.value;
     if (!expected || cookie !== expected) {
