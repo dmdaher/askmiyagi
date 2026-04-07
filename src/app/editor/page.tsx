@@ -34,19 +34,18 @@ const STATUS_CONFIG: Record<string, { label: string; style: string; dot: string 
   },
 };
 
-function getCookie(name: string): string | undefined {
-  if (typeof document === 'undefined') return undefined;
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-  return match?.[1];
-}
-
 export default function EditorListPage() {
   const [devices, setDevices] = useState<DeviceSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    setIsAdmin(!!getCookie('admin_access'));
+    // Detect role server-side (checks cookies against env vars)
+    fetch('/api/hosted/me')
+      .then(r => r.ok ? r.json() : { role: null })
+      .then(data => setIsAdmin(data.role === 'admin'))
+      .catch(() => {});
+
     fetch('/api/hosted/panels')
       .then(r => r.ok ? r.json() : [])
       .then(data => { setDevices(Array.isArray(data) ? data : []); setLoading(false); })
