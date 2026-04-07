@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useEditorStore } from './store';
 import type { MasterManifestInput } from './store';
+import { isHosted } from '@/lib/env';
 import EditorToolbar from './EditorToolbar';
 import EditorWorkspace from './EditorWorkspace';
 import PropertiesPanel from './PropertiesPanel';
@@ -85,7 +86,7 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
 
     try {
       // Force-save current manifest (bypass debounce)
-      await fetch(`/api/pipeline/${deviceId}/manifest`, {
+      await fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sections, controls, editorLabels: (state as any).editorLabels ?? [], controlGroups: (state as any).controlGroups ?? [], canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard: (state as any).keyboard }),
@@ -222,7 +223,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
 
     async function fetchManifest() {
       try {
-        const res = await fetch(`/api/pipeline/${deviceId}/manifest`);
+        const res = await fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`);
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           throw new Error(

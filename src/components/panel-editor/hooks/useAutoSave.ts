@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 import { useEditorStore } from '../store';
+import { isHosted } from '@/lib/env';
 
-const AUTO_SAVE_DEBOUNCE_MS = 800;
+const AUTO_SAVE_DEBOUNCE_MS = isHosted ? 2500 : 800;
 const UNDO_PERSIST_DEBOUNCE_MS = 2000;
 const MAX_PERSISTED_UNDO = 50;
 
@@ -75,7 +76,7 @@ export function useAutoSave(deviceId: string) {
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
           const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
-          fetch(`/api/pipeline/${deviceId}/manifest`, {
+          fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard }),

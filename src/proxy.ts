@@ -3,8 +3,25 @@ import type { NextRequest } from 'next/server';
 
 const PUBLIC_PATHS = ['/preview', '/legal'];
 
-export function proxy(_request: NextRequest) {
-  // Access gate disabled — allow everyone through
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Contractor editor: password-protected
+  if (pathname.startsWith('/editor')) {
+    const cookie = request.cookies.get('contractor_access')?.value;
+    if (cookie !== process.env.CONTRACTOR_PASSWORD) {
+      return NextResponse.redirect(new URL('/signin?role=contractor', request.url));
+    }
+  }
+
+  // Admin review: password-protected
+  if (pathname.startsWith('/admin/review')) {
+    const cookie = request.cookies.get('admin_access')?.value;
+    if (cookie !== process.env.ADMIN_PASSWORD) {
+      return NextResponse.redirect(new URL('/signin?role=admin', request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 

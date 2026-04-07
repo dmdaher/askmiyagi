@@ -3,6 +3,7 @@
 import { useEditorStore } from './store';
 import type { SnapGrid } from './store';
 import VersionHistoryDropdown from './VersionHistoryDropdown';
+import { isHosted } from '@/lib/env';
 
 const SNAP_OPTIONS: SnapGrid[] = [1, 2, 4, 8, 16, 32];
 const ZOOM_STEP = 0.1;
@@ -339,25 +340,46 @@ export default function EditorToolbar({
           />
         </div>
 
-        <button
-          data-tutorial="approve"
-          onClick={onApproveAndBuild}
-          disabled={previewMode || buildStatus === 'building'}
-          className={`flex h-7 items-center rounded px-2 text-[10px] font-medium whitespace-nowrap transition-colors ${
-            previewMode
-              ? 'border border-green-700 bg-green-700/20 text-green-400 cursor-default'
-              : buildStatus === 'building'
-                ? 'border border-gray-600 bg-gray-800 text-gray-400 cursor-wait'
-                : 'border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50'
-          }`}
-          title="Export panel manifest for production"
-        >
-          {buildStatus === 'building'
-            ? 'Exporting...'
-            : buildStatus === 'approved'
-              ? 'Exported ✓'
-              : 'Export Panel'}
-        </button>
+        {isHosted ? (
+          <button
+            onClick={async () => {
+              if (!confirm('Submit panel for review? You won\'t be able to edit until the owner responds.')) return;
+              try {
+                await fetch(`/api/hosted/panels/${deviceId}/status`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ status: 'submitted' }),
+                });
+                useEditorStore.getState().setPreviewMode(true);
+              } catch { /* silent */ }
+            }}
+            disabled={previewMode}
+            className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
+            title="Submit panel for owner review"
+          >
+            Submit for Review
+          </button>
+        ) : (
+          <button
+            data-tutorial="approve"
+            onClick={onApproveAndBuild}
+            disabled={previewMode || buildStatus === 'building'}
+            className={`flex h-7 items-center rounded px-2 text-[10px] font-medium whitespace-nowrap transition-colors ${
+              previewMode
+                ? 'border border-green-700 bg-green-700/20 text-green-400 cursor-default'
+                : buildStatus === 'building'
+                  ? 'border border-gray-600 bg-gray-800 text-gray-400 cursor-wait'
+                  : 'border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50'
+            }`}
+            title="Export panel manifest for production"
+          >
+            {buildStatus === 'building'
+              ? 'Exporting...'
+              : buildStatus === 'approved'
+                ? 'Exported ✓'
+                : 'Export Panel'}
+          </button>
+        )}
       </div>
     </div>
   );

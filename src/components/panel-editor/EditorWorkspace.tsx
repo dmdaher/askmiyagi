@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useZoomPan } from './hooks/useZoomPan';
 import { useEditorStore } from './store';
+import { isHosted } from '@/lib/env';
 import PanCanvas from './PanCanvas';
 
 interface EditorWorkspaceProps {
@@ -21,7 +22,7 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
     let cancelled = false;
     async function fetchPhoto() {
       try {
-        const res = await fetch(`/api/pipeline/${deviceId}/photos`);
+        const res = await fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}/photos`);
         if (!res.ok) return;
         const data = await res.json();
         const photos = data.photos ?? data;
@@ -30,7 +31,11 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
             p.name.toLowerCase().includes('top-view') || p.name.toLowerCase().includes('top_view')
           );
           const chosen = topView ?? photos[0];
-          setPhotoUrl(`/api/pipeline/${deviceId}/photos?file=${encodeURIComponent(chosen.name)}`);
+          setPhotoUrl(
+            isHosted
+              ? chosen.url  // Blob URLs are direct
+              : `/api/pipeline/${deviceId}/photos?file=${encodeURIComponent(chosen.name)}`
+          );
         }
       } catch { /* ignore */ }
     }
