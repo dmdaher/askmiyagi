@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { PipelineState, LogEntry, Escalation } from '@/lib/pipeline/types';
 import PhaseTimeline from './PhaseTimeline';
 import EscalationBanner from './EscalationBanner';
@@ -100,6 +100,9 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
     <div className="space-y-4">
       {/* Phase Timeline — full width */}
       <PhaseTimeline phases={pipeline.phases} currentPhase={pipeline.currentPhase} />
+
+      {/* Contractor handoff buttons */}
+      <ContractorActions deviceId={pipeline.deviceId} pipelineStatus={pipeline.status} />
 
       {/* Escalation Banner */}
       {activeEscalation && (
@@ -202,6 +205,71 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
         subscription={pipeline.subscription}
         burnRate={pipeline.burnRate}
       />
+    </div>
+  );
+}
+
+// ─── Contractor Handoff Buttons ─────────────────────────────────────────────
+
+function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pipelineStatus: string }) {
+  const [sending, setSending] = useState(false);
+  const [pulling, setPulling] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+
+  const handleSendToContractor = useCallback(async () => {
+    setSending(true);
+    setResult(null);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/send-to-hosted`, { method: 'POST' });
+      const data = await res.json();
+      setResult(data.ok ? `✓ ${data.output}` : `✗ ${data.error}`);
+    } catch (err) {
+      setResult(`✗ ${(err as Error).message}`);
+    }
+    setSending(false);
+  }, [deviceId]);
+
+  const handlePullAndBuild = useCallback(async () => {
+    setPulling(true);
+    setResult(null);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/pull-from-hosted`, { method: 'POST' });
+      const data = await res.json();
+      setResult(data.ok ? `✓ ${data.output}` : `✗ ${data.error}`);
+    } catch (err) {
+      setResult(`✗ ${(err as Error).message}`);
+    }
+    setPulling(false);
+  }, [deviceId]);
+
+  return (
+    <div
+      className="flex items-center gap-3 rounded-lg p-3"
+      style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
+    >
+      <span className="text-xs text-gray-500 mr-1">Contractor:</span>
+
+      <button
+        onClick={handleSendToContractor}
+        disabled={sending}
+        className="rounded border border-blue-600 bg-blue-700/30 px-3 py-1.5 text-xs font-medium text-blue-300 hover:bg-blue-700/50 transition-colors disabled:opacity-50"
+      >
+        {sending ? 'Sending...' : 'Send to Contractor'}
+      </button>
+
+      <button
+        onClick={handlePullAndBuild}
+        disabled={pulling}
+        className="rounded border border-green-600 bg-green-700/30 px-3 py-1.5 text-xs font-medium text-green-300 hover:bg-green-700/50 transition-colors disabled:opacity-50"
+      >
+        {pulling ? 'Pulling...' : 'Pull & Build Tutorials'}
+      </button>
+
+      {result && (
+        <span className={`text-xs truncate flex-1 ${result.startsWith('✓') ? 'text-green-400' : 'text-red-400'}`}>
+          {result}
+        </span>
+      )}
     </div>
   );
 }
