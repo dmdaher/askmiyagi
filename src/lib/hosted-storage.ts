@@ -34,6 +34,7 @@ export async function putDeviceState(deviceId: string, state: DeviceState): Prom
     access: 'public',
     contentType: 'application/json',
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
 }
 
@@ -77,6 +78,7 @@ export async function putPhoto(deviceId: string, name: string, data: Buffer | Ui
   const blob = await put(`${BLOB_PREFIX}/${deviceId}/photos/${name}`, data as any, {
     access: 'public',
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
   return blob.url;
 }

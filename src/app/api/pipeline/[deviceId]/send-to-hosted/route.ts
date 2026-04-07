@@ -40,6 +40,7 @@ export async function POST(
       access: 'public',
       contentType: 'application/json',
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
 
     // Upload photos to Blob
@@ -53,6 +54,7 @@ export async function POST(
         await put(`devices/${deviceId}/photos/${file}`, data as any, {
           access: 'public',
           addRandomSuffix: false,
+      allowOverwrite: true,
         });
         photoCount++;
       }
