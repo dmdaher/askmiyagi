@@ -45,7 +45,7 @@ export async function listDevices(): Promise<Array<{ deviceId: string; deviceNam
   const results = await Promise.all(
     stateBlobs.map(async (blob) => {
       try {
-        const res = await fetch(blob.url);
+        const res = await fetch(blob.url, { cache: 'no-store' });
         const state: DeviceState = await res.json();
         return {
           deviceId: state.deviceId,
