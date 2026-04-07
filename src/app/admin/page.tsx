@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { usePipelineStore } from '@/store/pipelineStore';
 import PipelineDashboard from '@/components/admin/PipelineDashboard';
 import UploadZone from '@/components/admin/UploadZone';
+import ContractorSubmissions from '@/components/admin/ContractorSubmissions';
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -54,25 +55,25 @@ export default function AdminPage() {
         </p>
       </motion.div>
 
+      {/* Contractor submissions — above pipeline grid, always visible */}
+      <ContractorSubmissions />
+
       {hasRuns ? (
-        /* Grid layout: pipeline cards + upload zone as last card */
+        /* Grid layout: upload zone first, then pipeline cards */
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Upload zone as the first card */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <UploadZone onCreated={handleCreated} />
+          </motion.div>
+
           <PipelineDashboard
             runs={runs}
             onSelectPipeline={handleSelectPipeline}
           />
-
-          {/* Upload zone as the last card in the grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.3,
-              delay: Object.keys(runs).length * 0.05,
-            }}
-          >
-            <UploadZone onCreated={handleCreated} />
-          </motion.div>
         </div>
       ) : (
         /* Empty state: centered upload zone */

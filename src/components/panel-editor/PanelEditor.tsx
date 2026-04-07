@@ -162,7 +162,7 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
         <div className="flex h-10 items-center justify-between border-b border-amber-700/40 bg-amber-900/20 px-4">
           <span className="text-sm text-amber-300 truncate">
             {isHosted && (typeof window !== 'undefined' && (window as any).__submittedForReview)
-              ? '✓ Submitted for review — the owner will be notified'
+              ? '✓ Submitted for review — let the owner know you\'re done'
               : buildStatus === 'approved' && exportMessage
                 ? `✓ ${exportMessage}`
                 : buildStatus === 'approved'

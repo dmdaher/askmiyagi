@@ -11,16 +11,22 @@ export function proxy(request: NextRequest) {
     const expected = process.env.CONTRACTOR_PASSWORD;
     const cookie = request.cookies.get('contractor_access')?.value;
     if (!expected || cookie !== expected) {
-      return NextResponse.redirect(new URL('/signin?role=contractor', request.url));
+      const url = new URL('/signin', request.url);
+      url.searchParams.set('role', 'contractor');
+      url.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(url);
     }
   }
 
-  // Admin review: admin password only
-  if (pathname.startsWith('/admin/review')) {
+  // Admin pages: admin password only (review + pipeline dashboard)
+  if (pathname.startsWith('/admin')) {
     const expected = process.env.ADMIN_PASSWORD;
     const cookie = request.cookies.get('admin_access')?.value;
     if (!expected || cookie !== expected) {
-      return NextResponse.redirect(new URL('/signin?role=admin', request.url));
+      const url = new URL('/signin', request.url);
+      url.searchParams.set('role', 'admin');
+      url.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(url);
     }
   }
 

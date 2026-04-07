@@ -37,7 +37,7 @@ export async function putDeviceState(deviceId: string, state: DeviceState): Prom
   });
 }
 
-export async function listDevices(): Promise<Array<{ deviceId: string; deviceName: string; manufacturer: string; status: string; updatedAt: string }>> {
+export async function listDevices(): Promise<Array<{ deviceId: string; deviceName: string; manufacturer: string; status: string; updatedAt: string; reviewNote?: string }>> {
   const { blobs } = await list({ prefix: `${BLOB_PREFIX}/` });
   const stateBlobs = blobs.filter(b => b.pathname.endsWith('/state.json'));
 
@@ -52,6 +52,7 @@ export async function listDevices(): Promise<Array<{ deviceId: string; deviceNam
           manufacturer: state.manufacturer,
           status: state.status,
           updatedAt: state.updatedAt,
+          reviewNote: state.reviewNote,
         };
       } catch {
         return null;

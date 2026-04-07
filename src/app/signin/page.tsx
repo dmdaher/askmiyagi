@@ -16,7 +16,7 @@ function SignInForm() {
     e.preventDefault();
     setLoading(true);
     const cookieName = role === 'admin' ? 'admin_access' : 'contractor_access';
-    const redirectTo = role === 'admin' ? '/admin/review' : '/editor';
+    const redirectTo = searchParams.get('redirect') ?? (role === 'admin' ? '/admin' : '/editor');
     document.cookie = `${cookieName}=${password.trim()}; path=/; max-age=${60 * 60 * 24 * 30}`;
 
     // Verify the password works by hitting the protected page
