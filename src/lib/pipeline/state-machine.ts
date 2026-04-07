@@ -131,9 +131,12 @@ const PHASE_ORDER: PipelinePhase[] = [
   // 'phase-0-control-extractor', — optional, parser reads manual directly now
   'phase-0-gatekeeper',
   'phase-0-layout-engine',
-  'phase-1-section-loop',
-  'phase-2-global-assembly',
-  'phase-3-harmonic-polish',
+  // Editor pause happens here (escalation gate in doPhase0LayoutEngine)
+  // Phases 1-3 skipped — contractor in the editor IS the quality gate.
+  // SI, PQ, Critic handlers remain in runner code for future re-enablement.
+  // 'phase-1-section-loop',
+  // 'phase-2-global-assembly',
+  // 'phase-3-harmonic-polish',
   'panel-pr',
   'phase-4-extraction',
   'phase-4-audit',
@@ -339,8 +342,13 @@ export function createWorktree(deviceId: string, branch: string): string {
   try {
     execSync(`git worktree remove --force "${worktreePath}" 2>/dev/null`, { stdio: 'pipe' });
   } catch {
-    // Worktree didn't exist — fine
+    // Worktree didn't exist or git doesn't recognize it — fine
   }
+  // If the directory still exists (git didn't know about it), force remove it
+  if (fs.existsSync(worktreePath)) {
+    fs.rmSync(worktreePath, { recursive: true, force: true });
+  }
+  execSync('git worktree prune', { stdio: 'pipe' });
 
   // Create the branch from test if it doesn't exist
   try {

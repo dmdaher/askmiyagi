@@ -100,8 +100,16 @@ const BUTTON_STYLES: Record<string, { bg: string; text: string; hover: string }>
   danger: { bg: '#ef4444', text: '#ffffff', hover: '#dc2626' },
 };
 
+const FALLBACK_CONFIG = {
+  bg: 'rgba(107, 114, 128, 0.1)',
+  border: '#6b7280',
+  buttons: [
+    { label: 'Resolve', resolution: 'resolved', variant: 'primary' as const },
+  ],
+};
+
 export default function EscalationBanner({ escalation, onResolve }: EscalationBannerProps) {
-  const config = ESCALATION_CONFIG[escalation.type];
+  const config = ESCALATION_CONFIG[escalation.type as EscalationType] ?? FALLBACK_CONFIG;
 
   return (
     <motion.div

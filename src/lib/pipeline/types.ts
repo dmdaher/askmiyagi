@@ -141,6 +141,9 @@ export interface PipelineState {
   /** Per-section strike counts for the Two-Strike Rule (gatekeeper retries) */
   strikeTracker: Record<string, number>;
 
+  /** True after codegen has successfully generated the panel. Used for nav gating. */
+  codegenCompleted?: boolean;
+
   lastCheckpoint: {
     phase: PipelinePhase;
     subStep: string;

@@ -1,0 +1,15 @@
+{
+  "planPath": "docs/plans/2026-03-23-keyboard-awareness.md",
+  "tasks": [
+    {"id": 1, "subject": "Task K1: Create shared Keyboard component", "status": "pending"},
+    {"id": 2, "subject": "Task K2: Update PanelShell to support keyboard", "status": "pending", "blockedBy": [1]},
+    {"id": 3, "subject": "Task K3: Update codegen to render keyboard", "status": "pending", "blockedBy": [2]},
+    {"id": 4, "subject": "Task K4: Update editor for keyboard/panel split", "status": "pending", "blockedBy": [1]},
+    {"id": 5, "subject": "Task K5: Update gatekeeper SOUL with keyboard + layout rules", "status": "pending"},
+    {"id": 6, "subject": "Task K6: Update diagram parser SOUL for keyboard boundary", "status": "pending"},
+    {"id": 7, "subject": "Task K7: Add manifest validator for keyboard field", "status": "pending", "blockedBy": [5]},
+    {"id": 8, "subject": "Task K8: Reset Fantom-06 pipeline and re-run gatekeeper", "status": "pending", "blockedBy": [5, 6, 7]},
+    {"id": 9, "subject": "Task K9: Visual verification + push", "status": "pending", "blockedBy": [3, 4, 8]}
+  ],
+  "lastUpdated": "2026-03-23T00:00:00Z"
+}

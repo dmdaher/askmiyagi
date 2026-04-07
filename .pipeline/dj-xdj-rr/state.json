@@ -1,0 +1,169 @@
+{
+  "deviceId": "dj-xdj-rr",
+  "deviceName": "DJ XDJ-RR",
+  "manufacturer": "Pioneer",
+  "manualPaths": [
+    "docs/Pioneer/dj-xdj-rr/XDJ-RR-manual.pdf",
+    "docs/Pioneer/dj-xdj-rr/XDJ-RR-quickstart.pdf"
+  ],
+  "currentPhase": "phase-0-gatekeeper",
+  "status": "paused",
+  "branch": "feature/dj-xdj-rr",
+  "createdAt": "2026-03-25T07:31:20.996Z",
+  "updatedAt": "2026-03-25T09:48:33.626Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-25T07:31:22.597Z",
+      "completedAt": "2026-03-25T07:35:06.706Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 0.5986542,
+      "tokens": {
+        "input": 2112,
+        "output": 8266,
+        "cacheCreation": 73138,
+        "cacheRead": 646869
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-25T07:55:34.572Z",
+      "completedAt": "2026-03-25T07:55:34.582Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 7.4918805,
+      "tokens": {
+        "input": 19,
+        "output": 54827,
+        "cacheCreation": 118194,
+        "cacheRead": 775622
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-25T09:46:20.477Z",
+      "completedAt": "2026-03-25T09:48:33.625Z",
+      "score": 7,
+      "status": "failed",
+      "costUsd": 13.121457,
+      "tokens": {
+        "input": 59,
+        "output": 62310,
+        "cacheCreation": 219692,
+        "cacheRead": 2885398
+      }
+    }
+  ],
+  "sections": [],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774432113625-dv1bny",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 7.0). Errors: 120/120 controls missing shape (100%); 120/120 controls missing sizeClass (100%); 120/120 controls missing labelDisplay (100%)",
+      "createdAt": "2026-03-25T09:48:33.625Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774432113625-dv1bny",
+  "totalCostUsd": 21.211991699999995,
+  "totalActualCostUsd": 8.16698775,
+  "totalTokens": {
+    "input": 2190,
+    "output": 125403,
+    "cacheCreation": 411024,
+    "cacheRead": 4307889
+  },
+  "budgetCapUsd": 50,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:33:38.200Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:55:34.504Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:44:09.295Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:46:20.398Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T09:48:33.564Z"
+      }
+    ],
+    "lastUpdated": "2026-03-25T09:48:33.590Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.060530850126072164,
+    "costPerAgent": 1.361164625,
+    "projectedBudgetExhaustedAt": "2026-03-25T21:19:39.730Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-25T07:33:38.202Z",
+        "cumulativeCost": 0.72729175
+      },
+      {
+        "timestamp": "2026-03-25T07:35:06.560Z",
+        "cumulativeCost": 1.20864425
+      },
+      {
+        "timestamp": "2026-03-25T07:55:34.510Z",
+        "cumulativeCost": 3.7059377500000004
+      },
+      {
+        "timestamp": "2026-03-25T09:44:09.300Z",
+        "cumulativeCost": 6.819046500000001
+      },
+      {
+        "timestamp": "2026-03-25T09:46:20.400Z",
+        "cumulativeCost": 7.4996695
+      },
+      {
+        "timestamp": "2026-03-25T09:48:33.566Z",
+        "cumulativeCost": 8.16698775
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/dj-xdj-rr",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "phase-0-gatekeeper",
+    "subStep": "start"
+  }
+}

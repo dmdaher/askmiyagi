@@ -81,8 +81,22 @@ Assign control indices to zones based on **geometric containment** (centroid ins
 ```
 Every index must appear in exactly one zone.
 
+#### Step 7: Keyboard Boundary Detection
+If the instrument has a keyboard visible in the hardware photo:
+- Identify the horizontal boundary between the control panel area and the keyboard
+- Report `panelHeightPercent`: the percentage of total instrument height occupied by the control panel (above the keyboard)
+- Typical values: 30-40% for full-size synths (61-88 keys), 40-50% for compact controllers (25-37 keys)
+- Include in the top-level spatial-blueprint output: `"panelHeightPercent": N`
+- All section bounding boxes should have their y-coordinates within 0 to panelHeightPercent
+
+If no keyboard is visible in the photo (DJ equipment, drum machines, effects):
+- Report `"panelHeightPercent": 100` — the full instrument is controls
+
 ### LIST LOGIC BAN:
 Never output a flat list. Every control must be in a 2D structure (grid cells or zone assignment).
+
+**Top-level fields in spatial-blueprint.json:**
+- `panelHeightPercent`: percentage of instrument height that is control panel (above keyboard). 100 if no keyboard.
 
 ### OUTPUT FORMAT (per section):
 ```json
@@ -111,9 +125,15 @@ Include YAML frontmatter: `agent`, `deviceId`, `phase: 0`, `status`, `score` (0-
 
 On startup, read existing checkpoint first. Resume from "Next step" if exists.
 
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/diagram-parser/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
+
 ### DATA FLOW:
 - **Reads:** Hardware photos, manual front-panel diagrams (visual only)
-- **Writes:** `.claude/agent-memory/diagram-parser/checkpoint.md` — spatial-blueprint JSON per section
+- **Writes:** `.pipeline/<deviceId>/agents/diagram-parser/checkpoint.md` — spatial-blueprint JSON per section
 
 ### QUALITY:
 The pipeline runner **mechanically validates** your output. It checks for: JSON blocks, centroids, topology fields, bounding boxes, containerZones, neighbor relationships, aspect ratios, centroid precision. Missing fields = auto-reject with specific error message. Your self-score is overridden by the mechanical score.

@@ -7,8 +7,8 @@ interface SectionProgressProps {
   currentSection?: string;
 }
 
-function ScoreCell({ score }: { score: number | null }) {
-  if (score === null) {
+function ScoreCell({ score }: { score: number | null | undefined }) {
+  if (score == null) {
     return <span className="text-xs font-mono" style={{ color: '#6b7280' }}>--</span>;
   }
 
@@ -72,7 +72,7 @@ export default function SectionProgress({ sections, currentSection }: SectionPro
                   </td>
                   <td className="px-3 py-1.5">
                     <span className="text-xs font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                      ${section.costUsd.toFixed(4)}
+                      ${(section.costUsd ?? 0).toFixed(4)}
                     </span>
                   </td>
                   <td className="px-3 py-1.5">

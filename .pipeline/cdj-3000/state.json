@@ -1,0 +1,475 @@
+{
+  "deviceId": "cdj-3000",
+  "deviceName": "CDJ-3000",
+  "manufacturer": "Pioneer",
+  "manualPaths": [
+    "docs/Pioneer/cdj-3000/CDJ-3000-instruction-manual.pdf"
+  ],
+  "currentPhase": "panel-pr",
+  "status": "paused",
+  "branch": "feature/cdj-3000",
+  "createdAt": "2026-03-23T03:33:19.765Z",
+  "updatedAt": "2026-03-24T06:31:17.717Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-23T04:51:35.397Z",
+      "completedAt": "2026-03-23T04:54:03.231Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 0.35033895000000004,
+      "tokens": {
+        "input": 20,
+        "output": 4218,
+        "cacheCreation": 42245,
+        "cacheRead": 428634
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-23T05:10:48.023Z",
+      "completedAt": "2026-03-23T05:10:48.034Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 7.602162,
+      "tokens": {
+        "input": 20,
+        "output": 64283,
+        "cacheCreation": 111246,
+        "cacheRead": 463183
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-23T05:10:48.036Z",
+      "completedAt": "2026-03-23T05:19:46.952Z",
+      "score": 9,
+      "status": "passed",
+      "costUsd": 5.7240255,
+      "tokens": {
+        "input": 23,
+        "output": 33261,
+        "cacheCreation": 98376,
+        "cacheRead": 923037
+      }
+    },
+    {
+      "phase": "phase-0-layout-engine",
+      "startedAt": "2026-03-23T05:19:46.954Z",
+      "completedAt": "2026-03-23T05:19:47.629Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "phase": "panel-pr",
+      "startedAt": "2026-03-24T06:31:16.919Z",
+      "completedAt": null,
+      "score": null,
+      "status": "running",
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "BROWSE",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 2.86255965,
+      "tokens": {
+        "input": 146,
+        "output": 49691,
+        "cacheCreation": 401313,
+        "cacheRead": 2039443
+      }
+    },
+    {
+      "id": "MEDIA",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "DISPLAY",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "SELECTOR",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "HOT_CUE",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "JOG_CONTROLS",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "LOOP",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "CUE_MEMORY",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "SYNC",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "TRANSPORT",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "JOG_WHEEL",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "TEMPO",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    }
+  ],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774245680615-dy213j",
+      "phase": "phase-1-section-loop",
+      "type": "topology-deadlock",
+      "message": "Section \"BROWSE\" failed after 3 attempts. Scores: SI=null, PQ=null, Critic=null",
+      "createdAt": "2026-03-23T06:01:20.615Z",
+      "resolvedAt": "2026-03-23T17:00:00.000Z",
+      "resolution": "reset to editor-ready"
+    },
+    {
+      "id": "esc-editor-ready-cdj-3000",
+      "phase": "phase-0-layout-engine",
+      "type": "agent-failure",
+      "message": "Pipeline ready for editor. Open the visual editor to position controls, then run codegen.",
+      "createdAt": "2026-03-23T17:00:00.000Z",
+      "resolvedAt": "2026-03-24T06:31:11.736Z",
+      "resolution": "retry"
+    },
+    {
+      "id": "esc-1774333877716-x7r95t",
+      "phase": "panel-pr",
+      "type": "agent-failure",
+      "message": "Failed to create panel PR: Command failed: gh pr create --base test --title \"feat: CDJ-3000 digital twin panel\" --body \"Automated panel build for CDJ-3000 by Miyagi Pipeline\"\nWarning: 2 uncommitted changes\naborted: you must first push the current branch to a remote, or use the --head flag\n",
+      "createdAt": "2026-03-24T06:31:17.716Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774333877716-x7r95t",
+  "totalCostUsd": 16.5390861,
+  "totalActualCostUsd": 11.6708285,
+  "totalTokens": {
+    "input": 209,
+    "output": 151453,
+    "cacheCreation": 653180,
+    "cacheRead": 3854297
+  },
+  "budgetCapUsd": 50,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T04:54:03.211Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:10:47.995Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:19:46.942Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:23:33.027Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:27:19.980Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:30:32.649Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:32:05.837Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:50:22.798Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:53:24.846Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:55:53.017Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T05:59:37.194Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T06:01:20.610Z"
+      }
+    ],
+    "lastUpdated": "2026-03-23T06:01:20.614Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.17344075642740378,
+    "costPerAgent": 0.9725690416666667,
+    "projectedBudgetExhaustedAt": "2026-03-23T09:42:20.186Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-23T04:54:03.212Z",
+        "cumulativeCost": 0.7718745000000002
+      },
+      {
+        "timestamp": "2026-03-23T05:10:47.998Z",
+        "cumulativeCost": 3.3059285000000003
+      },
+      {
+        "timestamp": "2026-03-23T05:19:46.944Z",
+        "cumulativeCost": 5.2139370000000005
+      },
+      {
+        "timestamp": "2026-03-23T05:23:33.033Z",
+        "cumulativeCost": 6.183568800000001
+      },
+      {
+        "timestamp": "2026-03-23T05:27:19.982Z",
+        "cumulativeCost": 7.117145900000001
+      },
+      {
+        "timestamp": "2026-03-23T05:30:32.650Z",
+        "cumulativeCost": 7.94096705
+      },
+      {
+        "timestamp": "2026-03-23T05:32:05.837Z",
+        "cumulativeCost": 8.4501083
+      },
+      {
+        "timestamp": "2026-03-23T05:50:22.800Z",
+        "cumulativeCost": 8.99695855
+      },
+      {
+        "timestamp": "2026-03-23T05:53:24.848Z",
+        "cumulativeCost": 9.64412665
+      },
+      {
+        "timestamp": "2026-03-23T05:55:53.018Z",
+        "cumulativeCost": 10.29064065
+      },
+      {
+        "timestamp": "2026-03-23T05:59:37.196Z",
+        "cumulativeCost": 11.21161545
+      },
+      {
+        "timestamp": "2026-03-23T06:01:20.612Z",
+        "cumulativeCost": 11.6708285
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/cdj-3000",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "panel-pr",
+    "subStep": "start"
+  }
+}

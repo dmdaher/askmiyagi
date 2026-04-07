@@ -1,0 +1,12 @@
+{
+  "planPath": "docs/plans/2026-03-23-shared-style-system.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 1: Create PanelShell component", "status": "pending"},
+    {"id": 2, "subject": "Task 2: Create SectionContainer component", "status": "pending"},
+    {"id": 3, "subject": "Task 3: Enrich TouchDisplay with scanlines + glow", "status": "pending"},
+    {"id": 4, "subject": "Task 4: Update codegen to use PanelShell", "status": "pending", "blockedBy": [1]},
+    {"id": 5, "subject": "Task 5: Update codegen sections to use SectionContainer", "status": "pending", "blockedBy": [2]},
+    {"id": 6, "subject": "Task 6: Visual verification", "status": "pending", "blockedBy": [3, 4, 5]}
+  ],
+  "lastUpdated": "2026-03-23T00:00:00Z"
+}

@@ -1,42 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import type { ManifestControl, ManifestSection, MasterManifest, SubZone } from '@/types/manifest';
+import { subZoneControls, subZoneDirection } from '@/types/manifest';
 
-// ─── Types ──────────────────────────────────────────────────
-
-interface ManifestControl {
-  id: string;
-  verbatimLabel: string;
-  type: string;
-  section: string;
-}
-
-interface ManifestSection {
-  id: string;
-  headerLabel: string | null;
-  archetype: string;
-  gridRows?: number;
-  gridCols?: number;
-  controls: string[];
-  containerAssignment?: Record<string, string[] | Record<string, SubZone>>;
-  heightSplits?: { cluster: number; anchor: number; gap: number };
-  panelBoundingBox?: { x: number; y: number; w: number; h: number };
-  widthPercent: number;
-  complexity: string;
-}
-
-type SubZone = string[] | { controls: string[]; direction: 'row' | 'column' };
-function szControls(sz: SubZone): string[] { return Array.isArray(sz) ? sz : sz.controls; }
-function szDirection(sz: SubZone): 'row' | 'column' { return Array.isArray(sz) ? 'column' : sz.direction; }
-
-interface MasterManifest {
-  deviceId: string;
-  deviceName: string;
-  manufacturer: string;
-  layoutType: string;
-  sections: ManifestSection[];
-  controls: ManifestControl[];
-}
+// Local aliases for brevity (used extensively in this file)
+const szControls = subZoneControls;
+const szDirection = subZoneDirection;
 
 interface TemplateSpec {
   sectionId: string;
@@ -373,7 +343,7 @@ function PanelSection({
               <div
                 key={role}
                 style={{
-                  flex: split ? `0 0 ${(split * 100).toFixed(0)}%` : '1',
+                  flex: split ? `0 0 ${((split ?? 0) * 100).toFixed(0)}%` : '1',
                   borderRadius: '3px',
                   padding: '2px',
                   display: 'flex',
@@ -670,13 +640,13 @@ function PropertiesPanel({
       {section.heightSplits && (
         <div style={rowStyle}>
           <label style={labelStyle}>
-            Cluster / Anchor: {(section.heightSplits.cluster * 100).toFixed(0)}% / {(section.heightSplits.anchor * 100).toFixed(0)}%
+            Cluster / Anchor: {((section.heightSplits?.cluster ?? 0) * 100).toFixed(0)}% / {((section.heightSplits?.anchor ?? 0) * 100).toFixed(0)}%
           </label>
           <input
             type="range"
             min={10}
             max={90}
-            value={Math.round(section.heightSplits.cluster * 100)}
+            value={Math.round((section.heightSplits?.cluster ?? 0.5) * 100)}
             onChange={(e) => {
               const cluster = parseInt(e.target.value) / 100;
               const anchor = Math.max(0, 1 - cluster - (section.heightSplits?.gap ?? 0.06));
@@ -1083,6 +1053,8 @@ export default function PanelLayoutEditor({ deviceId }: PanelLayoutEditorProps) 
         verbatimLabel: controlId,
         type: 'button',
         section: sectionId,
+        functionalGroup: 'default',
+        spatialNeighbors: { above: null, below: null, left: null, right: null },
       };
       return {
         ...prev,

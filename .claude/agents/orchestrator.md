@@ -221,8 +221,14 @@ The Orchestrator is the ROOT PROCESS. Enforcement:
 - Only the Orchestrator can authorize VAULT status
 - Only the Orchestrator can authorize UNLOCK
 
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/orchestrator/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
+
 ### CHECKPOINTING
-On startup, ALWAYS read `.claude/agent-memory/orchestrator/checkpoint.md` first. Resume from "Next step" if exists.
+On startup, ALWAYS read `.pipeline/<deviceId>/agents/orchestrator/checkpoint.md` first. Resume from "Next step" if exists.
 
 After each major step, write progress:
 - **Completed:** [what's done]

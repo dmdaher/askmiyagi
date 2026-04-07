@@ -13,7 +13,7 @@ const AGENT_COLORS: Record<string, string> = {
 
 interface AgentScoreCardProps {
   agentName: string;
-  score: number | null;
+  score: number | null | undefined;
   status: 'running' | 'passed' | 'failed' | null;
 }
 
@@ -21,14 +21,14 @@ export default function AgentScoreCard({ agentName, score, status }: AgentScoreC
   const agentColor = AGENT_COLORS[agentName] ?? '#6b7280';
 
   function getScoreColor(): string {
-    if (score === null) return '#6b7280';
+    if (score == null) return '#6b7280';
     if (score >= 10.0) return '#22c55e';
     if (score >= 9.5) return '#22c55e';
     return '#ef4444';
   }
 
   function formatScore(): string {
-    if (score === null) return '--';
+    if (score == null) return '--';
     return score.toFixed(1);
   }
 
@@ -66,7 +66,7 @@ export default function AgentScoreCard({ agentName, score, status }: AgentScoreC
           {formatScore()}
         </span>
 
-        {score !== null && score >= 10.0 && (
+        {score != null && score >= 10.0 && (
           <svg className="w-3.5 h-3.5" style={{ color: '#22c55e' }} fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"

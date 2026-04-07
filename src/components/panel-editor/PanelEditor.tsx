@@ -1,0 +1,325 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { useEditorStore } from './store';
+import type { MasterManifestInput } from './store';
+import { isHosted } from '@/lib/env';
+import EditorToolbar from './EditorToolbar';
+import EditorWorkspace from './EditorWorkspace';
+import PropertiesPanel from './PropertiesPanel';
+import LayersPanel from './LayersPanel';
+import ContextMenu from './ContextMenu';
+import IssueReportModal from './IssueReportModal';
+import EditorTutorial from './EditorTutorial';
+import { useEditorKeyboard } from './hooks/useEditorKeyboard';
+import { useAutoSave } from './hooks/useAutoSave';
+import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
+import { cleanupGeometry } from '@/lib/layout-inference';
+
+interface PanelEditorProps {
+  deviceId: string;
+}
+
+/** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
+function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onRestoreVersion?: () => void }) {
+  useEditorKeyboard();
+  useAutoSave(deviceId);
+
+  const previewMode = useEditorStore((s) => s.previewMode);
+  const setPreviewMode = useEditorStore((s) => s.setPreviewMode);
+  const [buildStatus, setBuildStatus] = useState<
+    'idle' | 'building' | 'approved'
+  >('idle');
+  const [codegenError, setCodegenError] = useState<string | null>(null);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
+  const [showIssueModal, setShowIssueModal] = useState(false);
+
+  // ── Clean Up: optional inference pass (snap rows, equalize spacing) ──────
+  const handleCleanUp = useCallback(() => {
+    const state = useEditorStore.getState();
+    const { sections, controls, canvasWidth, canvasHeight, controlScale } = state;
+    // Read cleanupGap if available (Part 3 adds this to store)
+    const cleanupGap = (state as any).cleanupGap as number | undefined;
+
+    // Push snapshot so Cmd+Z reverts the cleanup
+    state.pushSnapshot();
+
+    // Run geometry cleanup (snap alignment, equalize spacing)
+    // Pass controlScale so spacing uses visual sizes, not container sizes.
+    // Pass cleanupGap so the contractor's target gap is used instead of averaging.
+    const cleaned = cleanupGeometry(
+      sections, controls, canvasWidth, canvasHeight,
+      controlScale, cleanupGap && cleanupGap > 0 ? cleanupGap : undefined,
+    );
+
+    // Apply cleaned positions — sizes are NOT modified (sacred)
+    const updatedControls = { ...controls };
+    const updatedSections = { ...sections };
+    for (const cs of cleaned.sections) {
+      if (updatedSections[cs.id]) {
+        updatedSections[cs.id] = {
+          ...updatedSections[cs.id],
+          x: cs.x, y: cs.y, w: cs.w, h: cs.h,
+        };
+      }
+      for (const cc of cs.controls) {
+        if (updatedControls[cc.id]) {
+          updatedControls[cc.id] = {
+            ...updatedControls[cc.id],
+            x: cc.x, y: cc.y,
+            // w/h intentionally NOT overwritten — contractor sizes are sacred
+          };
+        }
+      }
+    }
+    useEditorStore.setState({ sections: updatedSections, controls: updatedControls });
+  }, []);
+
+  // ── Approve & Build: take positions as-is, run codegen for polish ──────
+  const handleApproveAndBuild = useCallback(async () => {
+    const state = useEditorStore.getState();
+    const { sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom } = state;
+    const cleanupGap = (state as any).cleanupGap as number | undefined;
+    const panelScale = (state as any).panelScale as number | undefined;
+    setBuildStatus('building');
+    setCodegenError(null);
+
+    try {
+      // Force-save current manifest (bypass debounce)
+      await fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sections, controls, editorLabels: (state as any).editorLabels ?? [], controlGroups: (state as any).controlGroups ?? [], canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard: (state as any).keyboard }),
+      });
+
+      // Export manifest JSON — replaces codegen TSX generation.
+      // Writes src/data/manifests/{deviceId}.json for production.
+      const exportRes = await fetch(`/api/pipeline/${deviceId}/export-manifest`, { method: 'POST' });
+      const exportBody = await exportRes.json().catch(() => ({}));
+      if (!exportRes.ok) {
+        throw new Error(exportBody.error ? `${exportBody.error}: ${exportBody.details || ''}` : 'Export failed');
+      }
+
+      setExportMessage(exportBody.output ?? 'Manifest exported successfully');
+      setPreviewMode(true);
+      setBuildStatus('approved');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setCodegenError(message);
+      setBuildStatus('idle');
+    }
+  }, [deviceId]);
+
+  const handleBackToEditor = useCallback(() => {
+    setPreviewMode(false);
+    setBuildStatus('idle');
+    setCodegenError(null);
+  }, []);
+
+  const handleLooksGood = useCallback(() => {
+    setBuildStatus('approved');
+  }, []);
+
+  return (
+    <div className="flex flex-col h-full bg-[#0d0d1a]" data-tutorial="canvas">
+      <EditorTutorial deviceId={deviceId} />
+      <EditorToolbar
+        deviceId={deviceId}
+        previewMode={previewMode}
+        buildStatus={buildStatus}
+        onApproveAndBuild={handleApproveAndBuild}
+        onCleanUp={handleCleanUp}
+        onTogglePreview={() => {
+          const next = !previewMode;
+          if (next) {
+            // Entering preview — clear selection so no outlines show
+            useEditorStore.getState().setSelectedIds([]);
+            useEditorStore.getState().setSelectedLabel(null);
+          }
+          setPreviewMode(next);
+        }}
+        onReportIssue={() => setShowIssueModal(true)}
+        onRestoreVersion={onRestoreVersion}
+      />
+
+      {/* Codegen error banner */}
+      {codegenError && (
+        <div className="flex h-10 items-center justify-between border-b border-red-700/40 bg-red-900/20 px-4">
+          <span className="text-sm text-red-300 truncate flex-1 mr-4">
+            Codegen error: {codegenError}
+          </span>
+          <button
+            onClick={() => setCodegenError(null)}
+            className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700 flex-shrink-0"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Preview mode banner */}
+      {previewMode && (
+        <div className="flex h-10 items-center justify-between border-b border-amber-700/40 bg-amber-900/20 px-4">
+          <span className="text-sm text-amber-300 truncate">
+            {buildStatus === 'approved' && exportMessage
+              ? `✓ ${exportMessage}`
+              : buildStatus === 'approved'
+                ? '✓ Panel exported'
+                : 'Preview Mode — clean panel view (click Preview to exit)'}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setPreviewMode(false); setBuildStatus('idle'); setExportMessage(null); }}
+              className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
+            >
+              Back to Editor
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-1 overflow-hidden relative">
+        <LayersPanel />
+        <EditorWorkspace deviceId={deviceId} readOnly={previewMode} />
+        <PropertiesPanel />
+      </div>
+      {!previewMode && <ContextMenu />}
+
+      {showIssueModal && (
+        <IssueReportModal
+          deviceId={deviceId}
+          onClose={() => setShowIssueModal(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function PanelEditor({ deviceId }: PanelEditorProps) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // Exposed for VersionHistoryDropdown to trigger a reload after restore
+  const forceReload = useCallback(() => {
+    // Push current state for undo before loading restored version
+    useEditorStore.getState().pushSnapshot();
+    setLoading(true);
+    setReloadKey((k) => k + 1);
+  }, []);
+
+  useEffect(() => {
+    // If the Zustand store already has data for this device (e.g., we switched
+    // tabs and came back), skip the disk reload to preserve in-memory state
+    // and undo history. Only fetch from disk on first load or device change.
+    // BUT: if reloadKey > 0, always reload (version restore triggered it).
+    const currentStore = useEditorStore.getState();
+    if (reloadKey === 0 && currentStore.deviceId === deviceId && Object.keys(currentStore.controls).length > 0) {
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function fetchManifest() {
+      try {
+        const res = await fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`);
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(
+            body.error ?? `Failed to load manifest (${res.status})`
+          );
+        }
+        const data = await res.json();
+        if (!cancelled) {
+          if (data._source === 'editor' && data.sections && data.controls) {
+            // Restore previously saved editor state (flat sections/controls)
+            // API normalizes to arrays — convert back to Record<id, Def> if needed
+            const sections = Array.isArray(data.sections)
+              ? Object.fromEntries(data.sections.map((s: any) => [s.id, {
+                  ...s,
+                  // Normalize: manifest uses 'controls', editor uses 'childIds'
+                  childIds: s.childIds ?? s.controls ?? [],
+                }]))
+              : data.sections;
+            const controls = Array.isArray(data.controls)
+              ? Object.fromEntries(data.controls.map((c: any) => [c.id, c]))
+              : data.controls;
+
+            // Use saved canvas dimensions if available (positions were created for that size).
+            // If not saved, DON'T recompute from deviceDimensions — the positions were created
+            // for the old default canvas. Let the store defaults (1200x1650) handle it.
+            const canvasUpdate: Record<string, number> = {};
+            if (data.canvasWidth && data.canvasHeight) {
+              canvasUpdate.canvasWidth = data.canvasWidth;
+              canvasUpdate.canvasHeight = data.canvasHeight;
+            }
+            // Restore canvas settings if saved
+            if (typeof data.controlScale === 'number') {
+              canvasUpdate.controlScale = data.controlScale;
+            }
+            if (typeof data.zoom === 'number') {
+              canvasUpdate.zoom = data.zoom;
+            }
+            if (typeof data.cleanupGap === 'number') {
+              canvasUpdate.cleanupGap = data.cleanupGap;
+            }
+            if (typeof data.panelScale === 'number') {
+              canvasUpdate.panelScale = data.panelScale;
+            }
+
+            useEditorStore.setState({
+              deviceId,
+              deviceName: data.deviceName ?? '',
+              manufacturer: data.manufacturer ?? '',
+              sections,
+              controls,
+              editorLabels: data.editorLabels ?? [],
+              controlGroups: data.controlGroups ?? [],
+              selectedIds: [],
+              lockedIds: [],
+              keyboard: data.keyboard ?? null,
+              _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
+              hasUserEdited: false,
+              ...canvasUpdate,
+            });
+          } else {
+            // First load — convert original pipeline manifest to editor format
+            useEditorStore.getState().loadFromManifest(data as MasterManifestInput);
+          }
+          // Initialize labels from controls if not yet done (migration)
+          useEditorStore.getState().initLabelsFromControls();
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Unknown error');
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchManifest();
+    return () => {
+      cancelled = true;
+    };
+  }, [deviceId, reloadKey]);
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center bg-[#0d0d1a]">
+        <div className="text-gray-500">Loading manifest...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center bg-[#0d0d1a]">
+        <div className="text-red-400">{error}</div>
+      </div>
+    );
+  }
+
+  return <EditorShell deviceId={deviceId} onRestoreVersion={forceReload} />;
+}

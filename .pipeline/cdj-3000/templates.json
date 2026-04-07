@@ -1,0 +1,617 @@
+{
+  "deviceId": "cdj-3000",
+  "deviceName": "CDJ-3000 Multi Player",
+  "generatedAt": "2026-03-23T05:19:47.618Z",
+  "templates": [
+    {
+      "sectionId": "BROWSE",
+      "archetype": "single-row",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "row",
+          "align-items": "center",
+          "gap": "4px"
+        }
+      },
+      "componentStructure": "<div data-section-id=\"BROWSE\" className=\"flex flex-row items-center gap-1\">{/* 7 controls in a horizontal row */}</div>",
+      "controlSlots": [
+        "SOURCE",
+        "BROWSE_BTN",
+        "TAG_LIST",
+        "SOURCE_INDICATOR",
+        "PLAYLIST",
+        "SEARCH_BTN",
+        "MENU_UTILITY"
+      ],
+      "notes": [
+        "Single row — 7 controls in a horizontal line"
+      ]
+    },
+    {
+      "sectionId": "MEDIA",
+      "archetype": "stacked-rows",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "gap": "4px",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "justify-content": "center"
+            },
+            "children": []
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"MEDIA\" className=\"flex flex-col gap-1 h-full\">\n  {/* Each row is a flex-row container */}\n  <div className=\"flex flex-row gap-1 justify-center\">{/* row N controls */}</div>\n</div>",
+      "controlSlots": [
+        "USB_PORT",
+        "USB_INDICATOR",
+        "USB_STOP",
+        "SD_INDICATOR",
+        "SD_SLOT"
+      ],
+      "notes": [
+        "Stacked rows — each row is a horizontal flex container",
+        "Row contents determined by manifest control order and neighbor relationships"
+      ],
+      "containerAssignment": {
+        "row-usb-top": [
+          "USB_PORT",
+          "USB_INDICATOR"
+        ],
+        "row-usb-stop": [
+          "USB_STOP"
+        ],
+        "row-sd": [
+          "SD_INDICATOR",
+          "SD_SLOT"
+        ]
+      }
+    },
+    {
+      "sectionId": "DISPLAY",
+      "archetype": "single-column",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "align-items": "center",
+          "gap": "4px"
+        }
+      },
+      "componentStructure": "<div data-section-id=\"DISPLAY\" className=\"flex flex-col items-center gap-1\">{/* 1 controls stacked vertically */}</div>",
+      "controlSlots": [
+        "TOUCH_DISPLAY"
+      ],
+      "notes": [
+        "Single column — 1 controls stacked vertically"
+      ]
+    },
+    {
+      "sectionId": "SELECTOR",
+      "archetype": "single-column",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "align-items": "center",
+          "gap": "4px"
+        }
+      },
+      "componentStructure": "<div data-section-id=\"SELECTOR\" className=\"flex flex-col items-center gap-1\">{/* 3 controls stacked vertically */}</div>",
+      "controlSlots": [
+        "BACK",
+        "TAG_TRACK_REMOVE",
+        "ROTARY_SELECTOR"
+      ],
+      "notes": [
+        "Single column — 3 controls stacked vertically"
+      ]
+    },
+    {
+      "sectionId": "HOT_CUE",
+      "archetype": "dual-column",
+      "cssArchitecture": {
+        "display": "grid",
+        "properties": {
+          "grid-template-columns": "repeat(2, 1fr)",
+          "gap": "8px",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "left-column",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "gap": "4px"
+            },
+            "children": []
+          },
+          {
+            "role": "right-column",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "display": "flex"
+            },
+            "children": [
+              "HOT_CUE_A",
+              "HOT_CUE_B",
+              "HOT_CUE_C",
+              "HOT_CUE_D",
+              "HOT_CUE_E",
+              "HOT_CUE_F",
+              "HOT_CUE_G",
+              "HOT_CUE_H"
+            ]
+          },
+          {
+            "role": "right-column.pads",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "HOT_CUE_A",
+              "HOT_CUE_B",
+              "HOT_CUE_C",
+              "HOT_CUE_D",
+              "HOT_CUE_E",
+              "HOT_CUE_F",
+              "HOT_CUE_G",
+              "HOT_CUE_H"
+            ]
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"HOT_CUE\" className=\"grid grid-cols-2 gap-2 h-full\">\n  <div className=\"flex flex-col gap-1\">{/* left column */}</div>\n  <div className=\"flex flex-col gap-1\">{/* right column */}</div>\n</div>",
+      "controlSlots": [
+        "SLIP",
+        "QUANTIZE",
+        "TIME_MODE_AUTO_CUE",
+        "HOT_CUE_A",
+        "HOT_CUE_B",
+        "HOT_CUE_C",
+        "HOT_CUE_D",
+        "HOT_CUE_E",
+        "HOT_CUE_F",
+        "HOT_CUE_G",
+        "HOT_CUE_H"
+      ],
+      "notes": [
+        "Dual column layout — controls split between two vertical columns",
+        "right-column has sub-zones: pads (row, 8 controls)"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "SLIP",
+          "QUANTIZE",
+          "TIME_MODE_AUTO_CUE"
+        ],
+        "right-column": {
+          "pads": {
+            "controls": [
+              "HOT_CUE_A",
+              "HOT_CUE_B",
+              "HOT_CUE_C",
+              "HOT_CUE_D",
+              "HOT_CUE_E",
+              "HOT_CUE_F",
+              "HOT_CUE_G",
+              "HOT_CUE_H"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    {
+      "sectionId": "JOG_CONTROLS",
+      "archetype": "dual-column",
+      "cssArchitecture": {
+        "display": "grid",
+        "properties": {
+          "grid-template-columns": "repeat(2, 1fr)",
+          "gap": "8px",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "left-column",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "gap": "4px"
+            },
+            "children": []
+          },
+          {
+            "role": "right-column",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "gap": "4px"
+            },
+            "children": []
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"JOG_CONTROLS\" className=\"grid grid-cols-2 gap-2 h-full\">\n  <div className=\"flex flex-col gap-1\">{/* left column */}</div>\n  <div className=\"flex flex-col gap-1\">{/* right column */}</div>\n</div>",
+      "controlSlots": [
+        "TRACK_FILTER_EDIT",
+        "SHORTCUT",
+        "VINYL_SPEED_ADJ",
+        "JOG_MODE",
+        "VINYL_CDJ_INDICATOR",
+        "JOG_ADJUST"
+      ],
+      "notes": [
+        "Dual column layout — controls split between two vertical columns"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "TRACK_FILTER_EDIT",
+          "SHORTCUT",
+          "VINYL_SPEED_ADJ"
+        ],
+        "right-column": [
+          "JOG_MODE",
+          "VINYL_CDJ_INDICATOR",
+          "JOG_ADJUST"
+        ]
+      }
+    },
+    {
+      "sectionId": "LOOP",
+      "archetype": "stacked-rows",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "gap": "4px",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "justify-content": "center"
+            },
+            "children": []
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"LOOP\" className=\"flex flex-col gap-1 h-full\">\n  {/* Each row is a flex-row container */}\n  <div className=\"flex flex-row gap-1 justify-center\">{/* row N controls */}</div>\n</div>",
+      "controlSlots": [
+        "LOOP_IN_CUE",
+        "LOOP_OUT",
+        "RELOOP_EXIT",
+        "FOUR_BEAT_LOOP",
+        "EIGHT_BEAT_LOOP"
+      ],
+      "notes": [
+        "Stacked rows — each row is a horizontal flex container",
+        "Row contents determined by manifest control order and neighbor relationships"
+      ],
+      "containerAssignment": {
+        "row-1": [
+          "LOOP_IN_CUE",
+          "LOOP_OUT"
+        ],
+        "row-2": [
+          "RELOOP_EXIT",
+          "FOUR_BEAT_LOOP",
+          "EIGHT_BEAT_LOOP"
+        ]
+      }
+    },
+    {
+      "sectionId": "CUE_MEMORY",
+      "archetype": "grid-NxM",
+      "cssArchitecture": {
+        "display": "grid",
+        "properties": {
+          "grid-template-columns": "repeat(2, 1fr)",
+          "grid-template-rows": "repeat(2, 1fr)",
+          "gap": "4px"
+        }
+      },
+      "componentStructure": "<div data-section-id=\"CUE_MEMORY\" className=\"grid grid-cols-2 grid-rows-2 gap-1\">{/* 4 cells */}</div>",
+      "controlSlots": [
+        "CUE_LOOP_CALL_BACK",
+        "CUE_LOOP_CALL_FWD",
+        "DELETE",
+        "MEMORY"
+      ],
+      "notes": [
+        "2x2 grid — 4 controls in 4 cells"
+      ]
+    },
+    {
+      "sectionId": "SYNC",
+      "archetype": "single-column",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "align-items": "center",
+          "gap": "4px"
+        }
+      },
+      "componentStructure": "<div data-section-id=\"SYNC\" className=\"flex flex-col items-center gap-1\">{/* 3 controls stacked vertically */}</div>",
+      "controlSlots": [
+        "MASTER",
+        "KEY_SYNC",
+        "BEAT_SYNC_INST_DOUBLES"
+      ],
+      "notes": [
+        "Single column — 3 controls stacked vertically"
+      ]
+    },
+    {
+      "sectionId": "TRANSPORT",
+      "archetype": "stacked-rows",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "gap": "4px",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "justify-content": "center"
+            },
+            "children": []
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"TRANSPORT\" className=\"flex flex-col gap-1 h-full\">\n  {/* Each row is a flex-row container */}\n  <div className=\"flex flex-row gap-1 justify-center\">{/* row N controls */}</div>\n</div>",
+      "controlSlots": [
+        "BEAT_JUMP_BACK",
+        "BEAT_JUMP_FWD",
+        "DIRECTION_LEVER",
+        "TRACK_SEARCH_BACK",
+        "TRACK_SEARCH_FWD",
+        "SEARCH_BACK",
+        "SEARCH_FWD",
+        "CUE_BTN",
+        "PLAY_PAUSE"
+      ],
+      "notes": [
+        "Stacked rows — each row is a horizontal flex container",
+        "Row contents determined by manifest control order and neighbor relationships"
+      ],
+      "containerAssignment": {
+        "row-beat-jump": [
+          "BEAT_JUMP_BACK",
+          "BEAT_JUMP_FWD"
+        ],
+        "row-direction": [
+          "DIRECTION_LEVER"
+        ],
+        "row-track-search": [
+          "TRACK_SEARCH_BACK",
+          "TRACK_SEARCH_FWD"
+        ],
+        "row-search": [
+          "SEARCH_BACK",
+          "SEARCH_FWD"
+        ],
+        "row-cue": [
+          "CUE_BTN"
+        ],
+        "row-play": [
+          "PLAY_PAUSE"
+        ]
+      }
+    },
+    {
+      "sectionId": "JOG_WHEEL",
+      "archetype": "anchor-layout",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "secondary-controls",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "flex": "0 0 10%",
+              "gap": "4px"
+            },
+            "children": []
+          },
+          {
+            "role": "anchor-element",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "flex": "0 0 85%",
+              "align-items": "center",
+              "justify-content": "center"
+            },
+            "children": []
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"JOG_WHEEL\" className=\"flex flex-col h-full\">\n  <div className=\"flex flex-row\" style={{ flex: '0 0 10%' }}>{/* secondary controls */}</div>\n  <div className=\"flex flex-col items-center justify-center\" style={{ flex: '0 0 85%' }}>{/* anchor element */}</div>\n</div>",
+      "controlSlots": [
+        "JOG_WHEEL",
+        "JOG_DISPLAY"
+      ],
+      "notes": [
+        "Anchor layout — dominant element gets 85% height",
+        "Secondary controls get 10% height",
+        "Gap: 5%"
+      ],
+      "containerAssignment": {
+        "secondary-controls": [
+          "JOG_DISPLAY"
+        ],
+        "anchor-element": [
+          "JOG_WHEEL"
+        ]
+      }
+    },
+    {
+      "sectionId": "TEMPO",
+      "archetype": "dual-column",
+      "cssArchitecture": {
+        "display": "grid",
+        "properties": {
+          "grid-template-columns": "repeat(2, 1fr)",
+          "gap": "8px",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "left-column",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "display": "flex"
+            },
+            "children": [
+              "TEMPO_RANGE",
+              "MASTER_TEMPO",
+              "TEMPO_RESET",
+              "TEMPO_RESET_INDICATOR"
+            ]
+          },
+          {
+            "role": "right-column",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "gap": "4px"
+            },
+            "children": []
+          },
+          {
+            "role": "left-column.mode-buttons",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "gap": "4px",
+              "align-items": "stretch",
+              "flex": "1"
+            },
+            "children": [
+              "TEMPO_RANGE",
+              "MASTER_TEMPO"
+            ]
+          },
+          {
+            "role": "left-column.reset-controls",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "TEMPO_RESET",
+              "TEMPO_RESET_INDICATOR"
+            ]
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"TEMPO\" className=\"grid grid-cols-2 gap-2 h-full\">\n  <div className=\"flex flex-col gap-1\">{/* left column */}</div>\n  <div className=\"flex flex-col gap-1\">{/* right column */}</div>\n</div>",
+      "controlSlots": [
+        "TEMPO_RANGE",
+        "MASTER_TEMPO",
+        "TEMPO_SLIDER",
+        "TEMPO_RESET",
+        "TEMPO_RESET_INDICATOR"
+      ],
+      "notes": [
+        "Dual column layout — controls split between two vertical columns",
+        "left-column has sub-zones: mode-buttons (column, 2 controls), reset-controls (row, 2 controls)"
+      ],
+      "containerAssignment": {
+        "left-column": {
+          "mode-buttons": {
+            "controls": [
+              "TEMPO_RANGE",
+              "MASTER_TEMPO"
+            ],
+            "direction": "column"
+          },
+          "reset-controls": {
+            "controls": [
+              "TEMPO_RESET",
+              "TEMPO_RESET_INDICATOR"
+            ],
+            "direction": "row"
+          }
+        },
+        "right-column": [
+          "TEMPO_SLIDER"
+        ]
+      }
+    }
+  ],
+  "panelArchitecture": {
+    "layoutType": "asymmetric",
+    "sectionOrder": [
+      "BROWSE",
+      "MEDIA",
+      "DISPLAY",
+      "SELECTOR",
+      "HOT_CUE",
+      "JOG_CONTROLS",
+      "LOOP",
+      "CUE_MEMORY",
+      "SYNC",
+      "TRANSPORT",
+      "JOG_WHEEL",
+      "TEMPO"
+    ],
+    "sectionWidths": {
+      "BROWSE": "78%",
+      "MEDIA": "14%",
+      "DISPLAY": "64%",
+      "SELECTOR": "22%",
+      "HOT_CUE": "52%",
+      "JOG_CONTROLS": "22%",
+      "LOOP": "28%",
+      "CUE_MEMORY": "23%",
+      "SYNC": "22%",
+      "TRANSPORT": "15%",
+      "JOG_WHEEL": "54%",
+      "TEMPO": "20%"
+    },
+    "totalSections": 12,
+    "totalControls": 61
+  },
+  "warnings": []
+}

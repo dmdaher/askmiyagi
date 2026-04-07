@@ -1,0 +1,622 @@
+{
+  "deviceId": "fantom-06",
+  "deviceName": "Fantom 06",
+  "manufacturer": "Roland",
+  "manualPaths": [
+    ".pipeline/fantom-06/input/manuals/FANTOM-06_07_08_eng01_W.pdf",
+    ".pipeline/fantom-06/input/manuals/FANTOM-06_07_08_Reference_eng01_W.pdf",
+    ".pipeline/fantom-06/input/manuals/FANTOM-06_07_08_Parameter_eng01_W.pdf"
+  ],
+  "currentPhase": "panel-pr",
+  "status": "paused",
+  "branch": "feature/fantom-06",
+  "createdAt": "2026-03-22T23:02:13.897Z",
+  "updatedAt": "2026-04-04T19:59:57.919Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-22T23:04:06.885Z",
+      "completedAt": "2026-03-22T23:06:58.039Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 0.3809067,
+      "tokens": {
+        "input": 176,
+        "output": 6210,
+        "cacheCreation": 41104,
+        "cacheRead": 443629
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-22T23:25:35.365Z",
+      "completedAt": "2026-03-22T23:25:35.373Z",
+      "score": 9.5,
+      "status": "passed",
+      "costUsd": 14.32369725,
+      "tokens": {
+        "input": 45,
+        "output": 76656,
+        "cacheCreation": 154813,
+        "cacheRead": 3780719
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-24T06:11:06.542Z",
+      "completedAt": "2026-03-24T06:32:36.147Z",
+      "score": 8.5,
+      "status": "passed",
+      "costUsd": 16.33706025,
+      "tokens": {
+        "input": 54,
+        "output": 83941,
+        "cacheCreation": 204703,
+        "cacheRead": 4134996
+      }
+    },
+    {
+      "phase": "phase-0-layout-engine",
+      "startedAt": "2026-03-24T06:32:36.149Z",
+      "completedAt": "2026-03-24T06:32:36.708Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "phase": "panel-pr",
+      "startedAt": "2026-03-26T19:59:41.963Z",
+      "completedAt": null,
+      "score": null,
+      "status": "running",
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "controller",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "zone",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "common",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "scene",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "synth",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "sequencer",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "pad",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    }
+  ],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774223685204-5g52wh",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 2.0). Errors: Section \"section-left-controllers\": archetype \"single-column\" but X-spread is 30%. Controls aren't in a single column.; Section \"section-right-synth\": archetype \"cluster-below-anchor\" mismatches geometry. Controls split into two X-clusters (gap: 20%). Suggest \"dual-column\".; Section \"section-right-sequencer\": archetype \"cluster-above-anchor\" mismatches geometry. Controls split into two X-clusters (gap: 20%). Suggest \"dual-column\".",
+      "createdAt": "2026-03-22T23:54:45.204Z",
+      "resolvedAt": "2026-03-23T05:05:00.000Z",
+      "resolution": "fixed p undefined bug"
+    },
+    {
+      "id": "esc-1774246357411-7qmj96",
+      "phase": "phase-1-section-loop",
+      "type": "topology-deadlock",
+      "message": "Section \"controller\" failed after 3 attempts. Scores: SI=null, PQ=null, Critic=null",
+      "createdAt": "2026-03-23T06:12:37.411Z",
+      "resolvedAt": "2026-03-23T06:15:00.000Z",
+      "resolution": "fixed: added editor-ready pause"
+    },
+    {
+      "id": "esc-1774283245793-t3d2ag",
+      "phase": "phase-1-section-loop",
+      "type": "topology-deadlock",
+      "message": "Section \"controller\" failed after 3 attempts. Scores: SI=null, PQ=null, Critic=null",
+      "createdAt": "2026-03-23T16:27:25.793Z",
+      "resolvedAt": "2026-03-23T17:00:00.000Z",
+      "resolution": "reset to editor-ready"
+    },
+    {
+      "id": "esc-editor-ready-fantom-06",
+      "phase": "phase-0-layout-engine",
+      "type": "agent-failure",
+      "message": "Pipeline ready for editor. Open the visual editor to position controls, then run codegen.",
+      "createdAt": "2026-03-23T17:00:00.000Z",
+      "resolvedAt": "2026-03-23T18:13:51.825Z",
+      "resolution": "retry"
+    },
+    {
+      "id": "esc-1774289635261-p9imba",
+      "phase": "panel-pr",
+      "type": "agent-failure",
+      "message": "Failed to create panel PR: Command failed: gh pr create --base test --title \"feat: Fantom 06 digital twin panel\" --body \"Automated panel build for Fantom 06 by Miyagi Pipeline\"\nWarning: 1 uncommitted change\naborted: you must first push the current branch to a remote, or use the --head flag\n",
+      "createdAt": "2026-03-23T18:13:55.261Z",
+      "resolvedAt": "2026-03-23T00:00:00Z",
+      "resolution": "auto-cleared for gatekeeper re-run"
+    },
+    {
+      "id": "esc-1774330701831-omfv59",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 0.0). Errors: Section \"common\" heightSplits has values > 1.0 ({\"cluster\":55,\"anchor\":48,\"gap\":5}). Must be 0-1 range (e.g., 0.30 not 30).; Section \"synth-mode\" heightSplits has values > 1.0 ({\"cluster\":40,\"anchor\":35,\"gap\":8}). Must be 0-1 range (e.g., 0.30 not 30).; Section \"pad\" heightSplits has values > 1.0 ({\"cluster\":18,\"anchor\":78,\"gap\":4}). Must be 0-1 range (e.g., 0.30 not 30).",
+      "createdAt": "2026-03-24T05:38:21.831Z",
+      "resolvedAt": null,
+      "resolution": null
+    },
+    {
+      "id": "esc-1774331801630-o91wbw",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 0.0). Errors: Section \"common\" heightSplits has values > 1.0 ({\"cluster\":55,\"anchor\":48,\"gap\":5}). Must be 0-1 range (e.g., 0.30 not 30).; Section \"synth-mode\" heightSplits has values > 1.0 ({\"cluster\":40,\"anchor\":35,\"gap\":8}). Must be 0-1 range (e.g., 0.30 not 30).; Section \"pad\" heightSplits has values > 1.0 ({\"cluster\":18,\"anchor\":78,\"gap\":4}). Must be 0-1 range (e.g., 0.30 not 30).",
+      "createdAt": "2026-03-24T05:56:41.630Z",
+      "resolvedAt": null,
+      "resolution": null
+    },
+    {
+      "id": "esc-1774332523909-h3a3w3",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 1.5). Errors: Section \"common\" heightSplits auto-corrected from integers to decimals ({\"cluster\":0.55,\"anchor\":0.48,\"gap\":0.05}); Section \"synth-mode\" heightSplits auto-corrected from integers to decimals ({\"cluster\":0.4,\"anchor\":0.35,\"gap\":0.08}); Section \"pad\" heightSplits auto-corrected from integers to decimals ({\"cluster\":0.18,\"anchor\":0.78,\"gap\":0.04})",
+      "createdAt": "2026-03-24T06:08:43.909Z",
+      "resolvedAt": null,
+      "resolution": null
+    },
+    {
+      "id": "esc-1774333956708-hmuwvu",
+      "phase": "phase-0-layout-engine",
+      "type": "agent-failure",
+      "message": "Pipeline ready for editor. Open the visual editor to position controls, then run codegen. Resume the pipeline after codegen to start QA.\nManifest: .pipeline/fantom-06/manifest.json\nTemplates: .pipeline/fantom-06/templates.json",
+      "createdAt": "2026-03-24T06:32:36.708Z",
+      "resolvedAt": "2026-03-26T19:59:36.319Z",
+      "resolution": "auto-resolved: pipeline advanced to next phase"
+    },
+    {
+      "id": "esc-1774555184056-acdqa4",
+      "phase": "panel-pr",
+      "type": "agent-failure",
+      "message": "Failed to create panel PR: Command failed: gh pr create --base test --title \"feat: Fantom 06 digital twin panel\" --body \"Automated panel build for Fantom 06 by Miyagi Pipeline\"\naborted: you must first push the current branch to a remote, or use the --head flag\n",
+      "createdAt": "2026-03-26T19:59:44.056Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774555184056-acdqa4",
+  "totalCostUsd": 106.27406085000001,
+  "totalActualCostUsd": 49.05983760000001,
+  "totalTokens": {
+    "input": 1622,
+    "output": 582061,
+    "cacheCreation": 2347471,
+    "cacheRead": 30890642
+  },
+  "budgetCapUsd": 200,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T06:12:37.403Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:00:26.712Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:05:15.022Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:09:19.546Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:11:58.169Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:15:00.086Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:20:06.654Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:21:38.065Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:24:34.563Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-23T16:27:25.790Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T05:29:24.596Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T05:36:09.343Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T05:38:21.794Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T05:52:07.564Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T05:54:24.967Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T05:56:41.592Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:05:16.945Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:07:15.871Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:08:43.842Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:32:36.092Z"
+      }
+    ],
+    "lastUpdated": "2026-03-24T06:32:36.140Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.026017680219501706,
+    "costPerAgent": 1.401709645714286,
+    "projectedBudgetExhaustedAt": "2026-03-28T07:14:02.889Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-22T23:06:58.019Z",
+        "cumulativeCost": 0.7589325000000001
+      },
+      {
+        "timestamp": "2026-03-22T23:25:35.354Z",
+        "cumulativeCost": 5.533498249999999
+      },
+      {
+        "timestamp": "2026-03-22T23:50:21.509Z",
+        "cumulativeCost": 9.021249999999998
+      },
+      {
+        "timestamp": "2026-03-22T23:53:07.833Z",
+        "cumulativeCost": 10.196289249999998
+      },
+      {
+        "timestamp": "2026-03-22T23:54:45.195Z",
+        "cumulativeCost": 10.844530499999998
+      },
+      {
+        "timestamp": "2026-03-23T05:01:12.774Z",
+        "cumulativeCost": 11.934721749999998
+      },
+      {
+        "timestamp": "2026-03-23T05:17:55.493Z",
+        "cumulativeCost": 14.660849999999998
+      },
+      {
+        "timestamp": "2026-03-23T05:21:11.670Z",
+        "cumulativeCost": 15.533903499999997
+      },
+      {
+        "timestamp": "2026-03-23T05:25:32.797Z",
+        "cumulativeCost": 16.499758449999998
+      },
+      {
+        "timestamp": "2026-03-23T05:30:13.558Z",
+        "cumulativeCost": 17.31249955
+      },
+      {
+        "timestamp": "2026-03-23T05:33:01.140Z",
+        "cumulativeCost": 18.412258299999998
+      },
+      {
+        "timestamp": "2026-03-23T05:50:44.561Z",
+        "cumulativeCost": 18.945233549999998
+      },
+      {
+        "timestamp": "2026-03-23T05:53:39.735Z",
+        "cumulativeCost": 19.48702925
+      },
+      {
+        "timestamp": "2026-03-23T05:56:41.011Z",
+        "cumulativeCost": 20.1632298
+      },
+      {
+        "timestamp": "2026-03-23T06:03:58.459Z",
+        "cumulativeCost": 21.21742245
+      },
+      {
+        "timestamp": "2026-03-23T06:12:37.406Z",
+        "cumulativeCost": 22.6037536
+      },
+      {
+        "timestamp": "2026-03-23T16:00:26.713Z",
+        "cumulativeCost": 23.3579631
+      },
+      {
+        "timestamp": "2026-03-23T16:05:15.026Z",
+        "cumulativeCost": 24.39903525
+      },
+      {
+        "timestamp": "2026-03-23T16:09:19.548Z",
+        "cumulativeCost": 25.2391401
+      },
+      {
+        "timestamp": "2026-03-23T16:11:58.169Z",
+        "cumulativeCost": 25.79425485
+      },
+      {
+        "timestamp": "2026-03-23T16:15:00.088Z",
+        "cumulativeCost": 26.5877602
+      },
+      {
+        "timestamp": "2026-03-23T16:20:06.655Z",
+        "cumulativeCost": 27.6172898
+      },
+      {
+        "timestamp": "2026-03-23T16:21:38.066Z",
+        "cumulativeCost": 28.078870050000003
+      },
+      {
+        "timestamp": "2026-03-23T16:24:34.564Z",
+        "cumulativeCost": 28.827217200000003
+      },
+      {
+        "timestamp": "2026-03-23T16:27:25.791Z",
+        "cumulativeCost": 29.533431600000004
+      },
+      {
+        "timestamp": "2026-03-24T05:29:24.598Z",
+        "cumulativeCost": 33.60116885000001
+      },
+      {
+        "timestamp": "2026-03-24T05:36:09.344Z",
+        "cumulativeCost": 35.42629285000001
+      },
+      {
+        "timestamp": "2026-03-24T05:38:21.794Z",
+        "cumulativeCost": 36.28350210000001
+      },
+      {
+        "timestamp": "2026-03-24T05:52:07.568Z",
+        "cumulativeCost": 39.007040350000004
+      },
+      {
+        "timestamp": "2026-03-24T05:54:24.968Z",
+        "cumulativeCost": 39.899269350000004
+      },
+      {
+        "timestamp": "2026-03-24T05:56:41.592Z",
+        "cumulativeCost": 40.61347285000001
+      },
+      {
+        "timestamp": "2026-03-24T06:05:16.946Z",
+        "cumulativeCost": 42.286055100000006
+      },
+      {
+        "timestamp": "2026-03-24T06:07:15.872Z",
+        "cumulativeCost": 42.818371600000006
+      },
+      {
+        "timestamp": "2026-03-24T06:08:43.844Z",
+        "cumulativeCost": 43.43069460000001
+      },
+      {
+        "timestamp": "2026-03-24T06:32:36.094Z",
+        "cumulativeCost": 49.05983760000001
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/fantom-06",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "panel-pr",
+    "subStep": "start"
+  },
+  "codegenCompleted": true
+}

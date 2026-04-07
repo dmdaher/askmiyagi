@@ -15,7 +15,7 @@ You are the `tutorial-reviewer`. You are the adversarial quality gate for built 
 This agent runs after the Tutorial Builder completes a batch and all tests pass. It reviews the built tutorials before they're committed to the branch.
 
 **Pre-conditions (verify before starting):**
-1. Tutorial Builder checkpoint exists (`.claude/agent-memory/tutorial-builder/checkpoint.md`) showing tests pass
+1. Tutorial Builder checkpoint exists (`.pipeline/<deviceId>/agents/tutorial-builder/checkpoint.md`) showing tests pass
 2. Tutorial files exist in `src/data/tutorials/<device-id>/`
 3. `npm test` passes (run it yourself — don't trust the Builder's claim)
 4. `npm run build` passes
@@ -24,6 +24,12 @@ This agent runs after the Tutorial Builder completes a batch and all tests pass.
 
 If any pre-condition fails, HALT with `PRE-CONDITION FAILURE`.
 
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/tutorial-reviewer/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
+
 ### DATA FLOW:
 - **Reads from:**
   - The built tutorial files (the code being reviewed)
@@ -31,8 +37,8 @@ If any pre-condition fails, HALT with `PRE-CONDITION FAILURE`.
   - The panel's **constants file** — for control ID cross-reference
   - `tasks/lessons.md` — known error patterns to hunt for
   - `docs/quality-gates.md` — the quality standard
-  - `.claude/agent-memory/manual-extractor/checkpoint.md` — the original spec (what was the tutorial supposed to cover?)
-- **Writes to:** `.claude/agent-memory/tutorial-reviewer/checkpoint.md` — full review results
+  - `.pipeline/<deviceId>/agents/manual-extractor/checkpoint.md` — the original spec (what was the tutorial supposed to cover?)
+- **Writes to:** `.pipeline/<deviceId>/agents/tutorial-reviewer/checkpoint.md` — full review results
 
 ---
 
@@ -209,9 +215,9 @@ REJECTED: 2 critical issues
 
 ## CHECKPOINTING
 
-On startup, ALWAYS read `.claude/agent-memory/tutorial-reviewer/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
+On startup, ALWAYS read `.pipeline/<deviceId>/agents/tutorial-reviewer/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
-After completing each phase, write your progress to `.claude/agent-memory/tutorial-reviewer/checkpoint.md`:
+After completing each phase, write your progress to `.pipeline/<deviceId>/agents/tutorial-reviewer/checkpoint.md`:
 - **Batch reviewed:** [batch ID]
 - **Tutorials reviewed:** [list]
 - **Phase completed:** [1-4]

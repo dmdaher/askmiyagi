@@ -20,11 +20,11 @@ const PHASE_LABELS: Record<string, string> = {
 };
 
 function formatTokens(n: number): string {
-  return n.toLocaleString('en-US');
+  return (n ?? 0).toLocaleString('en-US');
 }
 
 function formatCost(n: number): string {
-  return `$${n.toFixed(4)}`;
+  return `$${(n ?? 0).toFixed(4)}`;
 }
 
 function formatDuration(startedAt: string, completedAt: string | null): string {
@@ -67,7 +67,7 @@ function BudgetGauge({
   budget: number;
   burnRate?: BurnRate | null;
 }) {
-  const pct = Math.min((spent / budget) * 100, 100);
+  const pct = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
   const color = pct >= 85 ? '#EF4444' : pct >= 70 ? '#F59E0B' : 'var(--accent, #00aaff)';
 
   return (
@@ -154,7 +154,7 @@ function SubscriptionStatus({ subscription }: { subscription: SubscriptionUsage 
 }
 
 function BurnRateSparkline({ burnRate }: { burnRate: BurnRate }) {
-  const { dataPoints } = burnRate;
+  const dataPoints = burnRate.dataPoints ?? [];
   if (dataPoints.length < 2) return null;
 
   const costs = dataPoints.map((d) => d.cumulativeCost);
@@ -181,10 +181,10 @@ function BurnRateSparkline({ burnRate }: { burnRate: BurnRate }) {
         </span>
         <div className="flex items-center gap-3">
           <span className="text-[10px]" style={{ color: '#6b7280' }}>
-            ${burnRate.costPerMinute.toFixed(4)}/min
+            ${(burnRate.costPerMinute ?? 0).toFixed(4)}/min
           </span>
           <span className="text-[10px]" style={{ color: '#6b7280' }}>
-            ${burnRate.costPerAgent.toFixed(4)}/agent
+            ${(burnRate.costPerAgent ?? 0).toFixed(4)}/agent
           </span>
         </div>
       </div>
@@ -217,16 +217,17 @@ export default function CostBreakdown({
 }: CostBreakdownProps) {
   const [showSectionDetail, setShowSectionDetail] = useState(false);
 
-  const activePhaseCosts = phases.filter((p) => p.status !== 'skipped' && p.costUsd > 0);
+  const safePhases = phases ?? [];
+  const activePhaseCosts = safePhases.filter((p) => p.status !== 'skipped' && (p.costUsd ?? 0) > 0);
 
-  const totalTokensIn = phases.reduce((sum, p) => sum + p.tokens.input, 0);
-  const totalTokensOut = phases.reduce((sum, p) => sum + p.tokens.output, 0);
-  const totalCacheTokens = phases.reduce(
-    (sum, p) => sum + (p.tokens.cacheCreation ?? 0) + (p.tokens.cacheRead ?? 0),
+  const totalTokensIn = safePhases.reduce((sum, p) => sum + (p.tokens?.input ?? 0), 0);
+  const totalTokensOut = safePhases.reduce((sum, p) => sum + (p.tokens?.output ?? 0), 0);
+  const totalCacheTokens = safePhases.reduce(
+    (sum, p) => sum + (p.tokens?.cacheCreation ?? 0) + (p.tokens?.cacheRead ?? 0),
     0
   );
-  const totalCost = phases.reduce((sum, p) => sum + p.costUsd, 0);
-  const maxCost = Math.max(...activePhaseCosts.map((p) => p.costUsd), 0.0001);
+  const totalCost = safePhases.reduce((sum, p) => sum + (p.costUsd ?? 0), 0);
+  const maxCost = Math.max(...activePhaseCosts.map((p) => p.costUsd ?? 0), 0.0001);
 
   const showActualCostColumn =
     totalActualCostUsd !== undefined &&
@@ -267,10 +268,10 @@ export default function CostBreakdown({
             </tr>
           </thead>
           <tbody>
-            {phases
+            {safePhases
               .filter((p) => PHASE_LABELS[p.phase])
               .map((phase) => {
-                const cacheTokens = (phase.tokens.cacheCreation ?? 0) + (phase.tokens.cacheRead ?? 0);
+                const cacheTokens = (phase.tokens?.cacheCreation ?? 0) + (phase.tokens?.cacheRead ?? 0);
                 return (
                   <tr key={phase.phase} style={{ borderBottom: '1px solid var(--card-border, #2a2a3a)' }}>
                     <td className="px-3 py-1.5">
@@ -280,12 +281,12 @@ export default function CostBreakdown({
                     </td>
                     <td className="px-3 py-1.5">
                       <span className="text-xs font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                        {formatTokens(phase.tokens.input)}
+                        {formatTokens(phase.tokens?.input ?? 0)}
                       </span>
                     </td>
                     <td className="px-3 py-1.5">
                       <span className="text-xs font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                        {formatTokens(phase.tokens.output)}
+                        {formatTokens(phase.tokens?.output ?? 0)}
                       </span>
                     </td>
                     <td className="px-3 py-1.5">
@@ -295,7 +296,7 @@ export default function CostBreakdown({
                     </td>
                     <td className="px-3 py-1.5">
                       <span className="text-xs font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                        {formatCost(phase.costUsd)}
+                        {formatCost(phase.costUsd ?? 0)}
                       </span>
                     </td>
                     {showActualCostColumn && (
@@ -390,7 +391,7 @@ export default function CostBreakdown({
                 </thead>
                 <tbody>
                   {sections.map((s) => {
-                    const sectionCache = (s.tokens.cacheCreation ?? 0) + (s.tokens.cacheRead ?? 0);
+                    const sectionCache = (s.tokens?.cacheCreation ?? 0) + (s.tokens?.cacheRead ?? 0);
                     return (
                       <tr key={s.id} style={{ borderBottom: '1px solid var(--card-border, #2a2a3a)' }}>
                         <td className="px-2 py-1">
@@ -398,12 +399,12 @@ export default function CostBreakdown({
                         </td>
                         <td className="px-2 py-1">
                           <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                            {formatTokens(s.tokens.input)}
+                            {formatTokens(s.tokens?.input ?? 0)}
                           </span>
                         </td>
                         <td className="px-2 py-1">
                           <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                            {formatTokens(s.tokens.output)}
+                            {formatTokens(s.tokens?.output ?? 0)}
                           </span>
                         </td>
                         <td className="px-2 py-1">
@@ -413,7 +414,7 @@ export default function CostBreakdown({
                         </td>
                         <td className="px-2 py-1">
                           <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                            {formatCost(s.costUsd)}
+                            {formatCost(s.costUsd ?? 0)}
                           </span>
                         </td>
                       </tr>
@@ -434,7 +435,7 @@ export default function CostBreakdown({
           </p>
           <div className="space-y-1.5">
             {activePhaseCosts.map((p) => {
-              const pct = (p.costUsd / maxCost) * 100;
+              const pct = maxCost > 0 ? ((p.costUsd ?? 0) / maxCost) * 100 : 0;
               return (
                 <div key={p.phase} className="flex items-center gap-2">
                   <span className="text-[10px] w-16 text-right flex-shrink-0" style={{ color: '#6b7280' }}>
@@ -451,7 +452,7 @@ export default function CostBreakdown({
                     />
                   </div>
                   <span className="text-[10px] font-mono w-14 text-right flex-shrink-0" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                    {formatCost(p.costUsd)}
+                    {formatCost(p.costUsd ?? 0)}
                   </span>
                 </div>
               );

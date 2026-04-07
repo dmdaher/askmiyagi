@@ -37,7 +37,7 @@ Count your extracted items. Compare to the manual's total. They MUST match.
 Some manual items describe multiple physical controls (e.g., "HOT CUE (CALL/DELETE, A to H)" is 1 item but 9 physical controls). Flag these with `"compound": true` and list the sub-controls.
 
 ### OUTPUT FORMAT:
-Write a JSON file to `.claude/agent-memory/control-extractor/control-inventory.json`:
+Write a JSON file to `.pipeline/<deviceId>/agents/control-extractor/control-inventory.json`:
 
 ```json
 {
@@ -80,11 +80,17 @@ Write a JSON file to `.claude/agent-memory/control-extractor/control-inventory.j
 ### CHECKPOINTING:
 Include YAML frontmatter: `agent`, `deviceId`, `phase: 0`, `status`, `score` (0-10 scale), `verdict`, `timestamp`, `totalItems`.
 
-Write checkpoint to `.claude/agent-memory/control-extractor/checkpoint.md`.
+Write checkpoint to `.pipeline/<deviceId>/agents/control-extractor/checkpoint.md`.
+
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/control-extractor/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
 
 ### DATA FLOW:
 - **Reads:** Manual PDF only
-- **Writes:** `.claude/agent-memory/control-extractor/control-inventory.json` + checkpoint
+- **Writes:** `.pipeline/<deviceId>/agents/control-extractor/control-inventory.json` + checkpoint
 
 ### QUALITY:
 The pipeline runner mechanically validates your output: JSON parseable, all items have required fields, total count matches manual. Missing fields = auto-reject.

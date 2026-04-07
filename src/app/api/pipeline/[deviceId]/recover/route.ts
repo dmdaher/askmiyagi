@@ -88,6 +88,23 @@ export async function POST(
       return NextResponse.json({ status: 'paused', action: 'reset-failed', resumeFrom: state.currentPhase });
     }
 
+    case 'pause': {
+      // Soft stop — kill processes but preserve all state. Can resume later.
+      const pauseMessages: string[] = [];
+      if (state.childPid && isProcessAlive(state.childPid)) {
+        pauseMessages.push(gracefulKill(state.childPid, 'Agent'));
+      }
+      if (state.runnerPid && isProcessAlive(state.runnerPid)) {
+        pauseMessages.push(gracefulKill(state.runnerPid, 'Runner'));
+      }
+      state.status = 'paused';
+      state.runnerPid = null;
+      state.childPid = null;
+      appendLog(deviceId, { level: 'info', message: `Pipeline paused: ${pauseMessages.join('; ') || 'No active processes'}` });
+      writeState(deviceId, state);
+      return NextResponse.json({ status: 'paused', action: 'pause' });
+    }
+
     case 'kill-restart': {
       const messages: string[] = [];
 

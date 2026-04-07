@@ -46,8 +46,17 @@ next-env.d.ts
 # QA pipeline working artifacts
 .qa/
 
-# Pipeline runner working directory
-.pipeline/
+# Pipeline — ignore operational/temporary data, commit instrument state
+# Committed: state.json, manifest.json, manifest-editor.json, templates.json, inferred-layout.json
+# Ignored: logs, costs, agent checkpoints, manuals, photos, backups
+.pipeline/*/runner.log
+.pipeline/*/cost.json
+.pipeline/*/backups/
+.pipeline/*/"backups 2"/
+.pipeline/*/agents/
+.pipeline/*/input/
+.pipeline/*/*.stale
+.pipeline/saved/
 
 # Playwright MCP auto-captures
 .playwright-mcp/

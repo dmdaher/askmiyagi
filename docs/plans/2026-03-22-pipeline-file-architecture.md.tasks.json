@@ -1,0 +1,18 @@
+{
+  "planPath": "docs/plans/2026-03-22-pipeline-file-architecture.md",
+  "tasks": [
+    {"id": 31, "subject": "Task 1: Create pipelinePaths helper module", "status": "pending"},
+    {"id": 32, "subject": "Task 2: Update preflight — input/ directory + copy helpers", "status": "pending", "blockedBy": [31]},
+    {"id": 33, "subject": "Task 3: Update diagram parser + control extractor paths", "status": "pending", "blockedBy": [31, 32]},
+    {"id": 34, "subject": "Task 4: Update gatekeeper + layout engine paths", "status": "pending", "blockedBy": [31, 32]},
+    {"id": 35, "subject": "Task 5: Update QA phase paths (SI/PQ/Critic)", "status": "pending", "blockedBy": [31, 32]},
+    {"id": 36, "subject": "Task 6: Update manual extractor + coverage auditor paths", "status": "pending", "blockedBy": [31, 32]},
+    {"id": 37, "subject": "Task 7: Update tutorial phases + PR phases", "status": "pending", "blockedBy": [31, 32]},
+    {"id": 38, "subject": "Task 8: Update helper functions (parseSections, parseBatches)", "status": "pending", "blockedBy": [31]},
+    {"id": 39, "subject": "Task 9: Update all 14 SOUL prompts", "status": "pending", "blockedBy": [31]},
+    {"id": 40, "subject": "Task 10: Update checkpoint validators", "status": "pending"},
+    {"id": 41, "subject": "Task 11: Clean up dead code + update CLAUDE.md", "status": "pending", "blockedBy": [33, 34, 35, 36, 37, 38, 39, 40]},
+    {"id": 42, "subject": "Task 12: Smoke test — TypeScript compile + path verification", "status": "pending", "blockedBy": [41]}
+  ],
+  "lastUpdated": "2026-03-22T12:00:00.000Z"
+}

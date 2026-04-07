@@ -6,7 +6,7 @@
  *
  * Spawned as a detached process by the API route. Persists across server restarts.
  * Writes state to .pipeline/<device-id>/state.json (atomic writes).
- * Reads agent checkpoints from .claude/agent-memory/<id>/checkpoint.md.
+ * Reads agent checkpoints from .pipeline/<device-id>/agents/<id>/checkpoint.md.
  */
 
 import fs from 'fs';
@@ -47,6 +47,7 @@ import {
   validateArchetypeGeometry,
 } from '../src/lib/pipeline/checkpoint-validators';
 import * as validators from '../src/lib/pipeline/checkpoint-validators';
+import { pipelinePaths, agentPath, inputPath } from '../src/lib/pipeline/paths';
 
 const deviceId = process.argv[2];
 if (!deviceId) {
@@ -56,6 +57,10 @@ if (!deviceId) {
 
 /** Resolved worktree path — all agent invocations run here */
 let worktreeCwd: string;
+
+function paths() {
+  return pipelinePaths(deviceId, worktreeCwd);
+}
 
 /**
  * Sandboxed tool set for pipeline agents.
@@ -91,7 +96,6 @@ const HUMAN_REQUIRED_ESCALATIONS = new Set([
   'topology-deadlock',
   'two-strike-halt',
   'physical-impossibility',
-  'template-review',
 ]);
 
 /**
@@ -151,21 +155,52 @@ function isBudgetOk(state: PipelineState): boolean {
  */
 function getResumeContext(agent: string): string {
   try {
-    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', agent, 'checkpoint.md');
+    const p = paths();
+    const checkpointPath = p.agent(agent).wtCheckpoint;
     if (!fs.existsSync(checkpointPath)) return '';
-
     const content = fs.readFileSync(checkpointPath, 'utf-8');
     if (!content.trim()) return '';
-
     return `\n\n--- RESUME CONTEXT ---
 A previous run of this agent was interrupted. It left a checkpoint at:
-.claude/agent-memory/${agent}/checkpoint.md
+.pipeline/${deviceId}/agents/${agent}/checkpoint.md
 
 Read that checkpoint file FIRST. Continue from where it left off rather than starting from scratch.
 If the checkpoint indicates the work was complete, verify and finalize rather than redoing.
 --- END RESUME CONTEXT ---\n`;
   } catch {
     return '';
+  }
+}
+
+/** Copy an agent's output from worktree to main repo for persistence */
+function copyAgentOutput(agentName: string) {
+  const p = paths();
+  const src = p.agent(agentName).wtDir;
+  const dest = p.agent(agentName).dir;
+  if (!fs.existsSync(src)) return;
+  fs.cpSync(src, dest, { recursive: true });
+  appendLog(deviceId, { level: 'info', agent: agentName, message: `Copied agent output to main repo` });
+}
+
+/** Copy all agent outputs + inputs from main repo to worktree (for resume) */
+function copyPipelineToWorktree() {
+  const p = paths();
+  // Copy agents/ if exists
+  if (fs.existsSync(p.agentsDir)) {
+    fs.cpSync(p.agentsDir, p.wtAgentsDir, { recursive: true });
+    appendLog(deviceId, { level: 'info', agent: 'runner', message: 'Copied agent outputs to worktree for resume' });
+  }
+  // Copy input/ if exists
+  if (fs.existsSync(p.inputDir)) {
+    fs.cpSync(p.inputDir, path.join(worktreeCwd, '.pipeline', deviceId, 'input'), { recursive: true });
+  }
+  // Copy promoted artifacts if they exist
+  if (fs.existsSync(p.manifest)) {
+    fs.mkdirSync(path.dirname(p.wtManifest), { recursive: true });
+    fs.copyFileSync(p.manifest, p.wtManifest);
+  }
+  if (fs.existsSync(p.templates)) {
+    fs.copyFileSync(p.templates, p.wtTemplates);
   }
 }
 
@@ -209,6 +244,11 @@ async function run() {
   }
 
   worktreeCwd = state.worktreePath!;
+
+  // If resuming, copy existing agent outputs to worktree
+  if (state.phases.some(ph => ph.status === 'passed')) {
+    copyPipelineToWorktree();
+  }
 
   // Pull latest code into worktree — ensures SOULs, validators, and scripts are current
   try {
@@ -467,8 +507,115 @@ If you cannot find or download the manual after trying all approaches, state cle
   if (downloadedPdfs.length > 0) {
     // Store paths relative to worktree for agent prompts
     state.manualPaths = downloadedPdfs.map((p) => path.relative(worktreeCwd, p));
-    completePhase(state, 'phase-preflight', null, true);
     appendLog(deviceId, { level: 'info', message: `Manual downloaded: ${state.manualPaths.join(', ')}` });
+
+    // ── Auto-download hardware photos ──────────────────────────────────
+    const photosDir = path.join(outputDir, 'photos');
+    if (!fs.existsSync(photosDir)) {
+      fs.mkdirSync(photosDir, { recursive: true });
+    }
+
+    // Copy photos from main repo if they exist there but not in worktree
+    const mainRepoPhotos = path.join('docs', state.manufacturer, deviceId, 'photos');
+    if (fs.existsSync(mainRepoPhotos) && mainRepoPhotos !== photosDir) {
+      const mainPhotos = fs.readdirSync(mainRepoPhotos).filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f));
+      for (const photo of mainPhotos) {
+        const dest = path.join(photosDir, photo);
+        if (!fs.existsSync(dest)) {
+          fs.copyFileSync(path.join(mainRepoPhotos, photo), dest);
+          appendLog(deviceId, { level: 'info', message: `Copied photo from main repo: ${photo}` });
+        }
+      }
+    }
+
+    const existingPhotos = fs.readdirSync(photosDir).filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f));
+    if (existingPhotos.length === 0) {
+      appendLog(deviceId, { level: 'info', message: 'No photos found — auto-downloading hardware photos...' });
+
+      const photoResult = await invokeAgent({
+        prompt: `Find and download top-down/overhead hardware photos for:
+- Manufacturer: ${state.manufacturer}
+- Device: ${state.deviceName}
+
+REQUIREMENTS:
+1. You MUST find at least ONE top-down/overhead view of the entire instrument
+2. Also download angled views and front views if available
+3. Check the manufacturer's official website FIRST:
+   - Roland: https://static.roland.com/assets/images/products/gallery/{device-slug}_top_gal.jpg
+   - Pioneer DJ: https://www.pioneerdj.com/en-us/product/{device-slug}/
+   - Behringer: https://www.behringer.com/product/{device-slug}
+4. If official site fails, use WebSearch: "${state.manufacturer} ${state.deviceName} top view overhead photo"
+5. Download images using Bash with curl: curl -sL -o "{filename}.jpg" "{url}"
+6. Save ALL photos to: ${photosDir}
+7. Name files: ${deviceId}-top-view.jpg, ${deviceId}-top-angle.jpg, ${deviceId}-hero.jpg, ${deviceId}-front.jpg
+8. Verify each download is a valid image (file size > 10KB)
+9. Delete any files that are HTML error pages (< 10KB or not JPEG/PNG)
+
+IMPORTANT: At minimum, you need a top-down view. The Diagram Parser CANNOT run without photos.`,
+        deviceId,
+        cwd: worktreeCwd,
+        phase: 'phase-preflight',
+        agent: 'photo-downloader',
+        allowedTools: ['WebSearch', 'WebFetch', 'Bash', 'Read', 'Write'],
+        remainingBudgetUsd: getRemainingBudget(state),
+        maxBudgetPerInvocation: 5,
+        onChildPid: (pid) => trackChildPid(state, pid),
+      });
+
+      if (photoResult.costEntry) {
+        accumulateCost(state, photoResult.costEntry);
+        recordCostEntry(deviceId, photoResult.costEntry);
+      }
+
+      // Verify photos were downloaded
+      const downloadedPhotos = fs.readdirSync(photosDir).filter(f => {
+        if (!/\.(jpg|jpeg|png|webp)$/i.test(f)) return false;
+        const stat = fs.statSync(path.join(photosDir, f));
+        return stat.size > 10000; // Must be > 10KB to be a real image
+      });
+
+      if (downloadedPhotos.length > 0) {
+        appendLog(deviceId, { level: 'info', message: `Photos downloaded: ${downloadedPhotos.join(', ')}` });
+      } else {
+        appendLog(deviceId, { level: 'warn', message: 'No valid photos downloaded — parser may fail' });
+      }
+    } else {
+      appendLog(deviceId, { level: 'info', message: `Photos already exist: ${existingPhotos.join(', ')}` });
+    }
+
+    // ── Copy manuals and photos to centralized input/ directory ──────────
+    const pfPaths = paths();
+    fs.mkdirSync(pfPaths.manualsDir, { recursive: true });
+    for (const manualPath of state.manualPaths) {
+      const absSource = path.resolve(manualPath);
+      if (fs.existsSync(absSource)) {
+        const cleanName = path.basename(manualPath);
+        fs.copyFileSync(absSource, path.join(pfPaths.manualsDir, cleanName));
+      }
+    }
+
+    fs.mkdirSync(pfPaths.photosDir, { recursive: true });
+    // Copy photos to input/photos/
+    const photosSourceDir = path.join('docs', state.manufacturer, deviceId, 'photos');
+    if (fs.existsSync(photosSourceDir)) {
+      for (const photo of fs.readdirSync(photosSourceDir).filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))) {
+        fs.copyFileSync(path.join(photosSourceDir, photo), path.join(pfPaths.photosDir, photo));
+      }
+    }
+    // Also copy from worktree photos dir (may have been downloaded there)
+    if (fs.existsSync(photosDir)) {
+      for (const photo of fs.readdirSync(photosDir).filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))) {
+        const dest = path.join(pfPaths.photosDir, photo);
+        if (!fs.existsSync(dest)) {
+          fs.copyFileSync(path.join(photosDir, photo), dest);
+        }
+      }
+    }
+
+    // Copy input to worktree
+    fs.cpSync(pfPaths.inputDir, path.join(worktreeCwd, '.pipeline', deviceId, 'input'), { recursive: true });
+
+    completePhase(state, 'phase-preflight', null, true);
     advancePhase(state, worktreeCwd);
   } else {
     completePhase(state, 'phase-preflight', null, false);
@@ -483,10 +630,10 @@ async function doPhase0DiagramParser(state: PipelineState) {
   appendLog(deviceId, { level: 'info', agent: 'diagram-parser', message: 'Starting Phase 0a: Diagram Parser (vision extraction)' });
 
   // Check if parser already produced valid output (spatial-blueprint.json exists)
-  const existingBlueprint = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'spatial-blueprint.json');
+  const existingBlueprint = paths().agent('diagram-parser').wtDir + '/spatial-blueprint.json';
   if (fs.existsSync(existingBlueprint)) {
     const blueprintJson = fs.readFileSync(existingBlueprint, 'utf-8');
-    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'checkpoint.md');
+    const checkpointPath = paths().agent('diagram-parser').wtCheckpoint;
     const checkpointContent = fs.existsSync(checkpointPath) ? fs.readFileSync(checkpointPath, 'utf-8') : '';
     const { validateDiagramParserOutput: validate } = await import('../src/lib/pipeline/checkpoint-validators');
     const validation = validate(checkpointContent, blueprintJson);
@@ -566,8 +713,11 @@ For each section on the hardware panel:
 7. Assign containerZones for multi-zone topologies
 
 Output spatial-blueprint JSON per section.
-Write your checkpoint to .claude/agent-memory/diagram-parser/checkpoint.md with YAML frontmatter.
-Include: agent: diagram-parser, deviceId: ${deviceId}, phase: 0, status, score, verdict, timestamp${resumeCtx}`;
+Write your checkpoint to ${agentPath(deviceId, 'diagram-parser')}/checkpoint.md with YAML frontmatter.
+Include: agent: diagram-parser, deviceId: ${deviceId}, phase: 0, status, score, verdict, timestamp
+
+Read manuals from: ${inputPath(deviceId).manuals}/
+Read photos from: ${inputPath(deviceId).photos}/${resumeCtx}`;
 
   const result = await invokeAgent({
     prompt,
@@ -589,19 +739,33 @@ Include: agent: diagram-parser, deviceId: ${deviceId}, phase: 0, status, score, 
   updateSubscription(state, result.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('diagram-parser');
-  const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'checkpoint.md');
-  const checkpointFileExists = fs.existsSync(checkpointPath);
+  const dpCheckpointPath = paths().agent('diagram-parser').wtCheckpoint;
+  const checkpointFileExists = fs.existsSync(dpCheckpointPath);
+
+  // Copy agent output BEFORE validation (so main repo has the files regardless of score)
+  copyAgentOutput('diagram-parser');
 
   // --- POST-INSPECTION (mechanical validation) ---
   if (checkpointFileExists) {
-    const content = fs.readFileSync(checkpointPath, 'utf-8');
+    const content = fs.readFileSync(dpCheckpointPath, 'utf-8');
 
-    // Also check for a separate spatial-blueprint.json file (parser may write structured data there)
-    const blueprintPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'spatial-blueprint.json');
+    // Check for spatial-blueprint.json in the agent's output directory
+    const blueprintPathPrimary = paths().wtParserBlueprint;
+    const blueprintPathLegacy = path.join(worktreeCwd, '.pipeline', deviceId, 'spatial-blueprint.json');
     let blueprintJson: string | undefined;
-    if (fs.existsSync(blueprintPath)) {
-      blueprintJson = fs.readFileSync(blueprintPath, 'utf-8');
-      appendLog(deviceId, { level: 'info', agent: 'diagram-parser', message: `Found spatial-blueprint.json (${(blueprintJson.length / 1024).toFixed(1)}KB)` });
+    for (const bp of [blueprintPathPrimary, blueprintPathLegacy]) {
+      if (fs.existsSync(bp)) {
+        blueprintJson = fs.readFileSync(bp, 'utf-8');
+        appendLog(deviceId, { level: 'info', agent: 'diagram-parser', message: `Found spatial-blueprint.json at ${path.relative(worktreeCwd, bp)} (${(blueprintJson.length / 1024).toFixed(1)}KB)` });
+        // If found at legacy location, copy to canonical agent output dir
+        if (bp === blueprintPathLegacy && !fs.existsSync(blueprintPathPrimary)) {
+          const destDir = path.dirname(blueprintPathPrimary);
+          if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+          fs.copyFileSync(bp, blueprintPathPrimary);
+          appendLog(deviceId, { level: 'info', agent: 'diagram-parser', message: 'Copied spatial-blueprint.json to agent output dir for downstream phases' });
+        }
+        break;
+      }
     }
 
     const validation = validateDiagramParserOutput(content, blueprintJson);
@@ -630,6 +794,7 @@ Include: agent: diagram-parser, deviceId: ${deviceId}, phase: 0, status, score, 
     });
 
     if (effectiveScore >= 9.0 && validation.valid) {
+      // Agent output already copied above (before validation)
       completePhase(state, 'phase-0-diagram-parser', effectiveScore, true);
       advancePhase(state, worktreeCwd);
     } else {
@@ -654,7 +819,7 @@ async function doPhase0ControlExtractor(state: PipelineState) {
   if (!isBudgetOk(state)) return;
 
   // Skip if inventory already exists and is valid
-  const inventoryPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'control-extractor', 'control-inventory.json');
+  const inventoryPath = paths().wtControlInventory;
   if (fs.existsSync(inventoryPath)) {
     try {
       const inv = JSON.parse(fs.readFileSync(inventoryPath, 'utf-8'));
@@ -685,8 +850,8 @@ Find the "Part Names" or "Controls" section of the manual. Extract every numbere
 - item number, verbatim label, control type, functional group, description, page number
 - Flag compound items (one manual item = multiple physical controls)
 
-Output a JSON file to .claude/agent-memory/control-extractor/control-inventory.json
-Write checkpoint to .claude/agent-memory/control-extractor/checkpoint.md${resumeCtx}`;
+Output a JSON file to ${agentPath(deviceId, 'control-extractor')}/control-inventory.json
+Write checkpoint to ${agentPath(deviceId, 'control-extractor')}/checkpoint.md${resumeCtx}`;
 
   const result = await invokeAgent({
     prompt,
@@ -706,6 +871,9 @@ Write checkpoint to .claude/agent-memory/control-extractor/checkpoint.md${resume
   updateBurnRate(state, deviceId);
   updateSubscription(state, result.rateLimitEvents);
 
+  // Copy agent output BEFORE validation
+  copyAgentOutput('control-extractor');
+
   // Validate output
   if (fs.existsSync(inventoryPath)) {
     try {
@@ -716,6 +884,7 @@ Write checkpoint to .claude/agent-memory/control-extractor/checkpoint.md${resume
         message: `POST-INSPECT: ${controlCount} controls extracted` });
 
       if (controlCount > 0) {
+        // Agent output already copied above (before validation)
         completePhase(state, 'phase-0-control-extractor', 10, true);
         advancePhase(state, worktreeCwd);
       } else {
@@ -763,9 +932,12 @@ ${manualListGk}
 
 IMPORTANT: You are the JUDGE. You reconcile TWO data streams:
 1. Manual text (read the PDFs for control names, functional groups, parameter info)
-2. Diagram Parser output (read .claude/agent-memory/diagram-parser/spatial-blueprint.json for spatial geometry)
+2. Diagram Parser output (read ${agentPath(deviceId, 'diagram-parser')}/spatial-blueprint.json for spatial geometry)
 
-Also check if a Control Extractor inventory exists at .claude/agent-memory/control-extractor/control-inventory.json — if so, use it as an additional reference for control naming.
+Also check if a Control Extractor inventory exists at ${agentPath(deviceId, 'control-extractor')}/control-inventory.json — if so, use it as an additional reference for control naming.
+
+Read manuals from: ${inputPath(deviceId).manuals}/
+Read photos from: ${inputPath(deviceId).photos}/
 
 Your job is to RECONCILE these into a Master Manifest JSON. Rules:
 - Geometry (Parser) wins PLACEMENT decisions
@@ -788,9 +960,9 @@ This defines WHERE on the physical panel each section sits — critical for glob
 
 Output the Master Manifest JSON in a \`\`\`json code block in your checkpoint.
 The JSON must conform to the MasterManifest interface in scripts/layout-engine.ts.
-Also write the manifest to .pipeline/${deviceId}/manifest.json
+Also write the manifest to ${agentPath(deviceId, 'gatekeeper')}/manifest.json
 
-Write your checkpoint to .claude/agent-memory/gatekeeper/checkpoint.md with YAML frontmatter.
+Write your checkpoint to ${agentPath(deviceId, 'gatekeeper')}/checkpoint.md with YAML frontmatter.
 Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verdict, timestamp, conflicts${resumeCtx}`;
 
   const result = await invokeAgent({
@@ -814,10 +986,17 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
 
   const checkpoint = readAgentCheckpoint('gatekeeper');
 
+  // --- COPY AGENT OUTPUT BEFORE VALIDATION ---
+  // Always copy agent output from worktree to main repo immediately after the agent exits.
+  // Validation reads from main repo. If validation fails and we retry, the agent overwrites its output.
+  copyAgentOutput('gatekeeper');
+
   // --- POST-INSPECTION: validate the manifest.json file mechanically ---
+  const gkManifest = paths().agent('gatekeeper').dir + '/manifest.json';
   const worktreeManifest = path.join(worktreeCwd, '.pipeline', deviceId, 'manifest.json');
   const mainManifest = path.join('.pipeline', deviceId, 'manifest.json');
-  const manifestPath = fs.existsSync(worktreeManifest) ? worktreeManifest
+  const manifestPath = fs.existsSync(gkManifest) ? gkManifest
+    : fs.existsSync(worktreeManifest) ? worktreeManifest
     : fs.existsSync(mainManifest) ? mainManifest
     : null;
 
@@ -834,7 +1013,7 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
     });
 
     // 4-Point Validation: check neighbor directions against parser centroids
-    const blueprintPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'diagram-parser', 'spatial-blueprint.json');
+    const blueprintPath = paths().wtParserBlueprint;
     if (fs.existsSync(blueprintPath)) {
       const blueprintJson = fs.readFileSync(blueprintPath, 'utf-8');
       const neighborCheck = validateNeighborDirections(manifestJson, blueprintJson);
@@ -849,8 +1028,10 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
           level: 'warn', agent: 'gatekeeper',
           message: `4-POINT: ${neighborCheck.flippedNeighbors.length} flipped neighbor direction(s) found. Deducting from score.`,
         });
-        // Deduct but don't fail entirely — flipped neighbors are correctable
-        validation.score = Math.max(0, validation.score - neighborCheck.flippedNeighbors.length * 0.5);
+        // Deduct lightly — flipped neighbors are auto-corrected in the manifest.
+        // Cap total deduction at 1.0 regardless of count (they're mechanical fixes, not data quality issues).
+        const flipDeduction = Math.min(neighborCheck.flippedNeighbors.length * 0.1, 1.0);
+        validation.score = Math.max(0, validation.score - flipDeduction);
         validation.errors.push(...neighborCheck.errors);
       } else {
         appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: '4-POINT: All neighbor directions consistent with parser centroids' });
@@ -859,15 +1040,26 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
       // Archetype-Geometry Validation: does the archetype match the centroid distribution?
       const archetypeCheck = validateArchetypeGeometry(manifestJson, blueprintJson);
       if (archetypeCheck.mismatches.length > 0) {
+        // Auto-correct archetypes based on geometry — centroids are the source of truth
+        const parsedManifest = JSON.parse(manifestJson);
+        let corrected = false;
         for (const mm of archetypeCheck.mismatches) {
-          appendLog(deviceId, {
-            level: 'warn', agent: 'gatekeeper',
-            message: `ARCHETYPE-GEOMETRY: Section "${mm.sectionId}" — ${mm.reason} Suggest: ${mm.suggestion}`,
-          });
+          const section = parsedManifest.sections.find((s: { id: string }) => s.id === mm.sectionId);
+          if (section) {
+            appendLog(deviceId, {
+              level: 'info', agent: 'gatekeeper',
+              message: `ARCHETYPE-GEOMETRY: Auto-correcting "${mm.sectionId}" from "${mm.archetype}" → "${mm.suggestion}" (${mm.reason})`,
+            });
+            section.archetype = mm.suggestion;
+            corrected = true;
+          }
         }
-        // Each archetype mismatch is a significant error — deduct heavily
-        validation.score = Math.max(0, validation.score - archetypeCheck.mismatches.length * 2.0);
-        validation.errors.push(...archetypeCheck.errors);
+        if (corrected) {
+          // Re-save the corrected manifest
+          const manifestPath = paths().manifest;
+          fs.writeFileSync(manifestPath, JSON.stringify(parsedManifest, null, 2));
+          appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: `Auto-corrected ${archetypeCheck.mismatches.length} archetype(s) in manifest.json` });
+        }
       } else {
         appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: 'ARCHETYPE-GEOMETRY: All archetypes consistent with centroid distribution' });
       }
@@ -889,10 +1081,51 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
     // The mechanical validator (structural completeness + 4-Point + archetype-geometry)
     // is the authoritative gate.
     if (validation.score >= 9.0 && validation.valid) {
+      // Agent output already copied above (before validation)
       // Copy manifest to main pipeline dir if needed
       if (manifestPath === worktreeManifest && !fs.existsSync(mainManifest)) {
         fs.mkdirSync(path.dirname(mainManifest), { recursive: true });
         fs.copyFileSync(worktreeManifest, mainManifest);
+      }
+      // Promote gatekeeper manifest from agent dir to pipeline root
+      const gkPaths = paths();
+      const gkManifestSources = [
+        gkPaths.wtGatekeeperManifest,          // worktree agents/gatekeeper/manifest.json
+        gkPaths.gatekeeperManifest,             // main repo agents/gatekeeper/manifest.json
+        worktreeManifest,                        // worktree .pipeline/{id}/manifest.json (legacy)
+        gkPaths.manifest,                        // main repo .pipeline/{id}/manifest.json (legacy fallback)
+      ];
+      const gkManifestSource = gkManifestSources.find(p => fs.existsSync(p));
+      if (gkManifestSource) {
+        // Read existing manifest BEFORE overwriting — preserve sticky fields
+        let previousManifest: Record<string, unknown> | null = null;
+        if (fs.existsSync(gkPaths.manifest)) {
+          try { previousManifest = JSON.parse(fs.readFileSync(gkPaths.manifest, 'utf-8')); } catch { /* ignore */ }
+        }
+
+        fs.mkdirSync(path.dirname(gkPaths.manifest), { recursive: true });
+        fs.copyFileSync(gkManifestSource, gkPaths.manifest);
+        appendLog(deviceId, { level: 'info', agent: 'gatekeeper', message: `Promoted manifest.json from ${path.basename(path.dirname(gkManifestSource))} to pipeline root` });
+
+        // Carry forward deviceDimensions and keyboard if gatekeeper didn't include them.
+        // These are physical facts about the hardware — they never change between runs.
+        // Priority: gatekeeper output > editor manifest corrections > previous pipeline manifest.
+        if (previousManifest) {
+          const promoted = JSON.parse(fs.readFileSync(gkPaths.manifest, 'utf-8'));
+          let carried = false;
+          if (!promoted.deviceDimensions && previousManifest.deviceDimensions) {
+            promoted.deviceDimensions = previousManifest.deviceDimensions;
+            carried = true;
+          }
+          if (!promoted.keyboard && previousManifest.keyboard) {
+            promoted.keyboard = previousManifest.keyboard;
+            carried = true;
+          }
+          if (carried) {
+            fs.writeFileSync(gkPaths.manifest, JSON.stringify(promoted, null, 2));
+            appendLog(deviceId, { level: 'warn', agent: 'gatekeeper', message: 'Carried forward deviceDimensions/keyboard from previous manifest — gatekeeper did not include them' });
+          }
+        }
       }
       completePhase(state, 'phase-0-gatekeeper', effectiveGkScore, true);
       const sections = parseSectionsFromGatekeeper();
@@ -914,45 +1147,46 @@ Include: agent: gatekeeper, deviceId: ${deviceId}, phase: 0, status, score, verd
 }
 
 async function doPhase0LayoutEngine(state: PipelineState) {
-  // If templates already exist and phase was completed AND the template-review
-  // escalation was already resolved, advance. Otherwise re-trigger the review gate.
-  const outputPath = path.join('.pipeline', deviceId, 'templates.json');
+  const lePaths = paths();
+  const outputPath = lePaths.templates;
   const phaseResult = state.phases.find(p => p.phase === 'phase-0-layout-engine');
-  const templateReviewResolved = state.escalations.some(
-    e => e.type === 'template-review' && e.resolvedAt !== null
-  );
-  if (phaseResult?.status === 'passed' && fs.existsSync(outputPath) && templateReviewResolved) {
-    appendLog(deviceId, { level: 'info', message: 'Layout Engine: templates already reviewed and approved, advancing' });
-    advancePhase(state, worktreeCwd);
-    return;
-  }
-  if (phaseResult?.status === 'passed' && fs.existsSync(outputPath) && !templateReviewResolved) {
-    // Templates exist but haven't been reviewed — re-trigger the review gate
-    appendLog(deviceId, { level: 'info', message: 'Layout Engine: templates exist but not yet reviewed, pausing for review' });
-    const output = JSON.parse(fs.readFileSync(outputPath, 'utf-8'));
-    const templateCount = output.templates?.length ?? 0;
-    const controlCount = output.panelArchitecture?.totalControls ?? 0;
-    const archetypeSummary = (output.templates ?? [])
-      .map((t: { sectionId: string; archetype: string }) => `${t.sectionId} → ${t.archetype}`)
-      .join(', ');
-    createEscalation(state, 'template-review',
-      `Layout Engine produced ${templateCount} section templates for ${controlCount} controls. ` +
-      `Review templates at .pipeline/${deviceId}/templates.json before Panel Builder runs.\n` +
-      `Archetypes: ${archetypeSummary}`);
-    sendNotification('Miyagi Pipeline', `Templates ready for review: ${state.deviceName}`);
+
+  // If templates already exist and phase was completed, check editor-ready gate
+  if (phaseResult?.status === 'passed' && fs.existsSync(outputPath)) {
+    const editorResolved = state.escalations.some(
+      e => e.type === 'agent-failure' && e.message.includes('ready for editor') && e.resolvedAt
+    );
+    if (editorResolved) {
+      appendLog(deviceId, { level: 'info', message: 'Layout Engine: templates exist and editor gate resolved, advancing' });
+      advancePhase(state, worktreeCwd);
+      return;
+    }
+    // Editor gate not yet resolved — check if escalation exists
+    const editorPending = state.escalations.some(
+      e => e.type === 'agent-failure' && e.message.includes('ready for editor') && !e.resolvedAt
+    );
+    if (!editorPending) {
+      // Re-create escalation (shouldn't happen, but defensive)
+      createEscalation(state, 'agent-failure',
+        `Pipeline ready for editor. Open the visual editor to position controls, then run codegen. ` +
+        `Resume the pipeline after codegen to start QA.\n` +
+        `Manifest: .pipeline/${deviceId}/manifest.json\n` +
+        `Templates: .pipeline/${deviceId}/templates.json`);
+      sendNotification('Miyagi Pipeline', `${state.deviceName} is ready for the editor`);
+    }
+    appendLog(deviceId, { level: 'info', message: 'Layout Engine: waiting for editor gate to be resolved' });
+    state.status = 'paused';
+    writeState(deviceId, state);
     return;
   }
 
   startPhase(state, 'phase-0-layout-engine');
   appendLog(deviceId, { level: 'info', message: 'Starting Phase 0e: Layout Engine (deterministic template generation)' });
 
-  const manifestPath = path.join('.pipeline', deviceId, 'manifest.json');
+  const manifestPath = lePaths.manifest;
 
-  // Find the manifest JSON — check multiple locations:
-  // 1. Worktree's .pipeline/<deviceId>/manifest.json (gatekeeper may have written it there via Bash)
-  // 2. Main .pipeline/<deviceId>/manifest.json (if already copied)
-  // 3. Embedded in gatekeeper checkpoint as a ```json code block (original approach)
-  const worktreeManifestPath = path.join(worktreeCwd, '.pipeline', deviceId, 'manifest.json');
+  // Find the manifest JSON — check multiple locations
+  const worktreeManifestPath = lePaths.wtManifest;
 
   if (fs.existsSync(worktreeManifestPath) && !fs.existsSync(manifestPath)) {
     // Copy from worktree to main pipeline dir
@@ -970,9 +1204,7 @@ async function doPhase0LayoutEngine(state: PipelineState) {
 
   if (!fs.existsSync(manifestPath)) {
     // Fallback: extract JSON from gatekeeper checkpoint
-    const gatekeeperCheckpointPath = path.join(
-      worktreeCwd, '.claude', 'agent-memory', 'gatekeeper', 'checkpoint.md'
-    );
+    const gatekeeperCheckpointPath = paths().agent('gatekeeper').wtCheckpoint;
 
     if (!fs.existsSync(gatekeeperCheckpointPath)) {
       completePhase(state, 'phase-0-layout-engine', null, false);
@@ -1022,19 +1254,17 @@ async function doPhase0LayoutEngine(state: PipelineState) {
         message: `Layout Engine: ${templateCount} templates generated for ${controlCount} controls`,
       });
       completePhase(state, 'phase-0-layout-engine', 10, true);
-
-      // --- Template Review Gate ---
-      // Pause so the user can inspect manifest + templates before Panel Builder runs.
-      // Templates: .pipeline/<deviceId>/templates.json
-      // Manifest:  .pipeline/<deviceId>/manifest.json
-      const archetypeSummary = (output.templates ?? [])
-        .map((t: { sectionId: string; archetype: string }) => `${t.sectionId} → ${t.archetype}`)
-        .join(', ');
-      createEscalation(state, 'template-review',
-        `Layout Engine produced ${templateCount} section templates for ${controlCount} controls. ` +
-        `Review templates at .pipeline/${deviceId}/templates.json before Panel Builder runs.\n` +
-        `Archetypes: ${archetypeSummary}`);
-      sendNotification('Miyagi Pipeline', `Templates ready for review: ${state.deviceName}`);
+      // Pause for editor — the contractor positions controls, then codegen runs.
+      // Phase 1 (QA) requires a rendered panel, so it can't run until after codegen.
+      createEscalation(state, 'agent-failure',
+        `Pipeline ready for editor. Open the visual editor to position controls, then run codegen. ` +
+        `Resume the pipeline after codegen to start QA.\n` +
+        `Manifest: .pipeline/${deviceId}/manifest.json\n` +
+        `Templates: .pipeline/${deviceId}/templates.json`);
+      sendNotification('Miyagi Pipeline', `${state.deviceName} is ready for the editor`);
+      state.status = 'paused';
+      writeState(deviceId, state);
+      return;
     } else {
       completePhase(state, 'phase-0-layout-engine', null, false);
       if (!tryAutoRetry(state, 'agent-failure', 'Layout Engine produced no output file')) return;
@@ -1101,6 +1331,7 @@ async function doPhase1(state: PipelineState) {
       updateBurnRate(state, deviceId);
       updateSubscription(state, siResult.rateLimitEvents);
       section.siScore = readAgentCheckpoint('structural-inspector').score;
+      copyAgentOutput('structural-inspector');
 
       // PQ
       appendLog(deviceId, { level: 'info', agent: 'panel-questioner', message: `PQ: section ${section.id} (attempt ${section.attempts})` });
@@ -1115,6 +1346,7 @@ async function doPhase1(state: PipelineState) {
       updateBurnRate(state, deviceId);
       updateSubscription(state, pqResult.rateLimitEvents);
       section.pqScore = readAgentCheckpoint('panel-questioner').score;
+      copyAgentOutput('panel-questioner');
 
       // Critic
       appendLog(deviceId, { level: 'info', agent: 'critic', message: `Critic: section ${section.id} (attempt ${section.attempts})` });
@@ -1129,6 +1361,7 @@ async function doPhase1(state: PipelineState) {
       updateBurnRate(state, deviceId);
       updateSubscription(state, criticResult.rateLimitEvents);
       section.criticScore = readAgentCheckpoint('critic').score;
+      copyAgentOutput('critic');
 
       if (section.siScore === 10 && section.pqScore === 10 && section.criticScore === 10) {
         section.vaulted = true;
@@ -1258,7 +1491,7 @@ async function doPhase4Extract(state: PipelineState) {
   appendLog(deviceId, { level: 'info', message: 'Starting Phase 4: Manual Extraction (Sieve Protocol)' });
   if (!isBudgetOk(state)) return;
 
-  const sieveDir = path.join(worktreeCwd, '.claude', 'agent-memory', 'manual-extractor', 'sieve');
+  const sieveDir = paths().wtSieveDir;
   fs.mkdirSync(sieveDir, { recursive: true });
 
   // Step 1: Determine manual page count and bucket count
@@ -1344,7 +1577,7 @@ Rules:
 - Do NOT mention tutorials, curriculum, learning objectives, or prerequisites
 - Do NOT skip items that seem redundant
 
-Write output to: .claude/agent-memory/manual-extractor/sieve/${bucketFile}`,
+Write output to: ${agentPath(deviceId, 'manual-extractor')}/sieve/${bucketFile}`,
       deviceId, cwd: worktreeCwd, phase: 'phase-4-extraction', agent: 'manual-extractor',
       model: 'claude-opus-4-6',
       allowedTools: PIPELINE_TOOLS,
@@ -1383,10 +1616,10 @@ Write output to: .claude/agent-memory/manual-extractor/sieve/${bucketFile}`,
     const verifyResult = await invokeAgent({
       prompt: `SIEVE VERIFICATION — Bucket ${i} (pages ${pageStart}-${pageEnd})
 
-1. Read the sieve bucket at: .claude/agent-memory/manual-extractor/sieve/${bucketFile}
+1. Read the sieve bucket at: ${agentPath(deviceId, 'manual-extractor')}/sieve/${bucketFile}
 2. Re-read pages ${pageStart}-${pageEnd} of "${primaryManual}"
 3. Compare: find any omissions or typos in the bucket table
-4. Write the corrected table to: .claude/agent-memory/manual-extractor/sieve/${verifiedFile}
+4. Write the corrected table to: ${agentPath(deviceId, 'manual-extractor')}/sieve/${verifiedFile}
 5. Add a "VERIFIED" header at the top, followed by a summary of corrections made (or "No corrections needed")
 
 Focus ONLY on:
@@ -1432,10 +1665,10 @@ Focus ONLY on:
     const anchorResult = await invokeAgent({
       prompt: `SIEVE ANCHORING — Bucket ${i} (pages ${pageStart}-${pageEnd})
 
-1. Read the verified extraction at: .claude/agent-memory/manual-extractor/sieve/${verifiedFile}
+1. Read the verified extraction at: ${agentPath(deviceId, 'manual-extractor')}/sieve/${verifiedFile}
 2. Find and read the panel constants file for ${state.deviceName} (look for panel-constants.ts or similar in src/data/)
 3. Cross-reference every item in the verified table against the panel constants
-4. Write results to: .claude/agent-memory/manual-extractor/sieve/${anchoredFile}
+4. Write results to: ${agentPath(deviceId, 'manual-extractor')}/sieve/${anchoredFile}
 
 The output MUST have these three sections:
 ## PANEL-ONLY
@@ -1485,33 +1718,35 @@ Controls where the manual name differs from the panel constants name
   state.extractionProgress.currentSubStep = null;
 
   // Step 4: Assembly passes (curriculum design begins only after ALL buckets sieved)
+  const extractorSievePath = agentPath(deviceId, 'manual-extractor') + '/sieve';
+  const extractorAgentPath = agentPath(deviceId, 'manual-extractor');
   const passConfigs = [
     {
       num: 1, name: 'Feature Inventory', file: 'pass-1-inventory.md',
       validate: validators.validatePassInventory, cap: 5,
       prompt: `PASS 1 — FEATURE INVENTORY
 
-Read ALL verified sieve buckets in .claude/agent-memory/manual-extractor/sieve/bucket-*-verified.md
+Read ALL verified sieve buckets in ${extractorSievePath}/bucket-*-verified.md
 
 Produce a consolidated Feature Inventory:
 1. **Feature Inventory** — Every unique feature/workflow grouped by manual chapter, with page references
 2. **Page Coverage Map** — Which pages are covered, which have gaps
 
-Write to: .claude/agent-memory/manual-extractor/sieve/pass-1-inventory.md`,
+Write to: ${extractorSievePath}/pass-1-inventory.md`,
     },
     {
       num: 2, name: 'Relationships', file: 'pass-2-relationships.md',
       validate: validators.validatePassRelationships, cap: 5,
       prompt: `PASS 2 — RELATIONSHIPS & DEPENDENCIES
 
-Read: .claude/agent-memory/manual-extractor/sieve/pass-1-inventory.md
+Read: ${extractorSievePath}/pass-1-inventory.md
 
 For each feature in the inventory, determine:
 1. **Prerequisites** — What must the user know/configure before using this feature?
 2. **Dependencies** — Which other features does this one depend on?
 3. **Dependency JSON** — Output a JSON array: [{ "feature": "name", "depends_on": ["feat1", "feat2"] }]
 
-Write to: .claude/agent-memory/manual-extractor/sieve/pass-2-relationships.md`,
+Write to: ${extractorSievePath}/pass-2-relationships.md`,
     },
     {
       num: 3, name: 'Curriculum Design', file: 'pass-3-curriculum.md',
@@ -1519,8 +1754,8 @@ Write to: .claude/agent-memory/manual-extractor/sieve/pass-2-relationships.md`,
       prompt: `PASS 3 — CURRICULUM DESIGN
 
 Read:
-- .claude/agent-memory/manual-extractor/sieve/pass-1-inventory.md
-- .claude/agent-memory/manual-extractor/sieve/pass-2-relationships.md
+- ${extractorSievePath}/pass-1-inventory.md
+- ${extractorSievePath}/pass-2-relationships.md
 
 Design the tutorial curriculum:
 1. Group features into TUTORIAL blocks (3-8 related features per tutorial)
@@ -1529,7 +1764,7 @@ Design the tutorial curriculum:
 4. Build a DAG (dependency graph) showing tutorial ordering
 5. Output the DAG as both ASCII art and a JSON dependency array
 
-Write to: .claude/agent-memory/manual-extractor/sieve/pass-3-curriculum.md`,
+Write to: ${extractorSievePath}/pass-3-curriculum.md`,
     },
     {
       num: 4, name: 'Batch Plan', file: 'pass-4-batches.md',
@@ -1537,7 +1772,7 @@ Write to: .claude/agent-memory/manual-extractor/sieve/pass-3-curriculum.md`,
       prompt: `PASS 4 — BATCH PLAN
 
 Read:
-- .claude/agent-memory/manual-extractor/sieve/pass-3-curriculum.md
+- ${extractorSievePath}/pass-3-curriculum.md
 
 Group tutorials into BATCH blocks for implementation:
 1. Each BATCH should contain 3-5 tutorials that can be built together
@@ -1545,10 +1780,10 @@ Group tutorials into BATCH blocks for implementation:
 3. For each BATCH: list tutorials, estimated complexity, dependency chain to prior batches
 4. Define the execution order for batches
 
-Also write the final checkpoint to .claude/agent-memory/manual-extractor/checkpoint.md with YAML frontmatter:
+Also write the final checkpoint to ${extractorAgentPath}/checkpoint.md with YAML frontmatter:
 agent: manual-extractor, device_id: ${deviceId}, phase: 4, status: PASS, score: 10
 
-Write batch plan to: .claude/agent-memory/manual-extractor/sieve/pass-4-batches.md`,
+Write batch plan to: ${extractorSievePath}/pass-4-batches.md`,
     },
   ];
 
@@ -1601,6 +1836,7 @@ Write batch plan to: .claude/agent-memory/manual-extractor/sieve/pass-4-batches.
   }
 
   // All sieve + passes complete
+  copyAgentOutput('manual-extractor');
   const checkpoint = readAgentCheckpoint('manual-extractor');
   const score = checkpoint.score ?? 10;
   completePhase(state, 'phase-4-extraction', score, true);
@@ -1612,13 +1848,14 @@ async function doPhase4Audit(state: PipelineState) {
   appendLog(deviceId, { level: 'info', message: 'Starting Phase 4: Coverage Audit (Independence Enforced)' });
   if (!isBudgetOk(state)) return;
 
-  const extractorMemDir = path.join(worktreeCwd, '.claude', 'agent-memory', 'manual-extractor');
-  const sealedDir = path.join(worktreeCwd, '.claude', 'agent-memory', '.extractor-sealed');
-  const auditorSieveDir = path.join(worktreeCwd, '.claude', 'agent-memory', 'coverage-auditor');
-  const independentChecklistPath = path.join(auditorSieveDir, 'independent-checklist.md');
-  const comparativeAuditPath = path.join(auditorSieveDir, 'comparative-audit.md');
+  const auditPaths = paths();
+  const extractorMemDir = auditPaths.wtExtractorDir;
+  const sealedDir = auditPaths.extractorSealed;
+  const auditorDir = auditPaths.agent('coverage-auditor').wtDir;
+  const independentChecklistPath = path.join(auditorDir, 'independent-checklist.md');
+  const comparativeAuditPath = path.join(auditorDir, 'comparative-audit.md');
 
-  fs.mkdirSync(auditorSieveDir, { recursive: true });
+  fs.mkdirSync(auditorDir, { recursive: true });
 
   // Phase 1: Independent reading — SEAL extractor output
   let sealed = false;
@@ -1651,10 +1888,10 @@ For each chapter/section of the manual:
 3. Assess complexity (simple/medium/complex)
 4. Note any dependencies between features
 
-Write your independent checklist to: .claude/agent-memory/coverage-auditor/independent-checklist.md
+Write your independent checklist to: ${agentPath(deviceId, 'coverage-auditor')}/independent-checklist.md
 
 Rules:
-- Work ONLY from the manual — do not read any files in .claude/agent-memory/manual-extractor/
+- Work ONLY from the manual — do not read any files in ${agentPath(deviceId, 'manual-extractor')}/
 - Do not reference sieve buckets, passes, or extractor output
 - This is YOUR independent assessment`,
         deviceId, cwd: worktreeCwd, phase: 'phase-4-audit', agent: 'coverage-auditor',
@@ -1722,10 +1959,10 @@ Rules:
 Now compare your independent checklist against the extractor's output.
 
 Read:
-1. Your independent checklist: .claude/agent-memory/coverage-auditor/independent-checklist.md
-2. The extractor's inventory: .claude/agent-memory/manual-extractor/sieve/pass-1-inventory.md
-3. The extractor's curriculum: .claude/agent-memory/manual-extractor/sieve/pass-3-curriculum.md
-4. The extractor's batch plan: .claude/agent-memory/manual-extractor/sieve/pass-4-batches.md
+1. Your independent checklist: ${agentPath(deviceId, 'coverage-auditor')}/independent-checklist.md
+2. The extractor's inventory: ${agentPath(deviceId, 'manual-extractor')}/sieve/pass-1-inventory.md
+3. The extractor's curriculum: ${agentPath(deviceId, 'manual-extractor')}/sieve/pass-3-curriculum.md
+4. The extractor's batch plan: ${agentPath(deviceId, 'manual-extractor')}/sieve/pass-4-batches.md
 
 Produce a comparative audit with these sections:
 
@@ -1744,7 +1981,7 @@ Any dependency ordering mistakes in the extractor's curriculum/batch plan
 ## RECOMMENDATIONS
 Specific fixes needed before the curriculum can be approved
 
-Write to: .claude/agent-memory/coverage-auditor/comparative-audit.md`,
+Write to: ${agentPath(deviceId, 'coverage-auditor')}/comparative-audit.md`,
       deviceId, cwd: worktreeCwd, phase: 'phase-4-audit', agent: 'coverage-auditor',
       model: 'claude-opus-4-6',
       allowedTools: PIPELINE_TOOLS,
@@ -1783,13 +2020,13 @@ Write to: .claude/agent-memory/coverage-auditor/comparative-audit.md`,
   const verdictResult = await invokeAgent({
     prompt: `COVERAGE AUDIT — Phase 3: Verdict
 
-Read your comparative audit: .claude/agent-memory/coverage-auditor/comparative-audit.md
+Read your comparative audit: ${agentPath(deviceId, 'coverage-auditor')}/comparative-audit.md
 
 Based on your analysis, render a final verdict:
 - APPROVED: Coverage is >= 90% and no critical gaps
 - REJECTED: Coverage is < 90% or critical features are missing
 
-Write your checkpoint to .claude/agent-memory/coverage-auditor/checkpoint.md with YAML frontmatter:
+Write your checkpoint to ${agentPath(deviceId, 'coverage-auditor')}/checkpoint.md with YAML frontmatter:
 agent: coverage-auditor, device_id: ${deviceId}, phase: 4, status: PASS or FAIL, verdict: APPROVED or REJECTED, score: <coverage percentage as 0-10>
 
 Include a summary of your findings in the checkpoint body.`,
@@ -1805,6 +2042,7 @@ Include a summary of your findings in the checkpoint body.`,
   updateSubscription(state, verdictResult.rateLimitEvents);
 
   const checkpoint = readAgentCheckpoint('coverage-auditor');
+  copyAgentOutput('coverage-auditor');
   if (checkpoint.verdict === 'APPROVED') {
     completePhase(state, 'phase-4-audit', checkpoint.score, true);
     const batches = parseBatchesFromAuditor();
@@ -1896,9 +2134,9 @@ async function doTutorialPR(state: PipelineState) {
 
 // --- Helpers ---
 
-function readAgentCheckpoint(agent: string) {
+function readAgentCheckpoint(agentName: string) {
   try {
-    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', agent, 'checkpoint.md');
+    const checkpointPath = paths().agent(agentName).wtCheckpoint;
     const content = fs.readFileSync(checkpointPath, 'utf-8');
     return parseCheckpoint(content);
   } catch {
@@ -1909,18 +2147,17 @@ function readAgentCheckpoint(agent: string) {
 function parseSectionsFromGatekeeper(): SectionStatus[] {
   try {
     // Parse sections from manifest.json directly — not the checkpoint markdown
-    const worktreeManifest = path.join(worktreeCwd, '.pipeline', deviceId, 'manifest.json');
-    const mainManifest = path.join('.pipeline', deviceId, 'manifest.json');
-    const manifestPath = fs.existsSync(worktreeManifest) ? worktreeManifest
-      : fs.existsSync(mainManifest) ? mainManifest
+    const p = paths();
+    const manifestLoc = fs.existsSync(p.wtManifest) ? p.wtManifest
+      : fs.existsSync(p.manifest) ? p.manifest
       : null;
 
-    if (!manifestPath) {
+    if (!manifestLoc) {
       appendLog(deviceId, { level: 'warn', message: 'No manifest.json found — cannot parse sections' });
       return [];
     }
 
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+    const manifest = JSON.parse(fs.readFileSync(manifestLoc, 'utf-8'));
     const sections: SectionStatus[] = [];
 
     for (const s of manifest.sections ?? []) {
@@ -1947,7 +2184,7 @@ function parseSectionsFromGatekeeper(): SectionStatus[] {
 
 function parseBatchesFromAuditor() {
   try {
-    const checkpointPath = path.join(worktreeCwd, '.claude', 'agent-memory', 'coverage-auditor', 'checkpoint.md');
+    const checkpointPath = paths().agent('coverage-auditor').wtCheckpoint;
     const content = fs.readFileSync(checkpointPath, 'utf-8');
     const batches: { batchId: string; tutorials: string[] }[] = [];
     const batchPattern = /batch[- ]?(\w+).*?:\s*(.+)/gi;

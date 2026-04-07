@@ -1,38 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-interface ManifestControl {
-  id: string;
-  verbatimLabel: string;
-  type: string;
-  section: string;
-  functionalGroup: string;
-}
-
-interface ManifestSection {
-  id: string;
-  headerLabel: string | null;
-  archetype: string;
-  controls: string[];
-  widthPercent: number;
-  complexity: string;
-  gridRows?: number;
-  gridCols?: number;
-  heightSplits?: { cluster: number; anchor: number; gap: number };
-}
-
-interface MasterManifest {
-  deviceId: string;
-  deviceName: string;
-  manufacturer: string;
-  layoutType: string;
-  densityTargets: { vertical: string; horizontal: string; horizontalDeadSpaceMax: number };
-  sections: ManifestSection[];
-  controls: ManifestControl[];
-  sharedElements: Array<{ id: string; spans: string[]; expectedInstanceCount: number }>;
-  alignmentAnchors: Array<{ sourceId: string; targetId: string; axis: string }>;
-}
+import type { ManifestControl, ManifestSection, MasterManifest } from '@/types/manifest';
 
 interface ManifestViewerProps {
   deviceId: string;
@@ -81,11 +50,11 @@ export default function ManifestViewer({ deviceId }: ManifestViewerProps) {
         </div>
         <div className="grid grid-cols-3 gap-3 text-center">
           <div className="rounded p-2" style={{ backgroundColor: 'var(--surface, #1a1a2a)' }}>
-            <div className="text-lg font-bold" style={{ color: '#60a5fa' }}>{data.sections.length}</div>
+            <div className="text-lg font-bold" style={{ color: '#60a5fa' }}>{(data.sections ?? []).length}</div>
             <div className="text-[10px]" style={{ color: '#6b7280' }}>Sections</div>
           </div>
           <div className="rounded p-2" style={{ backgroundColor: 'var(--surface, #1a1a2a)' }}>
-            <div className="text-lg font-bold" style={{ color: '#34d399' }}>{data.controls.length}</div>
+            <div className="text-lg font-bold" style={{ color: '#34d399' }}>{(data.controls ?? []).length}</div>
             <div className="text-[10px]" style={{ color: '#6b7280' }}>Controls</div>
           </div>
           <div className="rounded p-2" style={{ backgroundColor: 'var(--surface, #1a1a2a)' }}>
@@ -101,8 +70,8 @@ export default function ManifestViewer({ deviceId }: ManifestViewerProps) {
           Sections
         </h3>
         <div className="space-y-2">
-          {data.sections.map((s) => {
-            const sectionControls = data.controls.filter((c) => c.section === s.id);
+          {(data.sections ?? []).map((s) => {
+            const sectionControls = (data.controls ?? []).filter((c) => c.section === s.id);
             const isExpanded = expandedSection === s.id;
             return (
               <div
@@ -130,7 +99,7 @@ export default function ManifestViewer({ deviceId }: ManifestViewerProps) {
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-[10px]" style={{ color: '#6b7280' }}>
-                    <span>{s.controls.length} controls</span>
+                    <span>{(s.controls ?? []).length} controls</span>
                     <span>{s.widthPercent}%</span>
                     {s.gridRows && s.gridCols && <span>{s.gridRows}x{s.gridCols}</span>}
                   </div>
@@ -141,17 +110,17 @@ export default function ManifestViewer({ deviceId }: ManifestViewerProps) {
                   <div className="mt-1.5 flex gap-1 h-2 rounded overflow-hidden">
                     <div
                       className="rounded-sm"
-                      style={{ flex: s.heightSplits.cluster, backgroundColor: 'rgba(96, 165, 250, 0.4)' }}
-                      title={`Cluster: ${(s.heightSplits.cluster * 100).toFixed(0)}%`}
+                      style={{ flex: s.heightSplits.cluster ?? 0, backgroundColor: 'rgba(96, 165, 250, 0.4)' }}
+                      title={`Cluster: ${((s.heightSplits.cluster ?? 0) * 100).toFixed(0)}%`}
                     />
                     <div
                       className="rounded-sm"
-                      style={{ flex: s.heightSplits.gap, backgroundColor: 'rgba(107, 114, 128, 0.2)' }}
+                      style={{ flex: s.heightSplits.gap ?? 0, backgroundColor: 'rgba(107, 114, 128, 0.2)' }}
                     />
                     <div
                       className="rounded-sm"
-                      style={{ flex: s.heightSplits.anchor, backgroundColor: 'rgba(52, 211, 153, 0.4)' }}
-                      title={`Anchor: ${(s.heightSplits.anchor * 100).toFixed(0)}%`}
+                      style={{ flex: s.heightSplits.anchor ?? 0, backgroundColor: 'rgba(52, 211, 153, 0.4)' }}
+                      title={`Anchor: ${((s.heightSplits.anchor ?? 0) * 100).toFixed(0)}%`}
                     />
                   </div>
                 )}
@@ -185,9 +154,9 @@ export default function ManifestViewer({ deviceId }: ManifestViewerProps) {
           Density Targets
         </h3>
         <div className="space-y-1 text-[11px]" style={{ color: '#9ca3af' }}>
-          <div>Vertical: {data.densityTargets.vertical}</div>
-          <div>Horizontal: {data.densityTargets.horizontal}</div>
-          <div>Max dead space: {data.densityTargets.horizontalDeadSpaceMax}%</div>
+          <div>Vertical: {data.densityTargets?.vertical ?? 'N/A'}</div>
+          <div>Horizontal: {data.densityTargets?.horizontal ?? 'N/A'}</div>
+          <div>Max dead space: {data.densityTargets?.horizontalDeadSpaceMax ?? 'N/A'}%</div>
         </div>
       </div>
     </div>

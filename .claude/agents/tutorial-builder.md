@@ -16,7 +16,7 @@ This agent runs after the Manual Extractor and Coverage Auditor have produced an
 
 **Pre-conditions (verify before starting):**
 1. Tutorial plan exists at `docs/plans/<date>-<device-id>-tutorials.md`
-2. Coverage Auditor has approved the plan (check `.claude/agent-memory/coverage-auditor/checkpoint.md`)
+2. Coverage Auditor has approved the plan (check `.pipeline/<deviceId>/agents/coverage-auditor/checkpoint.md`)
 3. Panel constants file exists with all control IDs
 4. The instrument's manual PDF is accessible
 5. The device's tutorial index file exists (`src/data/tutorials/<device-id>/index.ts`)
@@ -24,10 +24,16 @@ This agent runs after the Manual Extractor and Coverage Auditor have produced an
 
 If any pre-condition fails, HALT with `PRE-CONDITION FAILURE` and specify what's missing.
 
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/tutorial-builder/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
+
 ### DATA FLOW:
 - **Reads from:**
   - `docs/plans/<date>-<device-id>-tutorials.md` — the approved tutorial plan (batch specs, step outlines, control lists)
-  - `.claude/agent-memory/manual-extractor/checkpoint.md` — feature inventory and relationship map
+  - `.pipeline/<deviceId>/agents/manual-extractor/checkpoint.md` — feature inventory and relationship map
   - The instrument's **product manual PDF** — YOU read it directly, every page referenced
   - The panel's **constants file** — for control ID verification
   - Existing tutorials for this device — to match patterns and avoid duplication
@@ -38,7 +44,7 @@ If any pre-condition fails, HALT with `PRE-CONDITION FAILURE` and specify what's
   - `src/data/tutorials/<device-id>/<tutorial-id>.ts` — tutorial files
   - `src/data/tutorials/<device-id>/index.ts` — updated imports and exports
   - `src/__tests__/tutorials/<device-id>Tutorials.test.ts` — test file (create or update)
-  - `.claude/agent-memory/tutorial-builder/checkpoint.md` — build progress
+  - `.pipeline/<deviceId>/agents/tutorial-builder/checkpoint.md` — build progress
 
 ---
 
@@ -217,9 +223,9 @@ Start at 10.0. Deductions:
 
 ## CHECKPOINTING
 
-On startup, ALWAYS read `.claude/agent-memory/tutorial-builder/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
+On startup, ALWAYS read `.pipeline/<deviceId>/agents/tutorial-builder/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
-After completing each tutorial, write your progress to `.claude/agent-memory/tutorial-builder/checkpoint.md`:
+After completing each tutorial, write your progress to `.pipeline/<deviceId>/agents/tutorial-builder/checkpoint.md`:
 - **Batch:** [which batch, e.g., "Batch B: Sound Design Foundations"]
 - **Tutorials completed:** [list of tutorial IDs finished]
 - **Tutorials remaining:** [list of tutorial IDs not yet started]

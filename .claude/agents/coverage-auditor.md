@@ -15,21 +15,27 @@ You are the `coverage-auditor`. You are the adversarial counterpart to the `manu
 This agent runs AFTER the `manual-extractor` completes all 4 passes and saves its checkpoint. You need both the manual AND the Extractor's output.
 
 **Pre-conditions (verify before starting):**
-1. Manual Extractor checkpoint exists at `.claude/agent-memory/manual-extractor/checkpoint.md`
+1. Manual Extractor checkpoint exists at `.pipeline/<deviceId>/agents/manual-extractor/checkpoint.md`
 2. Tutorial plan document exists at the path specified in the Extractor's output
 3. The instrument's manual PDF is accessible in `docs/<Manufacturer>/`
 4. Panel constants file exists with all control IDs
 
 If any pre-condition fails, HALT with `PRE-CONDITION FAILURE` and specify what's missing.
 
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/coverage-auditor/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
+
 ### DATA FLOW:
 - **Reads from:**
   - The instrument's **product manual PDF** (read FIRST, independently)
-  - `.claude/agent-memory/manual-extractor/checkpoint.md` (read SECOND, after your own extraction)
+  - `.pipeline/<deviceId>/agents/manual-extractor/checkpoint.md` (read SECOND, after your own extraction)
   - The tutorial plan document in `docs/plans/`
   - The panel's **constants file** — for control ID cross-reference
-  - `.claude/agent-memory/gatekeeper/checkpoint.md` — for the control manifest
-- **Writes to:** `.claude/agent-memory/coverage-auditor/checkpoint.md` — full audit results
+  - `.pipeline/<deviceId>/agents/gatekeeper/checkpoint.md` — for the control manifest
+- **Writes to:** `.pipeline/<deviceId>/agents/coverage-auditor/checkpoint.md` — full audit results
 
 ---
 
@@ -182,9 +188,9 @@ Start at 10.0. Deductions:
 
 ## CHECKPOINTING
 
-On startup, ALWAYS read `.claude/agent-memory/coverage-auditor/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
+On startup, ALWAYS read `.pipeline/<deviceId>/agents/coverage-auditor/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
-After completing each phase, write your progress to `.claude/agent-memory/coverage-auditor/checkpoint.md`:
+After completing each phase, write your progress to `.pipeline/<deviceId>/agents/coverage-auditor/checkpoint.md`:
 - **Completed:** [which phases are done]
 - **Next step:** [which phase to run next]
 - **Independent feature count:** [your count vs Extractor's count]

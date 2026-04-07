@@ -238,8 +238,12 @@ curl -X POST http://localhost:3000/api/pipeline/<device-id>/recover \
 - State: `.pipeline/<device-id>/state.json` (atomic writes, survives crashes)
 - Logs: `.pipeline/<device-id>/runner.log` (append-only)
 - Cost: `.pipeline/<device-id>/cost.json`
-- Manifest: `.pipeline/<device-id>/manifest.json` (gatekeeper output, layout engine input)
+- Inputs: `.pipeline/<device-id>/input/manuals/` and `input/photos/` (copied during preflight)
+- Agent outputs: `.pipeline/<device-id>/agents/<agent-name>/` (checkpoints + structured data)
+- Manifest: `.pipeline/<device-id>/manifest.json` (promoted from agents/gatekeeper/)
 - Templates: `.pipeline/<device-id>/templates.json` (layout engine output)
+- Editor: `.pipeline/<device-id>/manifest-editor.json` (contractor's positioning — SACRED)
+- Saved edits: `.pipeline/saved/<device-id>/` (survives pipeline resets)
 - Worktree: `.worktrees/<device-id>/` (isolated git checkout)
 - All gitignored — not committed to the repo
 

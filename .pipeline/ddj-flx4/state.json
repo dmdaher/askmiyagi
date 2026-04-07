@@ -1,0 +1,213 @@
+{
+  "deviceId": "ddj-flx4",
+  "deviceName": "DDJ-FLX4",
+  "manufacturer": "Pioneer",
+  "manualPaths": [
+    "docs/Pioneer/ddj-flx4/DDJ-FLX4_manual_EN.pdf"
+  ],
+  "currentPhase": "phase-0-gatekeeper",
+  "status": "paused",
+  "branch": "feature/ddj-flx4",
+  "createdAt": "2026-03-24T05:08:08.792Z",
+  "updatedAt": "2026-03-24T07:11:09.072Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-24T05:49:24.423Z",
+      "completedAt": "2026-03-24T05:52:39.082Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 0.6240672,
+      "tokens": {
+        "input": 933,
+        "output": 6919,
+        "cacheCreation": 75976,
+        "cacheRead": 775244
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-24T06:05:09.836Z",
+      "completedAt": "2026-03-24T06:05:09.908Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 8.213721,
+      "tokens": {
+        "input": 26,
+        "output": 47725,
+        "cacheCreation": 152796,
+        "cacheRead": 1179354
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-24T07:09:23.766Z",
+      "completedAt": "2026-03-24T07:11:09.071Z",
+      "score": 9.2,
+      "status": "failed",
+      "costUsd": 20.385327,
+      "tokens": {
+        "input": 200,
+        "output": 67050,
+        "cacheCreation": 438208,
+        "cacheRead": 4758118
+      }
+    }
+  ],
+  "sections": [],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774333161681-nvgqqi",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper produced no manifest.json file",
+      "createdAt": "2026-03-24T06:19:21.681Z",
+      "resolvedAt": "2026-03-24T07:03:31.964Z",
+      "resolution": "retry"
+    },
+    {
+      "id": "esc-1774336269071-q3w4lr",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper produced no manifest.json file",
+      "createdAt": "2026-03-24T07:11:09.072Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774336269071-q3w4lr",
+  "totalCostUsd": 29.2231152,
+  "totalActualCostUsd": 10.83776245,
+  "totalTokens": {
+    "input": 1159,
+    "output": 121694,
+    "cacheCreation": 666980,
+    "cacheRead": 6712716
+  },
+  "budgetCapUsd": 50,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T05:51:12.226Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:05:09.787Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:14:10.808Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:16:17.457Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:19:21.637Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T07:07:27.817Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T07:09:23.739Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T07:11:09.063Z"
+      }
+    ],
+    "lastUpdated": "2026-03-24T07:11:09.070Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.13556127513112798,
+    "costPerAgent": 1.2041958277777778,
+    "projectedBudgetExhaustedAt": "2026-03-24T12:00:02.443Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-24T05:51:12.227Z",
+        "cumulativeCost": 0.71027825
+      },
+      {
+        "timestamp": "2026-03-24T05:52:39.071Z",
+        "cumulativeCost": 1.25604575
+      },
+      {
+        "timestamp": "2026-03-24T06:05:09.791Z",
+        "cumulativeCost": 3.99395275
+      },
+      {
+        "timestamp": "2026-03-24T06:14:10.812Z",
+        "cumulativeCost": 6.0598615
+      },
+      {
+        "timestamp": "2026-03-24T06:16:17.459Z",
+        "cumulativeCost": 6.7932072
+      },
+      {
+        "timestamp": "2026-03-24T06:19:21.638Z",
+        "cumulativeCost": 7.9015222000000005
+      },
+      {
+        "timestamp": "2026-03-24T07:07:27.819Z",
+        "cumulativeCost": 9.38738145
+      },
+      {
+        "timestamp": "2026-03-24T07:09:23.741Z",
+        "cumulativeCost": 10.0724202
+      },
+      {
+        "timestamp": "2026-03-24T07:11:09.067Z",
+        "cumulativeCost": 10.83776245
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/ddj-flx4",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "phase-0-gatekeeper",
+    "subStep": "start"
+  }
+}

@@ -22,7 +22,7 @@ export default function AdminPage() {
 
   const handleSelectPipeline = useCallback(
     (deviceId: string) => {
-      router.push(`/admin/pipeline/${deviceId}`);
+      router.push(`/admin/${deviceId}`);
     },
     [router],
   );
@@ -30,7 +30,7 @@ export default function AdminPage() {
   const handleCreated = useCallback(
     (deviceId: string) => {
       fetchRuns();
-      router.push(`/admin/pipeline/${deviceId}`);
+      router.push(`/admin/${deviceId}`);
     },
     [fetchRuns, router],
   );
@@ -38,7 +38,7 @@ export default function AdminPage() {
   const hasRuns = Object.keys(runs).length > 0;
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl px-6 py-8">
       {/* Page header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}

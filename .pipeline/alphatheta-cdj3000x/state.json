@@ -1,0 +1,407 @@
+{
+  "deviceId": "alphatheta-cdj3000x",
+  "deviceName": "alphatheta cdj3000x",
+  "manufacturer": "pioneer",
+  "manualPaths": [
+    "docs/pioneer/alphatheta-cdj3000x/CDJ-3000X_DRI1956B_manual.pdf"
+  ],
+  "currentPhase": "panel-pr",
+  "status": "paused",
+  "branch": "feature/alphatheta-cdj3000x",
+  "createdAt": "2026-03-24T05:53:30.355Z",
+  "updatedAt": "2026-03-25T04:10:26.849Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-24T05:53:38.411Z",
+      "completedAt": "2026-03-24T05:59:55.203Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 0.35919285,
+      "tokens": {
+        "input": 21,
+        "output": 5324,
+        "cacheCreation": 44773,
+        "cacheRead": 371237
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-24T06:14:21.547Z",
+      "completedAt": "2026-03-24T06:14:21.599Z",
+      "score": 9.5,
+      "status": "passed",
+      "costUsd": 7.242006750000001,
+      "tokens": {
+        "input": 29,
+        "output": 54066,
+        "cacheCreation": 95187,
+        "cacheRead": 934577
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-24T07:10:40.555Z",
+      "completedAt": "2026-03-24T07:13:45.190Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 13.546720500000001,
+      "tokens": {
+        "input": 120,
+        "output": 55495,
+        "cacheCreation": 256726,
+        "cacheRead": 3046122
+      }
+    },
+    {
+      "phase": "phase-0-layout-engine",
+      "startedAt": "2026-03-24T07:13:45.191Z",
+      "completedAt": "2026-03-24T07:13:45.750Z",
+      "score": 10,
+      "status": "passed",
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "phase": "panel-pr",
+      "startedAt": "2026-03-25T04:10:26.000Z",
+      "completedAt": null,
+      "score": null,
+      "status": "running",
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "source-bar",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "usb",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "display",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "browse",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "hot-cue",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "loop",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "cue-memory",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "beat-jump",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "transport",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "jog",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "jog-controls",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    },
+    {
+      "id": "sync-tempo",
+      "siScore": null,
+      "pqScore": null,
+      "criticScore": null,
+      "vaulted": false,
+      "attempts": 0,
+      "costUsd": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheCreation": 0,
+        "cacheRead": 0
+      }
+    }
+  ],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774333647093-yqlgjm",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper produced no manifest.json file",
+      "createdAt": "2026-03-24T06:27:27.093Z",
+      "resolvedAt": "2026-03-24T07:10:39.261Z",
+      "resolution": "retry"
+    },
+    {
+      "id": "esc-1774336425750-d5qgrz",
+      "phase": "phase-0-layout-engine",
+      "type": "agent-failure",
+      "message": "Pipeline ready for editor. Open the visual editor to position controls, then run codegen. Resume the pipeline after codegen to start QA.\nManifest: .pipeline/alphatheta-cdj3000x/manifest.json\nTemplates: .pipeline/alphatheta-cdj3000x/templates.json",
+      "createdAt": "2026-03-24T07:13:45.750Z",
+      "resolvedAt": "2026-03-25T04:10:22.282Z",
+      "resolution": "retry"
+    },
+    {
+      "id": "esc-1774411826849-2cphzh",
+      "phase": "panel-pr",
+      "type": "agent-failure",
+      "message": "Failed to create panel PR: Command failed: gh pr create --base test --title \"feat: alphatheta cdj3000x digital twin panel\" --body \"Automated panel build for alphatheta cdj3000x by Miyagi Pipeline\"\nWarning: 2 uncommitted changes\naborted: you must first push the current branch to a remote, or use the --head flag\n",
+      "createdAt": "2026-03-25T04:10:26.849Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774411826849-2cphzh",
+  "totalCostUsd": 21.1479201,
+  "totalActualCostUsd": 9.100631250000001,
+  "totalTokens": {
+    "input": 170,
+    "output": 114885,
+    "cacheCreation": 396686,
+    "cacheRead": 4351936
+  },
+  "budgetCapUsd": 50,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T05:54:41.300Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:14:21.517Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:22:22.097Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:24:29.188Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T06:27:27.090Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-24T07:13:45.181Z"
+      }
+    ],
+    "lastUpdated": "2026-03-24T07:13:45.185Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.11510361979990646,
+    "costPerAgent": 1.3000901785714287,
+    "projectedBudgetExhaustedAt": "2026-03-24T13:09:04.775Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-24T05:54:41.301Z",
+        "cumulativeCost": 0.3605912499999999
+      },
+      {
+        "timestamp": "2026-03-24T05:59:55.093Z",
+        "cumulativeCost": 2.1710555000000005
+      },
+      {
+        "timestamp": "2026-03-24T06:14:21.520Z",
+        "cumulativeCost": 4.585057750000001
+      },
+      {
+        "timestamp": "2026-03-24T06:22:22.099Z",
+        "cumulativeCost": 6.575800500000001
+      },
+      {
+        "timestamp": "2026-03-24T06:24:29.189Z",
+        "cumulativeCost": 7.3942535000000005
+      },
+      {
+        "timestamp": "2026-03-24T06:27:27.091Z",
+        "cumulativeCost": 8.1408465
+      },
+      {
+        "timestamp": "2026-03-24T07:13:45.182Z",
+        "cumulativeCost": 9.100631250000001
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/alphatheta-cdj3000x",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "panel-pr",
+    "subStep": "start"
+  }
+}

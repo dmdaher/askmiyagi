@@ -150,7 +150,7 @@ export default function PhaseTimeline({ phases, currentPhase }: PhaseTimelinePro
                 </span>
 
                 {/* Score */}
-                {status === 'completed' && score !== null && (
+                {status === 'completed' && score != null && (
                   <span className="text-[9px] font-mono" style={{ color: 'var(--accent, #00aaff)' }}>
                     {score.toFixed(1)}
                   </span>

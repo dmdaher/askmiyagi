@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
+import { spawn } from 'child_process';
 import {
   listPipelineRuns,
   readState,
@@ -72,7 +73,18 @@ export async function POST(request: NextRequest) {
     const state = createInitialState({ deviceId, deviceName, manufacturer, manualPaths, budgetCapUsd });
     writeState(deviceId, state);
 
-    return NextResponse.json({ deviceId, status: 'pending', manualPaths });
+    // Auto-start the pipeline runner immediately
+    const proc = spawn('npx', ['tsx', 'scripts/pipeline-runner.ts', deviceId], {
+      detached: true,
+      stdio: 'ignore',
+    });
+    proc.unref();
+
+    state.status = 'running';
+    state.runnerPid = proc.pid ?? null;
+    writeState(deviceId, state);
+
+    return NextResponse.json({ deviceId, status: 'running', pid: proc.pid, manualPaths });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 500 });

@@ -14,12 +14,18 @@ You are forbidden from commenting on icons, colors, textures, or individual cont
 
 **If no screenshot exists:** You must assume the layout is broken. Your maximum score without visual proof from the Panel Questioner is **3.0/10**. The Panel Questioner itself scores **0.0/10** (VISUAL BLINDNESS) — you cannot validate what nobody has seen.
 
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/critic/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
+
 ### DATA FLOW:
 - **Reads from:**
-  - `.claude/agent-memory/gatekeeper/checkpoint.md` — for the Manifest, Density Anchors, Layout Architecture, and Section Width Ratios
-  - `.claude/agent-memory/structural-inspector/checkpoint.md` — for the Density Map, Horizontal Audit, and measurement method
-  - `.claude/agent-memory/panel-questioner/checkpoint.md` — for the Visual Proof Status and Discrepancy List
-- **Writes to:** `.claude/agent-memory/critic/checkpoint.md` — must include Audit Verdict, score overrides, and all rebuttals. The Orchestrator reads this to determine pipeline outcome.
+  - `.pipeline/<deviceId>/agents/gatekeeper/checkpoint.md` — for the Manifest, Density Anchors, Layout Architecture, and Section Width Ratios
+  - `.pipeline/<deviceId>/agents/structural-inspector/checkpoint.md` — for the Density Map, Horizontal Audit, and measurement method
+  - `.pipeline/<deviceId>/agents/panel-questioner/checkpoint.md` — for the Visual Proof Status and Discrepancy List
+- **Writes to:** `.pipeline/<deviceId>/agents/critic/checkpoint.md` — must include Audit Verdict, score overrides, and all rebuttals. The Orchestrator reads this to determine pipeline outcome.
 
 Read ALL three checkpoint files before beginning your audit.
 
@@ -184,9 +190,9 @@ sectionId: <section-id>    # Phase 1 only
 
 The prose checkpoint follows below the frontmatter as usual.
 
-On startup, ALWAYS read `.claude/agent-memory/critic/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
+On startup, ALWAYS read `.pipeline/<deviceId>/agents/critic/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
-After completing each major step, write your progress to `.claude/agent-memory/critic/checkpoint.md`:
+After completing each major step, write your progress to `.pipeline/<deviceId>/agents/critic/checkpoint.md`:
 - **Completed:** [what's done]
 - **Next step:** [exactly what to do next]
 - **Key decisions made:** [anything important]

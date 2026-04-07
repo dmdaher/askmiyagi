@@ -1,0 +1,4495 @@
+{
+  "deviceId": "fantom-06",
+  "deviceName": "FANTOM-06",
+  "manufacturer": "Roland",
+  "layoutType": "asymmetric",
+  "densityTargets": {
+    "vertical": "medium",
+    "horizontal": "high",
+    "horizontalDeadSpaceMax": 0.05
+  },
+  "sections": [
+    {
+      "id": "controller",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "panelBoundingBox": {
+        "x": 70,
+        "y": 20,
+        "w": 175,
+        "h": 531
+      },
+      "controls": [
+        "wheel-1",
+        "wheel-2",
+        "s1",
+        "s2",
+        "pitch-bend-lever"
+      ]
+    },
+    {
+      "id": "zone",
+      "headerLabel": "ZONE",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 188,
+        "y": 20,
+        "w": 576,
+        "h": 290
+      },
+      "controls": [
+        "master-volume",
+        "pan-level",
+        "ctrl",
+        "assign",
+        "zone-9-16",
+        "zone-select",
+        "knob-1",
+        "knob-2",
+        "knob-3",
+        "knob-4",
+        "knob-5",
+        "knob-6",
+        "knob-7",
+        "knob-8",
+        "zone-int-ext-1",
+        "zone-int-ext-2",
+        "zone-int-ext-3",
+        "zone-int-ext-4",
+        "zone-int-ext-5",
+        "zone-int-ext-6",
+        "zone-int-ext-7",
+        "zone-int-ext-8",
+        "slider-1",
+        "slider-2",
+        "slider-3",
+        "slider-4",
+        "slider-5",
+        "slider-6",
+        "slider-7",
+        "slider-8",
+        "split",
+        "chord-memory",
+        "arpeggio",
+        "transpose",
+        "octave-down",
+        "octave-up"
+      ],
+      "containerAssignment": {
+        "master-volume": [
+          "master-volume"
+        ],
+        "top-buttons": {
+          "row": {
+            "controls": [
+              "pan-level",
+              "ctrl",
+              "assign",
+              "zone-9-16",
+              "zone-select"
+            ],
+            "direction": "row"
+          }
+        },
+        "knobs-row": {
+          "row": {
+            "controls": [
+              "knob-1",
+              "knob-2",
+              "knob-3",
+              "knob-4",
+              "knob-5",
+              "knob-6",
+              "knob-7",
+              "knob-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "zone-buttons-row": {
+          "row": {
+            "controls": [
+              "zone-int-ext-1",
+              "zone-int-ext-2",
+              "zone-int-ext-3",
+              "zone-int-ext-4",
+              "zone-int-ext-5",
+              "zone-int-ext-6",
+              "zone-int-ext-7",
+              "zone-int-ext-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "sliders-row": {
+          "row": {
+            "controls": [
+              "slider-1",
+              "slider-2",
+              "slider-3",
+              "slider-4",
+              "slider-5",
+              "slider-6",
+              "slider-7",
+              "slider-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "bottom-buttons": {
+          "row": {
+            "controls": [
+              "split",
+              "chord-memory",
+              "arpeggio",
+              "transpose",
+              "octave-down",
+              "octave-up"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    {
+      "id": "common",
+      "headerLabel": null,
+      "archetype": "anchor-layout",
+      "panelBoundingBox": {
+        "x": 723,
+        "y": 14,
+        "w": 375,
+        "h": 156
+      },
+      "controls": [
+        "write",
+        "master-fx",
+        "motional-pad",
+        "daw-ctrl",
+        "menu",
+        "display",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "tempo",
+        "value-dial",
+        "dec",
+        "inc",
+        "cursor-up",
+        "cursor-down",
+        "cursor-left",
+        "cursor-right",
+        "shift",
+        "exit",
+        "enter"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "write",
+          "master-fx",
+          "motional-pad",
+          "daw-ctrl",
+          "menu"
+        ],
+        "anchor": [
+          "display"
+        ],
+        "function-knobs": {
+          "row": {
+            "controls": [
+              "e1",
+              "e2",
+              "e3",
+              "e4",
+              "e5",
+              "e6"
+            ],
+            "direction": "row"
+          }
+        },
+        "bottom-left": [
+          "tempo"
+        ],
+        "nav-right": {
+          "value-dial": [
+            "value-dial"
+          ],
+          "inc-dec": {
+            "controls": [
+              "dec",
+              "inc"
+            ],
+            "direction": "row"
+          },
+          "cursor-cross": [
+            "cursor-up",
+            "cursor-left",
+            "cursor-right",
+            "cursor-down"
+          ],
+          "bottom-nav": {
+            "controls": [
+              "shift",
+              "exit",
+              "enter"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    {
+      "id": "scene",
+      "headerLabel": "SCENE CTRL",
+      "archetype": "single-column",
+      "panelBoundingBox": {
+        "x": 1050,
+        "y": 29,
+        "w": 125,
+        "h": 220
+      },
+      "controls": [
+        "scene-select",
+        "scene-chain",
+        "zone-view",
+        "single-tone"
+      ]
+    },
+    {
+      "id": "synth",
+      "headerLabel": "SYNTH CTRL",
+      "archetype": "cluster-below-anchor",
+      "panelBoundingBox": {
+        "x": 1181,
+        "y": 25,
+        "w": 198,
+        "h": 181
+      },
+      "gridRows": 2,
+      "gridCols": 3,
+      "controls": [
+        "cutoff",
+        "resonance",
+        "osc",
+        "filter-type",
+        "param",
+        "amp",
+        "fx",
+        "lfo"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "knob-row": {
+            "controls": [
+              "cutoff",
+              "resonance"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "osc",
+          "filter-type",
+          "param",
+          "amp",
+          "fx",
+          "lfo"
+        ]
+      }
+    },
+    {
+      "id": "sequencer",
+      "headerLabel": "SEQUENCER",
+      "archetype": "cluster-below-anchor",
+      "panelBoundingBox": {
+        "x": 1379,
+        "y": 25,
+        "w": 280,
+        "h": 288
+      },
+      "gridRows": 4,
+      "gridCols": 4,
+      "controls": [
+        "pattern",
+        "group",
+        "song",
+        "tr-rec",
+        "rhythm-ptn",
+        "stop",
+        "play",
+        "rec",
+        "tone-cat-1",
+        "tone-cat-2",
+        "tone-cat-3",
+        "tone-cat-4",
+        "tone-cat-5",
+        "tone-cat-6",
+        "tone-cat-7",
+        "tone-cat-8",
+        "tone-cat-9",
+        "tone-cat-10",
+        "tone-cat-11",
+        "tone-cat-12",
+        "tone-cat-13",
+        "tone-cat-14",
+        "tone-cat-15",
+        "tone-cat-16"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "nav-row": {
+            "controls": [
+              "pattern",
+              "group",
+              "song"
+            ],
+            "direction": "row"
+          },
+          "mode-row": {
+            "controls": [
+              "tr-rec",
+              "rhythm-ptn"
+            ],
+            "direction": "row"
+          },
+          "transport-row": {
+            "controls": [
+              "stop",
+              "play",
+              "rec"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "tone-cat-1",
+          "tone-cat-2",
+          "tone-cat-3",
+          "tone-cat-4",
+          "tone-cat-5",
+          "tone-cat-6",
+          "tone-cat-7",
+          "tone-cat-8",
+          "tone-cat-9",
+          "tone-cat-10",
+          "tone-cat-11",
+          "tone-cat-12",
+          "tone-cat-13",
+          "tone-cat-14",
+          "tone-cat-15",
+          "tone-cat-16"
+        ]
+      }
+    },
+    {
+      "id": "pad",
+      "headerLabel": "PAD",
+      "archetype": "cluster-below-anchor",
+      "panelBoundingBox": {
+        "x": 1641,
+        "y": 25,
+        "w": 230,
+        "h": 288
+      },
+      "gridRows": 4,
+      "gridCols": 4,
+      "controls": [
+        "sampling",
+        "pad-mode",
+        "clip-board",
+        "bank",
+        "hold",
+        "pad-1",
+        "pad-2",
+        "pad-3",
+        "pad-4",
+        "pad-5",
+        "pad-6",
+        "pad-7",
+        "pad-8",
+        "pad-9",
+        "pad-10",
+        "pad-11",
+        "pad-12",
+        "pad-13",
+        "pad-14",
+        "pad-15",
+        "pad-16"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "buttons-row-1": {
+            "controls": [
+              "sampling",
+              "pad-mode",
+              "clip-board"
+            ],
+            "direction": "row"
+          },
+          "buttons-row-2": {
+            "controls": [
+              "bank",
+              "hold"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "pad-1",
+          "pad-2",
+          "pad-3",
+          "pad-4",
+          "pad-5",
+          "pad-6",
+          "pad-7",
+          "pad-8",
+          "pad-9",
+          "pad-10",
+          "pad-11",
+          "pad-12",
+          "pad-13",
+          "pad-14",
+          "pad-15",
+          "pad-16"
+        ]
+      }
+    }
+  ],
+  "controls": [
+    {
+      "id": "wheel-1",
+      "verbatimLabel": "WHEEL1",
+      "type": "wheel",
+      "section": "controller",
+      "functionalGroup": "wheels",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "wheel-2",
+        "left": null,
+        "right": null
+      },
+      "editorPosition": {
+        "x": 126,
+        "y": 107,
+        "w": 20,
+        "h": 100
+      },
+      "labelDisplay": "below",
+      "_labelPos": {
+        "x": 106,
+        "y": 185,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "wheel-2",
+      "verbatimLabel": "WHEEL2",
+      "type": "wheel",
+      "section": "controller",
+      "functionalGroup": "wheels",
+      "spatialNeighbors": {
+        "above": "wheel-1",
+        "below": "pitch-bend-lever",
+        "left": null,
+        "right": null
+      },
+      "editorPosition": {
+        "x": 188,
+        "y": 107,
+        "w": 20,
+        "h": 100
+      },
+      "labelDisplay": "below",
+      "_labelPos": {
+        "x": 171,
+        "y": 178,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "s1",
+      "verbatimLabel": "S1",
+      "type": "button",
+      "section": "controller",
+      "functionalGroup": "assignable-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "s2"
+      },
+      "editorPosition": {
+        "x": 110,
+        "y": 359,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 96,
+        "y": 347,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "s2",
+      "verbatimLabel": "S2",
+      "type": "button",
+      "section": "controller",
+      "functionalGroup": "assignable-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "s1",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 155,
+        "y": 359,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 130,
+        "y": 345,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "pitch-bend-lever",
+      "verbatimLabel": "PITCH BEND/MOD",
+      "type": "lever",
+      "section": "controller",
+      "functionalGroup": "pitch-bend",
+      "spatialNeighbors": {
+        "above": "wheel-2",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "editorPosition": {
+        "x": 126,
+        "y": 400,
+        "w": 86,
+        "h": 86
+      },
+      "labelDisplay": "below",
+      "_labelPos": {
+        "x": 136,
+        "y": 477,
+        "w": 61,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "master-volume",
+      "verbatimLabel": "MASTER VOLUME",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "master-volume",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "editorPosition": {
+        "x": 265,
+        "y": 118,
+        "w": 39,
+        "h": 32
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 262,
+        "y": 100,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "pan-level",
+      "verbatimLabel": "PAN/\nLEVEL",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-mode-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-1",
+        "left": null,
+        "right": "ctrl"
+      },
+      "editorPosition": {
+        "x": 312,
+        "y": 81,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 301,
+        "y": 72,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "ctrl",
+      "verbatimLabel": "CTRL",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-mode-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-2",
+        "left": "pan-level",
+        "right": "assign"
+      },
+      "editorPosition": {
+        "x": 351,
+        "y": 83,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 338,
+        "y": 81,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "assign",
+      "verbatimLabel": "ASSIGN",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-mode-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-3",
+        "left": "ctrl",
+        "right": "zone-9-16"
+      },
+      "editorPosition": {
+        "x": 351,
+        "y": 124,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 335,
+        "y": 123,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-9-16",
+      "verbatimLabel": "ZONE 9-16",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-4",
+        "left": "assign",
+        "right": "zone-select"
+      },
+      "editorPosition": {
+        "x": 312,
+        "y": 165,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 298,
+        "y": 160,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-select",
+      "verbatimLabel": "ZONE\nSELECT",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-5",
+        "left": "zone-9-16",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 351,
+        "y": 164,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 334,
+        "y": 149,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "knob-1",
+      "verbatimLabel": "1",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "control-knobs",
+      "spatialNeighbors": {
+        "above": "pan-level",
+        "below": "zone-int-ext-1",
+        "left": null,
+        "right": "knob-2"
+      },
+      "editorPosition": {
+        "x": 402,
+        "y": 77,
+        "w": 32,
+        "h": 32
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "knob-2",
+      "verbatimLabel": "2",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "control-knobs",
+      "spatialNeighbors": {
+        "above": "ctrl",
+        "below": "zone-int-ext-2",
+        "left": "knob-1",
+        "right": "knob-3"
+      },
+      "editorPosition": {
+        "x": 445,
+        "y": 77,
+        "w": 32,
+        "h": 32
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "knob-3",
+      "verbatimLabel": "3",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "control-knobs",
+      "spatialNeighbors": {
+        "above": "assign",
+        "below": "zone-int-ext-3",
+        "left": "knob-2",
+        "right": "knob-4"
+      },
+      "editorPosition": {
+        "x": 487,
+        "y": 77,
+        "w": 32,
+        "h": 32
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "knob-4",
+      "verbatimLabel": "4",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "control-knobs",
+      "spatialNeighbors": {
+        "above": "zone-9-16",
+        "below": "zone-int-ext-4",
+        "left": "knob-3",
+        "right": "knob-5"
+      },
+      "editorPosition": {
+        "x": 529,
+        "y": 77,
+        "w": 32,
+        "h": 32
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "knob-5",
+      "verbatimLabel": "5",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "control-knobs",
+      "spatialNeighbors": {
+        "above": "zone-select",
+        "below": "zone-int-ext-5",
+        "left": "knob-4",
+        "right": "knob-6"
+      },
+      "editorPosition": {
+        "x": 572,
+        "y": 77,
+        "w": 32,
+        "h": 32
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "knob-6",
+      "verbatimLabel": "6",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "control-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-6",
+        "left": "knob-5",
+        "right": "knob-7"
+      },
+      "editorPosition": {
+        "x": 614,
+        "y": 77,
+        "w": 32,
+        "h": 32
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "knob-7",
+      "verbatimLabel": "7",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "control-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-7",
+        "left": "knob-6",
+        "right": "knob-8"
+      },
+      "editorPosition": {
+        "x": 656,
+        "y": 77,
+        "w": 32,
+        "h": 32
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "knob-8",
+      "verbatimLabel": "8",
+      "type": "knob",
+      "section": "zone",
+      "functionalGroup": "control-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-8",
+        "left": "knob-7",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 698,
+        "y": 77,
+        "w": 32,
+        "h": 32
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "zone-int-ext-1",
+      "verbatimLabel": "1",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-1",
+        "below": "slider-1",
+        "left": null,
+        "right": "zone-int-ext-2"
+      },
+      "editorPosition": {
+        "x": 400,
+        "y": 139,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 380,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-int-ext-2",
+      "verbatimLabel": "2",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-2",
+        "below": "slider-2",
+        "left": "zone-int-ext-1",
+        "right": "zone-int-ext-3"
+      },
+      "editorPosition": {
+        "x": 443,
+        "y": 139,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 423,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-int-ext-3",
+      "verbatimLabel": "3",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-3",
+        "below": "slider-3",
+        "left": "zone-int-ext-2",
+        "right": "zone-int-ext-4"
+      },
+      "editorPosition": {
+        "x": 484,
+        "y": 139,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 466,
+        "y": 133,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-int-ext-4",
+      "verbatimLabel": "4",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-4",
+        "below": "slider-4",
+        "left": "zone-int-ext-3",
+        "right": "zone-int-ext-5"
+      },
+      "editorPosition": {
+        "x": 527,
+        "y": 139,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 507,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-int-ext-5",
+      "verbatimLabel": "5",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-5",
+        "below": "slider-5",
+        "left": "zone-int-ext-4",
+        "right": "zone-int-ext-6"
+      },
+      "editorPosition": {
+        "x": 568,
+        "y": 139,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 551,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-int-ext-6",
+      "verbatimLabel": "6",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-6",
+        "below": "slider-6",
+        "left": "zone-int-ext-5",
+        "right": "zone-int-ext-7"
+      },
+      "editorPosition": {
+        "x": 611,
+        "y": 139,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 594,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-int-ext-7",
+      "verbatimLabel": "7",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-7",
+        "below": "slider-7",
+        "left": "zone-int-ext-6",
+        "right": "zone-int-ext-8"
+      },
+      "editorPosition": {
+        "x": 652,
+        "y": 139,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 633,
+        "y": 135,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-int-ext-8",
+      "verbatimLabel": "8",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-int-ext",
+      "spatialNeighbors": {
+        "above": "knob-8",
+        "below": "slider-8",
+        "left": "zone-int-ext-7",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 695,
+        "y": 139,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 673,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "slider-1",
+      "verbatimLabel": "1",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-1",
+        "below": "split",
+        "left": null,
+        "right": "slider-2"
+      },
+      "editorPosition": {
+        "x": 408,
+        "y": 187,
+        "w": 18,
+        "h": 75
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "slider-2",
+      "verbatimLabel": "2",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-2",
+        "below": null,
+        "left": "slider-1",
+        "right": "slider-3"
+      },
+      "editorPosition": {
+        "x": 449,
+        "y": 187,
+        "w": 19,
+        "h": 75
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "slider-3",
+      "verbatimLabel": "3",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-3",
+        "below": null,
+        "left": "slider-2",
+        "right": "slider-4"
+      },
+      "editorPosition": {
+        "x": 490,
+        "y": 187,
+        "w": 19,
+        "h": 75
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "slider-4",
+      "verbatimLabel": "4",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-4",
+        "below": "arpeggio",
+        "left": "slider-3",
+        "right": "slider-5"
+      },
+      "editorPosition": {
+        "x": 533,
+        "y": 187,
+        "w": 19,
+        "h": 75
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "slider-5",
+      "verbatimLabel": "5",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-5",
+        "below": "transpose",
+        "left": "slider-4",
+        "right": "slider-6"
+      },
+      "editorPosition": {
+        "x": 576,
+        "y": 187,
+        "w": 18,
+        "h": 75
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "slider-6",
+      "verbatimLabel": "6",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-6",
+        "below": null,
+        "left": "slider-5",
+        "right": "slider-7"
+      },
+      "editorPosition": {
+        "x": 617,
+        "y": 187,
+        "w": 19,
+        "h": 75
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "slider-7",
+      "verbatimLabel": "7",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-7",
+        "below": null,
+        "left": "slider-6",
+        "right": "slider-8"
+      },
+      "editorPosition": {
+        "x": 660,
+        "y": 187,
+        "w": 18,
+        "h": 75
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "slider-8",
+      "verbatimLabel": "8",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": {
+        "above": "zone-int-ext-8",
+        "below": "octave-up",
+        "left": "slider-7",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 703,
+        "y": 187,
+        "w": 18,
+        "h": 75
+      },
+      "labelDisplay": "hidden"
+    },
+    {
+      "id": "split",
+      "verbatimLabel": "SPLIT",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-1",
+        "below": null,
+        "left": null,
+        "right": "chord-memory"
+      },
+      "editorPosition": {
+        "x": 271,
+        "y": 204,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 267,
+        "y": 198,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "chord-memory",
+      "verbatimLabel": "CHORD\nMEMORY",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "split",
+        "right": "arpeggio"
+      },
+      "editorPosition": {
+        "x": 312,
+        "y": 204,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 303,
+        "y": 189,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "arpeggio",
+      "verbatimLabel": "ARPEGGIO",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-4",
+        "below": null,
+        "left": "chord-memory",
+        "right": "transpose"
+      },
+      "editorPosition": {
+        "x": 351,
+        "y": 205,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 342,
+        "y": 197,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "transpose",
+      "verbatimLabel": "TRANSPOSE",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-5",
+        "below": null,
+        "left": "arpeggio",
+        "right": "octave-down"
+      },
+      "editorPosition": {
+        "x": 271,
+        "y": 245,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 266,
+        "y": 235,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "octave-down",
+      "verbatimLabel": "DOWN",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "transpose",
+        "right": "octave-up"
+      },
+      "editorPosition": {
+        "x": 312,
+        "y": 245,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 303,
+        "y": 235,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "octave-up",
+      "verbatimLabel": "UP",
+      "type": "button",
+      "section": "zone",
+      "functionalGroup": "zone-performance",
+      "spatialNeighbors": {
+        "above": "slider-8",
+        "below": null,
+        "left": "octave-down",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 351,
+        "y": 245,
+        "w": 32,
+        "h": 20
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 338,
+        "y": 233,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "write",
+      "verbatimLabel": "WRITE",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "mode-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "master-fx",
+        "left": null,
+        "right": null
+      },
+      "labelDisplay": "above",
+      "editorPosition": {
+        "x": 753,
+        "y": 74,
+        "w": 32,
+        "h": 20
+      },
+      "_labelPos": {
+        "x": 520,
+        "y": 384,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "master-fx",
+      "verbatimLabel": "MASTER FX",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "mode-buttons",
+      "spatialNeighbors": {
+        "above": "write",
+        "below": "motional-pad",
+        "left": null,
+        "right": "display"
+      },
+      "labelDisplay": "above",
+      "editorPosition": {
+        "x": 753,
+        "y": 118,
+        "w": 32,
+        "h": 20
+      },
+      "_labelPos": {
+        "x": 610,
+        "y": 384,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "motional-pad",
+      "verbatimLabel": "MOTIONAL PAD",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "mode-buttons",
+      "spatialNeighbors": {
+        "above": "master-fx",
+        "below": "daw-ctrl",
+        "left": null,
+        "right": null
+      },
+      "labelDisplay": "above",
+      "editorPosition": {
+        "x": 754,
+        "y": 162,
+        "w": 32,
+        "h": 20
+      },
+      "_labelPos": {
+        "x": 700,
+        "y": 384,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "daw-ctrl",
+      "verbatimLabel": "DAW CTRL",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "mode-buttons",
+      "spatialNeighbors": {
+        "above": "motional-pad",
+        "below": "menu",
+        "left": null,
+        "right": "cursor-up"
+      },
+      "labelDisplay": "above",
+      "editorPosition": {
+        "x": 754,
+        "y": 206,
+        "w": 32,
+        "h": 20
+      },
+      "_labelPos": {
+        "x": 790,
+        "y": 384,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "menu",
+      "verbatimLabel": "MENU",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "navigation",
+      "spatialNeighbors": {
+        "above": "daw-ctrl",
+        "below": "tempo",
+        "left": null,
+        "right": "cursor-down"
+      },
+      "labelDisplay": "above",
+      "editorPosition": {
+        "x": 755,
+        "y": 250,
+        "w": 32,
+        "h": 20
+      },
+      "_labelPos": {
+        "x": 880,
+        "y": 384,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "display",
+      "verbatimLabel": "Display",
+      "type": "screen",
+      "section": "common",
+      "functionalGroup": "display",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "master-fx",
+        "right": "value-dial"
+      },
+      "editorPosition": {
+        "x": 800,
+        "y": 56,
+        "w": 281,
+        "h": 168
+      },
+      "labelDisplay": "below",
+      "_labelPos": {
+        "x": 773,
+        "y": 244,
+        "w": 281,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "e1",
+      "verbatimLabel": "E1",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "function-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "e2"
+      },
+      "labelDisplay": "hidden",
+      "editorPosition": {
+        "x": 820,
+        "y": 242,
+        "w": 24,
+        "h": 24
+      },
+      "_labelPos": {
+        "x": 970,
+        "y": 393,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "e2",
+      "verbatimLabel": "E2",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "function-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e1",
+        "right": "e3"
+      },
+      "labelDisplay": "hidden",
+      "editorPosition": {
+        "x": 870,
+        "y": 242,
+        "w": 24,
+        "h": 24
+      },
+      "_labelPos": {
+        "x": 1060,
+        "y": 393,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "e3",
+      "verbatimLabel": "E3",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "function-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e2",
+        "right": "e4"
+      },
+      "labelDisplay": "hidden",
+      "editorPosition": {
+        "x": 920,
+        "y": 242,
+        "w": 24,
+        "h": 24
+      },
+      "_labelPos": {
+        "x": 520,
+        "y": 483,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "e4",
+      "verbatimLabel": "E4",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "function-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e3",
+        "right": "e5"
+      },
+      "labelDisplay": "hidden",
+      "editorPosition": {
+        "x": 970,
+        "y": 242,
+        "w": 24,
+        "h": 24
+      },
+      "_labelPos": {
+        "x": 610,
+        "y": 483,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "e5",
+      "verbatimLabel": "E5",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "function-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e4",
+        "right": "e6"
+      },
+      "labelDisplay": "hidden",
+      "editorPosition": {
+        "x": 1019,
+        "y": 242,
+        "w": 24,
+        "h": 24
+      },
+      "_labelPos": {
+        "x": 700,
+        "y": 483,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "e6",
+      "verbatimLabel": "E6",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "function-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "e5",
+        "right": null
+      },
+      "labelDisplay": "hidden",
+      "editorPosition": {
+        "x": 1069,
+        "y": 242,
+        "w": 24,
+        "h": 24
+      },
+      "_labelPos": {
+        "x": 790,
+        "y": 483,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "tempo",
+      "verbatimLabel": "TEMPO",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "tempo",
+      "spatialNeighbors": {
+        "above": "menu",
+        "below": null,
+        "left": null,
+        "right": "shift"
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 916,
+        "y": 449,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 880,
+        "y": 474,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "value-dial",
+      "verbatimLabel": "VALUE",
+      "type": "encoder",
+      "section": "common",
+      "functionalGroup": "navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "cursor-up",
+        "left": "display",
+        "right": null
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 1006,
+        "y": 449,
+        "w": 24,
+        "h": 24
+      },
+      "_labelPos": {
+        "x": 970,
+        "y": 483,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "dec",
+      "verbatimLabel": "DEC",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "cursor-left",
+        "left": null,
+        "right": "inc"
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 1096,
+        "y": 449,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 1060,
+        "y": 474,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "inc",
+      "verbatimLabel": "INC",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "cursor-right",
+        "left": "dec",
+        "right": null
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 556,
+        "y": 539,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 520,
+        "y": 564,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "cursor-up",
+      "verbatimLabel": "CURSOR UP",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "cursor",
+      "spatialNeighbors": {
+        "above": "value-dial",
+        "below": "cursor-down",
+        "left": "daw-ctrl",
+        "right": null
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 646,
+        "y": 539,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 610,
+        "y": 564,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "cursor-down",
+      "verbatimLabel": "CURSOR DOWN",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "cursor",
+      "spatialNeighbors": {
+        "above": "cursor-up",
+        "below": "exit",
+        "left": "menu",
+        "right": null
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 736,
+        "y": 539,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 700,
+        "y": 564,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "cursor-left",
+      "verbatimLabel": "CURSOR LEFT",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "cursor",
+      "spatialNeighbors": {
+        "above": "dec",
+        "below": "shift",
+        "left": null,
+        "right": "cursor-right"
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 826,
+        "y": 539,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 790,
+        "y": 564,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "cursor-right",
+      "verbatimLabel": "CURSOR RIGHT",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "cursor",
+      "spatialNeighbors": {
+        "above": "inc",
+        "below": "enter",
+        "left": "cursor-left",
+        "right": null
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 916,
+        "y": 539,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 880,
+        "y": 564,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "shift",
+      "verbatimLabel": "SHIFT",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "modal-buttons",
+      "spatialNeighbors": {
+        "above": "cursor-left",
+        "below": null,
+        "left": "tempo",
+        "right": "exit"
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 1006,
+        "y": 539,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 970,
+        "y": 564,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "exit",
+      "verbatimLabel": "EXIT",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "modal-buttons",
+      "spatialNeighbors": {
+        "above": "cursor-down",
+        "below": null,
+        "left": "shift",
+        "right": "enter"
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 1096,
+        "y": 539,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 1060,
+        "y": 564,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "enter",
+      "verbatimLabel": "ENTER",
+      "type": "button",
+      "section": "common",
+      "functionalGroup": "modal-buttons",
+      "spatialNeighbors": {
+        "above": "cursor-right",
+        "below": null,
+        "left": "exit",
+        "right": null
+      },
+      "labelDisplay": "below",
+      "editorPosition": {
+        "x": 556,
+        "y": 599,
+        "w": 24,
+        "h": 15
+      },
+      "_labelPos": {
+        "x": 520,
+        "y": 624,
+        "w": 60,
+        "align": "center",
+        "fontSize": 8
+      }
+    },
+    {
+      "id": "scene-select",
+      "verbatimLabel": "SCENE SELECT",
+      "type": "button",
+      "section": "scene",
+      "functionalGroup": "scene",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "scene-chain",
+        "left": null,
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1110,
+        "y": 16,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1048,
+        "y": 25,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "scene-chain",
+      "verbatimLabel": "SCENE CHAIN",
+      "type": "button",
+      "section": "scene",
+      "functionalGroup": "scene",
+      "spatialNeighbors": {
+        "above": "scene-select",
+        "below": "zone-view",
+        "left": null,
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1110,
+        "y": 79,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1048,
+        "y": 88,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "zone-view",
+      "verbatimLabel": "ZONE VIEW",
+      "type": "button",
+      "section": "scene",
+      "functionalGroup": "scene",
+      "spatialNeighbors": {
+        "above": "scene-chain",
+        "below": "single-tone",
+        "left": null,
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1110,
+        "y": 118,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1048,
+        "y": 127,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "single-tone",
+      "verbatimLabel": "SINGLE TONE",
+      "type": "button",
+      "section": "scene",
+      "functionalGroup": "scene",
+      "spatialNeighbors": {
+        "above": "zone-view",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1110,
+        "y": 168,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1048,
+        "y": 177,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "cutoff",
+      "verbatimLabel": "CUTOFF",
+      "type": "knob",
+      "section": "synth",
+      "functionalGroup": "synth-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "resonance"
+      },
+      "editorPosition": {
+        "x": 1238,
+        "y": 16,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "below",
+      "_labelPos": {
+        "x": 1179,
+        "y": 74,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "resonance",
+      "verbatimLabel": "RESONANCE",
+      "type": "knob",
+      "section": "synth",
+      "functionalGroup": "synth-knobs",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "cutoff",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1337,
+        "y": 16,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "below",
+      "_labelPos": {
+        "x": 1278,
+        "y": 74,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "osc",
+      "verbatimLabel": "OSC",
+      "type": "button",
+      "section": "synth",
+      "functionalGroup": "synth-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "amp",
+        "left": null,
+        "right": "filter-type"
+      },
+      "editorPosition": {
+        "x": 1252,
+        "y": 91,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1193,
+        "y": 97,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "filter-type",
+      "verbatimLabel": "FILTER TYPE",
+      "type": "button",
+      "section": "synth",
+      "functionalGroup": "synth-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "fx",
+        "left": "osc",
+        "right": "param"
+      },
+      "editorPosition": {
+        "x": 1302,
+        "y": 91,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1243,
+        "y": 97,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "param",
+      "verbatimLabel": "PARAM",
+      "type": "button",
+      "section": "synth",
+      "functionalGroup": "synth-buttons",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo",
+        "left": "filter-type",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1352,
+        "y": 91,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1293,
+        "y": 97,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "amp",
+      "verbatimLabel": "AMP",
+      "type": "button",
+      "section": "synth",
+      "functionalGroup": "synth-buttons",
+      "spatialNeighbors": {
+        "above": "osc",
+        "below": null,
+        "left": null,
+        "right": "fx"
+      },
+      "editorPosition": {
+        "x": 1252,
+        "y": 128,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1193,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "fx",
+      "verbatimLabel": "FX",
+      "type": "button",
+      "section": "synth",
+      "functionalGroup": "synth-buttons",
+      "spatialNeighbors": {
+        "above": "filter-type",
+        "below": null,
+        "left": "amp",
+        "right": "lfo"
+      },
+      "editorPosition": {
+        "x": 1302,
+        "y": 128,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1243,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "lfo",
+      "verbatimLabel": "LFO",
+      "type": "button",
+      "section": "synth",
+      "functionalGroup": "synth-buttons",
+      "spatialNeighbors": {
+        "above": "param",
+        "below": null,
+        "left": "fx",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1352,
+        "y": 128,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1293,
+        "y": 134,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "pattern",
+      "verbatimLabel": "PATTERN",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-nav",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tr-rec",
+        "left": null,
+        "right": "group"
+      },
+      "editorPosition": {
+        "x": 1406,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1391,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "group",
+      "verbatimLabel": "GROUP",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-nav",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "rhythm-ptn",
+        "left": "pattern",
+        "right": "song"
+      },
+      "editorPosition": {
+        "x": 1406,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1391,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "song",
+      "verbatimLabel": "SONG",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-nav",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tone-cat-3",
+        "left": "group",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1461,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1446,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tr-rec",
+      "verbatimLabel": "TR-REC",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-mode",
+      "spatialNeighbors": {
+        "above": "pattern",
+        "below": "tone-cat-1",
+        "left": null,
+        "right": "rhythm-ptn"
+      },
+      "editorPosition": {
+        "x": 1461,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1446,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "rhythm-ptn",
+      "verbatimLabel": "RHYTHM PTN",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "sequencer-mode",
+      "spatialNeighbors": {
+        "above": "group",
+        "below": "tone-cat-2",
+        "left": "tr-rec",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1498,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1483,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "stop",
+      "verbatimLabel": "STOP",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "transport",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "play"
+      },
+      "editorPosition": {
+        "x": 1549,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1534,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "play",
+      "verbatimLabel": "PLAY",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "transport",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "stop",
+        "right": "rec"
+      },
+      "editorPosition": {
+        "x": 1574,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1559,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "rec",
+      "verbatimLabel": "REC",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "transport",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "play",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1601,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1586,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-1",
+      "verbatimLabel": "A.PIANO",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tr-rec",
+        "below": "tone-cat-5",
+        "left": null,
+        "right": "tone-cat-2"
+      },
+      "editorPosition": {
+        "x": 1391,
+        "y": 163,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1376,
+        "y": 147,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-2",
+      "verbatimLabel": "E.PIANO",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "rhythm-ptn",
+        "below": "tone-cat-6",
+        "left": "tone-cat-1",
+        "right": "tone-cat-3"
+      },
+      "editorPosition": {
+        "x": 1450,
+        "y": 163,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1435,
+        "y": 147,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-3",
+      "verbatimLabel": "ORGAN",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "song",
+        "below": "tone-cat-7",
+        "left": "tone-cat-2",
+        "right": "tone-cat-4"
+      },
+      "editorPosition": {
+        "x": 1491,
+        "y": 163,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1476,
+        "y": 147,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-4",
+      "verbatimLabel": "GUITAR/BASS",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tone-cat-8",
+        "left": "tone-cat-3",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1573,
+        "y": 163,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1558,
+        "y": 147,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-5",
+      "verbatimLabel": "STRINGS",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-1",
+        "below": "tone-cat-9",
+        "left": null,
+        "right": "tone-cat-6"
+      },
+      "editorPosition": {
+        "x": 1391,
+        "y": 194,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1376,
+        "y": 178,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-6",
+      "verbatimLabel": "BRASS",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-2",
+        "below": "tone-cat-10",
+        "left": "tone-cat-5",
+        "right": "tone-cat-7"
+      },
+      "editorPosition": {
+        "x": 1450,
+        "y": 194,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1435,
+        "y": 178,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-7",
+      "verbatimLabel": "SYNTH LEAD",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-3",
+        "below": "tone-cat-11",
+        "left": "tone-cat-6",
+        "right": "tone-cat-8"
+      },
+      "editorPosition": {
+        "x": 1491,
+        "y": 194,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1476,
+        "y": 178,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-8",
+      "verbatimLabel": "SYNTH PAD",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-4",
+        "below": "tone-cat-12",
+        "left": "tone-cat-7",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1573,
+        "y": 194,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1558,
+        "y": 178,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-9",
+      "verbatimLabel": "BELL/MALLET",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-5",
+        "below": "tone-cat-13",
+        "left": null,
+        "right": "tone-cat-10"
+      },
+      "editorPosition": {
+        "x": 1391,
+        "y": 225,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1376,
+        "y": 209,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-10",
+      "verbatimLabel": "HIT/OTHER",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-6",
+        "below": "tone-cat-14",
+        "left": "tone-cat-9",
+        "right": "tone-cat-11"
+      },
+      "editorPosition": {
+        "x": 1450,
+        "y": 225,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1435,
+        "y": 209,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-11",
+      "verbatimLabel": "RHYTHM",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-7",
+        "below": "tone-cat-15",
+        "left": "tone-cat-10",
+        "right": "tone-cat-12"
+      },
+      "editorPosition": {
+        "x": 1491,
+        "y": 225,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1476,
+        "y": 209,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-12",
+      "verbatimLabel": "S.N. ACOUSTIC",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-8",
+        "below": "tone-cat-16",
+        "left": "tone-cat-11",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1573,
+        "y": 225,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1558,
+        "y": 209,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-13",
+      "verbatimLabel": "S.N.S",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-9",
+        "below": null,
+        "left": null,
+        "right": "tone-cat-14"
+      },
+      "editorPosition": {
+        "x": 1391,
+        "y": 256,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1376,
+        "y": 240,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-14",
+      "verbatimLabel": "VTW",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-10",
+        "below": null,
+        "left": "tone-cat-13",
+        "right": "tone-cat-15"
+      },
+      "editorPosition": {
+        "x": 1450,
+        "y": 256,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1435,
+        "y": 240,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-15",
+      "verbatimLabel": "MODEL",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-11",
+        "below": null,
+        "left": "tone-cat-14",
+        "right": "tone-cat-16"
+      },
+      "editorPosition": {
+        "x": 1491,
+        "y": 256,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1476,
+        "y": 240,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "tone-cat-16",
+      "verbatimLabel": "DRUM",
+      "type": "button",
+      "section": "sequencer",
+      "functionalGroup": "tone-category",
+      "spatialNeighbors": {
+        "above": "tone-cat-12",
+        "below": null,
+        "left": "tone-cat-15",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1573,
+        "y": 256,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1558,
+        "y": 240,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "sampling",
+      "verbatimLabel": "SAMPLING",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-controls",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-1",
+        "left": null,
+        "right": "pad-mode"
+      },
+      "editorPosition": {
+        "x": 1654,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1639,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "pad-mode",
+      "verbatimLabel": "PAD MODE",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-controls",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-2",
+        "left": "sampling",
+        "right": "clip-board"
+      },
+      "editorPosition": {
+        "x": 1704,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1689,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "clip-board",
+      "verbatimLabel": "CLIP BOARD",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-controls",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-3",
+        "left": "pad-mode",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1733,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1718,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "bank",
+      "verbatimLabel": "BANK",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-controls",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "hold"
+      },
+      "editorPosition": {
+        "x": 1758,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1743,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "hold",
+      "verbatimLabel": "HOLD",
+      "type": "button",
+      "section": "pad",
+      "functionalGroup": "pad-controls",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "bank",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1811,
+        "y": 38,
+        "w": 30,
+        "h": 19
+      },
+      "labelDisplay": "above",
+      "_labelPos": {
+        "x": 1796,
+        "y": 22,
+        "w": 60,
+        "align": "center",
+        "fontSize": 6
+      }
+    },
+    {
+      "id": "pad-1",
+      "verbatimLabel": "1",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "sampling",
+        "below": "pad-5",
+        "left": null,
+        "right": "pad-2"
+      },
+      "editorPosition": {
+        "x": 1654,
+        "y": 163,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-2",
+      "verbatimLabel": "2",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-mode",
+        "below": "pad-6",
+        "left": "pad-1",
+        "right": "pad-3"
+      },
+      "editorPosition": {
+        "x": 1706,
+        "y": 163,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-3",
+      "verbatimLabel": "3",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "clip-board",
+        "below": "pad-7",
+        "left": "pad-2",
+        "right": "pad-4"
+      },
+      "editorPosition": {
+        "x": 1760,
+        "y": 163,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-4",
+      "verbatimLabel": "4",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-8",
+        "left": "pad-3",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1811,
+        "y": 163,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-5",
+      "verbatimLabel": "5",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-1",
+        "below": "pad-9",
+        "left": null,
+        "right": "pad-6"
+      },
+      "editorPosition": {
+        "x": 1654,
+        "y": 194,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-6",
+      "verbatimLabel": "6",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-2",
+        "below": "pad-10",
+        "left": "pad-5",
+        "right": "pad-7"
+      },
+      "editorPosition": {
+        "x": 1706,
+        "y": 194,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-7",
+      "verbatimLabel": "7",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-3",
+        "below": "pad-11",
+        "left": "pad-6",
+        "right": "pad-8"
+      },
+      "editorPosition": {
+        "x": 1760,
+        "y": 194,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-8",
+      "verbatimLabel": "8",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-4",
+        "below": "pad-12",
+        "left": "pad-7",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1811,
+        "y": 194,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-9",
+      "verbatimLabel": "9",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-5",
+        "below": "pad-13",
+        "left": null,
+        "right": "pad-10"
+      },
+      "editorPosition": {
+        "x": 1654,
+        "y": 225,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-10",
+      "verbatimLabel": "10",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-6",
+        "below": "pad-14",
+        "left": "pad-9",
+        "right": "pad-11"
+      },
+      "editorPosition": {
+        "x": 1706,
+        "y": 225,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-11",
+      "verbatimLabel": "11",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-7",
+        "below": "pad-15",
+        "left": "pad-10",
+        "right": "pad-12"
+      },
+      "editorPosition": {
+        "x": 1760,
+        "y": 225,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-12",
+      "verbatimLabel": "12",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-8",
+        "below": "pad-16",
+        "left": "pad-11",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1811,
+        "y": 225,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-13",
+      "verbatimLabel": "13",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-9",
+        "below": null,
+        "left": null,
+        "right": "pad-14"
+      },
+      "editorPosition": {
+        "x": 1654,
+        "y": 256,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-14",
+      "verbatimLabel": "14",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-10",
+        "below": null,
+        "left": "pad-13",
+        "right": "pad-15"
+      },
+      "editorPosition": {
+        "x": 1706,
+        "y": 256,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-15",
+      "verbatimLabel": "15",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-11",
+        "below": null,
+        "left": "pad-14",
+        "right": "pad-16"
+      },
+      "editorPosition": {
+        "x": 1760,
+        "y": 256,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    },
+    {
+      "id": "pad-16",
+      "verbatimLabel": "16",
+      "type": "pad",
+      "section": "pad",
+      "functionalGroup": "pads",
+      "spatialNeighbors": {
+        "above": "pad-12",
+        "below": null,
+        "left": "pad-15",
+        "right": null
+      },
+      "editorPosition": {
+        "x": 1811,
+        "y": 256,
+        "w": 30,
+        "h": 30
+      },
+      "labelDisplay": "on-button"
+    }
+  ],
+  "sharedElements": [
+    {
+      "id": "display",
+      "spans": [
+        "common"
+      ],
+      "expectedInstanceCount": 1,
+      "position": "center"
+    }
+  ],
+  "alignmentAnchors": [
+    {
+      "sourceId": "knob-1",
+      "targetId": "zone-int-ext-1",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-1",
+      "targetId": "slider-1",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-8",
+      "targetId": "zone-int-ext-8",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "knob-8",
+      "targetId": "slider-8",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "e1",
+      "targetId": "e6",
+      "axis": "y",
+      "tolerancePx": 2
+    },
+    {
+      "sourceId": "dec",
+      "targetId": "inc",
+      "axis": "y",
+      "tolerancePx": 2
+    },
+    {
+      "sourceId": "shift",
+      "targetId": "enter",
+      "axis": "y",
+      "tolerancePx": 2
+    },
+    {
+      "sourceId": "cursor-up",
+      "targetId": "cursor-down",
+      "axis": "x",
+      "tolerancePx": 2
+    },
+    {
+      "sourceId": "cursor-left",
+      "targetId": "cursor-right",
+      "axis": "y",
+      "tolerancePx": 2
+    },
+    {
+      "sourceId": "stop",
+      "targetId": "rec",
+      "axis": "y",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "pad-1",
+      "targetId": "pad-4",
+      "axis": "y",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "pad-1",
+      "targetId": "pad-13",
+      "axis": "x",
+      "tolerancePx": 4
+    }
+  ],
+  "keyboard": {
+    "keys": 61,
+    "startNote": "C2",
+    "type": "standard",
+    "panelHeightPercent": 55,
+    "leftPercent": 5,
+    "widthPercent": 93
+  },
+  "deviceDimensions": {
+    "widthMm": 997,
+    "depthMm": 300,
+    "heightMm": 97
+  },
+  "editorLabels": [
+    {
+      "id": "label-wheel-1",
+      "controlId": "wheel-1",
+      "text": "WHEEL1",
+      "x": 106,
+      "y": 210,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-wheel-2",
+      "controlId": "wheel-2",
+      "text": "WHEEL2",
+      "x": 168,
+      "y": 210,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-s1",
+      "controlId": "s1",
+      "text": "S1",
+      "x": 96,
+      "y": 348,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-s2",
+      "controlId": "s2",
+      "text": "S2",
+      "x": 141,
+      "y": 348,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-pitch-bend-lever",
+      "controlId": "pitch-bend-lever",
+      "text": "PITCH BEND/MOD",
+      "x": 126,
+      "y": 489,
+      "fontSize": 5,
+      "align": "center",
+      "w": 86
+    },
+    {
+      "id": "label-split",
+      "controlId": "split",
+      "text": "SPLIT",
+      "x": 258,
+      "y": 193,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-chord-memory",
+      "controlId": "chord-memory",
+      "text": "CHORD\nMEMORY",
+      "x": 299,
+      "y": 185,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-arpeggio",
+      "controlId": "arpeggio",
+      "text": "ARPEGGIO",
+      "x": 337,
+      "y": 194,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-transpose",
+      "controlId": "transpose",
+      "text": "TRANSPOSE",
+      "x": 258,
+      "y": 234,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-octave-down",
+      "controlId": "octave-down",
+      "text": "DOWN",
+      "x": 299,
+      "y": 234,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-octave-up",
+      "controlId": "octave-up",
+      "text": "UP",
+      "x": 338,
+      "y": 234,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-master-volume",
+      "controlId": "master-volume",
+      "text": "MASTER\nVOLUME",
+      "x": 255,
+      "y": 99,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-pan-level",
+      "controlId": "pan-level",
+      "text": "PAN/\nLEVEL",
+      "x": 299,
+      "y": 62,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-ctrl",
+      "controlId": "ctrl",
+      "text": "CTRL",
+      "x": 337,
+      "y": 72,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-assign",
+      "controlId": "assign",
+      "text": "ASSIGN",
+      "x": 337,
+      "y": 113,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-9-16",
+      "controlId": "zone-9-16",
+      "text": "ZONE 9-16",
+      "x": 299,
+      "y": 154,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-select",
+      "controlId": "zone-select",
+      "text": "ZONE\nSELECT",
+      "x": 337,
+      "y": 145,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-1",
+      "controlId": "zone-int-ext-1",
+      "text": "1",
+      "x": 387,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-2",
+      "controlId": "zone-int-ext-2",
+      "text": "2",
+      "x": 430,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-3",
+      "controlId": "zone-int-ext-3",
+      "text": "3",
+      "x": 471,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-4",
+      "controlId": "zone-int-ext-4",
+      "text": "4",
+      "x": 514,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-5",
+      "controlId": "zone-int-ext-5",
+      "text": "5",
+      "x": 555,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-6",
+      "controlId": "zone-int-ext-6",
+      "text": "6",
+      "x": 598,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-7",
+      "controlId": "zone-int-ext-7",
+      "text": "7",
+      "x": 639,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-8",
+      "controlId": "zone-int-ext-8",
+      "text": "8",
+      "x": 682,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-display",
+      "controlId": "display",
+      "text": "Display",
+      "x": 800,
+      "y": 227,
+      "fontSize": 5,
+      "align": "center",
+      "w": 281
+    },
+    {
+      "id": "label-scene-select",
+      "controlId": "scene-select",
+      "text": "SCENE SELECT",
+      "x": 1095,
+      "y": 5,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-scene-chain",
+      "controlId": "scene-chain",
+      "text": "SCENE CHAIN",
+      "x": 1095,
+      "y": 68,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-view",
+      "controlId": "zone-view",
+      "text": "ZONE VIEW",
+      "x": 1095,
+      "y": 107,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-single-tone",
+      "controlId": "single-tone",
+      "text": "SINGLE TONE",
+      "x": 1095,
+      "y": 157,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cutoff",
+      "controlId": "cutoff",
+      "text": "CUTOFF",
+      "x": 1223,
+      "y": 49,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-resonance",
+      "controlId": "resonance",
+      "text": "RESONANCE",
+      "x": 1322,
+      "y": 49,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-osc",
+      "controlId": "osc",
+      "text": "OSC",
+      "x": 1237,
+      "y": 80,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-filter-type",
+      "controlId": "filter-type",
+      "text": "FILTER TYPE",
+      "x": 1287,
+      "y": 80,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-param",
+      "controlId": "param",
+      "text": "PARAM",
+      "x": 1337,
+      "y": 80,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-amp",
+      "controlId": "amp",
+      "text": "AMP",
+      "x": 1237,
+      "y": 117,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-fx",
+      "controlId": "fx",
+      "text": "FX",
+      "x": 1287,
+      "y": 117,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-lfo",
+      "controlId": "lfo",
+      "text": "LFO",
+      "x": 1337,
+      "y": 117,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-pattern",
+      "controlId": "pattern",
+      "text": "PATTERN",
+      "x": 1391,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-group",
+      "controlId": "group",
+      "text": "GROUP",
+      "x": 1391,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-song",
+      "controlId": "song",
+      "text": "SONG",
+      "x": 1446,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tr-rec",
+      "controlId": "tr-rec",
+      "text": "TR-REC",
+      "x": 1446,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-rhythm-ptn",
+      "controlId": "rhythm-ptn",
+      "text": "RHYTHM PTN",
+      "x": 1483,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-stop",
+      "controlId": "stop",
+      "text": "STOP",
+      "x": 1534,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-play",
+      "controlId": "play",
+      "text": "PLAY",
+      "x": 1559,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-rec",
+      "controlId": "rec",
+      "text": "REC",
+      "x": 1586,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-1",
+      "controlId": "tone-cat-1",
+      "text": "A.PIANO",
+      "x": 1376,
+      "y": 152,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-2",
+      "controlId": "tone-cat-2",
+      "text": "E.PIANO",
+      "x": 1435,
+      "y": 152,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-3",
+      "controlId": "tone-cat-3",
+      "text": "ORGAN",
+      "x": 1476,
+      "y": 152,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-4",
+      "controlId": "tone-cat-4",
+      "text": "GUITAR/BASS",
+      "x": 1558,
+      "y": 152,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-5",
+      "controlId": "tone-cat-5",
+      "text": "STRINGS",
+      "x": 1376,
+      "y": 183,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-6",
+      "controlId": "tone-cat-6",
+      "text": "BRASS",
+      "x": 1435,
+      "y": 183,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-7",
+      "controlId": "tone-cat-7",
+      "text": "SYNTH LEAD",
+      "x": 1476,
+      "y": 183,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-8",
+      "controlId": "tone-cat-8",
+      "text": "SYNTH PAD",
+      "x": 1558,
+      "y": 183,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-9",
+      "controlId": "tone-cat-9",
+      "text": "BELL/MALLET",
+      "x": 1376,
+      "y": 214,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-10",
+      "controlId": "tone-cat-10",
+      "text": "HIT/OTHER",
+      "x": 1435,
+      "y": 214,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-11",
+      "controlId": "tone-cat-11",
+      "text": "RHYTHM",
+      "x": 1476,
+      "y": 214,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-12",
+      "controlId": "tone-cat-12",
+      "text": "S.N. ACOUSTIC",
+      "x": 1558,
+      "y": 214,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-13",
+      "controlId": "tone-cat-13",
+      "text": "S.N.S",
+      "x": 1376,
+      "y": 245,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-14",
+      "controlId": "tone-cat-14",
+      "text": "VTW",
+      "x": 1435,
+      "y": 245,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-15",
+      "controlId": "tone-cat-15",
+      "text": "MODEL",
+      "x": 1476,
+      "y": 245,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-16",
+      "controlId": "tone-cat-16",
+      "text": "DRUM",
+      "x": 1558,
+      "y": 245,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-sampling",
+      "controlId": "sampling",
+      "text": "SAMPLING",
+      "x": 1639,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-pad-mode",
+      "controlId": "pad-mode",
+      "text": "PAD MODE",
+      "x": 1689,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-clip-board",
+      "controlId": "clip-board",
+      "text": "CLIP BOARD",
+      "x": 1718,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-bank",
+      "controlId": "bank",
+      "text": "BANK",
+      "x": 1743,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-hold",
+      "controlId": "hold",
+      "text": "HOLD",
+      "x": 1796,
+      "y": 27,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-write",
+      "controlId": "write",
+      "text": "WRITE",
+      "x": 739,
+      "y": 63,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-motional-pad",
+      "controlId": "motional-pad",
+      "text": "MOTIONAL\nPAD",
+      "x": 740,
+      "y": 143,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-daw-ctrl",
+      "controlId": "daw-ctrl",
+      "text": "DAW CTRL",
+      "x": 740,
+      "y": 195,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e2",
+      "controlId": "e2",
+      "text": "E2",
+      "x": 852,
+      "y": 274,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e3",
+      "controlId": "e3",
+      "text": "E3",
+      "x": 902,
+      "y": 224,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e4",
+      "controlId": "e4",
+      "text": "E4",
+      "x": 952,
+      "y": 274,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e5",
+      "controlId": "e5",
+      "text": "E5",
+      "x": 1001,
+      "y": 274,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e6",
+      "controlId": "e6",
+      "text": "E6",
+      "x": 1051,
+      "y": 274,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tempo",
+      "controlId": "tempo",
+      "text": "TEMPO",
+      "x": 898,
+      "y": 467,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-value-dial",
+      "controlId": "value-dial",
+      "text": "VALUE",
+      "x": 988,
+      "y": 476,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-dec",
+      "controlId": "dec",
+      "text": "DEC",
+      "x": 1078,
+      "y": 467,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-inc",
+      "controlId": "inc",
+      "text": "INC",
+      "x": 538,
+      "y": 557,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cursor-up",
+      "controlId": "cursor-up",
+      "text": "CURSOR UP",
+      "x": 628,
+      "y": 557,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cursor-down",
+      "controlId": "cursor-down",
+      "text": "CURSOR DOWN",
+      "x": 718,
+      "y": 557,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cursor-left",
+      "controlId": "cursor-left",
+      "text": "CURSOR LEFT",
+      "x": 808,
+      "y": 557,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cursor-right",
+      "controlId": "cursor-right",
+      "text": "CURSOR RIGHT",
+      "x": 898,
+      "y": 557,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-shift",
+      "controlId": "shift",
+      "text": "SHIFT",
+      "x": 988,
+      "y": 557,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-exit",
+      "controlId": "exit",
+      "text": "EXIT",
+      "x": 1078,
+      "y": 557,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-enter",
+      "controlId": "enter",
+      "text": "ENTER",
+      "x": 538,
+      "y": 617,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-master-fx",
+      "controlId": "master-fx",
+      "text": "MASTER FX",
+      "x": 739,
+      "y": 107,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-menu",
+      "controlId": "menu",
+      "text": "MENU",
+      "x": 741,
+      "y": 239,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e1",
+      "controlId": "e1",
+      "text": "E1",
+      "x": 802,
+      "y": 274,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    }
+  ]
+}

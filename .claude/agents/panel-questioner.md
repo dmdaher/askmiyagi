@@ -29,9 +29,15 @@ You must generate your own spatial position map BEFORE reading the Gatekeeper's 
 - If both CDP and standard Playwright screenshots fail, you MUST report the failure mode and score 0.0/10 with status "VISUAL BLINDNESS."
 - Do NOT attempt to infer visual correctness from code analysis. Code that looks correct can render incorrectly.
 
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/panel-questioner/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
+
 ### DATA FLOW:
-- **Reads from:** `.claude/agent-memory/gatekeeper/checkpoint.md` — for the Manifest (control IDs, verbatim labels), Asset Paths (reference photos and manual location), and Density Anchors
-- **Writes to:** `.claude/agent-memory/panel-questioner/checkpoint.md` — must include Visual Proof Status, screenshot path (if obtained), and the full Discrepancy List. The Critic depends on your Visual Proof Status.
+- **Reads from:** `.pipeline/<deviceId>/agents/gatekeeper/checkpoint.md` — for the Manifest (control IDs, verbatim labels), Asset Paths (reference photos and manual location), and Density Anchors
+- **Writes to:** `.pipeline/<deviceId>/agents/panel-questioner/checkpoint.md` — must include Visual Proof Status, screenshot path (if obtained), and the full Discrepancy List. The Critic depends on your Visual Proof Status.
 
 ### SCREENSHOT ACQUISITION PROTOCOL:
 1. **Pre-flight:** Before navigating, verify the dev server is running and accessible. Use `curl` or equivalent to confirm the URL returns a 200 status.
@@ -61,7 +67,7 @@ You must generate your own spatial position map BEFORE reading the Gatekeeper's 
 7. **No Hallucination:** You are PROHIBITED from using DOM coordinates (`getBoundingClientRect`) to infer visual quality. If you cannot see it, you cannot score it.
 
 ### REFERENCE PHOTOS:
-Read the Gatekeeper's checkpoint (`.claude/agent-memory/gatekeeper/checkpoint.md`) to find the Asset Paths for reference photos and manual. Use these as your comparison baseline. If the Gatekeeper listed specific photo URLs or file paths, load those for side-by-side comparison.
+Read the Gatekeeper's checkpoint (`.pipeline/<deviceId>/agents/gatekeeper/checkpoint.md`) to find the Asset Paths for reference photos and manual. Use these as your comparison baseline. If the Gatekeeper listed specific photo URLs or file paths, load those for side-by-side comparison.
 
 ### 3-PHASE SCORING SYSTEM:
 This agent operates in **Phase 1 (Atomic Topology)** per-section and **Phase 3 (Harmonic Polish)** full-panel.
@@ -200,9 +206,9 @@ sectionId: <section-id>    # Phase 1 only
 
 The prose checkpoint follows below the frontmatter as usual.
 
-On startup, ALWAYS read `.claude/agent-memory/panel-questioner/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
+On startup, ALWAYS read `.pipeline/<deviceId>/agents/panel-questioner/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
-After completing each major step, write your progress to `.claude/agent-memory/panel-questioner/checkpoint.md`:
+After completing each major step, write your progress to `.pipeline/<deviceId>/agents/panel-questioner/checkpoint.md`:
 - **Completed:** [what's done]
 - **Next step:** [exactly what to do next]
 - **Key decisions made:** [anything important]

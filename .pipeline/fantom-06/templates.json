@@ -1,0 +1,911 @@
+{
+  "deviceId": "fantom-06",
+  "deviceName": "FANTOM-06",
+  "generatedAt": "2026-03-24T06:32:36.697Z",
+  "templates": [
+    {
+      "sectionId": "controller",
+      "archetype": "single-column",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "align-items": "center",
+          "gap": "4px"
+        }
+      },
+      "componentStructure": "<div data-section-id=\"controller\" className=\"flex flex-col items-center gap-1\">{/* 5 controls stacked vertically */}</div>",
+      "controlSlots": [
+        "wheel-1",
+        "wheel-2",
+        "s1",
+        "s2",
+        "pitch-bend-lever"
+      ],
+      "notes": [
+        "Single column — 5 controls stacked vertically"
+      ]
+    },
+    {
+      "sectionId": "zone",
+      "archetype": "stacked-rows",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "gap": "4px",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "justify-content": "center"
+            },
+            "children": []
+          },
+          {
+            "role": "top-buttons.row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "pan-level",
+              "ctrl",
+              "assign",
+              "zone-9-16",
+              "zone-select"
+            ]
+          },
+          {
+            "role": "knobs-row.row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "knob-1",
+              "knob-2",
+              "knob-3",
+              "knob-4",
+              "knob-5",
+              "knob-6",
+              "knob-7",
+              "knob-8"
+            ]
+          },
+          {
+            "role": "zone-buttons-row.row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "zone-int-ext-1",
+              "zone-int-ext-2",
+              "zone-int-ext-3",
+              "zone-int-ext-4",
+              "zone-int-ext-5",
+              "zone-int-ext-6",
+              "zone-int-ext-7",
+              "zone-int-ext-8"
+            ]
+          },
+          {
+            "role": "sliders-row.row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "slider-1",
+              "slider-2",
+              "slider-3",
+              "slider-4",
+              "slider-5",
+              "slider-6",
+              "slider-7",
+              "slider-8"
+            ]
+          },
+          {
+            "role": "bottom-buttons.row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "split",
+              "chord-memory",
+              "arpeggio",
+              "transpose",
+              "octave-down",
+              "octave-up"
+            ]
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"zone\" className=\"flex flex-col gap-1 h-full\">\n  {/* Each row is a flex-row container */}\n  <div className=\"flex flex-row gap-1 justify-center\">{/* row N controls */}</div>\n</div>",
+      "controlSlots": [
+        "master-volume",
+        "pan-level",
+        "ctrl",
+        "assign",
+        "zone-9-16",
+        "zone-select",
+        "knob-1",
+        "knob-2",
+        "knob-3",
+        "knob-4",
+        "knob-5",
+        "knob-6",
+        "knob-7",
+        "knob-8",
+        "zone-int-ext-1",
+        "zone-int-ext-2",
+        "zone-int-ext-3",
+        "zone-int-ext-4",
+        "zone-int-ext-5",
+        "zone-int-ext-6",
+        "zone-int-ext-7",
+        "zone-int-ext-8",
+        "slider-1",
+        "slider-2",
+        "slider-3",
+        "slider-4",
+        "slider-5",
+        "slider-6",
+        "slider-7",
+        "slider-8",
+        "split",
+        "chord-memory",
+        "arpeggio",
+        "transpose",
+        "octave-down",
+        "octave-up"
+      ],
+      "notes": [
+        "Stacked rows — each row is a horizontal flex container",
+        "Row contents determined by manifest control order and neighbor relationships",
+        "top-buttons has sub-zones: row (row, 5 controls)",
+        "knobs-row has sub-zones: row (row, 8 controls)",
+        "zone-buttons-row has sub-zones: row (row, 8 controls)",
+        "sliders-row has sub-zones: row (row, 8 controls)",
+        "bottom-buttons has sub-zones: row (row, 6 controls)"
+      ],
+      "containerAssignment": {
+        "master-volume": [
+          "master-volume"
+        ],
+        "top-buttons": {
+          "row": {
+            "controls": [
+              "pan-level",
+              "ctrl",
+              "assign",
+              "zone-9-16",
+              "zone-select"
+            ],
+            "direction": "row"
+          }
+        },
+        "knobs-row": {
+          "row": {
+            "controls": [
+              "knob-1",
+              "knob-2",
+              "knob-3",
+              "knob-4",
+              "knob-5",
+              "knob-6",
+              "knob-7",
+              "knob-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "zone-buttons-row": {
+          "row": {
+            "controls": [
+              "zone-int-ext-1",
+              "zone-int-ext-2",
+              "zone-int-ext-3",
+              "zone-int-ext-4",
+              "zone-int-ext-5",
+              "zone-int-ext-6",
+              "zone-int-ext-7",
+              "zone-int-ext-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "sliders-row": {
+          "row": {
+            "controls": [
+              "slider-1",
+              "slider-2",
+              "slider-3",
+              "slider-4",
+              "slider-5",
+              "slider-6",
+              "slider-7",
+              "slider-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "bottom-buttons": {
+          "row": {
+            "controls": [
+              "split",
+              "chord-memory",
+              "arpeggio",
+              "transpose",
+              "octave-down",
+              "octave-up"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    {
+      "sectionId": "common",
+      "archetype": "anchor-layout",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "secondary-controls",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "flex": "0 0 30%",
+              "gap": "4px"
+            },
+            "children": []
+          },
+          {
+            "role": "anchor-element",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "flex": "0 0 60%",
+              "align-items": "center",
+              "justify-content": "center"
+            },
+            "children": []
+          },
+          {
+            "role": "function-knobs.row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "e1",
+              "e2",
+              "e3",
+              "e4",
+              "e5",
+              "e6"
+            ]
+          },
+          {
+            "role": "nav-right.value-dial",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "gap": "4px",
+              "align-items": "stretch",
+              "flex": "1"
+            },
+            "children": [
+              "value-dial"
+            ]
+          },
+          {
+            "role": "nav-right.inc-dec",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "dec",
+              "inc"
+            ]
+          },
+          {
+            "role": "nav-right.cursor-cross",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "column",
+              "gap": "4px",
+              "align-items": "stretch",
+              "flex": "1"
+            },
+            "children": [
+              "cursor-up",
+              "cursor-left",
+              "cursor-right",
+              "cursor-down"
+            ]
+          },
+          {
+            "role": "nav-right.bottom-nav",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "shift",
+              "exit",
+              "enter"
+            ]
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"common\" className=\"flex flex-col h-full\">\n  <div className=\"flex flex-row\" style={{ flex: '0 0 30%' }}>{/* secondary controls */}</div>\n  <div className=\"flex flex-col items-center justify-center\" style={{ flex: '0 0 60%' }}>{/* anchor element */}</div>\n</div>",
+      "controlSlots": [
+        "write",
+        "master-fx",
+        "motional-pad",
+        "daw-ctrl",
+        "menu",
+        "display",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "tempo",
+        "value-dial",
+        "dec",
+        "inc",
+        "cursor-up",
+        "cursor-down",
+        "cursor-left",
+        "cursor-right",
+        "shift",
+        "exit",
+        "enter"
+      ],
+      "notes": [
+        "Anchor layout — dominant element gets 60% height",
+        "Secondary controls get 30% height",
+        "Gap: 10%",
+        "function-knobs has sub-zones: row (row, 6 controls)",
+        "nav-right has sub-zones: value-dial (column, 1 controls), inc-dec (row, 2 controls), cursor-cross (column, 4 controls), bottom-nav (row, 3 controls)"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "write",
+          "master-fx",
+          "motional-pad",
+          "daw-ctrl",
+          "menu"
+        ],
+        "anchor": [
+          "display"
+        ],
+        "function-knobs": {
+          "row": {
+            "controls": [
+              "e1",
+              "e2",
+              "e3",
+              "e4",
+              "e5",
+              "e6"
+            ],
+            "direction": "row"
+          }
+        },
+        "bottom-left": [
+          "tempo"
+        ],
+        "nav-right": {
+          "value-dial": [
+            "value-dial"
+          ],
+          "inc-dec": {
+            "controls": [
+              "dec",
+              "inc"
+            ],
+            "direction": "row"
+          },
+          "cursor-cross": [
+            "cursor-up",
+            "cursor-left",
+            "cursor-right",
+            "cursor-down"
+          ],
+          "bottom-nav": {
+            "controls": [
+              "shift",
+              "exit",
+              "enter"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    {
+      "sectionId": "scene",
+      "archetype": "single-column",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "align-items": "center",
+          "gap": "4px"
+        }
+      },
+      "componentStructure": "<div data-section-id=\"scene\" className=\"flex flex-col items-center gap-1\">{/* 4 controls stacked vertically */}</div>",
+      "controlSlots": [
+        "scene-select",
+        "scene-chain",
+        "zone-view",
+        "single-tone"
+      ],
+      "notes": [
+        "Single column — 4 controls stacked vertically"
+      ]
+    },
+    {
+      "sectionId": "synth",
+      "archetype": "cluster-below-anchor",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "anchor",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "flex": "0 0 52%",
+              "align-items": "center",
+              "display": "flex",
+              "gap": "4px"
+            },
+            "children": [
+              "cutoff",
+              "resonance"
+            ]
+          },
+          {
+            "role": "cluster",
+            "display": "grid",
+            "properties": {
+              "grid-template-columns": "repeat(3, 1fr)",
+              "grid-template-rows": "repeat(2, 1fr)",
+              "gap": "4px",
+              "flex": "0 0 42%"
+            },
+            "children": []
+          },
+          {
+            "role": "anchor.knob-row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "cutoff",
+              "resonance"
+            ]
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"synth\" className=\"flex flex-col h-full\">\n  <div className=\"flex flex-col items-center\" style={{ flex: '0 0 52%' }}>{/* anchor */}</div>\n  <div className=\"grid grid-cols-3 grid-rows-2 gap-1\" style={{ flex: '0 0 42%' }}>{/* cluster */}</div>\n</div>",
+      "controlSlots": [
+        "cutoff",
+        "resonance",
+        "osc",
+        "filter-type",
+        "param",
+        "amp",
+        "fx",
+        "lfo"
+      ],
+      "notes": [
+        "Cluster-below-anchor — anchor element above grid cluster (2x3)",
+        "Anchor: 52% | Cluster: 42% | Gap: 6%",
+        "anchor has sub-zones: knob-row (row, 2 controls)"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "knob-row": {
+            "controls": [
+              "cutoff",
+              "resonance"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "osc",
+          "filter-type",
+          "param",
+          "amp",
+          "fx",
+          "lfo"
+        ]
+      }
+    },
+    {
+      "sectionId": "sequencer",
+      "archetype": "cluster-below-anchor",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "anchor",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "flex": "0 0 52%",
+              "align-items": "center",
+              "display": "flex",
+              "gap": "4px"
+            },
+            "children": [
+              "pattern",
+              "group",
+              "song",
+              "tr-rec",
+              "rhythm-ptn",
+              "stop",
+              "play",
+              "rec"
+            ]
+          },
+          {
+            "role": "cluster",
+            "display": "grid",
+            "properties": {
+              "grid-template-columns": "repeat(4, 1fr)",
+              "grid-template-rows": "repeat(4, 1fr)",
+              "gap": "4px",
+              "flex": "0 0 42%"
+            },
+            "children": []
+          },
+          {
+            "role": "anchor.nav-row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "pattern",
+              "group",
+              "song"
+            ]
+          },
+          {
+            "role": "anchor.mode-row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "tr-rec",
+              "rhythm-ptn"
+            ]
+          },
+          {
+            "role": "anchor.transport-row",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "stop",
+              "play",
+              "rec"
+            ]
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"sequencer\" className=\"flex flex-col h-full\">\n  <div className=\"flex flex-col items-center\" style={{ flex: '0 0 52%' }}>{/* anchor */}</div>\n  <div className=\"grid grid-cols-4 grid-rows-4 gap-1\" style={{ flex: '0 0 42%' }}>{/* cluster */}</div>\n</div>",
+      "controlSlots": [
+        "pattern",
+        "group",
+        "song",
+        "tr-rec",
+        "rhythm-ptn",
+        "stop",
+        "play",
+        "rec",
+        "tone-cat-1",
+        "tone-cat-2",
+        "tone-cat-3",
+        "tone-cat-4",
+        "tone-cat-5",
+        "tone-cat-6",
+        "tone-cat-7",
+        "tone-cat-8",
+        "tone-cat-9",
+        "tone-cat-10",
+        "tone-cat-11",
+        "tone-cat-12",
+        "tone-cat-13",
+        "tone-cat-14",
+        "tone-cat-15",
+        "tone-cat-16"
+      ],
+      "notes": [
+        "Cluster-below-anchor — anchor element above grid cluster (4x4)",
+        "Anchor: 52% | Cluster: 42% | Gap: 6%",
+        "anchor has sub-zones: nav-row (row, 3 controls), mode-row (row, 2 controls), transport-row (row, 3 controls)"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "nav-row": {
+            "controls": [
+              "pattern",
+              "group",
+              "song"
+            ],
+            "direction": "row"
+          },
+          "mode-row": {
+            "controls": [
+              "tr-rec",
+              "rhythm-ptn"
+            ],
+            "direction": "row"
+          },
+          "transport-row": {
+            "controls": [
+              "stop",
+              "play",
+              "rec"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "tone-cat-1",
+          "tone-cat-2",
+          "tone-cat-3",
+          "tone-cat-4",
+          "tone-cat-5",
+          "tone-cat-6",
+          "tone-cat-7",
+          "tone-cat-8",
+          "tone-cat-9",
+          "tone-cat-10",
+          "tone-cat-11",
+          "tone-cat-12",
+          "tone-cat-13",
+          "tone-cat-14",
+          "tone-cat-15",
+          "tone-cat-16"
+        ]
+      }
+    },
+    {
+      "sectionId": "pad",
+      "archetype": "cluster-below-anchor",
+      "cssArchitecture": {
+        "display": "flex",
+        "properties": {
+          "flex-direction": "column",
+          "height": "100%"
+        },
+        "childContainers": [
+          {
+            "role": "anchor",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "flex": "0 0 52%",
+              "align-items": "center",
+              "display": "flex",
+              "gap": "4px"
+            },
+            "children": [
+              "sampling",
+              "pad-mode",
+              "clip-board",
+              "bank",
+              "hold"
+            ]
+          },
+          {
+            "role": "cluster",
+            "display": "grid",
+            "properties": {
+              "grid-template-columns": "repeat(4, 1fr)",
+              "grid-template-rows": "repeat(4, 1fr)",
+              "gap": "4px",
+              "flex": "0 0 42%"
+            },
+            "children": []
+          },
+          {
+            "role": "anchor.buttons-row-1",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "sampling",
+              "pad-mode",
+              "clip-board"
+            ]
+          },
+          {
+            "role": "anchor.buttons-row-2",
+            "display": "flex",
+            "properties": {
+              "flex-direction": "row",
+              "gap": "4px",
+              "align-items": "center",
+              "flex": "1"
+            },
+            "children": [
+              "bank",
+              "hold"
+            ]
+          }
+        ]
+      },
+      "componentStructure": "<div data-section-id=\"pad\" className=\"flex flex-col h-full\">\n  <div className=\"flex flex-col items-center\" style={{ flex: '0 0 52%' }}>{/* anchor */}</div>\n  <div className=\"grid grid-cols-4 grid-rows-4 gap-1\" style={{ flex: '0 0 42%' }}>{/* cluster */}</div>\n</div>",
+      "controlSlots": [
+        "sampling",
+        "pad-mode",
+        "clip-board",
+        "bank",
+        "hold",
+        "pad-1",
+        "pad-2",
+        "pad-3",
+        "pad-4",
+        "pad-5",
+        "pad-6",
+        "pad-7",
+        "pad-8",
+        "pad-9",
+        "pad-10",
+        "pad-11",
+        "pad-12",
+        "pad-13",
+        "pad-14",
+        "pad-15",
+        "pad-16"
+      ],
+      "notes": [
+        "Cluster-below-anchor — anchor element above grid cluster (4x4)",
+        "Anchor: 52% | Cluster: 42% | Gap: 6%",
+        "anchor has sub-zones: buttons-row-1 (row, 3 controls), buttons-row-2 (row, 2 controls)"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "buttons-row-1": {
+            "controls": [
+              "sampling",
+              "pad-mode",
+              "clip-board"
+            ],
+            "direction": "row"
+          },
+          "buttons-row-2": {
+            "controls": [
+              "bank",
+              "hold"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "pad-1",
+          "pad-2",
+          "pad-3",
+          "pad-4",
+          "pad-5",
+          "pad-6",
+          "pad-7",
+          "pad-8",
+          "pad-9",
+          "pad-10",
+          "pad-11",
+          "pad-12",
+          "pad-13",
+          "pad-14",
+          "pad-15",
+          "pad-16"
+        ]
+      }
+    }
+  ],
+  "panelArchitecture": {
+    "layoutType": "asymmetric",
+    "sectionOrder": [
+      "controller",
+      "zone",
+      "common",
+      "scene",
+      "synth",
+      "sequencer",
+      "pad"
+    ],
+    "sectionWidths": {
+      "controller": "undefined%",
+      "zone": "undefined%",
+      "common": "undefined%",
+      "scene": "undefined%",
+      "synth": "undefined%",
+      "sequencer": "undefined%",
+      "pad": "undefined%"
+    },
+    "totalSections": 7,
+    "totalControls": 121
+  },
+  "warnings": [
+    "Section \"common\" uses anchor-layout but missing heightSplits (will use defaults)",
+    "Section \"synth\" uses cluster-below-anchor but missing heightSplits (will use defaults)",
+    "Section \"sequencer\" uses cluster-below-anchor but missing heightSplits (will use defaults)",
+    "Section \"pad\" uses cluster-below-anchor but missing heightSplits (will use defaults)"
+  ]
+}

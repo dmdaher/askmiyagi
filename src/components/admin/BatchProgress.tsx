@@ -56,11 +56,11 @@ export default function BatchProgress({ batches }: BatchProgressProps) {
                         color: 'var(--foreground, #e0e0e0)',
                       }}
                     >
-                      {batch.tutorials.length}
+                      {(batch.tutorials ?? []).length}
                     </span>
                   </td>
                   <td className="px-3 py-1.5">
-                    {batch.builderScore !== null ? (
+                    {batch.builderScore != null ? (
                       <span
                         className="text-xs font-mono font-semibold"
                         style={{ color: batch.builderScore >= 9.5 ? '#22c55e' : '#f59e0b' }}
@@ -72,7 +72,7 @@ export default function BatchProgress({ batches }: BatchProgressProps) {
                     )}
                   </td>
                   <td className="px-3 py-1.5">
-                    {batch.reviewerVerdict !== null ? (
+                    {batch.reviewerVerdict != null ? (
                       <span
                         className="text-xs"
                         style={{

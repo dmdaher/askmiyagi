@@ -1,0 +1,170 @@
+{
+  "deviceId": "fantom-07",
+  "deviceName": "fantom 07",
+  "manufacturer": "Roland",
+  "manualPaths": [
+    "docs/Roland/fantom-07/FANTOM-06_07_08_Owners_Manual_eng.pdf",
+    "docs/Roland/fantom-07/FANTOM-06_07_08_Parameter_Guide_eng.pdf",
+    "docs/Roland/fantom-07/FANTOM-06_07_08_Reference_Manual_eng.pdf"
+  ],
+  "currentPhase": "phase-0-gatekeeper",
+  "status": "paused",
+  "branch": "feature/fantom-07",
+  "createdAt": "2026-03-25T07:24:27.905Z",
+  "updatedAt": "2026-03-25T08:59:58.167Z",
+  "phases": [
+    {
+      "phase": "phase-preflight",
+      "startedAt": "2026-03-25T07:24:29.375Z",
+      "completedAt": "2026-03-25T07:28:59.602Z",
+      "score": null,
+      "status": "passed",
+      "costUsd": 0.7368912,
+      "tokens": {
+        "input": 48,
+        "output": 8060,
+        "cacheCreation": 85304,
+        "cacheRead": 986524
+      }
+    },
+    {
+      "phase": "phase-0-diagram-parser",
+      "startedAt": "2026-03-25T07:28:59.603Z",
+      "completedAt": "2026-03-25T07:42:24.124Z",
+      "score": 9.5,
+      "status": "passed",
+      "costUsd": 8.013521249999998,
+      "tokens": {
+        "input": 27,
+        "output": 56350,
+        "cacheCreation": 115883,
+        "cacheRead": 1076040
+      }
+    },
+    {
+      "phase": "phase-0-gatekeeper",
+      "startedAt": "2026-03-25T08:56:48.436Z",
+      "completedAt": "2026-03-25T08:59:58.166Z",
+      "score": 7.8,
+      "status": "failed",
+      "costUsd": 12.37835025,
+      "tokens": {
+        "input": 66,
+        "output": 49045,
+        "cacheCreation": 211077,
+        "cacheRead": 3160861
+      }
+    }
+  ],
+  "sections": [],
+  "tutorialBatches": [],
+  "escalations": [
+    {
+      "id": "esc-1774429198166-q4slsv",
+      "phase": "phase-0-gatekeeper",
+      "type": "agent-failure",
+      "message": "Gatekeeper manifest failed validation (score: 7.8). Errors: 121/121 controls missing shape (100%); 121/121 controls missing sizeClass (100%); 121/121 controls missing labelDisplay (100%)",
+      "createdAt": "2026-03-25T08:59:58.166Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ],
+  "activeEscalation": "esc-1774429198166-q4slsv",
+  "totalCostUsd": 21.1287627,
+  "totalActualCostUsd": 8.4890515,
+  "totalTokens": {
+    "input": 141,
+    "output": 113455,
+    "cacheCreation": 412264,
+    "cacheRead": 5223425
+  },
+  "budgetCapUsd": 50,
+  "subscription": {
+    "windowResetsAt": 0,
+    "isUsingOverage": false,
+    "overageStatus": "",
+    "rateLimitEvents": [
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:27:16.638Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T07:42:24.077Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T08:54:48.072Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T08:56:48.415Z"
+      },
+      {
+        "status": "allowed",
+        "resetsAt": 0,
+        "rateLimitType": "",
+        "overageStatus": "",
+        "isUsingOverage": false,
+        "capturedAt": "2026-03-25T08:59:58.119Z"
+      }
+    ],
+    "lastUpdated": "2026-03-25T08:59:58.152Z"
+  },
+  "burnRate": {
+    "costPerMinute": 0.09158402505518312,
+    "costPerAgent": 1.4148419166666668,
+    "projectedBudgetExhaustedAt": "2026-03-25T16:33:13.472Z",
+    "dataPoints": [
+      {
+        "timestamp": "2026-03-25T07:27:16.639Z",
+        "cumulativeCost": 0.8984382500000001
+      },
+      {
+        "timestamp": "2026-03-25T07:28:59.536Z",
+        "cumulativeCost": 1.46442925
+      },
+      {
+        "timestamp": "2026-03-25T07:42:24.082Z",
+        "cumulativeCost": 4.135603000000001
+      },
+      {
+        "timestamp": "2026-03-25T08:54:48.076Z",
+        "cumulativeCost": 6.756069
+      },
+      {
+        "timestamp": "2026-03-25T08:56:48.416Z",
+        "cumulativeCost": 7.46551975
+      },
+      {
+        "timestamp": "2026-03-25T08:59:58.123Z",
+        "cumulativeCost": 8.4890515
+      }
+    ]
+  },
+  "runnerPid": null,
+  "childPid": null,
+  "worktreePath": "/Users/devin/Documents/Fun & Stuff/Music/Music Studio/askmiyagi/.worktrees/fantom-07",
+  "extractionProgress": null,
+  "strikeTracker": {},
+  "lastCheckpoint": {
+    "phase": "phase-0-gatekeeper",
+    "subStep": "start"
+  }
+}

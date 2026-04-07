@@ -17,15 +17,23 @@ export default function AdminLayout({
           >
             Miyagi Pipeline Control
           </Link>
-          <Link
-            href="/"
-            className="text-sm text-gray-500 transition-colors hover:text-gray-300"
-          >
-            Back to Studio
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/admin/review"
+              className="text-sm text-gray-400 transition-colors hover:text-gray-200"
+            >
+              Review
+            </Link>
+            <Link
+              href="/"
+              className="text-sm text-gray-500 transition-colors hover:text-gray-300"
+            >
+              Back to Studio
+            </Link>
+          </div>
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-6 py-8">{children}</main>
+      <main className="flex-1">{children}</main>
     </div>
   );
 }

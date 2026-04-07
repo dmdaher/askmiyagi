@@ -54,7 +54,7 @@ interface PipelineDetailProps {
 
 export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDetailProps) {
   const activeEscalation: Escalation | undefined = pipeline.activeEscalation
-    ? pipeline.escalations.find((e) => e.id === pipeline.activeEscalation) ?? undefined
+    ? (pipeline.escalations ?? []).find((e) => e.id === pipeline.activeEscalation) ?? undefined
     : undefined;
 
   const isPhase1 = pipeline.currentPhase === 'phase-1-section-loop';
@@ -65,17 +65,17 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
   const [activeTab, setActiveTab] = useState<DetailTab>(isTemplateReview ? 'layout' : 'logs');
 
   // Check if layout engine has passed (manifest/templates available)
-  const layoutEnginePassed = pipeline.phases.some(
+  const layoutEnginePassed = (pipeline.phases ?? []).some(
     (p) => p.phase === 'phase-0-layout-engine' && p.status === 'passed'
   );
-  const gatekeeperPassed = pipeline.phases.some(
+  const gatekeeperPassed = (pipeline.phases ?? []).some(
     (p) => p.phase === 'phase-0-gatekeeper' && p.status === 'passed'
   );
 
   // Extract agent scores and statuses from pipeline phases
   const agentData = ALL_AGENTS.map((agent) => {
     const phaseKey = Object.entries(AGENT_PHASE_MAP).find(([, a]) => a === agent)?.[0];
-    const phaseResult = phaseKey ? pipeline.phases.find((p) => p.phase === phaseKey) : undefined;
+    const phaseResult = phaseKey ? (pipeline.phases ?? []).find((p) => p.phase === phaseKey) : undefined;
 
     return {
       agentName: agent,
@@ -92,8 +92,8 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
 
   // Determine current section for Phase 1
   const currentSection = isPhase1
-    ? pipeline.sections.find((s) => !s.vaulted && s.attempts > 0)?.id
-      ?? pipeline.sections.find((s) => !s.vaulted)?.id
+    ? (pipeline.sections ?? []).find((s) => !s.vaulted && s.attempts > 0)?.id
+      ?? (pipeline.sections ?? []).find((s) => !s.vaulted)?.id
     : undefined;
 
   return (
@@ -174,11 +174,11 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
             <DiagnosticsPanel deviceId={pipeline.deviceId} />
 
             {/* Context panel: SectionProgress or BatchProgress */}
-            {isPhase1 && pipeline.sections.length > 0 && (
+            {isPhase1 && (pipeline.sections ?? []).length > 0 && (
               <SectionProgress sections={pipeline.sections} currentSection={currentSection} />
             )}
 
-            {isPhase5 && pipeline.tutorialBatches.length > 0 && (
+            {isPhase5 && (pipeline.tutorialBatches ?? []).length > 0 && (
               <BatchProgress batches={pipeline.tutorialBatches} />
             )}
           </div>
@@ -196,7 +196,7 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
       {/* Cost Breakdown — full width, always visible */}
       <CostBreakdown
         phases={pipeline.phases}
-        sections={isPhase1 || pipeline.sections.length > 0 ? pipeline.sections : undefined}
+        sections={isPhase1 || (pipeline.sections ?? []).length > 0 ? pipeline.sections : undefined}
         totalActualCostUsd={pipeline.totalActualCostUsd}
         budgetCapUsd={pipeline.budgetCapUsd}
         subscription={pipeline.subscription}

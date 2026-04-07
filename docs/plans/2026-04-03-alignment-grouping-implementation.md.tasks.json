@@ -1,0 +1,16 @@
+{
+  "planPath": "docs/plans/2026-04-03-alignment-grouping-implementation.md",
+  "tasks": [
+    {"id": 1, "nativeId": "2", "subject": "Task 1: ControlGroup type + align/distribute store actions", "status": "pending"},
+    {"id": 2, "nativeId": "3", "subject": "Task 2: createGroup + ungroupControls store actions", "status": "pending", "blockedBy": [1]},
+    {"id": 3, "nativeId": "4", "subject": "Task 3: SVG alignment icons", "status": "pending"},
+    {"id": 4, "nativeId": "5", "subject": "Task 4: Properties panel alignment UI", "status": "pending", "blockedBy": [1, 2, 3]},
+    {"id": 5, "nativeId": "6", "subject": "Task 5: Keyboard shortcuts", "status": "pending", "blockedBy": [1]},
+    {"id": 6, "nativeId": "7", "subject": "Task 6: Context menu multi-select extension", "status": "pending", "blockedBy": [1, 2]},
+    {"id": 7, "nativeId": "8", "subject": "Task 7: Group-aware click & drag in ControlNode", "status": "pending", "blockedBy": [1, 2]},
+    {"id": 8, "nativeId": "9", "subject": "Task 8: GroupOverlay component", "status": "pending", "blockedBy": [1, 2]},
+    {"id": 9, "nativeId": "10", "subject": "Task 9: Layers panel group nodes", "status": "pending", "blockedBy": [1, 2]},
+    {"id": 10, "nativeId": "11", "subject": "Task 10: Playwright E2E verification", "status": "pending", "blockedBy": [4, 5, 6, 7, 8, 9]}
+  ],
+  "lastUpdated": "2026-04-03T08:00:00Z"
+}

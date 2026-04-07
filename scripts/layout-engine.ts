@@ -18,123 +18,18 @@
 
 import fs from 'fs';
 import path from 'path';
+import type {
+  ManifestControl,
+  ManifestSection,
+  MasterManifest,
+  LayoutArchetype,
+  SubZone,
+} from '../src/types/manifest';
+import { subZoneControls, subZoneDirection } from '../src/types/manifest';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-export interface ManifestControl {
-  id: string;
-  verbatimLabel: string;
-  type: 'button' | 'knob' | 'slider' | 'switch' | 'led' | 'screen' | 'encoder' | 'wheel' | 'pad' | 'fader';
-  section: string;
-  functionalGroup: string;
-  spatialNeighbors: {
-    above: string | null;
-    below: string | null;
-    left: string | null;
-    right: string | null;
-  };
-}
-
-/** A sub-zone within a container — either a flat list or controls + direction */
-export type SubZone = string[] | { controls: string[]; direction: 'row' | 'column' };
-
-/** Helper to get control IDs from a SubZone */
-export function subZoneControls(sz: SubZone): string[] {
-  return Array.isArray(sz) ? sz : sz.controls;
-}
-
-/** Helper to get direction from a SubZone (defaults to column) */
-export function subZoneDirection(sz: SubZone): 'row' | 'column' {
-  return Array.isArray(sz) ? 'column' : sz.direction;
-}
-
-export interface ManifestSection {
-  id: string;
-  headerLabel: string | null;
-  archetype: LayoutArchetype;
-  /** Position and size on the physical panel as % of total panel dimensions.
-   *  Derived from Parser's section bounding boxes. Used by the Layout tab
-   *  for accurate spatial positioning and by SI for global layout verification. */
-  panelBoundingBox?: { x: number; y: number; w: number; h: number };
-  /** Grid dimensions — required for grid-NxM archetype */
-  gridRows?: number;
-  gridCols?: number;
-  /** Controls in this section, ordered top-to-bottom, left-to-right */
-  controls: string[];
-  /**
-   * Explicit assignment of controls to sub-containers.
-   * Required for archetypes with multiple containers (cluster-above-anchor,
-   * cluster-below-anchor, anchor-layout, dual-column).
-   *
-   * Keys are container roles (e.g., "cluster", "anchor", "left-column", "right-column").
-   * Values are either:
-   *   - string[] — flat list of control IDs in that container (direction defaults to column)
-   *   - Record<string, SubZone> — nested sub-zones within the container
-   *
-   * SubZone is either:
-   *   - string[] — control IDs (direction defaults to column)
-   *   - { controls: string[], direction: 'row' | 'column' } — control IDs + layout direction
-   *
-   * The Layout Engine validates that every control in `controls` appears in exactly
-   * one container, and that no container references controls not in `controls`.
-   */
-  containerAssignment?: Record<string, string[] | Record<string, SubZone>>;
-  /** Proportional height splits for anchor-layout and cluster-above-anchor */
-  heightSplits?: {
-    cluster: number;
-    anchor: number;
-    gap: number;
-  };
-  /** Target width as percentage of total panel width */
-  widthPercent: number;
-  /** Complexity flag from gatekeeper */
-  complexity: 'LOW' | 'MEDIUM' | 'HIGH';
-}
-
-export interface SharedElement {
-  id: string;
-  spans: string[];
-  expectedInstanceCount: number;
-  position: string;
-}
-
-export interface MasterManifest {
-  deviceId: string;
-  deviceName: string;
-  manufacturer: string;
-  layoutType: 'uniform-row' | 'grid' | 'asymmetric';
-  densityTargets: {
-    vertical: string;
-    horizontal: string;
-    horizontalDeadSpaceMax: number;
-  };
-  sections: ManifestSection[];
-  controls: ManifestControl[];
-  sharedElements: SharedElement[];
-  alignmentAnchors: Array<{
-    sourceId: string;
-    targetId: string;
-    axis: 'x' | 'y';
-    tolerancePx: number;
-  }>;
-}
-
-// ─── Archetype System ───────────────────────────────────────────────────────
-
-/**
- * Layout archetypes — the ONLY valid archetype values.
- * The Gatekeeper can ONLY select from this list.
- * Adding a new archetype requires updating this type AND the ARCHETYPE_CSS map.
- */
-export type LayoutArchetype =
-  | 'grid-NxM'
-  | 'single-column'
-  | 'single-row'
-  | 'anchor-layout'
-  | 'cluster-above-anchor'
-  | 'cluster-below-anchor'
-  | 'dual-column'
-  | 'stacked-rows';
+// Re-export shared types and helpers for consumers that import from layout-engine
+export type { ManifestControl, ManifestSection, MasterManifest, LayoutArchetype, SubZone };
+export { subZoneControls, subZoneDirection };
 
 export interface TemplateSpec {
   sectionId: string;
@@ -429,6 +324,24 @@ function generateTemplate(section: ManifestSection, controls: ManifestControl[])
       };
     }
 
+    case 'transport-pair': {
+      return {
+        sectionId: section.id,
+        archetype: section.archetype,
+        cssArchitecture: {
+          display: 'flex',
+          properties: {
+            'flex-direction': 'column',
+            'align-items': 'center',
+            'gap': '16px',
+          },
+        },
+        componentStructure: `<div data-section-id="${section.id}" className="flex flex-col items-center gap-4">{/* 2 transport buttons stacked vertically */}</div>`,
+        controlSlots: section.controls,
+        notes: [`Transport pair — two large circular buttons stacked vertically with generous spacing`],
+      };
+    }
+
     case 'stacked-rows': {
       return {
         sectionId: section.id,
@@ -477,7 +390,7 @@ function generateTemplate(section: ManifestSection, controls: ManifestControl[])
         section.archetype as string,
         `Unknown archetype "${section.archetype}". ` +
         `Valid archetypes: grid-NxM, single-column, single-row, anchor-layout, ` +
-        `cluster-above-anchor, cluster-below-anchor, dual-column, stacked-rows. ` +
+        `cluster-above-anchor, cluster-below-anchor, dual-column, transport-pair, stacked-rows. ` +
         `To add a new archetype, update LayoutArchetype type AND the generateTemplate switch in layout-engine.ts.`
       );
     }

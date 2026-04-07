@@ -7,6 +7,9 @@ interface LeverProps {
   label: string;
   highlighted?: boolean;
   scale?: number;
+  positions?: number;
+  positionLabels?: string[];
+  currentPosition?: number;
 }
 
 const highlightAnimation = {
@@ -29,7 +32,92 @@ export default function Lever({
   label,
   highlighted = false,
   scale: s = 1,
+  positions = 2,
+  positionLabels,
+  currentPosition = 0,
 }: LeverProps) {
+  // Multi-position horizontal switch mode
+  if (positions > 2) {
+    const trackWidth = 48 * s;
+    const trackHeight = 12 * s;
+    const posCount = positions;
+    const segWidth = trackWidth / posCount;
+    const clampedPos = Math.max(0, Math.min(posCount - 1, currentPosition));
+    const labels = positionLabels ?? Array.from({ length: posCount }, (_, i) => `${i + 1}`);
+
+    return (
+      <div className="flex flex-col items-center gap-1" data-control-id={id}>
+        {/* Position labels */}
+        <div className="flex" style={{ width: trackWidth, justifyContent: 'space-between' }}>
+          {labels.slice(0, posCount).map((lbl, i) => (
+            <span
+              key={i}
+              className="text-[7px] font-medium uppercase tracking-wider text-center"
+              style={{
+                width: segWidth,
+                color: i === clampedPos ? '#ccc' : '#555',
+              }}
+            >
+              {lbl}
+            </span>
+          ))}
+        </div>
+
+        {/* Track */}
+        <motion.div
+          className="relative cursor-pointer"
+          style={{
+            width: trackWidth,
+            height: trackHeight,
+            borderRadius: trackHeight / 2,
+            background: 'linear-gradient(to bottom, #1a1a1a 0%, #2a2a2a 50%, #222 100%)',
+            boxShadow:
+              'inset 0 2px 4px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)',
+            border: '1px solid #111',
+          }}
+          {...(highlighted ? highlightAnimation : {})}
+        >
+          {/* Position notches */}
+          {labels.slice(0, posCount).map((_, i) => (
+            <div
+              key={i}
+              className="absolute"
+              style={{
+                width: 1,
+                height: trackHeight * 0.4,
+                top: trackHeight * 0.3,
+                left: segWidth * i + segWidth / 2,
+                backgroundColor: 'rgba(255,255,255,0.1)',
+              }}
+            />
+          ))}
+
+          {/* Thumb / lever */}
+          <div
+            style={{
+              position: 'absolute',
+              width: Math.max(10, segWidth * 0.6),
+              height: trackHeight - 4,
+              top: 2,
+              left: segWidth * clampedPos + segWidth / 2 - Math.max(10, segWidth * 0.6) / 2,
+              borderRadius: (trackHeight - 4) / 2,
+              background: 'linear-gradient(to bottom, #666 0%, #555 40%, #444 100%)',
+              boxShadow:
+                '0 2px 4px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.3)',
+              transition: 'left 0.15s ease',
+            }}
+          />
+        </motion.div>
+
+        {/* Label */}
+        <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider text-center leading-tight">
+          {label}
+        </span>
+      </div>
+    );
+  }
+
+  // Default: vertical ball-stick lever (original 2-position)
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
       {/* Lever assembly */}

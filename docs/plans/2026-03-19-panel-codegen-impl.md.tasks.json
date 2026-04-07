@@ -1,0 +1,20 @@
+{
+  "planPath": "docs/plans/2026-03-19-panel-codegen-impl.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 1: Panel Codegen — Core Script", "status": "pending"},
+    {"id": 2, "subject": "Task 2: Install Editor Dependencies", "status": "pending", "blockedBy": [1]},
+    {"id": 3, "subject": "Task 3: Editor Zustand Store", "status": "pending", "blockedBy": [2]},
+    {"id": 4, "subject": "Task 4: Editor Route + Shell Component", "status": "pending", "blockedBy": [3]},
+    {"id": 5, "subject": "Task 5: Canvas with Zoom/Pan", "status": "pending", "blockedBy": [4]},
+    {"id": 6, "subject": "Task 6: SectionFrame + ControlNode with Real Components", "status": "pending", "blockedBy": [5]},
+    {"id": 7, "subject": "Task 7: Properties Panel", "status": "pending", "blockedBy": [6]},
+    {"id": 8, "subject": "Task 8: Grid Overlay + Photo Overlay", "status": "pending", "blockedBy": [6]},
+    {"id": 9, "subject": "Task 9: Multi-Select + Lock + Inline Label Editing", "status": "pending", "blockedBy": [6]},
+    {"id": 10, "subject": "Task 10: Keyboard Shortcuts + Context Menu", "status": "pending", "blockedBy": [6]},
+    {"id": 11, "subject": "Task 11: Auto-Save + Undo Persistence", "status": "pending", "blockedBy": [6]},
+    {"id": 12, "subject": "Task 12: Codegen Validation Step", "status": "pending", "blockedBy": [11]},
+    {"id": 13, "subject": "Task 13: Polish + Tooltips", "status": "pending", "blockedBy": [12]},
+    {"id": 14, "subject": "Task 14: Integration Test — Full CDJ-3000 Flow", "status": "pending", "blockedBy": [13]}
+  ],
+  "lastUpdated": "2026-03-19T00:00:00.000Z"
+}

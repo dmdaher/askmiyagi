@@ -1,0 +1,386 @@
+'use client';
+
+import { useEditorStore } from './store';
+import type { SnapGrid } from './store';
+import VersionHistoryDropdown from './VersionHistoryDropdown';
+import { isHosted } from '@/lib/env';
+
+const SNAP_OPTIONS: SnapGrid[] = [1, 2, 4, 8, 16, 32];
+const ZOOM_STEP = 0.1;
+
+interface EditorToolbarProps {
+  deviceId: string;
+  previewMode: boolean;
+  buildStatus: 'idle' | 'building' | 'approved';
+  onApproveAndBuild: () => void;
+  onCleanUp: () => void;
+  onTogglePreview: () => void;
+  onReportIssue?: () => void;
+  onRestoreVersion?: () => void;
+}
+
+export default function EditorToolbar({
+  deviceId,
+  previewMode,
+  buildStatus,
+  onApproveAndBuild,
+  onCleanUp,
+  onTogglePreview,
+  onReportIssue,
+  onRestoreVersion,
+}: EditorToolbarProps) {
+  const manufacturer = useEditorStore((s) => s.manufacturer);
+  const deviceName = useEditorStore((s) => s.deviceName);
+  const zoom = useEditorStore((s) => s.zoom);
+  const snapGrid = useEditorStore((s) => s.snapGrid);
+  const showGrid = useEditorStore((s) => s.showGrid);
+  const showPhoto = useEditorStore((s) => s.showPhoto);
+  const photoMode = useEditorStore((s) => s.photoMode);
+  const photoOpacity = useEditorStore((s) => s.photoOpacity);
+  const controlScale = useEditorStore((s) => s.controlScale);
+  const showLabels = useEditorStore((s) => s.showLabels);
+  const toggleLabels = useEditorStore((s) => s.toggleLabels);
+  const past = useEditorStore((s) => s.past);
+  const future = useEditorStore((s) => s.future);
+
+  const setZoom = useEditorStore((s) => s.setZoom);
+  const setSnapGrid = useEditorStore((s) => s.setSnapGrid);
+  const setControlScale = useEditorStore((s) => s.setControlScale);
+  const toggleGrid = useEditorStore((s) => s.toggleGrid);
+  const togglePhoto = useEditorStore((s) => s.togglePhoto);
+  const setPhotoMode = useEditorStore((s) => s.setPhotoMode);
+  const setPhotoOpacity = useEditorStore((s) => s.setPhotoOpacity);
+  const photoOffsetX = useEditorStore((s) => s.photoOffsetX);
+  const photoOffsetY = useEditorStore((s) => s.photoOffsetY);
+  const setPhotoOffset = useEditorStore((s) => s.setPhotoOffset);
+  const setPhotoScale = useEditorStore((s) => s.setPhotoScale);
+  const undo = useEditorStore((s) => s.undo);
+  const redo = useEditorStore((s) => s.redo);
+  const cleanupGap = useEditorStore((s) => s.cleanupGap);
+  const setCleanupGap = useEditorStore((s) => s.setCleanupGap);
+  const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
+  const setAllLabelFontSize = useEditorStore((s) => s.setAllLabelFontSize);
+  const resetAllSizes = useEditorStore((s) => s.resetAllSizes);
+  const scaleCanvas = useEditorStore((s) => s.scaleCanvas);
+  const addStandaloneLabel = useEditorStore((s) => s.addStandaloneLabel);
+  const canvasWidth = useEditorStore((s) => s.canvasWidth);
+  const canvasHeight = useEditorStore((s) => s.canvasHeight);
+  const setCanvasSize = useEditorStore((s) => s.setCanvasSize);
+
+  const zoomPercent = Math.round(zoom * 100);
+
+  // Shared styles
+  const toggleBtn = (active: boolean) =>
+    `flex h-6 items-center rounded px-1.5 text-[10px] transition-colors whitespace-nowrap ${
+      active
+        ? 'bg-blue-500/20 text-blue-400'
+        : 'text-gray-500 hover:bg-gray-800 hover:text-gray-300'
+    }`;
+  const iconBtn =
+    'flex h-6 w-6 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30';
+  const divider = <div className="h-5 w-px bg-gray-800 flex-shrink-0" />;
+
+  return (
+    <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2">
+
+      {/* ── LEFT: Device + View ────────────────────────────────── */}
+
+      {/* Device name */}
+      {deviceName && (
+        <div className="flex items-center gap-1 border-r border-gray-700 pr-2 mr-0.5 flex-shrink-0">
+          <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500">
+            {manufacturer}
+          </span>
+          <span className="text-[10px] font-semibold text-gray-300 whitespace-nowrap">
+            {deviceName}
+          </span>
+        </div>
+      )}
+
+      {/* Undo / Redo */}
+      <button onClick={undo} disabled={past.length === 0} className={iconBtn} title="Undo (Cmd+Z)">
+        <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.5 2L1 5.5 4.5 9V6.5C8.5 6.5 11 8 12.5 11c-1-3.5-3.5-6-8-6.5V2z" /></svg>
+      </button>
+      <button onClick={redo} disabled={future.length === 0} className={iconBtn} title="Redo (Cmd+Shift+Z)">
+        <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 2L15 5.5 11.5 9V6.5C7.5 6.5 5 8 3.5 11c1-3.5 3.5-6 8-6.5V2z" /></svg>
+      </button>
+
+      {divider}
+
+      {/* Snap */}
+      <select
+        value={snapGrid}
+        onChange={(e) => setSnapGrid(Number(e.target.value) as SnapGrid)}
+        className="h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none"
+        title="Snap Grid"
+      >
+        {SNAP_OPTIONS.map((v) => (
+          <option key={v} value={v}>{v}px</option>
+        ))}
+      </select>
+
+      {/* Zoom */}
+      <div className="flex items-center gap-0.5">
+        <button onClick={() => setZoom(zoom - ZOOM_STEP)} disabled={zoom <= 0.1} className={iconBtn} title="Zoom Out">-</button>
+        <span className="w-8 text-center text-[10px] text-gray-400">{zoomPercent}%</span>
+        <button onClick={() => setZoom(zoom + ZOOM_STEP)} disabled={zoom >= 5} className={iconBtn} title="Zoom In">+</button>
+      </div>
+
+      {/* Control Scale slider — HIDDEN for now (redundant with Zoom).
+          Keep code intact for potential future use. Use Zoom or Canvas W×H instead. */}
+
+      {divider}
+
+      {/* ── MIDDLE: Overlays ───────────────────────────────────── */}
+
+      <button data-tutorial="grid" onClick={toggleGrid} className={toggleBtn(showGrid)} title="Grid (G)" disabled={previewMode}>Grid</button>
+
+      <button onClick={toggleLabels} className={toggleBtn(showLabels)} title="Labels (T)" disabled={previewMode}>Labels</button>
+
+      {/* Add standalone label */}
+      <button
+        onClick={() => {
+          pushSnapshot();
+          // Create at center of canvas area
+          addStandaloneLabel(canvasWidth / 2 - 30, canvasHeight / 2);
+        }}
+        disabled={previewMode}
+        className={iconBtn}
+        title="Add standalone label at canvas center"
+      >
+        +L
+      </button>
+
+      {/* Label size (only when labels visible) */}
+      {showLabels && (
+        <select
+          value=""
+          onChange={(e) => {
+            const val = e.target.value;
+            if (!val) return;
+            pushSnapshot();
+            setAllLabelFontSize(val === 'auto' ? undefined : Number(val));
+          }}
+          className="h-6 rounded border border-gray-700 bg-gray-900 px-0.5 text-[9px] text-gray-400 outline-none"
+          title="Set all label sizes"
+        >
+          <option value="">Sz</option>
+          <option value="auto">Auto</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+      )}
+
+      {/* Photo */}
+      <div className="flex items-center gap-1" data-tutorial="photo">
+        <button onClick={togglePhoto} className={toggleBtn(showPhoto)} title="Photo (P)">Photo</button>
+        {showPhoto && (
+          <>
+            <div className="flex rounded overflow-hidden border border-gray-700">
+              <button
+                onClick={() => setPhotoMode('side-by-side')}
+                className={`px-1 py-0.5 text-[8px] ${photoMode === 'side-by-side' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-900 text-gray-500'}`}
+              >Side</button>
+              <button
+                onClick={() => setPhotoMode('overlay')}
+                className={`px-1 py-0.5 text-[8px] ${photoMode === 'overlay' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-900 text-gray-500'}`}
+              >Over</button>
+            </div>
+            {photoMode === 'overlay' && (
+              <>
+                <input
+                  type="range" min={0} max={100}
+                  value={Math.round(photoOpacity * 100)}
+                  onChange={(e) => setPhotoOpacity(Number(e.target.value) / 100)}
+                  className="h-1 w-12 cursor-pointer accent-blue-500"
+                  title={`Opacity: ${Math.round(photoOpacity * 100)}%`}
+                />
+                {/* Photo offset inputs — shift the photo without moving controls */}
+                <input
+                  type="number"
+                  value={photoOffsetX}
+                  onChange={(e) => setPhotoOffset(Number(e.target.value) || 0, photoOffsetY)}
+                  className="w-10 h-5 rounded border border-gray-700 bg-gray-900 px-0.5 text-[9px] text-gray-400 text-center outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  title="Photo X offset (px)"
+                />
+                <input
+                  type="number"
+                  value={photoOffsetY}
+                  onChange={(e) => setPhotoOffset(photoOffsetX, Number(e.target.value) || 0)}
+                  className="w-10 h-5 rounded border border-gray-700 bg-gray-900 px-0.5 text-[9px] text-gray-400 text-center outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  title="Photo Y offset (px)"
+                />
+                <button
+                  onClick={() => { setPhotoOffset(0, 0); setPhotoScale(1); }}
+                  className="text-[8px] text-gray-500 hover:text-gray-300 px-1"
+                  title="Reset photo offset + scale"
+                >Rst</button>
+              </>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ── SPACER ─────────────────────────────────────────────── */}
+      <div className="flex-1 min-w-2" />
+
+      {/* ── RIGHT: Actions ─────────────────────────────────────── */}
+
+      {/* History + Report + Help */}
+      <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
+
+      {onReportIssue && (
+        <button onClick={onReportIssue} className={iconBtn} title="Report Issue" data-tutorial="report">
+          <span className="text-[10px]">⚑</span>
+        </button>
+      )}
+
+      <button
+        onClick={() => window.dispatchEvent(new Event('editor-tutorial-replay'))}
+        className={iconBtn}
+        title="Help"
+      >?</button>
+
+      {/* Reset Sizes */}
+      <button
+        onClick={() => { pushSnapshot(); resetAllSizes(); }}
+        disabled={previewMode}
+        className="flex h-6 items-center rounded px-1.5 text-[9px] text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300 disabled:opacity-30 whitespace-nowrap"
+        title="Reset all controls to default sizes (undoable)"
+      >Reset Sizes</button>
+
+      {divider}
+
+      {/* Gap + Clean Up */}
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <label className="text-[9px] text-gray-500">Gap</label>
+        <input
+          type="number" min={0} max={32}
+          value={cleanupGap}
+          onChange={(e) => setCleanupGap(Number(e.target.value))}
+          className="h-6 w-8 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none focus:border-blue-500"
+          title="Gap px (used by Clean Up)"
+        />
+        <button
+          onClick={onCleanUp}
+          disabled={previewMode || buildStatus === 'building'}
+          className="flex h-7 items-center rounded px-2 text-[10px] font-medium whitespace-nowrap transition-colors border border-blue-600 bg-blue-700/30 text-blue-300 hover:bg-blue-700/50 disabled:opacity-30"
+          title="Clean Up — snap rows, equalize spacing (Cmd+Z to undo)"
+        >Clean Up</button>
+        <button
+          onClick={onTogglePreview}
+          className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors ${
+            previewMode
+              ? 'border border-amber-500 bg-amber-600/30 text-amber-300 hover:bg-amber-600/50'
+              : 'border border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700'
+          }`}
+          title="Preview — see panel as it appears in production"
+        >{previewMode ? 'Exit Preview' : 'Preview'}</button>
+      </div>
+
+      {divider}
+
+      {/* Canvas Scale + Approve & Build */}
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <button
+          onClick={() => { pushSnapshot(); scaleCanvas(0.8); }}
+          disabled={previewMode}
+          className="flex h-6 w-6 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30"
+          title="Scale canvas down 80%"
+        >-</button>
+        <span className="text-[9px] text-gray-500">Canvas</span>
+        <button
+          onClick={() => { pushSnapshot(); scaleCanvas(1.25); }}
+          disabled={previewMode}
+          className="flex h-6 w-6 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30"
+          title="Scale canvas up 125%"
+        >+</button>
+
+        {/* Manual canvas W/H inputs (independent of proportional scale) */}
+        <div className="flex items-center gap-0.5 ml-1">
+          <input
+            type="number"
+            defaultValue={canvasWidth}
+            key={`w-${canvasWidth}`}
+            onBlur={(e) => {
+              const val = parseInt(e.target.value, 10);
+              if (!isNaN(val) && val !== canvasWidth && val >= 400) {
+                pushSnapshot();
+                setCanvasSize(val, canvasHeight);
+              }
+            }}
+            onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+            disabled={previewMode}
+            className="w-12 h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 text-center outline-none focus:border-blue-500 disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            title="Canvas width (px) — widens canvas without scaling controls"
+          />
+          <span className="text-[9px] text-gray-600">×</span>
+          <input
+            type="number"
+            defaultValue={canvasHeight}
+            key={`h-${canvasHeight}`}
+            onBlur={(e) => {
+              const val = parseInt(e.target.value, 10);
+              if (!isNaN(val) && val !== canvasHeight && val >= 300) {
+                pushSnapshot();
+                setCanvasSize(canvasWidth, val);
+              }
+            }}
+            onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+            disabled={previewMode}
+            className="w-12 h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 text-center outline-none focus:border-blue-500 disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            title="Canvas height (px) — heightens canvas without scaling controls"
+          />
+        </div>
+
+        {isHosted ? (
+          <button
+            onClick={async () => {
+              if (!confirm('Submit panel for review? You won\'t be able to edit until the owner responds.')) return;
+              try {
+                await fetch(`/api/hosted/panels/${deviceId}/status`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ status: 'submitted' }),
+                });
+                useEditorStore.getState().setPreviewMode(true);
+              } catch { /* silent */ }
+            }}
+            disabled={previewMode}
+            className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
+            title="Submit panel for owner review"
+          >
+            Submit for Review
+          </button>
+        ) : (
+          <button
+            data-tutorial="approve"
+            onClick={onApproveAndBuild}
+            disabled={previewMode || buildStatus === 'building'}
+            className={`flex h-7 items-center rounded px-2 text-[10px] font-medium whitespace-nowrap transition-colors ${
+              previewMode
+                ? 'border border-green-700 bg-green-700/20 text-green-400 cursor-default'
+                : buildStatus === 'building'
+                  ? 'border border-gray-600 bg-gray-800 text-gray-400 cursor-wait'
+                  : 'border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50'
+            }`}
+            title="Export panel manifest for production"
+          >
+            {buildStatus === 'building'
+              ? 'Exporting...'
+              : buildStatus === 'approved'
+                ? 'Exported ✓'
+                : 'Export Panel'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}

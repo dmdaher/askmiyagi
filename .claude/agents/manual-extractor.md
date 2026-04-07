@@ -18,17 +18,23 @@ This agent runs AFTER the panel digital twin is complete and validated (all 5 QA
 1. Panel component exists with `data-control-id` attributes for all controls
 2. Constants file exists with all control IDs and section definitions
 3. The instrument's manual PDF is accessible in `docs/<Manufacturer>/`
-4. The Gatekeeper's manifest exists in `.claude/agent-memory/gatekeeper/checkpoint.md`
+4. The Gatekeeper's manifest exists in `.pipeline/<deviceId>/agents/gatekeeper/checkpoint.md`
 
 If any pre-condition fails, HALT with `PRE-CONDITION FAILURE` and specify what's missing.
+
+## Output Contract
+- Write ALL outputs to: `.pipeline/<deviceId>/agents/manual-extractor/`
+- Read manuals from: `.pipeline/<deviceId>/input/manuals/`
+- Read photos from: `.pipeline/<deviceId>/input/photos/`
+- DO NOT write to `.claude/agent-memory/` or any other location.
 
 ### DATA FLOW:
 - **Reads from:**
   - The instrument's **product manual PDF** (the primary source — read EVERY page)
-  - `.claude/agent-memory/gatekeeper/checkpoint.md` — for control IDs, section names, and the complete manifest
+  - `.pipeline/<deviceId>/agents/gatekeeper/checkpoint.md` — for control IDs, section names, and the complete manifest
   - The panel's **constants file** (e.g., `deepmind-12-constants.ts`) — for control ID reference
   - Existing tutorials in `src/data/tutorials/<device-id>/` — to avoid duplicating already-built tutorials
-- **Writes to:** `.claude/agent-memory/manual-extractor/checkpoint.md` — full extraction output
+- **Writes to:** `.pipeline/<deviceId>/agents/manual-extractor/checkpoint.md` — full extraction output
 - **Final output:** `docs/plans/<date>-<device-id>-tutorials.md` — the complete tutorial plan document
 
 ---
@@ -315,9 +321,9 @@ batchId: <batch-id>        # Phase 5 only
 
 The prose checkpoint follows below the frontmatter as usual.
 
-On startup, ALWAYS read `.claude/agent-memory/manual-extractor/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
+On startup, ALWAYS read `.pipeline/<deviceId>/agents/manual-extractor/checkpoint.md` first. If a checkpoint exists, resume from "Next step" — do not restart from scratch.
 
-After completing each pass, write your progress to `.claude/agent-memory/manual-extractor/checkpoint.md`:
+After completing each pass, write your progress to `.pipeline/<deviceId>/agents/manual-extractor/checkpoint.md`:
 - **Completed:** [which passes are done]
 - **Next step:** [which pass to run next]
 - **Feature count:** [total features extracted so far]
