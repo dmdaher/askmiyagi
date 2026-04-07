@@ -79,6 +79,8 @@ export default function ContractorSubmissions() {
 
   if (loading || devices.length === 0) return null;
 
+  const needsReview = devices.filter(d => d.status === 'submitted').length;
+
   // Sort: submitted first
   const sorted = [...devices].sort((a, b) => {
     const order: Record<string, number> = { submitted: 0, 'in-progress': 1, ready: 2, approved: 3 };
@@ -92,8 +94,25 @@ export default function ContractorSubmissions() {
       transition={{ duration: 0.3, delay: 0.2 }}
       className="mb-10"
     >
-      <h2 className="text-lg font-semibold text-gray-200 mb-1">Contractor Submissions</h2>
-      <p className="text-xs text-gray-500 mb-4">Instruments sent to contractor for editing</p>
+      <div className="flex items-center gap-3 mb-4">
+        <h2 className="text-lg font-semibold text-gray-200">Contractor Submissions</h2>
+        {needsReview > 0 && (
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">
+            {needsReview} needs review
+          </span>
+        )}
+      </div>
+
+      {needsReview > 0 && (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-900/20 px-4 py-3 mb-3 flex items-center gap-2">
+          <span className="text-amber-400 text-sm">⚠</span>
+          <span className="text-sm text-amber-300">
+            {needsReview === 1
+              ? 'A panel is ready for your review'
+              : `${needsReview} panels are ready for your review`}
+          </span>
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         {sorted.map((d) => {
