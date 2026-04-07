@@ -15,9 +15,11 @@ function SignInForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const cookieName = role === 'admin' ? 'admin_access' : 'contractor_access';
     const redirectTo = role === 'admin' ? '/admin/review' : '/editor';
-    document.cookie = `${cookieName}=${password.trim()}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    // Set both cookies — proxy checks each against its own env var
+    const trimmed = password.trim();
+    document.cookie = `contractor_access=${trimmed}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    document.cookie = `admin_access=${trimmed}; path=/; max-age=${60 * 60 * 24 * 30}`;
 
     // Verify the password works by hitting the protected page
     const res = await fetch(redirectTo, { redirect: 'manual' });
