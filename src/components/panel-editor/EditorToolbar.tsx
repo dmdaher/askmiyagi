@@ -262,8 +262,8 @@ export default function EditorToolbar({
 
       {divider}
 
-      {/* Gap + Clean Up */}
-      <div className="flex items-center gap-1 flex-shrink-0">
+      {/* Gap + Clean Up — hidden from contractor (power-user tools) */}
+      {!isHosted && <div className="flex items-center gap-1 flex-shrink-0">
         <label className="text-[9px] text-gray-500">Gap</label>
         <input
           type="number" min={0} max={32}
@@ -278,21 +278,24 @@ export default function EditorToolbar({
           className="flex h-7 items-center rounded px-2 text-[10px] font-medium whitespace-nowrap transition-colors border border-blue-600 bg-blue-700/30 text-blue-300 hover:bg-blue-700/50 disabled:opacity-30"
           title="Clean Up — snap rows, equalize spacing (Cmd+Z to undo)"
         >Clean Up</button>
-        <button
-          onClick={onTogglePreview}
-          className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors ${
-            previewMode
-              ? 'border border-amber-500 bg-amber-600/30 text-amber-300 hover:bg-amber-600/50'
-              : 'border border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700'
-          }`}
-          title="Preview — see panel as it appears in production"
-        >{previewMode ? 'Exit Preview' : 'Preview'}</button>
-      </div>
+      </div>}
+
+      {/* Preview — visible to everyone */}
+      <button
+        onClick={onTogglePreview}
+        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors ${
+          previewMode
+            ? 'border border-amber-500 bg-amber-600/30 text-amber-300 hover:bg-amber-600/50'
+            : 'border border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700'
+        }`}
+        title="Preview — see panel as it appears in production"
+      >{previewMode ? 'Exit Preview' : 'Preview'}</button>
 
       {divider}
 
-      {/* Canvas Scale + Approve & Build */}
+      {/* Canvas Scale + Export/Submit */}
       <div className="flex items-center gap-1 flex-shrink-0">
+        {!isHosted && <>
         <button
           onClick={() => { pushSnapshot(); scaleCanvas(0.8); }}
           disabled={previewMode}
@@ -343,6 +346,7 @@ export default function EditorToolbar({
             title="Canvas height (px) — heightens canvas without scaling controls"
           />
         </div>
+        </>}
 
         {isHosted ? (
           <button

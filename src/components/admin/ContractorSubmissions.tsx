@@ -119,14 +119,19 @@ export default function ContractorSubmissions() {
 
                 {isSubmitted && (
                   <>
-                    <a
-                      href={`/admin/review/${d.deviceId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded border border-amber-600 bg-amber-700/30 px-3 py-1.5 text-[10px] font-medium text-amber-300 hover:bg-amber-700/50 transition-colors"
+                    <button
+                      onClick={async () => {
+                        setActing(d.deviceId);
+                        // Pull contractor's work from Blob → local, then open editor
+                        await fetch(`/api/pipeline/${d.deviceId}/pull-from-hosted`, { method: 'POST' });
+                        setActing(null);
+                        window.open(`/admin/${d.deviceId}/editor`, '_blank');
+                      }}
+                      disabled={acting === d.deviceId}
+                      className="rounded border border-amber-600 bg-amber-700/30 px-3 py-1.5 text-[10px] font-medium text-amber-300 hover:bg-amber-700/50 transition-colors disabled:opacity-50"
                     >
-                      Review →
-                    </a>
+                      {acting === d.deviceId ? 'Loading...' : 'Review →'}
+                    </button>
                     <button
                       onClick={() => handleAction(d.deviceId, 'approve')}
                       disabled={acting === d.deviceId}
