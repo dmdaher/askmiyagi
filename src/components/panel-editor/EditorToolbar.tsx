@@ -265,7 +265,8 @@ export default function EditorToolbar({
       {/* Preview */}
       <button
         onClick={onTogglePreview}
-        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors ${
+        disabled={isHosted && typeof window !== 'undefined' && !!(window as any).__submittedForReview}
+        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors disabled:opacity-30 ${
           previewMode
             ? 'border border-amber-500 bg-amber-600/30 text-amber-300 hover:bg-amber-600/50'
             : 'border border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -329,29 +330,34 @@ export default function EditorToolbar({
         </div>
 
         {isHosted ? (
-          <button
-            onClick={async () => {
-              if (!confirm('Submit panel for review? You won\'t be able to edit until the owner responds.')) return;
-              try {
-                await fetch(`/api/hosted/panels/${deviceId}/status`, {
-                  method: 'PATCH',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ status: 'submitted' }),
-                });
-                useEditorStore.getState().setPreviewMode(true);
-                useEditorStore.getState().setSelectedIds([]);
-                // Signal submission complete via buildStatus
-                if (typeof window !== 'undefined') {
-                  (window as any).__submittedForReview = true;
-                }
-              } catch { alert('Failed to submit — please try again.'); }
-            }}
-            disabled={previewMode}
-            className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
-            title="Submit panel for owner review"
-          >
-            Submit for Review
-          </button>
+          (typeof window !== 'undefined' && (window as any).__submittedForReview) ? (
+            <span className="flex h-7 items-center px-3 text-[10px] font-medium text-green-400 border border-green-700 bg-green-700/20 rounded whitespace-nowrap">
+              Submitted ✓
+            </span>
+          ) : (
+            <button
+              onClick={async () => {
+                if (!confirm('Submit panel for review? You won\'t be able to edit until the owner responds.')) return;
+                try {
+                  await fetch(`/api/hosted/panels/${deviceId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'submitted' }),
+                  });
+                  useEditorStore.getState().setPreviewMode(true);
+                  useEditorStore.getState().setSelectedIds([]);
+                  if (typeof window !== 'undefined') {
+                    (window as any).__submittedForReview = true;
+                  }
+                } catch { alert('Failed to submit — please try again.'); }
+              }}
+              disabled={previewMode}
+              className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
+              title="Submit panel for owner review"
+            >
+              Submit for Review
+            </button>
+          )
         ) : (
           <button
             data-tutorial="approve"

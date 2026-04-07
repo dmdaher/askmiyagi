@@ -45,7 +45,7 @@ export default function ContractorSubmissions() {
 
   useEffect(() => {
     fetchDevices();
-    const interval = setInterval(fetchDevices, 30000);
+    const interval = setInterval(fetchDevices, 10000);
     return () => clearInterval(interval);
   }, [fetchDevices]);
 
