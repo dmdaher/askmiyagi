@@ -7,14 +7,26 @@ function SignInForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const role = searchParams.get('role') ?? 'contractor';
+  const retry = searchParams.get('retry') === '1';
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(retry);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const cookieName = role === 'admin' ? 'admin_access' : 'contractor_access';
     const redirectTo = role === 'admin' ? '/admin/review' : '/editor';
-    document.cookie = `${cookieName}=${password}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    document.cookie = `${cookieName}=${password.trim()}; path=/; max-age=${60 * 60 * 24 * 30}`;
+
+    // Verify the password works by hitting the protected page
+    const res = await fetch(redirectTo, { redirect: 'manual' });
+    if (res.type === 'opaqueredirect' || res.status === 307 || res.status === 308) {
+      // Redirected back = wrong password
+      setError(true);
+      setLoading(false);
+      return;
+    }
     router.push(redirectTo);
   };
 
@@ -35,7 +47,11 @@ function SignInForm() {
       />
 
       {error && (
-        <p className="text-xs text-red-400 mt-2">Incorrect password</p>
+        <p className="text-xs text-red-400 mt-2">Incorrect password — try again</p>
+      )}
+
+      {loading && (
+        <p className="text-xs text-gray-500 mt-2">Verifying...</p>
       )}
 
       <button
