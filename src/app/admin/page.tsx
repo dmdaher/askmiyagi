@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { usePipelineStore } from '@/store/pipelineStore';
 import PipelineDashboard from '@/components/admin/PipelineDashboard';
 import UploadZone from '@/components/admin/UploadZone';
+import ContractorSubmissions from '@/components/admin/ContractorSubmissions';
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -111,6 +112,8 @@ export default function AdminPage() {
           </div>
         </motion.div>
       )}
+      {/* Contractor submissions — fetches from hosted Blob */}
+      <ContractorSubmissions />
     </div>
   );
 }
