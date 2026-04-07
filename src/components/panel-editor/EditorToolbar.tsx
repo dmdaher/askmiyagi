@@ -233,28 +233,32 @@ export default function EditorToolbar({
 
       {/* ── RIGHT: Actions ─────────────────────────────────────── */}
 
-      {/* History + Report + Help */}
-      <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
+      {/* History + Report + Help — local only */}
+      {!isHosted && (
+        <>
+          <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
 
-      {onReportIssue && (
-        <button onClick={onReportIssue} className={iconBtn} title="Report Issue" data-tutorial="report">
-          <span className="text-[10px]">⚑</span>
-        </button>
+          {onReportIssue && (
+            <button onClick={onReportIssue} className={iconBtn} title="Report Issue" data-tutorial="report">
+              <span className="text-[10px]">⚑</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => window.dispatchEvent(new Event('editor-tutorial-replay'))}
+            className={iconBtn}
+            title="Help"
+          >?</button>
+
+          {/* Reset Sizes */}
+          <button
+            onClick={() => { pushSnapshot(); resetAllSizes(); }}
+            disabled={previewMode}
+            className="flex h-6 items-center rounded px-1.5 text-[9px] text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300 disabled:opacity-30 whitespace-nowrap"
+            title="Reset all controls to default sizes (undoable)"
+          >Reset Sizes</button>
+        </>
       )}
-
-      <button
-        onClick={() => window.dispatchEvent(new Event('editor-tutorial-replay'))}
-        className={iconBtn}
-        title="Help"
-      >?</button>
-
-      {/* Reset Sizes */}
-      <button
-        onClick={() => { pushSnapshot(); resetAllSizes(); }}
-        disabled={previewMode}
-        className="flex h-6 items-center rounded px-1.5 text-[9px] text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300 disabled:opacity-30 whitespace-nowrap"
-        title="Reset all controls to default sizes (undoable)"
-      >Reset Sizes</button>
 
       {divider}
 
@@ -351,6 +355,11 @@ export default function EditorToolbar({
                   body: JSON.stringify({ status: 'submitted' }),
                 });
                 useEditorStore.getState().setPreviewMode(true);
+                useEditorStore.getState().setSelectedIds([]);
+                // Signal submission complete via buildStatus
+                if (typeof window !== 'undefined') {
+                  (window as any).__submittedForReview = true;
+                }
               } catch { /* silent */ }
             }}
             disabled={previewMode}
