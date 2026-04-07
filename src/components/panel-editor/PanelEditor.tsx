@@ -170,12 +170,15 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
                   : 'Preview Mode — clean panel view (click Preview to exit)'}
           </span>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => { setPreviewMode(false); setBuildStatus('idle'); setExportMessage(null); }}
-              className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
-            >
-              Back to Editor
-            </button>
+            {/* Hide "Back to Editor" after submit in hosted mode — contractor is locked out */}
+            {!(isHosted && typeof window !== 'undefined' && (window as any).__submittedForReview) && (
+              <button
+                onClick={() => { setPreviewMode(false); setBuildStatus('idle'); setExportMessage(null); }}
+                className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
+              >
+                Back to Editor
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -291,6 +294,15 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
           }
           // Initialize labels from controls if not yet done (migration)
           useEditorStore.getState().initLabelsFromControls();
+
+          // In hosted mode, lock editor if panel is already submitted/approved
+          if (isHosted && (data._status === 'submitted' || data._status === 'approved')) {
+            useEditorStore.getState().setPreviewMode(true);
+            if (typeof window !== 'undefined') {
+              (window as any).__submittedForReview = true;
+            }
+          }
+
           setLoading(false);
         }
       } catch (err) {

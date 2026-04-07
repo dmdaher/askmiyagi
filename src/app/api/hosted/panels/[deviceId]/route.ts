@@ -36,6 +36,11 @@ export async function PUT(
     return NextResponse.json({ error: 'Device not found' }, { status: 404 });
   }
 
+  // Refuse saves when panel is submitted or approved (prevents auto-save overwriting review state)
+  if (existing.status === 'submitted' || existing.status === 'approved') {
+    return NextResponse.json({ error: 'Panel is locked for review', status: existing.status }, { status: 403 });
+  }
+
   // Wrap: editor sends flat manifest, we store nested in state.json
   const newStatus = existing.status === 'ready' ? 'in-progress' : existing.status;
   await putDeviceState(deviceId, {

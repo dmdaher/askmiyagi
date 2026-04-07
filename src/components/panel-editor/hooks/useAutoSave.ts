@@ -72,9 +72,17 @@ export function useAutoSave(deviceId: string) {
           return;
         }
 
+        // Stop auto-save after contractor submits for review
+        if (isHosted && useEditorStore.getState().previewMode) {
+          return;
+        }
+
         // Debounce the save
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
+          // Double-check: previewMode may have been set while debounce was pending
+          if (isHosted && useEditorStore.getState().previewMode) return;
+
           const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
           fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`, {
             method: 'PUT',
