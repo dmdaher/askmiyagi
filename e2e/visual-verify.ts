@@ -33,7 +33,7 @@ async function run() {
   // Check alignment buttons
   const alignBtns = await page.evaluate(() => {
     const btns = document.querySelectorAll('button[title*="Align"]');
-    return { count: btns.length, titles: Array.from(btns).map((b) => b.title) };
+    return { count: btns.length, titles: Array.from(btns).map((b) => (b as HTMLElement).title) };
   });
   console.log('Alignment buttons:', JSON.stringify(alignBtns));
 
@@ -95,7 +95,7 @@ async function run() {
   // Check distribute buttons
   const distBtns = await page.evaluate(() => {
     const btns = document.querySelectorAll('button[title*="Distribute"]');
-    return { count: btns.length, titles: Array.from(btns).map((b) => b.title) };
+    return { count: btns.length, titles: Array.from(btns).map((b) => (b as HTMLElement).title) };
   });
   console.log('Distribute buttons:', JSON.stringify(distBtns));
 
