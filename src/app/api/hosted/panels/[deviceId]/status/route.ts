@@ -35,8 +35,8 @@ export async function PATCH(
   await putDeviceState(deviceId, {
     ...existing,
     status,
-    // Clear reviewNote when submitting or approving; set when requesting changes
-    reviewNote: status === 'in-progress' ? (reviewNote ?? existing.reviewNote) : undefined,
+    // Set reviewNote when requesting changes, preserve through submitted, clear on approved
+    reviewNote: status === 'approved' ? undefined : (reviewNote ?? existing.reviewNote),
     updatedAt: new Date().toISOString(),
   });
 

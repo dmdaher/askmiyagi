@@ -18,7 +18,7 @@ function SignInForm() {
     setError(false);
 
     const cookieName = role === 'admin' ? 'admin_access' : 'contractor_access';
-    document.cookie = `${cookieName}=${password.trim()}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    document.cookie = `${cookieName}=${password.trim()}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
 
     // Verify the password works by hitting the protected page
     try {

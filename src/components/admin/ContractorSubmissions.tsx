@@ -13,7 +13,7 @@ interface DeviceState {
 }
 
 const STATUS_LABELS: Record<string, { text: string; dot: string }> = {
-  ready: { text: 'text-green-400', dot: 'bg-green-400' },
+  ready: { text: 'text-gray-400', dot: 'bg-gray-400' },
   'in-progress': { text: 'text-blue-400', dot: 'bg-blue-400' },
   submitted: { text: 'text-amber-400', dot: 'bg-amber-400' },
   approved: { text: 'text-green-400', dot: 'bg-green-400' },
@@ -54,11 +54,15 @@ export default function ContractorSubmissions() {
   const handleApprove = async (deviceId: string) => {
     setActing(deviceId);
     try {
-      await fetch(`/api/hosted/panels/${deviceId}/status`, {
+      const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'approved' }),
       });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Failed (${res.status})`);
+      }
       setResult(prev => ({ ...prev, [deviceId]: '✓ Approved' }));
       fetchDevices();
     } catch (err) {
@@ -70,11 +74,15 @@ export default function ContractorSubmissions() {
   const handleSendFeedback = async (deviceId: string) => {
     setActing(deviceId);
     try {
-      await fetch(`/api/hosted/panels/${deviceId}/status`, {
+      const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'in-progress', reviewNote: feedbackText }),
       });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Failed (${res.status})`);
+      }
       setResult(prev => ({ ...prev, [deviceId]: '↩ Sent back with feedback' }));
       setFeedbackFor(null);
       setFeedbackText('');
@@ -167,7 +175,7 @@ export default function ContractorSubmissions() {
                     </span>
                     <p className={`text-[10px] ${style.text}`}>{label}</p>
                     {d.reviewNote && d.status === 'in-progress' && (
-                      <p className="text-[9px] text-amber-400/60 mt-0.5">Note: {d.reviewNote}</p>
+                      <p className="text-[11px] text-amber-400/70 mt-0.5">Note: {d.reviewNote}</p>
                     )}
                   </div>
                 </div>

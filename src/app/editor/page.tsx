@@ -13,7 +13,7 @@ interface DeviceSummary {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; dot: string }> = {
-  ready: { label: 'Ready for editing', dot: 'bg-green-400' },
+  ready: { label: 'Ready for editing', dot: 'bg-gray-400' },
   'in-progress': { label: 'In Progress', dot: 'bg-blue-400' },
   submitted: { label: 'Submitted — waiting for review', dot: 'bg-amber-400' },
   approved: { label: 'Approved', dot: 'bg-green-400' },
@@ -91,7 +91,7 @@ export default function EditorListPage() {
                       </Link>
                     )}
                     {d.status === 'submitted' && (
-                      <span className="text-[11px] text-amber-400/60">Waiting for review</span>
+                      <span className="text-[11px] text-amber-400">Waiting for review</span>
                     )}
                     {d.status === 'approved' && (
                       <span className="text-[11px] text-green-400">✓ Complete</span>
