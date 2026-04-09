@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readState, writeState } from '@/lib/pipeline/state-machine';
+import { gracefulKill } from '@/lib/pipeline/process-utils';
 
 export async function GET(
   _request: NextRequest,
@@ -26,15 +27,18 @@ export async function DELETE(
     return NextResponse.json({ error: `No pipeline found for device: ${deviceId}` }, { status: 404 });
   }
 
+  // Kill child agent first, then runner — with graceful shutdown
+  if (state.childPid) {
+    gracefulKill(state.childPid, 'Agent');
+  }
   if (state.runnerPid) {
-    try {
-      process.kill(state.runnerPid, 'SIGTERM');
-    } catch { /* Process may have already exited */ }
+    gracefulKill(state.runnerPid, 'Runner');
   }
 
   state.status = 'failed';
   state.currentPhase = 'failed';
   state.runnerPid = null;
+  state.childPid = null;
   writeState(deviceId, state);
 
   return NextResponse.json({ status: 'cancelled' });

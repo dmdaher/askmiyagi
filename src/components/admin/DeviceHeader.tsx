@@ -41,7 +41,7 @@ export default function DeviceHeader({ deviceId }: DeviceHeaderProps) {
   };
 
   const handleRestart = async () => {
-    if (!confirm('Re-run the entire pipeline with latest improvements. Your editor positions will be preserved.')) return;
+    if (!confirm(`Restart pipeline for "${deviceName}"?\n\nThis will re-run the entire pipeline from scratch with the latest improvements. Your editor positions will be preserved.`)) return;
     await fetch(`/api/pipeline/${deviceId}/restart`, { method: 'POST' });
     window.location.reload();
   };

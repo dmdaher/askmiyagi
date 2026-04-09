@@ -270,6 +270,8 @@ async function run() {
       fs.mkdirSync(destDir, { recursive: true });
       fs.copyFileSync(absSource, destInWorktree);
       appendLog(deviceId, { level: 'info', message: `Copied manual to worktree: ${manualPath}` });
+    } else if (!fs.existsSync(absSource)) {
+      appendLog(deviceId, { level: 'warn', message: `Manual not found at ${manualPath} — preflight will re-download` });
     }
   }
 
@@ -289,6 +291,21 @@ async function run() {
       }
     } catch { /* ignore heartbeat errors */ }
   }, 30_000);
+
+  // Signal handlers — ensure cleanup runs when killed by cancel/restart/pause
+  const handleSignal = (signal: string) => {
+    appendLog(deviceId, { level: 'info', message: `Runner received ${signal} — cleaning up` });
+    clearInterval(heartbeatInterval);
+    state.runnerPid = null;
+    state.childPid = null;
+    if (state.status === 'running') {
+      state.status = 'paused';
+    }
+    writeState(deviceId, state);
+    process.exit(0);
+  };
+  process.on('SIGTERM', () => handleSignal('SIGTERM'));
+  process.on('SIGINT', () => handleSignal('SIGINT'));
 
   try {
     while (state.status === 'running') {
