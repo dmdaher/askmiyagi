@@ -183,8 +183,10 @@ export default function ContractorSubmissions() {
                       {d.manufacturer} {d.deviceName}
                     </span>
                     <p className={`text-[10px] ${style.text}`}>{label}</p>
-                    {d.reviewNote && d.status === 'in-progress' && (
-                      <p className="text-[11px] text-amber-400/70 mt-0.5">Note: {d.reviewNote}</p>
+                    {d.reviewNote && (d.status === 'in-progress' || d.status === 'submitted') && (
+                      <p className="text-[11px] text-amber-400/70 mt-0.5">
+                        {d.status === 'submitted' ? 'Contractor note: ' : 'Your feedback: '}{d.reviewNote}
+                      </p>
                     )}
                   </div>
                 </div>
