@@ -1448,6 +1448,9 @@ async function doPanelPR(state: PipelineState) {
   appendLog(deviceId, { level: 'info', message: 'Creating panel PR...' });
 
   try {
+    // Push the worktree branch to remote before creating PR
+    execSync('git push -u origin HEAD', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd });
+
     const prOutput = execSync(
       `gh pr create --base test --title "feat: ${state.deviceName} digital twin panel" --body "Automated panel build for ${state.deviceName} by Miyagi Pipeline"`,
       { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd }
