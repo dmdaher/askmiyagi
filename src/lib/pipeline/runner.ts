@@ -135,7 +135,7 @@ export function invokeAgent(opts: {
       message: `Starting ${opts.agent} invocation${opts.cwd ? ` (cwd: ${opts.cwd})` : ''}`,
     });
 
-    const proc = spawn('npx', ['claude', ...args], {
+    const proc = spawn('claude', args, {
       stdio: ['ignore', 'pipe', 'pipe'],
       cwd: opts.cwd,
       env: { ...process.env },
