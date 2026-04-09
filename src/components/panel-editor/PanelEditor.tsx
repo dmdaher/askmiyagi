@@ -295,11 +295,19 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
           // Initialize labels from controls if not yet done (migration)
           useEditorStore.getState().initLabelsFromControls();
 
-          // In hosted mode, lock editor if panel is already submitted/approved
-          if (isHosted && (data._status === 'submitted' || data._status === 'approved')) {
-            useEditorStore.getState().setPreviewMode(true);
-            if (typeof window !== 'undefined') {
-              (window as any).__submittedForReview = true;
+          // In hosted mode, lock or unlock editor based on current status
+          if (isHosted) {
+            if (data._status === 'submitted' || data._status === 'approved') {
+              useEditorStore.getState().setPreviewMode(true);
+              if (typeof window !== 'undefined') {
+                (window as any).__submittedForReview = true;
+              }
+            } else {
+              // Unlock — admin may have sent changes back
+              useEditorStore.getState().setPreviewMode(false);
+              if (typeof window !== 'undefined') {
+                (window as any).__submittedForReview = false;
+              }
             }
           }
 
