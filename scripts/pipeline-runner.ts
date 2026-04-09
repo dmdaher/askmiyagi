@@ -1448,9 +1448,14 @@ async function doPanelPR(state: PipelineState) {
   appendLog(deviceId, { level: 'info', message: 'Creating panel PR...' });
 
   try {
-    // Push the worktree branch to remote before creating PR
-    execSync('git push -u origin HEAD', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd });
+    // Panel PR phase is obsolete — PanelRenderer uses committed JSON, not generated TSX.
+    // The flow is now: pipeline completes → Send to Contractor → contractor edits → approve → Pull & Build.
+    // Skip PR creation and just mark the phase as passed.
+    appendLog(deviceId, { level: 'info', message: 'Panel PR skipped — using PanelRenderer + contractor flow instead of codegen PR' });
+    passPhase(state, 'panel-pr');
+    return;
 
+    // Legacy code below (kept for reference, never reached):
     const prOutput = execSync(
       `gh pr create --base test --title "feat: ${state.deviceName} digital twin panel" --body "Automated panel build for ${state.deviceName} by Miyagi Pipeline"`,
       { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd }
