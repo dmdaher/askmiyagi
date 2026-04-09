@@ -338,18 +338,25 @@ export default function EditorToolbar({
             <button
               onClick={async () => {
                 if (!confirm('Submit panel for review? You won\'t be able to edit until the owner responds.')) return;
+                // Lock editor IMMEDIATELY — blocks any queued auto-save timers
+                // from firing between now and PATCH completing
+                useEditorStore.getState().setPreviewMode(true);
+                useEditorStore.getState().setSelectedIds([]);
                 try {
-                  await fetch(`/api/hosted/panels/${deviceId}/status`, {
+                  const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'submitted' }),
                   });
-                  useEditorStore.getState().setPreviewMode(true);
-                  useEditorStore.getState().setSelectedIds([]);
+                  if (!res.ok) throw new Error('Submit failed');
                   if (typeof window !== 'undefined') {
                     (window as any).__submittedForReview = true;
                   }
-                } catch { alert('Failed to submit — please try again.'); }
+                } catch {
+                  // PATCH failed — unlock editor so they can retry
+                  useEditorStore.getState().setPreviewMode(false);
+                  alert('Failed to submit — please try again.');
+                }
               }}
               disabled={previewMode}
               className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
