@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
+import { initDevice, putPhoto } from '@/lib/hosted-storage';
 import fs from 'fs';
 import path from 'path';
 
@@ -7,8 +7,7 @@ import path from 'path';
  * POST /api/pipeline/{deviceId}/send-to-hosted
  *
  * Local-only route: reads manifest + photos from local filesystem,
- * uploads to Vercel Blob for the hosted contractor editor.
- * Server-side Blob SDK calls — no CORS issues.
+ * uploads to Vercel Blob (separate status.json + manifest.json blobs).
  *
  * Response shape: { ok, output?, error? } — consumed by PipelineDetail.ContractorActions
  */
@@ -27,24 +26,15 @@ export async function POST(
   try {
     const manifest = JSON.parse(fs.readFileSync(editorPath, 'utf-8'));
 
-    const state = {
+    // Write both blobs (status.json + manifest.json)
+    await initDevice(
       deviceId,
-      deviceName: manifest.deviceName ?? deviceId,
-      manufacturer: manifest.manufacturer ?? '',
-      status: 'ready',
+      manifest.deviceName ?? deviceId,
+      manifest.manufacturer ?? '',
       manifest,
-      updatedAt: new Date().toISOString(),
-    };
+    );
 
-    // Upload state — allowOverwrite required
-    await put(`devices/${deviceId}/state.json`, JSON.stringify(state), {
-      access: 'public',
-      contentType: 'application/json',
-      addRandomSuffix: false,
-      allowOverwrite: true,
-    });
-
-    // Upload photos — allowOverwrite required
+    // Upload photos
     let photoCount = 0;
     const photosDir = path.join(pipelineDir, 'input', 'photos');
     if (fs.existsSync(photosDir)) {
@@ -52,11 +42,7 @@ export async function POST(
         const filePath = path.join(photosDir, file);
         if (!fs.statSync(filePath).isFile()) continue;
         const data = fs.readFileSync(filePath);
-        await put(`devices/${deviceId}/photos/${file}`, data as any, {
-          access: 'public',
-          addRandomSuffix: false,
-          allowOverwrite: true,
-        });
+        await putPhoto(deviceId, file, data);
         photoCount++;
       }
     }

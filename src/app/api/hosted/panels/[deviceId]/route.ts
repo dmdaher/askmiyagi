@@ -1,33 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDeviceState, putDeviceState } from '@/lib/hosted-storage';
+import { getDeviceStatus, getDeviceManifest, putDeviceManifest, putDeviceStatus } from '@/lib/hosted-storage';
 
 /**
  * GET /api/hosted/panels/{deviceId}
- * Returns manifest in the SAME flat format as local /api/pipeline/{id}/manifest.
- * Adds _source:'hosted', _status, _reviewNote for the editor to detect hosted mode.
+ * Returns manifest in flat format + status metadata from separate blob.
  */
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ deviceId: string }> }
 ) {
   const { deviceId } = await params;
-  const state = await getDeviceState(deviceId);
-  if (!state) {
+
+  const [status, manifest] = await Promise.all([
+    getDeviceStatus(deviceId),
+    getDeviceManifest(deviceId),
+  ]);
+
+  if (!status || !manifest) {
     return NextResponse.json({ error: 'Device not found' }, { status: 404 });
   }
 
   return NextResponse.json({
-    ...(state.manifest as Record<string, unknown>),
+    ...(manifest as Record<string, unknown>),
     _source: 'hosted',
-    _status: state.status,
-    _updatedAt: state.updatedAt,
-    _reviewNote: state.reviewNote ?? null,
+    _status: status.status,
+    _updatedAt: status.updatedAt,
+    _reviewNote: status.reviewNote ?? null,
   });
 }
 
 /**
  * PUT /api/hosted/panels/{deviceId}
- * Auto-save from editor. Rejects when submitted/approved (403).
+ * Auto-save from editor. Writes ONLY the manifest blob.
+ * Never touches status — eliminates the race condition.
+ *
+ * Checks status blob separately: rejects when submitted/approved.
  */
 export async function PUT(
   request: NextRequest,
@@ -36,28 +43,31 @@ export async function PUT(
   const { deviceId } = await params;
   const body = await request.json();
 
-  const existing = await getDeviceState(deviceId);
-  if (!existing) {
+  // Check status from separate blob — no read-modify-write on same blob
+  const status = await getDeviceStatus(deviceId);
+  if (!status) {
     return NextResponse.json({ error: 'Device not found' }, { status: 404 });
   }
 
-  // Server-side write lock: reject saves when panel is under review or approved
-  if (existing.status === 'submitted' || existing.status === 'approved') {
+  // Server-side lock: reject saves when panel is under review or approved
+  if (status.status === 'submitted' || status.status === 'approved') {
     return NextResponse.json(
-      { error: 'Panel is locked for review', status: existing.status },
+      { error: 'Panel is locked for review', status: status.status },
       { status: 403 },
     );
   }
 
-  // First auto-save transitions ready → in-progress
-  const newStatus = existing.status === 'ready' ? 'in-progress' : existing.status;
+  // Write manifest to its own blob — completely independent of status
+  await putDeviceManifest(deviceId, body);
 
-  await putDeviceState(deviceId, {
-    ...existing,
-    status: newStatus as any,
-    manifest: body,
-    updatedAt: new Date().toISOString(),
-  });
+  // First auto-save transitions ready → in-progress (update status blob)
+  if (status.status === 'ready') {
+    await putDeviceStatus(deviceId, {
+      ...status,
+      status: 'in-progress',
+      updatedAt: new Date().toISOString(),
+    });
+  }
 
-  return NextResponse.json({ ok: true, status: newStatus });
+  return NextResponse.json({ ok: true, status: status.status === 'ready' ? 'in-progress' : status.status });
 }

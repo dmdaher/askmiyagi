@@ -1,11 +1,17 @@
 /**
  * Vercel Blob storage for hosted contractor editor.
  *
- * RULES (non-negotiable):
+ * ARCHITECTURE: Status and manifest are SEPARATE blobs.
+ *   devices/{deviceId}/status.json   — status + reviewNote (small, PATCH only)
+ *   devices/{deviceId}/manifest.json — full editor manifest (large, PUT auto-save)
+ *   devices/{deviceId}/photos/*.jpg  — reference photos
+ *
+ * This eliminates the race condition where auto-save PUT overwrites
+ * the status set by PATCH — they never touch the same blob.
+ *
+ * RULES:
  * 1. Every put() call MUST include allowOverwrite: true
- * 2. Every fetch() from Blob MUST include { cache: 'no-store' }
- * 3. One state.json per device at devices/{deviceId}/state.json
- * 4. Photos at devices/{deviceId}/photos/{name}.jpg
+ * 2. Every fetch() from Blob URL MUST use cache buster + { cache: 'no-store' }
  */
 
 import { put, list, head } from '@vercel/blob';
@@ -16,12 +22,11 @@ const PREFIX = 'devices';
 
 export type DeviceStatus = 'ready' | 'in-progress' | 'submitted' | 'approved';
 
-export interface DeviceState {
+export interface DeviceStatusData {
   deviceId: string;
   deviceName: string;
   manufacturer: string;
   status: DeviceStatus;
-  manifest: Record<string, unknown>;
   reviewNote?: string;
   updatedAt: string;
 }
@@ -48,14 +53,23 @@ export function isValidTransition(from: DeviceStatus, to: DeviceStatus): boolean
   return VALID_TRANSITIONS[from]?.includes(to) ?? false;
 }
 
-// ─── Read operations (ALL use cache: 'no-store') ────────────────────────────
+// ─── Helper: fetch with cache buster ────────────────────────────────────────
 
-export async function getDeviceState(deviceId: string): Promise<DeviceState | null> {
+async function fetchFresh(url: string): Promise<Response> {
+  const bustUrl = `${url}${url.includes('?') ? '&' : '?'}cb=${Date.now()}`;
+  return fetch(bustUrl, { cache: 'no-store' });
+}
+
+// ─── Status operations (separate blob — never touched by auto-save) ─────────
+
+function statusPath(deviceId: string) {
+  return `${PREFIX}/${deviceId}/status.json`;
+}
+
+export async function getDeviceStatus(deviceId: string): Promise<DeviceStatusData | null> {
   try {
-    const meta = await head(`${PREFIX}/${deviceId}/state.json`);
-    // Cache buster: Vercel edge can cache even with no-store on public Blob URLs
-    const bustUrl = `${meta.url}${meta.url.includes('?') ? '&' : '?'}cb=${Date.now()}`;
-    const res = await fetch(bustUrl, { cache: 'no-store' });
+    const meta = await head(statusPath(deviceId));
+    const res = await fetchFresh(meta.url);
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -63,24 +77,60 @@ export async function getDeviceState(deviceId: string): Promise<DeviceState | nu
   }
 }
 
+export async function putDeviceStatus(deviceId: string, data: DeviceStatusData): Promise<void> {
+  await put(statusPath(deviceId), JSON.stringify(data), {
+    access: 'public',
+    contentType: 'application/json',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+}
+
+// ─── Manifest operations (separate blob — auto-save writes here) ────────────
+
+function manifestPath(deviceId: string) {
+  return `${PREFIX}/${deviceId}/manifest.json`;
+}
+
+export async function getDeviceManifest(deviceId: string): Promise<Record<string, unknown> | null> {
+  try {
+    const meta = await head(manifestPath(deviceId));
+    const res = await fetchFresh(meta.url);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function putDeviceManifest(deviceId: string, manifest: Record<string, unknown>): Promise<void> {
+  await put(manifestPath(deviceId), JSON.stringify(manifest), {
+    access: 'public',
+    contentType: 'application/json',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+}
+
+// ─── List operations ────────────────────────────────────────────────────────
+
 export async function listDevices(): Promise<DeviceSummary[]> {
   try {
     const { blobs } = await list({ prefix: `${PREFIX}/` });
-    const stateBlobs = blobs.filter(b => b.pathname.endsWith('/state.json'));
+    const statusBlobs = blobs.filter(b => b.pathname.endsWith('/status.json'));
 
     const results = await Promise.all(
-      stateBlobs.map(async (blob) => {
+      statusBlobs.map(async (blob) => {
         try {
-          const bustUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}cb=${Date.now()}`;
-        const res = await fetch(bustUrl, { cache: 'no-store' });
-          const state: DeviceState = await res.json();
+          const res = await fetchFresh(blob.url);
+          const data: DeviceStatusData = await res.json();
           return {
-            deviceId: state.deviceId,
-            deviceName: state.deviceName,
-            manufacturer: state.manufacturer,
-            status: state.status,
-            updatedAt: state.updatedAt,
-            reviewNote: state.reviewNote,
+            deviceId: data.deviceId,
+            deviceName: data.deviceName,
+            manufacturer: data.manufacturer,
+            status: data.status,
+            updatedAt: data.updatedAt,
+            reviewNote: data.reviewNote,
           } as DeviceSummary;
         } catch {
           return null;
@@ -94,6 +144,8 @@ export async function listDevices(): Promise<DeviceSummary[]> {
   }
 }
 
+// ─── Photo operations ───────────────────────────────────────────────────────
+
 export async function listPhotos(deviceId: string): Promise<Array<{ name: string; url: string }>> {
   try {
     const { blobs } = await list({ prefix: `${PREFIX}/${deviceId}/photos/` });
@@ -106,17 +158,6 @@ export async function listPhotos(deviceId: string): Promise<Array<{ name: string
   }
 }
 
-// ─── Write operations (ALL use allowOverwrite: true) ────────────────────────
-
-export async function putDeviceState(deviceId: string, state: DeviceState): Promise<void> {
-  await put(`${PREFIX}/${deviceId}/state.json`, JSON.stringify(state), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
-}
-
 export async function putPhoto(deviceId: string, name: string, data: Buffer | Uint8Array): Promise<string> {
   const blob = await put(`${PREFIX}/${deviceId}/photos/${name}`, data as any, {
     access: 'public',
@@ -124,4 +165,22 @@ export async function putPhoto(deviceId: string, name: string, data: Buffer | Ui
     allowOverwrite: true,
   });
   return blob.url;
+}
+
+// ─── Init device (writes both blobs) ────────────────────────────────────────
+
+export async function initDevice(
+  deviceId: string,
+  deviceName: string,
+  manufacturer: string,
+  manifest: Record<string, unknown>,
+): Promise<void> {
+  await putDeviceStatus(deviceId, {
+    deviceId,
+    deviceName,
+    manufacturer,
+    status: 'ready',
+    updatedAt: new Date().toISOString(),
+  });
+  await putDeviceManifest(deviceId, manifest);
 }
