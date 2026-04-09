@@ -174,12 +174,14 @@ export async function initDevice(
   deviceName: string,
   manufacturer: string,
   manifest: Record<string, unknown>,
+  reviewNote?: string,
 ): Promise<void> {
   await putDeviceStatus(deviceId, {
     deviceId,
     deviceName,
     manufacturer,
     status: 'ready',
+    reviewNote,
     updatedAt: new Date().toISOString(),
   });
   await putDeviceManifest(deviceId, manifest);

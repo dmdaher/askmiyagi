@@ -215,19 +215,29 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
   const [sending, setSending] = useState(false);
   const [pulling, setPulling] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [sendNote, setSendNote] = useState('');
 
   const handleSendToContractor = useCallback(async () => {
     setSending(true);
     setResult(null);
     try {
-      const res = await fetch(`/api/pipeline/${deviceId}/send-to-hosted`, { method: 'POST' });
+      const res = await fetch(`/api/pipeline/${deviceId}/send-to-hosted`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note: sendNote.trim() || undefined }),
+      });
       const data = await res.json();
-      setResult(data.ok ? `✓ ${data.output}` : `✗ ${data.error}`);
+      if (!data.ok) throw new Error(data.error);
+
+      setResult(`✓ ${data.output}`);
+      setShowSendModal(false);
+      setSendNote('');
     } catch (err) {
       setResult(`✗ ${(err as Error).message}`);
     }
     setSending(false);
-  }, [deviceId]);
+  }, [deviceId, sendNote]);
 
   const handlePullAndBuild = useCallback(async () => {
     setPulling(true);
@@ -243,33 +253,70 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
   }, [deviceId]);
 
   return (
-    <div
-      className="flex items-center gap-3 rounded-lg p-3"
-      style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
-    >
-      <span className="text-xs text-gray-500 mr-1">Contractor:</span>
-
-      <button
-        onClick={handleSendToContractor}
-        disabled={sending}
-        className="rounded border border-blue-600 bg-blue-700/30 px-3 py-1.5 text-xs font-medium text-blue-300 hover:bg-blue-700/50 transition-colors disabled:opacity-50"
+    <>
+      <div
+        className="flex items-center gap-3 rounded-lg p-3"
+        style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
       >
-        {sending ? 'Sending...' : 'Send to Contractor'}
-      </button>
+        <span className="text-xs text-gray-500 mr-1">Contractor:</span>
 
-      <button
-        onClick={handlePullAndBuild}
-        disabled={pulling}
-        className="rounded border border-green-600 bg-green-700/30 px-3 py-1.5 text-xs font-medium text-green-300 hover:bg-green-700/50 transition-colors disabled:opacity-50"
-      >
-        {pulling ? 'Pulling...' : 'Pull & Build Tutorials'}
-      </button>
+        <button
+          onClick={() => { setShowSendModal(true); setSendNote(''); }}
+          disabled={sending}
+          className="rounded border border-blue-600 bg-blue-700/30 px-3 py-1.5 text-xs font-medium text-blue-300 hover:bg-blue-700/50 transition-colors disabled:opacity-50"
+        >
+          {sending ? 'Sending...' : 'Send to Contractor'}
+        </button>
 
-      {result && (
-        <span className={`text-xs truncate flex-1 ${result.startsWith('✓') ? 'text-green-400' : 'text-red-400'}`}>
-          {result}
-        </span>
+        <button
+          onClick={handlePullAndBuild}
+          disabled={pulling}
+          className="rounded border border-green-600 bg-green-700/30 px-3 py-1.5 text-xs font-medium text-green-300 hover:bg-green-700/50 transition-colors disabled:opacity-50"
+        >
+          {pulling ? 'Pulling...' : 'Pull & Build Tutorials'}
+        </button>
+
+        {result && (
+          <span className={`text-xs truncate flex-1 ${result.startsWith('✓') ? 'text-green-400' : 'text-red-400'}`}>
+            {result}
+          </span>
+        )}
+      </div>
+
+      {/* Send to Contractor modal */}
+      {showSendModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60" onClick={() => setShowSendModal(false)}>
+          <div className="w-full max-w-lg rounded-xl border border-gray-700 bg-[#111122] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-base font-semibold text-gray-200 mb-1">Send to Contractor</h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Add a note for the contractor (optional) — describe what's ready, what to focus on, or any context they need.
+            </p>
+            <textarea
+              value={sendNote}
+              onChange={(e) => setSendNote(e.target.value)}
+              placeholder={"Example:\n- Controls are positioned from the pipeline\n- Focus on aligning the zone buttons row\n- Keyboard width might need adjusting\n- Common section labels need cleanup"}
+              rows={6}
+              autoFocus
+              className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-200 outline-none focus:border-blue-500 placeholder:text-gray-600 resize-none"
+            />
+            <div className="flex items-center justify-between mt-4">
+              <button
+                onClick={() => setShowSendModal(false)}
+                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSendToContractor}
+                disabled={sending}
+                className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 transition-colors disabled:opacity-50"
+              >
+                {sending ? 'Sending...' : 'Send to Contractor'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }
