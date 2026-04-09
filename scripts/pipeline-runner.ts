@@ -1168,13 +1168,13 @@ async function doPhase0LayoutEngine(state: PipelineState) {
     if (!editorPending) {
       // Re-create escalation (shouldn't happen, but defensive)
       createEscalation(state, 'agent-failure',
-        `Pipeline ready for editor. Open the visual editor to position controls, then run codegen. ` +
-        `Resume the pipeline after codegen to start QA.\n` +
+        `Pipeline ready for editor. Click "Send to Contractor" to upload the manifest for the contractor to edit. ` +
+        `Resume the pipeline after the panel is approved to start QA.\n` +
         `Manifest: .pipeline/${deviceId}/manifest.json\n` +
         `Templates: .pipeline/${deviceId}/templates.json`);
       sendNotification('Miyagi Pipeline', `${state.deviceName} is ready for the editor`);
     }
-    appendLog(deviceId, { level: 'info', message: 'Layout Engine: waiting for editor gate to be resolved' });
+    appendLog(deviceId, { level: 'info', message: 'Layout Engine: waiting for editor/contractor gate to be resolved' });
     state.status = 'paused';
     writeState(deviceId, state);
     return;
@@ -1254,11 +1254,11 @@ async function doPhase0LayoutEngine(state: PipelineState) {
         message: `Layout Engine: ${templateCount} templates generated for ${controlCount} controls`,
       });
       completePhase(state, 'phase-0-layout-engine', 10, true);
-      // Pause for editor — the contractor positions controls, then codegen runs.
-      // Phase 1 (QA) requires a rendered panel, so it can't run until after codegen.
+      // Pause for editor — the contractor positions controls via the hosted editor.
+      // Use "Send to Contractor" on the pipeline detail page to upload to Blob.
       createEscalation(state, 'agent-failure',
-        `Pipeline ready for editor. Open the visual editor to position controls, then run codegen. ` +
-        `Resume the pipeline after codegen to start QA.\n` +
+        `Pipeline ready for editor. Click "Send to Contractor" to upload the manifest for the contractor to edit. ` +
+        `Resume the pipeline after the panel is approved to start QA.\n` +
         `Manifest: .pipeline/${deviceId}/manifest.json\n` +
         `Templates: .pipeline/${deviceId}/templates.json`);
       sendNotification('Miyagi Pipeline', `${state.deviceName} is ready for the editor`);
@@ -1448,6 +1448,14 @@ async function doPanelPR(state: PipelineState) {
   appendLog(deviceId, { level: 'info', message: 'Creating panel PR...' });
 
   try {
+    // Panel PR phase is obsolete — PanelRenderer uses committed JSON, not generated TSX.
+    // The flow is now: pipeline completes → Send to Contractor → contractor edits → approve → Pull & Build.
+    // Skip PR creation and just mark the phase as passed.
+    appendLog(deviceId, { level: 'info', message: 'Panel PR skipped — using PanelRenderer + contractor flow instead of codegen PR' });
+    passPhase(state, 'panel-pr');
+    return;
+
+    // Legacy code below (kept for reference, never reached):
     const prOutput = execSync(
       `gh pr create --base test --title "feat: ${state.deviceName} digital twin panel" --body "Automated panel build for ${state.deviceName} by Miyagi Pipeline"`,
       { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd }
@@ -2118,6 +2126,9 @@ async function doTutorialPR(state: PipelineState) {
   appendLog(deviceId, { level: 'info', message: 'Creating tutorial PR...' });
 
   try {
+    // Push the worktree branch to remote before creating PR
+    execSync('git push -u origin HEAD', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd });
+
     const prOutput = execSync(
       `gh pr create --base test --title "feat: ${state.deviceName} tutorials" --body "Automated tutorial build for ${state.deviceName} by Miyagi Pipeline"`,
       { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd }
