@@ -116,8 +116,9 @@ export default function ContractorSubmissions() {
 
   // ── Render ────────────────────────────────────────────────────────────────
 
-  if (loading || devices.length === 0) return null;
+  if (loading) return null;
 
+  const isEmpty = devices.length === 0;
   const needsReview = devices.filter(d => d.status === 'submitted').length;
   const sorted = [...devices].sort((a, b) => {
     const order: Record<string, number> = { submitted: 0, 'in-progress': 1, ready: 2, approved: 3 };
@@ -148,6 +149,14 @@ export default function ContractorSubmissions() {
           <span className="text-sm text-amber-300">
             {needsReview === 1 ? 'A panel is ready for your review' : `${needsReview} panels are ready for your review`}
           </span>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {isEmpty && (
+        <div className="rounded-lg border border-gray-800 bg-[#111122] px-4 py-6 text-center">
+          <p className="text-sm text-gray-500">No instruments sent to contractor yet</p>
+          <p className="text-xs text-gray-600 mt-1">Use "Send to Contractor" on a pipeline detail page to get started</p>
         </div>
       )}
 
