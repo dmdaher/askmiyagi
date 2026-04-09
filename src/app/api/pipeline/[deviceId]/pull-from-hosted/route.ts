@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDeviceState } from '@/lib/hosted-storage';
+import { getDeviceStatus, getDeviceManifest } from '@/lib/hosted-storage';
 import fs from 'fs';
 import path from 'path';
 
@@ -8,9 +8,8 @@ import path from 'path';
  *
  * Local-only route: pulls contractor's manifest from hosted Blob,
  * writes to local manifest-editor.json, then runs export-manifest.
- * Server-side Blob SDK calls — no CORS issues.
  *
- * Response shape: { ok, output?, error?, status? } — consumed by PipelineDetail.ContractorActions
+ * Response shape: { ok, output?, error?, status? }
  */
 export async function POST(
   _request: NextRequest,
@@ -19,8 +18,12 @@ export async function POST(
   const { deviceId } = await params;
 
   try {
-    const state = await getDeviceState(deviceId);
-    if (!state) {
+    const [status, manifest] = await Promise.all([
+      getDeviceStatus(deviceId),
+      getDeviceManifest(deviceId),
+    ]);
+
+    if (!status || !manifest) {
       return NextResponse.json({ error: 'Device not found in hosted storage' }, { status: 404 });
     }
 
@@ -30,7 +33,7 @@ export async function POST(
       fs.mkdirSync(pipelineDir, { recursive: true });
     }
     const editorPath = path.join(pipelineDir, 'manifest-editor.json');
-    fs.writeFileSync(editorPath, JSON.stringify(state.manifest, null, 2));
+    fs.writeFileSync(editorPath, JSON.stringify(manifest, null, 2));
 
     // Run export-manifest to write production JSON
     let exported = false;
@@ -43,8 +46,8 @@ export async function POST(
 
     return NextResponse.json({
       ok: true,
-      status: state.status,
-      output: `Pulled manifest from hosted (status: ${state.status}). Local manifest-editor.json updated.${exported ? ' Production manifest exported.' : ''}`,
+      status: status.status,
+      output: `Pulled manifest from hosted (status: ${status.status}). Local manifest-editor.json updated.${exported ? ' Production manifest exported.' : ''}`,
     });
   } catch (err) {
     return NextResponse.json(
