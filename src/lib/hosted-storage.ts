@@ -53,7 +53,9 @@ export function isValidTransition(from: DeviceStatus, to: DeviceStatus): boolean
 export async function getDeviceState(deviceId: string): Promise<DeviceState | null> {
   try {
     const meta = await head(`${PREFIX}/${deviceId}/state.json`);
-    const res = await fetch(meta.url, { cache: 'no-store' });
+    // Cache buster: Vercel edge can cache even with no-store on public Blob URLs
+    const bustUrl = `${meta.url}${meta.url.includes('?') ? '&' : '?'}cb=${Date.now()}`;
+    const res = await fetch(bustUrl, { cache: 'no-store' });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -69,7 +71,8 @@ export async function listDevices(): Promise<DeviceSummary[]> {
     const results = await Promise.all(
       stateBlobs.map(async (blob) => {
         try {
-          const res = await fetch(blob.url, { cache: 'no-store' });
+          const bustUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}cb=${Date.now()}`;
+        const res = await fetch(bustUrl, { cache: 'no-store' });
           const state: DeviceState = await res.json();
           return {
             deviceId: state.deviceId,
