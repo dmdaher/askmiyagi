@@ -99,7 +99,8 @@ export default function ContractorSubmissions() {
       await fetch(`/api/pipeline/${deviceId}/pull-from-hosted`, { method: 'POST' });
     } catch { /* pull failed — open editor with local state */ }
     setActing(null);
-    window.open(`/admin/${deviceId}/editor`, '_blank');
+    // Force fresh load — bypass Zustand store cache from previous session
+    window.open(`/admin/${deviceId}/editor?reload=${Date.now()}`, '_blank');
   };
 
   const handlePullBuild = async (deviceId: string) => {
@@ -183,8 +184,10 @@ export default function ContractorSubmissions() {
                       {d.manufacturer} {d.deviceName}
                     </span>
                     <p className={`text-[10px] ${style.text}`}>{label}</p>
-                    {d.reviewNote && d.status === 'in-progress' && (
-                      <p className="text-[11px] text-amber-400/70 mt-0.5">Note: {d.reviewNote}</p>
+                    {d.reviewNote && (d.status === 'in-progress' || d.status === 'submitted') && (
+                      <p className="text-[11px] text-amber-400/70 mt-0.5">
+                        {d.status === 'submitted' ? 'Contractor note: ' : 'Your feedback: '}{d.reviewNote}
+                      </p>
                     )}
                   </div>
                 </div>

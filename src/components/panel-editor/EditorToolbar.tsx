@@ -1,11 +1,90 @@
 'use client';
 
+import { useState } from 'react';
 import { useEditorStore } from './store';
 import type { SnapGrid } from './store';
 import VersionHistoryDropdown from './VersionHistoryDropdown';
 import { isHosted } from '@/lib/env';
 
 const SNAP_OPTIONS: SnapGrid[] = [1, 2, 4, 8, 16, 32];
+
+/** Submit for Review button with note modal */
+function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disabled: boolean }) {
+  const [showModal, setShowModal] = useState(false);
+  const [note, setNote] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    // Lock editor IMMEDIATELY — blocks queued auto-save timers
+    useEditorStore.getState().setPreviewMode(true);
+    useEditorStore.getState().setSelectedIds([]);
+    try {
+      const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'submitted', reviewNote: note.trim() || undefined }),
+      });
+      if (!res.ok) throw new Error('Submit failed');
+      if (typeof window !== 'undefined') {
+        (window as any).__submittedForReview = true;
+      }
+      setShowModal(false);
+    } catch {
+      useEditorStore.getState().setPreviewMode(false);
+      alert('Failed to submit — please try again.');
+    }
+    setSubmitting(false);
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        disabled={disabled}
+        className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
+        title="Submit panel for owner review"
+      >
+        Submit for Review
+      </button>
+
+      {showModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60" onClick={() => setShowModal(false)}>
+          <div className="w-full max-w-lg rounded-xl border border-gray-700 bg-[#111122] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-base font-semibold text-gray-200 mb-1">Submit for Review</h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Add a note for the reviewer (optional) — mention anything they should know about your changes.
+            </p>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder={"Example:\n- Aligned all zone buttons and knobs\n- Moved value dial closer to cursor buttons\n- Added arrow icons to cursor labels\n- Common section might need a wider canvas"}
+              rows={6}
+              autoFocus
+              className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-200 outline-none focus:border-blue-500 placeholder:text-gray-600 resize-none"
+            />
+            <p className="text-[10px] text-gray-600 mt-2">You won't be able to edit until the reviewer responds.</p>
+            <div className="flex items-center justify-between mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-500 transition-colors disabled:opacity-50"
+              >
+                {submitting ? 'Submitting...' : 'Submit for Review'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 const ZOOM_STEP = 0.1;
 
 interface EditorToolbarProps {
@@ -335,35 +414,7 @@ export default function EditorToolbar({
               Submitted ✓
             </span>
           ) : (
-            <button
-              onClick={async () => {
-                if (!confirm('Submit panel for review? You won\'t be able to edit until the owner responds.')) return;
-                // Lock editor IMMEDIATELY — blocks any queued auto-save timers
-                // from firing between now and PATCH completing
-                useEditorStore.getState().setPreviewMode(true);
-                useEditorStore.getState().setSelectedIds([]);
-                try {
-                  const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'submitted' }),
-                  });
-                  if (!res.ok) throw new Error('Submit failed');
-                  if (typeof window !== 'undefined') {
-                    (window as any).__submittedForReview = true;
-                  }
-                } catch {
-                  // PATCH failed — unlock editor so they can retry
-                  useEditorStore.getState().setPreviewMode(false);
-                  alert('Failed to submit — please try again.');
-                }
-              }}
-              disabled={previewMode}
-              className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
-              title="Submit panel for owner review"
-            >
-              Submit for Review
-            </button>
+            <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
           )
         ) : (
           <button
