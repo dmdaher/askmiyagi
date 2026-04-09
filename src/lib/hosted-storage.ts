@@ -38,7 +38,7 @@ export interface DeviceSummary {
 // ─── Valid state transitions ────────────────────────────────────────────────
 
 const VALID_TRANSITIONS: Record<DeviceStatus, DeviceStatus[]> = {
-  'ready': ['in-progress'],
+  'ready': ['in-progress', 'submitted'],
   'in-progress': ['submitted'],
   'submitted': ['approved', 'in-progress'],
   'approved': ['in-progress'],
