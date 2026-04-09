@@ -218,8 +218,10 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
     // tabs and came back), skip the disk reload to preserve in-memory state
     // and undo history. Only fetch from disk on first load or device change.
     // BUT: if reloadKey > 0, always reload (version restore triggered it).
+    // Force reload if ?reload= param is present (review flow pulls fresh data)
+    const hasReloadParam = typeof window !== 'undefined' && window.location.search.includes('reload=');
     const currentStore = useEditorStore.getState();
-    if (reloadKey === 0 && currentStore.deviceId === deviceId && Object.keys(currentStore.controls).length > 0) {
+    if (!hasReloadParam && reloadKey === 0 && currentStore.deviceId === deviceId && Object.keys(currentStore.controls).length > 0) {
       setLoading(false);
       return;
     }

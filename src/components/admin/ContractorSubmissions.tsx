@@ -99,7 +99,8 @@ export default function ContractorSubmissions() {
       await fetch(`/api/pipeline/${deviceId}/pull-from-hosted`, { method: 'POST' });
     } catch { /* pull failed — open editor with local state */ }
     setActing(null);
-    window.open(`/admin/${deviceId}/editor`, '_blank');
+    // Force fresh load — bypass Zustand store cache from previous session
+    window.open(`/admin/${deviceId}/editor?reload=${Date.now()}`, '_blank');
   };
 
   const handlePullBuild = async (deviceId: string) => {
