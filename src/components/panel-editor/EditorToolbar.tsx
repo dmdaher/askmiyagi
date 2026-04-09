@@ -23,7 +23,7 @@ function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disab
       const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'submitted', reviewNote: note.trim() || undefined }),
+        body: JSON.stringify({ status: 'submitted', contractorNote: note.trim() || undefined }),
       });
       if (!res.ok) throw new Error('Submit failed');
       if (typeof window !== 'undefined') {

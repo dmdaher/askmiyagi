@@ -26,12 +26,20 @@ export async function POST(
   try {
     const manifest = JSON.parse(fs.readFileSync(editorPath, 'utf-8'));
 
+    // Read optional note from request body
+    let note: string | undefined;
+    try {
+      const body = await _request.json();
+      note = body?.note;
+    } catch { /* no body is fine */ }
+
     // Write both blobs (status.json + manifest.json)
     await initDevice(
       deviceId,
       manifest.deviceName ?? deviceId,
       manifest.manufacturer ?? '',
       manifest,
+      note,
     );
 
     // Upload photos

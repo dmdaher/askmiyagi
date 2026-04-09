@@ -25,7 +25,8 @@ export async function GET(
     _source: 'hosted',
     _status: status.status,
     _updatedAt: status.updatedAt,
-    _reviewNote: status.reviewNote ?? null,
+    _adminNote: status.adminNote ?? null,
+    _contractorNote: status.contractorNote ?? null,
   });
 }
 
