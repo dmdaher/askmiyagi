@@ -21,7 +21,7 @@ interface PanelEditorProps {
 }
 
 /** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
-function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onRestoreVersion?: () => void }) {
+function EditorShell({ deviceId, onRestoreVersion, adminNote }: { deviceId: string; onRestoreVersion?: () => void; adminNote?: string | null }) {
   useEditorKeyboard();
   useAutoSave(deviceId);
 
@@ -32,6 +32,7 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
   >('idle');
   const [codegenError, setCodegenError] = useState<string | null>(null);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
+  const [noteExpanded, setNoteExpanded] = useState(false);
   const [showIssueModal, setShowIssueModal] = useState(false);
 
   // ── Clean Up: optional inference pass (snap rows, equalize spacing) ──────
@@ -183,6 +184,25 @@ function EditorShell({ deviceId, onRestoreVersion }: { deviceId: string; onResto
         </div>
       )}
 
+      {/* Admin feedback banner — visible inside editor while contractor works */}
+      {isHosted && adminNote && !previewMode && (
+        <div
+          className="flex items-start gap-2 border-b border-blue-700/40 bg-blue-900/20 px-4 py-2 cursor-pointer"
+          onClick={() => setNoteExpanded(!noteExpanded)}
+        >
+          <span className="text-blue-400 text-sm mt-0.5">📋</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] text-blue-400 font-medium">Reviewer feedback</p>
+            <p className={`text-xs text-blue-300/80 whitespace-pre-wrap ${noteExpanded ? '' : 'line-clamp-1'}`}>
+              {adminNote}
+            </p>
+            {!noteExpanded && adminNote.length > 80 && (
+              <span className="text-[9px] text-blue-400/50">Click to expand</span>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-1 overflow-hidden relative">
         <LayersPanel />
         <EditorWorkspace deviceId={deviceId} readOnly={previewMode} />
@@ -204,6 +224,7 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [adminNote, setAdminNote] = useState<string | null>(null);
 
   // Exposed for VersionHistoryDropdown to trigger a reload after restore
   const forceReload = useCallback(() => {
@@ -297,8 +318,9 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
           // Initialize labels from controls if not yet done (migration)
           useEditorStore.getState().initLabelsFromControls();
 
-          // In hosted mode, lock or unlock editor based on current status
+          // In hosted mode, capture admin note and lock/unlock based on status
           if (isHosted) {
+            setAdminNote(data._adminNote ?? null);
             if (data._status === 'submitted' || data._status === 'approved') {
               useEditorStore.getState().setPreviewMode(true);
               if (typeof window !== 'undefined') {
@@ -345,5 +367,5 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
     );
   }
 
-  return <EditorShell deviceId={deviceId} onRestoreVersion={forceReload} />;
+  return <EditorShell deviceId={deviceId} onRestoreVersion={forceReload} adminNote={adminNote} />;
 }

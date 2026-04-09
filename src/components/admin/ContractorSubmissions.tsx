@@ -9,7 +9,8 @@ interface DeviceState {
   manufacturer: string;
   status: string;
   updatedAt: string;
-  reviewNote?: string;
+  adminNote?: string;
+  contractorNote?: string;
 }
 
 const STATUS_LABELS: Record<string, { text: string; dot: string }> = {
@@ -21,7 +22,7 @@ const STATUS_LABELS: Record<string, { text: string; dot: string }> = {
 
 function getLabel(d: DeviceState): string {
   if (d.status === 'ready') return 'Sent to contractor — waiting for edits';
-  if (d.status === 'in-progress' && d.reviewNote) return 'Changes requested — contractor revising';
+  if (d.status === 'in-progress' && d.adminNote) return 'Changes requested — contractor revising';
   if (d.status === 'in-progress') return 'Contractor editing';
   if (d.status === 'submitted') return 'Submitted — needs your review';
   if (d.status === 'approved') return 'Approved ✓';
@@ -77,7 +78,7 @@ export default function ContractorSubmissions() {
       const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'in-progress', reviewNote: feedbackText }),
+        body: JSON.stringify({ status: 'in-progress', adminNote: feedbackText }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -184,10 +185,11 @@ export default function ContractorSubmissions() {
                       {d.manufacturer} {d.deviceName}
                     </span>
                     <p className={`text-[10px] ${style.text}`}>{label}</p>
-                    {d.reviewNote && (d.status === 'in-progress' || d.status === 'submitted') && (
-                      <p className="text-[11px] text-amber-400/70 mt-0.5">
-                        {d.status === 'submitted' ? 'Contractor note: ' : 'Your feedback: '}{d.reviewNote}
-                      </p>
+                    {d.contractorNote && d.status === 'submitted' && (
+                      <p className="text-[11px] text-blue-400/70 mt-0.5">Contractor: {d.contractorNote}</p>
+                    )}
+                    {d.adminNote && d.status === 'in-progress' && (
+                      <p className="text-[11px] text-amber-400/70 mt-0.5">Your feedback: {d.adminNote}</p>
                     )}
                   </div>
                 </div>

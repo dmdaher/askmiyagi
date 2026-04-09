@@ -27,7 +27,8 @@ export interface DeviceStatusData {
   deviceName: string;
   manufacturer: string;
   status: DeviceStatus;
-  reviewNote?: string;
+  adminNote?: string;       // admin → contractor (feedback, instructions)
+  contractorNote?: string;  // contractor → admin (submission notes)
   updatedAt: string;
 }
 
@@ -37,7 +38,8 @@ export interface DeviceSummary {
   manufacturer: string;
   status: DeviceStatus;
   updatedAt: string;
-  reviewNote?: string;
+  adminNote?: string;
+  contractorNote?: string;
 }
 
 // ─── Valid state transitions ────────────────────────────────────────────────
@@ -130,7 +132,8 @@ export async function listDevices(): Promise<DeviceSummary[]> {
             manufacturer: data.manufacturer,
             status: data.status,
             updatedAt: data.updatedAt,
-            reviewNote: data.reviewNote,
+            adminNote: data.adminNote,
+            contractorNote: data.contractorNote,
           } as DeviceSummary;
         } catch {
           return null;
@@ -174,14 +177,14 @@ export async function initDevice(
   deviceName: string,
   manufacturer: string,
   manifest: Record<string, unknown>,
-  reviewNote?: string,
+  adminNote?: string,
 ): Promise<void> {
   await putDeviceStatus(deviceId, {
     deviceId,
     deviceName,
     manufacturer,
     status: 'ready',
-    reviewNote,
+    adminNote,
     updatedAt: new Date().toISOString(),
   });
   await putDeviceManifest(deviceId, manifest);

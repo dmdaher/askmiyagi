@@ -13,7 +13,7 @@ export async function PATCH(
 ) {
   const { deviceId } = await params;
   const body = await request.json();
-  const { status, reviewNote } = body;
+  const { status, adminNote, contractorNote } = body;
 
   if (!VALID_STATUSES.includes(status)) {
     return NextResponse.json({ error: `Invalid status: ${status}` }, { status: 400 });
@@ -34,7 +34,10 @@ export async function PATCH(
   await putDeviceStatus(deviceId, {
     ...existing,
     status,
-    reviewNote: status === 'approved' ? undefined : (reviewNote ?? existing.reviewNote),
+    // Admin note: set on request-changes, preserved through submitted, cleared on approved
+    adminNote: status === 'approved' ? undefined : (adminNote ?? existing.adminNote),
+    // Contractor note: set on submit, cleared when admin acts
+    contractorNote: status === 'submitted' ? (contractorNote ?? existing.contractorNote) : undefined,
     updatedAt: new Date().toISOString(),
   });
 

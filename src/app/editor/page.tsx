@@ -9,7 +9,8 @@ interface DeviceSummary {
   manufacturer: string;
   status: string;
   updatedAt: string;
-  reviewNote?: string;
+  adminNote?: string;
+  contractorNote?: string;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; dot: string }> = {
@@ -65,7 +66,7 @@ export default function EditorListPage() {
           <div className="flex flex-col gap-3">
             {devices.map((d) => {
               const cfg = STATUS_CONFIG[d.status] ?? STATUS_CONFIG.ready;
-              const hasNote = d.status === 'in-progress' && d.reviewNote;
+              const hasNote = d.adminNote && (d.status === 'in-progress' || d.status === 'ready');
               return (
                 <div
                   key={d.deviceId}
@@ -102,7 +103,7 @@ export default function EditorListPage() {
                   {hasNote && (
                     <div className="mt-3 rounded border border-amber-600/30 bg-amber-900/15 px-3 py-2">
                       <p className="text-[10px] text-amber-400 font-medium mb-0.5">Feedback from reviewer:</p>
-                      <p className="text-xs text-amber-300/80 whitespace-pre-wrap">{d.reviewNote}</p>
+                      <p className="text-xs text-amber-300/80 whitespace-pre-wrap">{d.adminNote}</p>
                     </div>
                   )}
                 </div>
