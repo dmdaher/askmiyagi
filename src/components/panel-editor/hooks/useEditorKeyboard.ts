@@ -157,6 +157,13 @@ export function useEditorKeyboard() {
       // [ and ] shortcuts removed — controlScale hidden for now (redundant with Zoom).
       // Use Cmd+= / Cmd+- for Zoom instead.
 
+      // ── Help drawer: ? (Shift+/) ─────────────────────────────────────────
+      if (e.key === '?' && !isMod) {
+        e.preventDefault();
+        window.dispatchEvent(new Event('editor-help-toggle'));
+        return;
+      }
+
       // ── Escape: clear selection ───────────────────────────────────────────
       if (e.key === 'Escape') {
         store.setSelectedIds([]);

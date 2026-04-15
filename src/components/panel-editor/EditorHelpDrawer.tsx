@@ -1,0 +1,271 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+type HelpTab = 'guide' | 'shortcuts' | 'workflow';
+
+interface EditorHelpDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onReplayTour: () => void;
+}
+
+function CollapsibleSection({ title, children, defaultOpen = false }: {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-b border-white/5 last:border-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-medium text-white/90 hover:bg-white/5 transition-colors"
+      >
+        {title}
+        <span className={`text-white/30 transition-transform text-xs ${open ? 'rotate-90' : ''}`}>
+          &#9654;
+        </span>
+      </button>
+      {open && (
+        <div className="px-5 pb-4 text-[13px] leading-relaxed text-gray-400 space-y-2">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ShortcutRow({ action, keys }: { action: string; keys: string }) {
+  return (
+    <div className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
+      <span className="text-gray-400 text-[13px]">{action}</span>
+      <kbd className="rounded bg-white/10 px-2 py-0.5 text-[11px] font-mono text-gray-300">{keys}</kbd>
+    </div>
+  );
+}
+
+function GuideTab() {
+  return (
+    <div>
+      <CollapsibleSection title="Canvas" defaultOpen>
+        <p><strong className="text-white/80">Move controls</strong> &mdash; Click and drag any control to reposition it. Controls snap to your grid setting.</p>
+        <p><strong className="text-white/80">Resize</strong> &mdash; Drag the corner or edge handles that appear when a control is selected.</p>
+        <p><strong className="text-white/80">Select multiple</strong> &mdash; Click and drag on empty canvas space to draw a selection box around multiple controls. Hold Shift to add to selection, Cmd/Ctrl to toggle.</p>
+        <p><strong className="text-white/80">Right-click menu</strong> &mdash; Right-click any control for quick access to align, distribute, group, duplicate, delete, and lock/unlock.</p>
+        <p><strong className="text-white/80">Double-click a label</strong> &mdash; Edit the label text inline. Press Escape or click away to save.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Toolbar">
+        <p><strong className="text-white/80">Undo / Redo</strong> &mdash; Every action is reversible. Use Cmd+Z / Cmd+Shift+Z or the toolbar buttons.</p>
+        <p><strong className="text-white/80">Snap Grid</strong> &mdash; Controls the pixel grid that controls snap to when dragged. Smaller values (1-2px) for precision, larger (8-16px) for fast rough positioning.</p>
+        <p><strong className="text-white/80">Zoom</strong> &mdash; Changes your view magnification. Does not affect the actual panel size &mdash; purely for comfort while editing.</p>
+        <p><strong className="text-white/80">Grid overlay</strong> &mdash; Shows thin guidelines at the snap interval. Helps you see alignment at a glance. Toggle with <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">G</kbd>.</p>
+        <p><strong className="text-white/80">Labels</strong> &mdash; Show/hide text labels on all controls. Toggle with <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">T</kbd>.</p>
+        <p><strong className="text-white/80">Canvas Size (W &times; H)</strong> &mdash; Set exact pixel dimensions for the panel canvas. Match these to the reference photo proportions.</p>
+        <p><strong className="text-white/80">Preview</strong> &mdash; Shows the panel as end users will see it. Use this to check your work before submitting.</p>
+        <p><strong className="text-white/80">Submit for Review</strong> &mdash; Sends your work to the admin for review. You can add an optional note. The editor locks until the admin responds.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Photo Overlay">
+        <p>The photo overlay lets you see the real hardware underneath your controls so you can match positions exactly.</p>
+        <p><strong className="text-white/80">Side-by-side mode</strong> &mdash; Shows the photo next to the canvas with a draggable divider. Good for comparing layout at a glance.</p>
+        <p><strong className="text-white/80">Overlay mode</strong> &mdash; Places the photo directly under your controls with adjustable opacity. Set opacity to 40-50% so you can see both layers.</p>
+        <p><strong className="text-white/80">Offset (X/Y)</strong> &mdash; Shift the photo position to align it precisely with your canvas. Use Reset to zero out.</p>
+        <p>Toggle with <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">P</kbd>.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Layers Panel">
+        <p>Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">L</kbd> to open. Shows all sections and their controls in a tree view.</p>
+        <p><strong className="text-white/80">Sections</strong> &mdash; Logical groups like &ldquo;MIXER&rdquo;, &ldquo;TRANSPORT&rdquo;, &ldquo;EFFECTS&rdquo;. Click the arrow to expand and see child controls.</p>
+        <p><strong className="text-white/80">Click a control</strong> &mdash; Selects it on the canvas and scrolls to it. Shift-click to add to selection.</p>
+        <p><strong className="text-white/80">Groups</strong> &mdash; Shown with a violet dashed border. Expand to see members. Selecting a group member auto-expands its group.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Properties Panel">
+        <p>Appears on the right when you select a control. Shows and lets you edit all properties.</p>
+        <p><strong className="text-white/80">Type</strong> &mdash; Change what kind of control this is (button, knob, slider, pad, etc.).</p>
+        <p><strong className="text-white/80">Label</strong> &mdash; Edit label text and choose position: above, below, left, right, on the button, or hidden.</p>
+        <p><strong className="text-white/80">X, Y, W, H</strong> &mdash; Set exact pixel position and size. Good for fine-tuning after dragging.</p>
+        <p><strong className="text-white/80">Align tools</strong> &mdash; Select 2+ controls, then align them: left edges, centers, or right edges (horizontal); top, middle, or bottom (vertical). &ldquo;Align&rdquo; means &ldquo;straighten into a line.&rdquo;</p>
+        <p><strong className="text-white/80">Distribute</strong> &mdash; Select 3+ controls to space them equally. Horizontal distribute makes even gaps left-to-right; vertical does top-to-bottom.</p>
+        <p><strong className="text-white/80">Gap</strong> &mdash; Set an exact pixel distance between selected controls. Type a number, hit enter.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Grouping Controls">
+        <p>Select 2+ controls and press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+G</kbd> to group them. Groups:</p>
+        <p>&bull; Move together when you drag any member</p>
+        <p>&bull; Align as a unit with the alignment tools</p>
+        <p>&bull; Show as a unit in the Layers panel</p>
+        <p>Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+Shift+G</kbd> to ungroup.</p>
+      </CollapsibleSection>
+    </div>
+  );
+}
+
+function ShortcutsTab() {
+  return (
+    <div className="px-5 py-4 space-y-4">
+      <div>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">General</h4>
+        <ShortcutRow action="Undo" keys="Cmd+Z" />
+        <ShortcutRow action="Redo" keys="Cmd+Shift+Z" />
+        <ShortcutRow action="Delete selection" keys="Backspace" />
+        <ShortcutRow action="Duplicate" keys="Cmd+D" />
+        <ShortcutRow action="Clear selection" keys="Escape" />
+      </div>
+      <div>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">View Toggles</h4>
+        <ShortcutRow action="Grid overlay" keys="G" />
+        <ShortcutRow action="Photo overlay" keys="P" />
+        <ShortcutRow action="Layers panel" keys="L" />
+        <ShortcutRow action="Labels" keys="T" />
+        <ShortcutRow action="Zoom in" keys="Cmd+=" />
+        <ShortcutRow action="Zoom out" keys="Cmd+-" />
+        <ShortcutRow action="Open help" keys="?" />
+      </div>
+      <div>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Alignment</h4>
+        <ShortcutRow action="Align centers horizontally" keys="Shift+H" />
+        <ShortcutRow action="Align centers vertically" keys="Shift+V" />
+        <ShortcutRow action="Distribute horizontal" keys="Cmd+Shift+H" />
+        <ShortcutRow action="Distribute vertical" keys="Cmd+Shift+V" />
+      </div>
+      <div>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Grouping</h4>
+        <ShortcutRow action="Group selected" keys="Cmd+G" />
+        <ShortcutRow action="Ungroup" keys="Cmd+Shift+G" />
+      </div>
+    </div>
+  );
+}
+
+function WorkflowTab() {
+  const steps = [
+    { title: 'Open the photo overlay', desc: 'Press P or click the Photo button. Switch to Overlay mode and set opacity to around 40-50% so you can see the real hardware under your controls.' },
+    { title: 'Adjust canvas size', desc: 'Set the W and H values in the toolbar to match the photo proportions. This ensures controls are positioned at the right scale.' },
+    { title: 'Position controls on the photo', desc: 'Drag each control to match its real position on the hardware. Start with the big, obvious ones (knobs, sliders, screens) then refine smaller controls.' },
+    { title: 'Align rows and columns', desc: 'Select a row of controls, press Shift+H to align their centers. Select a column, press Shift+V. This straightens everything into clean lines.' },
+    { title: 'Distribute for even spacing', desc: 'Select 3+ controls in a row/column, then Cmd+Shift+H (horizontal) or Cmd+Shift+V (vertical) to space them equally.' },
+    { title: 'Fine-tune with Gap inputs', desc: 'In the Properties panel, use the Gap (H/V) inputs to set exact pixel spacing between controls. Good for knob rows that need uniform gaps.' },
+    { title: 'Group related controls', desc: 'Select controls that belong together (e.g., a row of channel faders) and press Cmd+G. Groups move together and won\'t accidentally get misaligned.' },
+    { title: 'Preview your work', desc: 'Click Preview in the toolbar to see the panel as the end user will see it. Check that labels are readable and nothing overlaps.' },
+    { title: 'Submit for review', desc: 'Click Submit for Review. Add an optional note about any tricky areas. The editor locks while the admin reviews. You\'ll see feedback on the instrument list if changes are needed.' },
+  ];
+
+  return (
+    <div className="px-5 py-4 space-y-1">
+      <p className="text-[13px] text-gray-500 mb-4">A typical editing session, start to finish:</p>
+      {steps.map((step, i) => (
+        <div key={i} className="flex gap-3 py-2.5 border-b border-white/5 last:border-0">
+          <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-[11px] font-bold text-blue-400">
+            {i + 1}
+          </span>
+          <div>
+            <p className="text-[13px] font-medium text-white/85">{step.title}</p>
+            <p className="text-[12px] text-gray-500 mt-0.5 leading-relaxed">{step.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const TAB_LABELS: Record<HelpTab, string> = {
+  guide: 'Guide',
+  shortcuts: 'Shortcuts',
+  workflow: 'Workflow',
+};
+
+export default function EditorHelpDrawer({ isOpen, onClose, onReplayTour }: EditorHelpDrawerProps) {
+  const [activeTab, setActiveTab] = useState<HelpTab>('guide');
+  // Reset tab when drawer closes
+  useEffect(() => {
+    if (!isOpen) setActiveTab('guide');
+  }, [isOpen]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isOpen, onClose]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 z-50 flex justify-end"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+
+          {/* Drawer */}
+          <motion.div
+            className="relative w-full max-w-sm h-full bg-[#0f0f1a] border-l border-white/10 flex flex-col"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
+              <div>
+                <h2 className="text-base font-semibold text-white">Editor Guide</h2>
+                <p className="text-[11px] text-white/30 mt-0.5">Reference &middot; always available with ?</p>
+              </div>
+              <button
+                onClick={onClose}
+                className="rounded-lg p-1.5 text-white/40 hover:bg-white/10 hover:text-white/80 transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-1 px-5 py-2.5 border-b border-white/5 flex-shrink-0">
+              {(Object.keys(TAB_LABELS) as HelpTab[]).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                    activeTab === tab
+                      ? 'bg-blue-500/15 text-blue-400'
+                      : 'text-white/40 hover:bg-white/5 hover:text-white/60'
+                  }`}
+                >
+                  {TAB_LABELS[tab]}
+                </button>
+              ))}
+            </div>
+
+            {/* Tab content */}
+            <div className="flex-1 overflow-y-auto">
+              {activeTab === 'guide' && <GuideTab />}
+              {activeTab === 'shortcuts' && <ShortcutsTab />}
+              {activeTab === 'workflow' && <WorkflowTab />}
+            </div>
+
+            {/* Footer: replay tour */}
+            <div className="border-t border-white/10 px-5 py-3 flex-shrink-0">
+              <button
+                onClick={onReplayTour}
+                className="w-full rounded-lg border border-white/10 py-2 text-xs font-medium text-white/50 hover:bg-white/5 hover:text-white/70 transition-colors"
+              >
+                Replay Guided Tour
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
