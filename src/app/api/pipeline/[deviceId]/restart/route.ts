@@ -9,15 +9,7 @@ import {
   ensurePipelineDir,
   appendLog,
 } from '@/lib/pipeline/state-machine';
-
-function isProcessAlive(pid: number): boolean {
-  try {
-    execSync(`ps -p ${pid} -o pid= 2>/dev/null`, { encoding: 'utf-8' });
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { gracefulKill } from '@/lib/pipeline/process-utils';
 
 /**
  * POST /api/pipeline/[deviceId]/restart
@@ -40,12 +32,12 @@ export async function POST(
   // 1. Extract device metadata before wiping state
   const { deviceName, manufacturer, manualPaths, budgetCapUsd } = state;
 
-  // 2. Kill running processes
-  if (state.childPid && isProcessAlive(state.childPid)) {
-    try { process.kill(state.childPid, 'SIGTERM'); } catch { /* ignore */ }
+  // 2. Kill running processes (child first, then runner — with graceful shutdown)
+  if (state.childPid) {
+    gracefulKill(state.childPid, 'Agent');
   }
-  if (state.runnerPid && isProcessAlive(state.runnerPid)) {
-    try { process.kill(state.runnerPid, 'SIGTERM'); } catch { /* ignore */ }
+  if (state.runnerPid) {
+    gracefulKill(state.runnerPid, 'Runner');
   }
 
   const pipelineDir = path.join('.pipeline', deviceId);

@@ -350,12 +350,14 @@ export function createWorktree(deviceId: string, branch: string): string {
   }
   execSync('git worktree prune', { stdio: 'pipe' });
 
-  // Create the branch from test if it doesn't exist
+  // Delete old branch if it exists, then create fresh from test.
+  // Without this, restart re-uses a stale branch that may have diverged from test.
   try {
-    execSync(`git branch "${branch}" test 2>/dev/null`, { stdio: 'pipe' });
+    execSync(`git branch -D "${branch}" 2>/dev/null`, { stdio: 'pipe' });
   } catch {
-    // Branch already exists — fine
+    // Branch didn't exist — fine
   }
+  execSync(`git branch "${branch}" test`, { stdio: 'pipe' });
 
   // Create the worktree
   fs.mkdirSync(WORKTREE_DIR, { recursive: true });

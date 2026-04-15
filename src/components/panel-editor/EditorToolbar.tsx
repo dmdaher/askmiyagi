@@ -96,6 +96,7 @@ interface EditorToolbarProps {
   onTogglePreview: () => void;
   onReportIssue?: () => void;
   onRestoreVersion?: () => void;
+  onToggleHelp?: () => void;
 }
 
 export default function EditorToolbar({
@@ -107,6 +108,7 @@ export default function EditorToolbar({
   onTogglePreview,
   onReportIssue,
   onRestoreVersion,
+  onToggleHelp,
 }: EditorToolbarProps) {
   const manufacturer = useEditorStore((s) => s.manufacturer);
   const deviceName = useEditorStore((s) => s.deviceName);
@@ -186,18 +188,6 @@ export default function EditorToolbar({
 
       {divider}
 
-      {/* Snap */}
-      <select
-        value={snapGrid}
-        onChange={(e) => setSnapGrid(Number(e.target.value) as SnapGrid)}
-        className="h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none"
-        title="Snap Grid"
-      >
-        {SNAP_OPTIONS.map((v) => (
-          <option key={v} value={v}>{v}px</option>
-        ))}
-      </select>
-
       {/* Zoom */}
       <div className="flex items-center gap-0.5">
         <button onClick={() => setZoom(zoom - ZOOM_STEP)} disabled={zoom <= 0.1} className={iconBtn} title="Zoom Out">-</button>
@@ -205,14 +195,25 @@ export default function EditorToolbar({
         <button onClick={() => setZoom(zoom + ZOOM_STEP)} disabled={zoom >= 5} className={iconBtn} title="Zoom In">+</button>
       </div>
 
-      {/* Control Scale slider — HIDDEN for now (redundant with Zoom).
-          Keep code intact for potential future use. Use Zoom or Canvas W×H instead. */}
-
       {divider}
 
       {/* ── MIDDLE: Overlays ───────────────────────────────────── */}
 
-      <button data-tutorial="grid" onClick={toggleGrid} className={toggleBtn(showGrid)} title="Grid (G)" disabled={previewMode}>Grid</button>
+      {/* Grid toggle + snap size — grouped so the relationship is obvious */}
+      <div className="flex items-center gap-0.5" data-tutorial="grid">
+        <button onClick={toggleGrid} className={toggleBtn(showGrid)} title="Grid (G)" disabled={previewMode}>Grid</button>
+        <select
+          value={snapGrid}
+          onChange={(e) => setSnapGrid(Number(e.target.value) as SnapGrid)}
+          className="h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none"
+          title="Snap grid size — controls snap to this interval when dragging"
+          disabled={previewMode}
+        >
+          {SNAP_OPTIONS.map((v) => (
+            <option key={v} value={v}>{v}px</option>
+          ))}
+        </select>
+      </div>
 
       <button onClick={toggleLabels} className={toggleBtn(showLabels)} title="Labels (T)" disabled={previewMode}>Labels</button>
 
@@ -312,7 +313,15 @@ export default function EditorToolbar({
 
       {/* ── RIGHT: Actions ─────────────────────────────────────── */}
 
-      {/* History + Report + Help — local only */}
+      {/* Help — always visible (contractors need this) */}
+      <button
+        onClick={onToggleHelp}
+        className={iconBtn}
+        title="Help (?)"
+        data-tutorial="help"
+      >?</button>
+
+      {/* History + Report — local only */}
       {!isHosted && (
         <>
           <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
@@ -322,12 +331,6 @@ export default function EditorToolbar({
               <span className="text-[10px]">⚑</span>
             </button>
           )}
-
-          <button
-            onClick={() => window.dispatchEvent(new Event('editor-tutorial-replay'))}
-            className={iconBtn}
-            title="Help"
-          >?</button>
 
           {/* Reset Sizes */}
           <button
@@ -409,13 +412,15 @@ export default function EditorToolbar({
         </div>
 
         {isHosted ? (
-          (typeof window !== 'undefined' && (window as any).__submittedForReview) ? (
-            <span className="flex h-7 items-center px-3 text-[10px] font-medium text-green-400 border border-green-700 bg-green-700/20 rounded whitespace-nowrap">
-              Submitted ✓
-            </span>
-          ) : (
-            <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
-          )
+          <div data-tutorial="submit">
+            {(typeof window !== 'undefined' && (window as any).__submittedForReview) ? (
+              <span className="flex h-7 items-center px-3 text-[10px] font-medium text-green-400 border border-green-700 bg-green-700/20 rounded whitespace-nowrap">
+                Submitted ✓
+              </span>
+            ) : (
+              <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
+            )}
+          </div>
         ) : (
           <button
             data-tutorial="approve"

@@ -1,32 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { execSync } from 'child_process';
 import { readState, writeState, appendLog } from '@/lib/pipeline/state-machine';
-
-function isProcessAlive(pid: number): boolean {
-  try {
-    execSync(`ps -p ${pid} -o pid= 2>/dev/null`, { encoding: 'utf-8' });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function gracefulKill(pid: number, label: string): string {
-  if (!isProcessAlive(pid)) return `${label} (PID ${pid}) already dead`;
-
-  // SIGTERM first — gives the process a chance to clean up
-  try { process.kill(pid, 'SIGTERM'); } catch { /* ignore */ }
-
-  // Wait up to 5 seconds for graceful exit
-  for (let i = 0; i < 10; i++) {
-    execSync('sleep 0.5');
-    if (!isProcessAlive(pid)) return `${label} (PID ${pid}) exited gracefully`;
-  }
-
-  // Still alive — force kill
-  try { process.kill(pid, 'SIGKILL'); } catch { /* ignore */ }
-  return `${label} (PID ${pid}) force-killed after 5s timeout`;
-}
+import { isProcessAlive, gracefulKill } from '@/lib/pipeline/process-utils';
 
 /**
  * POST /api/pipeline/[deviceId]/recover

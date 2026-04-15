@@ -11,6 +11,7 @@ import LayersPanel from './LayersPanel';
 import ContextMenu from './ContextMenu';
 import IssueReportModal from './IssueReportModal';
 import EditorTutorial from './EditorTutorial';
+import EditorHelpDrawer from './EditorHelpDrawer';
 import { useEditorKeyboard } from './hooks/useEditorKeyboard';
 import { useAutoSave } from './hooks/useAutoSave';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
@@ -34,6 +35,14 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote }: { deviceId: stri
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [noteExpanded, setNoteExpanded] = useState(false);
   const [showIssueModal, setShowIssueModal] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
+  // Listen for help toggle from keyboard shortcut
+  useEffect(() => {
+    const handler = () => setShowHelp((s) => !s);
+    window.addEventListener('editor-help-toggle', handler);
+    return () => window.removeEventListener('editor-help-toggle', handler);
+  }, []);
 
   // ── Clean Up: optional inference pass (snap rows, equalize spacing) ──────
   const handleCleanUp = useCallback(() => {
@@ -141,6 +150,7 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote }: { deviceId: stri
         }}
         onReportIssue={() => setShowIssueModal(true)}
         onRestoreVersion={onRestoreVersion}
+        onToggleHelp={() => setShowHelp((s) => !s)}
       />
 
       {/* Codegen error banner — local only */}
@@ -216,6 +226,15 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote }: { deviceId: stri
           onClose={() => setShowIssueModal(false)}
         />
       )}
+
+      <EditorHelpDrawer
+        isOpen={showHelp}
+        onClose={() => setShowHelp(false)}
+        onReplayTour={() => {
+          setShowHelp(false);
+          window.dispatchEvent(new Event('editor-tutorial-replay'));
+        }}
+      />
     </div>
   );
 }
