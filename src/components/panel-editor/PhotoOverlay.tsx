@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useEditorStore } from './store';
+import { isHosted } from '@/lib/env';
 
 /**
  * Renders the first hardware reference photo behind the canvas content.
  * Reads deviceId from the editor store.
- * Fetches the photo list from the pipeline API.
+ * Fetches the photo list from the appropriate API (pipeline or hosted).
  */
 export default function PhotoOverlay() {
   const showPhoto = useEditorStore((s) => s.showPhoto);
@@ -26,10 +27,11 @@ export default function PhotoOverlay() {
 
     async function fetchPhotos() {
       try {
-        const res = await fetch(`/api/pipeline/${deviceId}/photos`);
+        const useHostedApi = isHosted || deviceId.startsWith('sandbox-');
+        const res = await fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}/photos`);
         if (!res.ok) return;
         const data = await res.json();
-        // API returns { photos: [{ name, path, size }] }
+        // API returns { photos: [{ name, path, size }] } or [{ name, url }]
         const photos = data.photos ?? data;
         if (!cancelled && Array.isArray(photos) && photos.length > 0) {
           // Prefer the top-view photo if available, otherwise first photo
@@ -37,9 +39,11 @@ export default function PhotoOverlay() {
             p.name.toLowerCase().includes('top-view') || p.name.toLowerCase().includes('top_view')
           );
           const chosen = topView ?? photos[0];
-          // API serves photos via ?file= query param, not subpath
-          const url = `/api/pipeline/${deviceId}/photos?file=${encodeURIComponent(chosen.name)}`;
-          setPhotoUrl(url);
+          setPhotoUrl(
+            useHostedApi
+              ? chosen.url  // Blob URLs are direct
+              : `/api/pipeline/${deviceId}/photos?file=${encodeURIComponent(chosen.name)}`
+          );
         }
       } catch {
         // Silently ignore — photo overlay is optional

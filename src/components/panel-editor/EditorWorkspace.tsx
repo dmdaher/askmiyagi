@@ -33,7 +33,7 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
           );
           const chosen = topView ?? photos[0];
           setPhotoUrl(
-            isHosted
+            useHostedApi
               ? chosen.url  // Blob URLs are direct
               : `/api/pipeline/${deviceId}/photos?file=${encodeURIComponent(chosen.name)}`
           );

@@ -324,7 +324,7 @@ export default function EditorToolbar({
       >?</button>
 
       {/* History + Report — local only */}
-      {!isHosted && (
+      {!isHosted && !isSandbox && (
         <>
           <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
 
@@ -413,7 +413,7 @@ export default function EditorToolbar({
           />
         </div>
 
-        {isHosted && isSandbox ? (
+        {isSandbox ? (
           <span className="flex h-7 items-center px-3 text-[10px] font-medium text-violet-400 border border-violet-500/30 bg-violet-600/15 rounded whitespace-nowrap">
             Practice Mode
           </span>
