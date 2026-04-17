@@ -67,6 +67,10 @@ export async function POST(request: Request) {
       deviceId: device.sandboxId,
       deviceName: device.deviceName,
       _source: 'editor',
+      // Map panelWidth/panelHeight to canvasWidth/canvasHeight so the editor
+      // and photo overlay render at the correct dimensions
+      canvasWidth: raw.canvasWidth ?? raw.panelWidth ?? 1200,
+      canvasHeight: raw.canvasHeight ?? raw.panelHeight ?? 800,
     };
 
     // Convert editorSections → sections (with childIds)
