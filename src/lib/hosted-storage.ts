@@ -29,6 +29,7 @@ export interface DeviceStatusData {
   status: DeviceStatus;
   adminNote?: string;       // admin → contractor (feedback, instructions)
   contractorNote?: string;  // contractor → admin (submission notes)
+  isSandbox?: boolean;      // practice instrument — no submit, hidden from admin
   updatedAt: string;
 }
 
@@ -40,6 +41,7 @@ export interface DeviceSummary {
   updatedAt: string;
   adminNote?: string;
   contractorNote?: string;
+  isSandbox?: boolean;
 }
 
 // ─── Valid state transitions ────────────────────────────────────────────────
@@ -116,7 +118,7 @@ export async function putDeviceManifest(deviceId: string, manifest: Record<strin
 
 // ─── List operations ────────────────────────────────────────────────────────
 
-export async function listDevices(): Promise<DeviceSummary[]> {
+export async function listDevices(opts?: { sandbox?: boolean }): Promise<DeviceSummary[]> {
   try {
     const { blobs } = await list({ prefix: `${PREFIX}/` });
     const statusBlobs = blobs.filter(b => b.pathname.endsWith('/status.json'));
@@ -134,6 +136,7 @@ export async function listDevices(): Promise<DeviceSummary[]> {
             updatedAt: data.updatedAt,
             adminNote: data.adminNote,
             contractorNote: data.contractorNote,
+            isSandbox: data.isSandbox,
           } as DeviceSummary;
         } catch {
           return null;
@@ -141,7 +144,11 @@ export async function listDevices(): Promise<DeviceSummary[]> {
       })
     );
 
-    return results.filter(Boolean) as DeviceSummary[];
+    const all = results.filter(Boolean) as DeviceSummary[];
+
+    // Filter by sandbox flag: true = only sandbox, false/undefined = exclude sandbox
+    if (opts?.sandbox === true) return all.filter(d => d.isSandbox);
+    return all.filter(d => !d.isSandbox);
   } catch {
     return [];
   }
@@ -177,14 +184,15 @@ export async function initDevice(
   deviceName: string,
   manufacturer: string,
   manifest: Record<string, unknown>,
-  adminNote?: string,
+  opts?: { adminNote?: string; isSandbox?: boolean },
 ): Promise<void> {
   await putDeviceStatus(deviceId, {
     deviceId,
     deviceName,
     manufacturer,
     status: 'ready',
-    adminNote,
+    adminNote: opts?.adminNote,
+    isSandbox: opts?.isSandbox,
     updatedAt: new Date().toISOString(),
   });
   await putDeviceManifest(deviceId, manifest);

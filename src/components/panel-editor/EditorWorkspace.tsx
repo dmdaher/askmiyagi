@@ -22,7 +22,8 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
     let cancelled = false;
     async function fetchPhoto() {
       try {
-        const res = await fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}/photos`);
+        const useHostedApi = isHosted || deviceId.startsWith('sandbox-');
+        const res = await fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}/photos`);
         if (!res.ok) return;
         const data = await res.json();
         const photos = data.photos ?? data;
@@ -32,7 +33,7 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
           );
           const chosen = topView ?? photos[0];
           setPhotoUrl(
-            isHosted
+            useHostedApi
               ? chosen.url  // Blob URLs are direct
               : `/api/pipeline/${deviceId}/photos?file=${encodeURIComponent(chosen.name)}`
           );

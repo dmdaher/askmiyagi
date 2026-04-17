@@ -39,7 +39,7 @@ export async function POST(
       manifest.deviceName ?? deviceId,
       manifest.manufacturer ?? '',
       manifest,
-      note,
+      { adminNote: note },
     );
 
     // Upload photos
