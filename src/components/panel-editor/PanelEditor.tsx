@@ -19,10 +19,11 @@ import { cleanupGeometry } from '@/lib/layout-inference';
 
 interface PanelEditorProps {
   deviceId: string;
+  isSandbox?: boolean;
 }
 
 /** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
-function EditorShell({ deviceId, onRestoreVersion, adminNote }: { deviceId: string; onRestoreVersion?: () => void; adminNote?: string | null }) {
+function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { deviceId: string; onRestoreVersion?: () => void; adminNote?: string | null; isSandbox?: boolean }) {
   useEditorKeyboard();
   useAutoSave(deviceId);
 
@@ -151,6 +152,7 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote }: { deviceId: stri
         onReportIssue={() => setShowIssueModal(true)}
         onRestoreVersion={onRestoreVersion}
         onToggleHelp={() => setShowHelp((s) => !s)}
+        isSandbox={isSandbox}
       />
 
       {/* Codegen error banner — local only */}
@@ -239,7 +241,7 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote }: { deviceId: stri
   );
 }
 
-export default function PanelEditor({ deviceId }: PanelEditorProps) {
+export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -270,7 +272,8 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
 
     async function fetchManifest() {
       try {
-        const res = await fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`);
+        const useHostedApi = isHosted || isSandbox;
+        const res = await fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`);
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           throw new Error(
@@ -279,16 +282,18 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
         }
         const data = await res.json();
         if (!cancelled) {
-          if ((data._source === 'editor' || data._source === 'hosted') && data.sections && data.controls) {
+          // Accept both 'sections' (editor auto-save format) and 'editorSections' (production manifest format)
+          const rawSections = data.sections ?? data.editorSections;
+          if ((data._source === 'editor' || data._source === 'hosted') && rawSections && data.controls) {
             // Restore previously saved editor state (flat sections/controls)
             // API normalizes to arrays — convert back to Record<id, Def> if needed
-            const sections = Array.isArray(data.sections)
-              ? Object.fromEntries(data.sections.map((s: any) => [s.id, {
+            const sections = Array.isArray(rawSections)
+              ? Object.fromEntries(rawSections.map((s: any) => [s.id, {
                   ...s,
                   // Normalize: manifest uses 'controls', editor uses 'childIds'
                   childIds: s.childIds ?? s.controls ?? [],
                 }]))
-              : data.sections;
+              : rawSections;
             const controls = Array.isArray(data.controls)
               ? Object.fromEntries(data.controls.map((c: any) => [c.id, c]))
               : data.controls;
@@ -386,5 +391,5 @@ export default function PanelEditor({ deviceId }: PanelEditorProps) {
     );
   }
 
-  return <EditorShell deviceId={deviceId} onRestoreVersion={forceReload} adminNote={adminNote} />;
+  return <EditorShell deviceId={deviceId} onRestoreVersion={forceReload} adminNote={adminNote} isSandbox={isSandbox} />;
 }

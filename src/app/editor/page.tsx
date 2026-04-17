@@ -51,6 +51,19 @@ export default function EditorListPage() {
           </button>
         </div>
 
+        {/* Practice Editor link */}
+        <Link
+          href="/editor/practice"
+          className="flex items-center gap-3 rounded-lg border border-violet-500/20 bg-violet-900/10 px-5 py-3 mb-4 transition-colors hover:border-violet-500/40 hover:bg-violet-900/20"
+        >
+          <div className="w-2 h-2 rounded-full bg-violet-400" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-violet-300">Practice Editor</p>
+            <p className="text-[11px] text-gray-500">Learn the tools without affecting real instruments</p>
+          </div>
+          <span className="text-xs text-violet-400">→</span>
+        </Link>
+
         {loading ? (
           <div className="text-gray-500 text-sm">Loading...</div>
         ) : error ? (

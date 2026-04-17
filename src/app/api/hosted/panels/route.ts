@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { listDevices } from '@/lib/hosted-storage';
 
-/** GET /api/hosted/panels — list all devices with statuses */
-export async function GET() {
+/** GET /api/hosted/panels — list devices. ?sandbox=true for practice instruments only. */
+export async function GET(request: NextRequest) {
   try {
-    const devices = await listDevices();
+    const sandbox = request.nextUrl.searchParams.get('sandbox') === 'true';
+    const devices = await listDevices({ sandbox });
     return NextResponse.json(devices);
   } catch (err) {
     return NextResponse.json(

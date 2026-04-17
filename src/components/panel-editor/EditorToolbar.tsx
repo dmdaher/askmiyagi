@@ -97,6 +97,7 @@ interface EditorToolbarProps {
   onReportIssue?: () => void;
   onRestoreVersion?: () => void;
   onToggleHelp?: () => void;
+  isSandbox?: boolean;
 }
 
 export default function EditorToolbar({
@@ -109,6 +110,7 @@ export default function EditorToolbar({
   onReportIssue,
   onRestoreVersion,
   onToggleHelp,
+  isSandbox,
 }: EditorToolbarProps) {
   const manufacturer = useEditorStore((s) => s.manufacturer);
   const deviceName = useEditorStore((s) => s.deviceName);
@@ -411,7 +413,11 @@ export default function EditorToolbar({
           />
         </div>
 
-        {isHosted ? (
+        {isHosted && isSandbox ? (
+          <span className="flex h-7 items-center px-3 text-[10px] font-medium text-violet-400 border border-violet-500/30 bg-violet-600/15 rounded whitespace-nowrap">
+            Practice Mode
+          </span>
+        ) : isHosted ? (
           <div data-tutorial="submit">
             {(typeof window !== 'undefined' && (window as any).__submittedForReview) ? (
               <span className="flex h-7 items-center px-3 text-[10px] font-medium text-green-400 border border-green-700 bg-green-700/20 rounded whitespace-nowrap">
