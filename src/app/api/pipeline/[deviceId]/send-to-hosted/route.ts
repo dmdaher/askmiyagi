@@ -26,6 +26,19 @@ export async function POST(
   try {
     const manifest = JSON.parse(fs.readFileSync(editorPath, 'utf-8'));
 
+    // Read pipeline state for proper device name/manufacturer
+    // (manifest may only have the slug as deviceName)
+    let deviceName = manifest.deviceName ?? deviceId;
+    let manufacturer = manifest.manufacturer ?? '';
+    const statePath = path.join(pipelineDir, 'state.json');
+    if (fs.existsSync(statePath)) {
+      try {
+        const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
+        if (state.deviceName) deviceName = state.deviceName;
+        if (state.manufacturer) manufacturer = state.manufacturer;
+      } catch { /* ignore parse errors — fall back to manifest values */ }
+    }
+
     // Read optional note from request body
     let note: string | undefined;
     try {
@@ -36,8 +49,8 @@ export async function POST(
     // Write both blobs (status.json + manifest.json)
     await initDevice(
       deviceId,
-      manifest.deviceName ?? deviceId,
-      manifest.manufacturer ?? '',
+      deviceName,
+      manufacturer,
       manifest,
       { adminNote: note },
     );
