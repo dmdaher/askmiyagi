@@ -323,16 +323,23 @@ export default function EditorToolbar({
         data-tutorial="help"
       >?</button>
 
-      {/* History + Report — local only */}
+      {/* Report Issue — visible for contractors and admin (not sandbox) */}
+      {!isSandbox && onReportIssue && (
+        <button
+          onClick={onReportIssue}
+          className="flex h-6 items-center gap-1 rounded border border-gray-700 px-2 text-[10px] text-gray-400 transition-colors hover:bg-gray-800 hover:text-gray-300"
+          title="Report Issue"
+          data-tutorial="report"
+        >
+          <span className="text-xs">⚑</span>
+          Report Issue
+        </button>
+      )}
+
+      {/* History + Reset — local only */}
       {!isHosted && !isSandbox && (
         <>
           <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
-
-          {onReportIssue && (
-            <button onClick={onReportIssue} className={iconBtn} title="Report Issue" data-tutorial="report">
-              <span className="text-[10px]">⚑</span>
-            </button>
-          )}
 
           {/* Reset Sizes */}
           <button

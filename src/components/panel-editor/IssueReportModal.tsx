@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { isHosted } from '@/lib/env';
 
 interface IssueReportModalProps {
   deviceId: string;
@@ -32,7 +33,9 @@ export default function IssueReportModal({ deviceId, onClose }: IssueReportModal
     setError(null);
 
     try {
-      const res = await fetch(`/api/pipeline/${deviceId}/issues`, {
+      // Always write issues to Blob (hosted API) so they appear in the
+      // admin ContractorSubmissions view regardless of where they're filed
+      const res = await fetch(`/api/hosted/panels/${deviceId}/issues`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, description: description.trim() }),

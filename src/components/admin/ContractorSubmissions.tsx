@@ -13,6 +13,23 @@ interface DeviceState {
   contractorNote?: string;
 }
 
+interface DeviceIssue {
+  id: string;
+  type: string;
+  description: string;
+  createdAt: string;
+  status: 'open' | 'investigating' | 'resolved';
+  resolution?: string;
+}
+
+interface AuditFinding {
+  id: string;
+  label: string;
+  type: string;
+  manualPage?: string;
+  section?: string;
+}
+
 const STATUS_LABELS: Record<string, { text: string; dot: string }> = {
   ready: { text: 'text-gray-400', dot: 'bg-gray-400' },
   'in-progress': { text: 'text-blue-400', dot: 'bg-blue-400' },
@@ -36,17 +53,35 @@ export default function ContractorSubmissions() {
   const [result, setResult] = useState<Record<string, string>>({});
   const [feedbackFor, setFeedbackFor] = useState<string | null>(null);
   const [feedbackText, setFeedbackText] = useState('');
+  const [deviceIssues, setDeviceIssues] = useState<Record<string, DeviceIssue[]>>({});
+  const [expandedIssues, setExpandedIssues] = useState<Set<string>>(new Set());
+  const [auditRunning, setAuditRunning] = useState<string | null>(null);
+  const [auditFindings, setAuditFindings] = useState<Record<string, AuditFinding[]>>({});
+  const [auditResult, setAuditResult] = useState<Record<string, string>>({});
 
   const fetchDevices = useCallback(() => {
     fetch('/api/hosted/panels')
       .then(r => r.ok ? r.json() : [])
-      .then(data => { setDevices(Array.isArray(data) ? data : []); setLoading(false); })
+      .then((data) => {
+        const list: DeviceState[] = Array.isArray(data) ? data : [];
+        setDevices(list);
+        setLoading(false);
+        // Fetch issues for each device
+        for (const d of list) {
+          fetch(`/api/hosted/panels/${d.deviceId}/issues`)
+            .then(r => r.ok ? r.json() : [])
+            .then((issues: DeviceIssue[]) => {
+              setDeviceIssues(prev => ({ ...prev, [d.deviceId]: issues }));
+            })
+            .catch(() => {});
+        }
+      })
       .catch(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     fetchDevices();
-    const interval = setInterval(fetchDevices, 10000);
+    const interval = setInterval(fetchDevices, 30000); // 30s for issues (less frequent)
     return () => clearInterval(interval);
   }, [fetchDevices]);
 
@@ -114,6 +149,65 @@ export default function ContractorSubmissions() {
       setResult(prev => ({ ...prev, [deviceId]: `✗ ${(err as Error).message}` }));
     }
     setActing(null);
+  };
+
+  // ── Audit Actions ─────────────────────────────────────────────────────────
+
+  const handleRunAudit = async (deviceId: string, issue: DeviceIssue) => {
+    setAuditRunning(issue.id);
+    setAuditResult(prev => ({ ...prev, [issue.id]: '' }));
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/audit-controls`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: issue.description }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Audit failed');
+      if (data.findings && data.findings.length > 0) {
+        setAuditFindings(prev => ({ ...prev, [issue.id]: data.findings }));
+        setAuditResult(prev => ({ ...prev, [issue.id]: `Found ${data.findings.length} missing controls` }));
+      } else {
+        setAuditResult(prev => ({ ...prev, [issue.id]: 'No missing controls found in manual' }));
+      }
+    } catch (err) {
+      setAuditResult(prev => ({ ...prev, [issue.id]: `Error: ${(err as Error).message}` }));
+    }
+    setAuditRunning(null);
+  };
+
+  const handleAddAndSend = async (deviceId: string, issueId: string) => {
+    const findings = auditFindings[issueId];
+    if (!findings?.length) return;
+    setAuditRunning(issueId);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/audit-controls/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ controls: findings, issueId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Failed to add controls');
+      setAuditResult(prev => ({ ...prev, [issueId]: `✓ ${data.controlsAdded} controls added and sent to contractor` }));
+      setAuditFindings(prev => { const next = { ...prev }; delete next[issueId]; return next; });
+      fetchDevices(); // Refresh to show updated status
+    } catch (err) {
+      setAuditResult(prev => ({ ...prev, [issueId]: `Error: ${(err as Error).message}` }));
+    }
+    setAuditRunning(null);
+  };
+
+  const handleDismissIssue = async (deviceId: string, issueId: string) => {
+    try {
+      const issues = deviceIssues[deviceId] ?? [];
+      const updated = issues.map(i => i.id === issueId ? { ...i, status: 'resolved' as const, resolution: 'Dismissed by admin' } : i);
+      await fetch(`/api/hosted/panels/${deviceId}/issues`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _replace: true, issues: updated }),
+      });
+      setDeviceIssues(prev => ({ ...prev, [deviceId]: updated }));
+    } catch { /* best effort */ }
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -246,6 +340,108 @@ export default function ContractorSubmissions() {
                   )}
                 </div>
               </div>
+
+              {/* Inline issues section */}
+              {(() => {
+                const issues = (deviceIssues[d.deviceId] ?? []).filter(i => i.status !== 'resolved');
+                if (issues.length === 0) return null;
+                const isExpanded = expandedIssues.has(d.deviceId);
+                return (
+                  <>
+                    <button
+                      onClick={() => setExpandedIssues(prev => {
+                        const next = new Set(prev);
+                        next.has(d.deviceId) ? next.delete(d.deviceId) : next.add(d.deviceId);
+                        return next;
+                      })}
+                      className="mt-2 flex items-center gap-1.5 text-[11px] text-red-400 hover:text-red-300 transition-colors"
+                    >
+                      <span>⚠</span>
+                      <span>{issues.length} issue{issues.length > 1 ? 's' : ''} reported</span>
+                      <span className={`text-[9px] transition-transform ${isExpanded ? 'rotate-90' : ''}`}>▶</span>
+                    </button>
+                    {isExpanded && (
+                      <div className="mt-2 space-y-2">
+                        {issues.map((issue) => (
+                          <div key={issue.id} className="rounded border border-red-800/30 bg-red-900/10 px-3 py-2.5">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="rounded bg-red-500/20 border border-red-500/30 px-1.5 py-0.5 text-[9px] font-medium text-red-400">
+                                    {issue.type.replace('-', ' ')}
+                                  </span>
+                                  <span className="text-[9px] text-gray-500">
+                                    {new Date(issue.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                </div>
+                                <p className="text-[12px] text-gray-300 whitespace-pre-wrap">{issue.description}</p>
+                              </div>
+                            </div>
+
+                            {/* Audit running state */}
+                            {auditRunning === issue.id && (
+                              <div className="mt-2 flex items-center gap-2 text-[11px] text-blue-400">
+                                <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+                                Checking manual...
+                              </div>
+                            )}
+
+                            {/* Audit findings */}
+                            {auditFindings[issue.id] && auditFindings[issue.id].length > 0 && (
+                              <div className="mt-2 rounded border border-green-800/30 bg-green-900/10 px-3 py-2">
+                                <p className="text-[11px] font-medium text-green-400 mb-1.5">
+                                  Found {auditFindings[issue.id].length} missing controls
+                                </p>
+                                <div className="flex flex-wrap gap-1.5 mb-2">
+                                  {auditFindings[issue.id].map((f) => (
+                                    <span key={f.id} className="rounded bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-[10px] text-green-300">
+                                      {f.label} ({f.type})
+                                    </span>
+                                  ))}
+                                </div>
+                                <button
+                                  onClick={() => handleAddAndSend(d.deviceId, issue.id)}
+                                  disabled={auditRunning === issue.id}
+                                  className="rounded bg-green-600 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-green-500 transition-colors disabled:opacity-50"
+                                >
+                                  Add {auditFindings[issue.id].length} Controls & Send to Contractor
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Audit result message */}
+                            {auditResult[issue.id] && !auditFindings[issue.id]?.length && auditRunning !== issue.id && (
+                              <p className={`mt-2 text-[11px] ${auditResult[issue.id].startsWith('✓') ? 'text-green-400' : auditResult[issue.id].startsWith('Error') ? 'text-red-400' : 'text-gray-400'}`}>
+                                {auditResult[issue.id]}
+                              </p>
+                            )}
+
+                            {/* Action buttons */}
+                            {auditRunning !== issue.id && !auditFindings[issue.id]?.length && (
+                              <div className="mt-2 flex items-center gap-2">
+                                {issue.type === 'missing-control' && (
+                                  <button
+                                    onClick={() => handleRunAudit(d.deviceId, issue)}
+                                    className="rounded border border-blue-600/40 bg-blue-700/20 px-2.5 py-1 text-[10px] font-medium text-blue-300 hover:bg-blue-700/40 transition-colors"
+                                  >
+                                    Run Audit
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => handleDismissIssue(d.deviceId, issue.id)}
+                                  className="rounded border border-gray-700 px-2.5 py-1 text-[10px] text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
+                                >
+                                  Dismiss
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           );
         })}

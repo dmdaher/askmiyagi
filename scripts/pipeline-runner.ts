@@ -1469,7 +1469,8 @@ async function doPanelPR(state: PipelineState) {
     // The flow is now: pipeline completes → Send to Contractor → contractor edits → approve → Pull & Build.
     // Skip PR creation and just mark the phase as passed.
     appendLog(deviceId, { level: 'info', message: 'Panel PR skipped — using PanelRenderer + contractor flow instead of codegen PR' });
-    passPhase(state, 'panel-pr');
+    completePhase(state, 'panel-pr', null, true);
+    advancePhase(state, worktreeCwd);
     return;
 
     // Legacy code below (kept for reference, never reached):
