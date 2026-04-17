@@ -91,7 +91,7 @@ const phaseRetries: Record<string, number> = {};
 const HUMAN_REQUIRED_ESCALATIONS = new Set([
   'budget-exceeded',
   'manual-not-found',
-  'panel-pr-review',
+  // 'panel-pr-review', — removed with panel-pr phase
   'curriculum-review',
   'topology-deadlock',
   'two-strike-halt',
@@ -351,9 +351,7 @@ async function run() {
         case 'phase-3-harmonic-polish':
           await doPhase3(state);
           break;
-        case 'panel-pr':
-          await doPanelPR(state);
-          break;
+        // panel-pr removed — PanelRenderer uses committed JSON, no codegen PR needed
         case 'phase-4-extraction':
           await doPhase4Extract(state);
           break;
@@ -1457,34 +1455,6 @@ async function doPhase3(state: PipelineState) {
   } else {
     completePhase(state, 'phase-3-harmonic-polish', checkpoint.score, false);
     tryAutoRetry(state, 'agent-failure', `Harmonic polish score ${checkpoint.score ?? 'unknown'} below threshold`);
-  }
-}
-
-async function doPanelPR(state: PipelineState) {
-  startPhase(state, 'panel-pr');
-  appendLog(deviceId, { level: 'info', message: 'Creating panel PR...' });
-
-  try {
-    // Panel PR phase is obsolete — PanelRenderer uses committed JSON, not generated TSX.
-    // The flow is now: pipeline completes → Send to Contractor → contractor edits → approve → Pull & Build.
-    // Skip PR creation and just mark the phase as passed.
-    appendLog(deviceId, { level: 'info', message: 'Panel PR skipped — using PanelRenderer + contractor flow instead of codegen PR' });
-    completePhase(state, 'panel-pr', null, true);
-    advancePhase(state, worktreeCwd);
-    return;
-
-    // Legacy code below (kept for reference, never reached):
-    const prOutput = execSync(
-      `gh pr create --base test --title "feat: ${state.deviceName} digital twin panel" --body "Automated panel build for ${state.deviceName} by Miyagi Pipeline"`,
-      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd }
-    );
-    const prUrl = prOutput.trim();
-    appendLog(deviceId, { level: 'info', message: `Panel PR created: ${prUrl}` });
-    createEscalation(state, 'panel-pr-review', `Panel PR ready for review: ${prUrl}`, prUrl);
-    sendNotification('Miyagi Pipeline', `Panel PR ready for review: ${state.deviceName}`);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    tryAutoRetry(state, 'agent-failure', `Failed to create panel PR: ${message}`);
   }
 }
 

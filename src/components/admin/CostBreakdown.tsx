@@ -12,7 +12,6 @@ const PHASE_LABELS: Record<string, string> = {
   'phase-1-section-loop': 'Sections',
   'phase-2-global-assembly': 'Assembly',
   'phase-3-harmonic-polish': 'Polish',
-  'panel-pr': 'Panel PR',
   'phase-4-extraction': 'Extract',
   'phase-4-audit': 'Audit',
   'phase-5-tutorial-build': 'Tutorials',

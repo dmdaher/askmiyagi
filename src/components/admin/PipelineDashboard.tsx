@@ -17,7 +17,6 @@ const PIPELINE_PHASES: PipelinePhase[] = [
   'phase-1-section-loop',
   'phase-2-global-assembly',
   'phase-3-harmonic-polish',
-  'panel-pr',
   'phase-4-extraction',
   'phase-4-audit',
   'phase-5-tutorial-build',

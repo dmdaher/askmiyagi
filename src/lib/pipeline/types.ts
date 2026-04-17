@@ -8,7 +8,6 @@ export type PipelinePhase =
   | 'phase-1-section-loop'
   | 'phase-2-global-assembly'
   | 'phase-3-harmonic-polish'
-  | 'panel-pr'
   | 'phase-4-extraction'
   | 'phase-4-audit'
   | 'phase-5-tutorial-build'
@@ -79,7 +78,6 @@ export interface PhaseResult {
 }
 
 export type EscalationType =
-  | 'panel-pr-review'
   | 'topology-deadlock'
   | 'curriculum-review'
   | 'budget-exceeded'

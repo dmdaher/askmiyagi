@@ -137,7 +137,7 @@ const PHASE_ORDER: PipelinePhase[] = [
   // 'phase-1-section-loop',
   // 'phase-2-global-assembly',
   // 'phase-3-harmonic-polish',
-  'panel-pr',
+  // 'panel-pr', — removed: PanelRenderer uses committed JSON, no codegen PR needed
   'phase-4-extraction',
   'phase-4-audit',
   'phase-5-tutorial-build',

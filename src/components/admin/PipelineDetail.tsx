@@ -12,6 +12,7 @@ import CostBreakdown from './CostBreakdown';
 import DiagnosticsPanel from './DiagnosticsPanel';
 import ManifestViewer from './ManifestViewer';
 import PanelLayoutEditor from './PanelLayoutEditor';
+import IssuesPanel from './IssuesPanel';
 
 const AGENT_PHASE_MAP: Record<string, string> = {
   'phase-0-diagram-parser': 'diagram-parser',
@@ -172,6 +173,9 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
                 ))}
               </div>
             </div>
+
+            {/* Issues — always visible */}
+            <IssuesPanel deviceId={pipeline.deviceId} />
 
             {/* Diagnostics — always visible */}
             <DiagnosticsPanel deviceId={pipeline.deviceId} />
