@@ -187,6 +187,7 @@ export interface DeviceIssue {
   createdAt: string;
   status: 'open' | 'investigating' | 'resolved';
   resolution?: string;
+  findings?: Array<{ id: string; label: string; type: string; manualPage?: string; section?: string }>;
 }
 
 function issuesPath(deviceId: string) {
