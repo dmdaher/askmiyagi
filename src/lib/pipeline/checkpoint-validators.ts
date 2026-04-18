@@ -479,11 +479,11 @@ export function validateArchetypeGeometry(
   const mismatches: Array<{ sectionId: string; archetype: string; reason: string; suggestion: string }> = [];
 
   let manifest: { sections: Array<{ id: string; archetype: string; controls: string[] }> };
-  let blueprint: { sections: Array<{ sectionId: string; controls: Array<{ id: number; centroid: { x: number; y: number } }> }> };
+  let blueprint: Blueprint;
 
   try {
     manifest = JSON.parse(manifestJson);
-    blueprint = JSON.parse(blueprintJson);
+    blueprint = normalizeBlueprint(JSON.parse(blueprintJson));
   } catch {
     return { valid: false, errors: ['Could not parse JSON'], mismatches: [] };
   }
@@ -495,7 +495,7 @@ export function validateArchetypeGeometry(
     );
     if (!bSection || bSection.controls.length < 2) continue;
 
-    const centroids = bSection.controls.map(c => c.centroid).filter(Boolean);
+    const centroids = bSection.controls.map(c => c.centroid).filter((c): c is { x: number; y: number } => !!c);
     if (centroids.length < 2) continue;
 
     // Compute spread: how much do centroids vary in X vs Y?
@@ -577,11 +577,11 @@ export function validateNeighborDirections(
   const flipped: Array<{ control: string; neighbor: string; direction: string; expected: string }> = [];
 
   let manifest: { sections: Array<{ id: string; controls: string[] }>; controls: Array<{ id: string; spatialNeighbors?: Record<string, string | null> }> };
-  let blueprint: { sections: Array<{ sectionId: string; controls: Array<{ id: number; centroid: { x: number; y: number } }> }> };
+  let blueprint: Blueprint;
 
   try {
     manifest = JSON.parse(manifestJson);
-    blueprint = JSON.parse(blueprintJson);
+    blueprint = normalizeBlueprint(JSON.parse(blueprintJson));
   } catch {
     return { valid: false, errors: ['Could not parse manifest or blueprint JSON'], flippedNeighbors: [] };
   }
@@ -703,6 +703,22 @@ interface Blueprint {
   sections: BlueprintSection[];
 }
 
+/** Normalize blueprint.sections — agent may output as object or array */
+function normalizeBlueprint(raw: Record<string, unknown>): Blueprint {
+  let sections: BlueprintSection[] = [];
+  if (Array.isArray(raw.sections)) {
+    sections = raw.sections;
+  } else if (raw.sections && typeof raw.sections === 'object') {
+    // Convert object { sectionId: { controls: [...] } } to array
+    sections = Object.entries(raw.sections as Record<string, unknown>).map(([key, val]) => ({
+      sectionId: key,
+      controls: (val as { controls?: BlueprintControl[] })?.controls ?? [],
+      ...(val as Record<string, unknown>),
+    })) as BlueprintSection[];
+  }
+  return { ...raw, sections } as Blueprint;
+}
+
 /**
  * Validate manifest completeness after the Visual Extractor, before the Layout Engine.
  *
@@ -733,7 +749,7 @@ export function validateManifestCompleteness(
   let blueprint: Blueprint | null = null;
   if (blueprintJson) {
     try {
-      blueprint = JSON.parse(blueprintJson) as Blueprint;
+      blueprint = normalizeBlueprint(JSON.parse(blueprintJson));
     } catch {
       // Non-fatal — geometric checks will be skipped
     }
