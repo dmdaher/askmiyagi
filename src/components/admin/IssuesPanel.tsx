@@ -134,11 +134,20 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
         >
           Issues
         </h3>
-        {openIssues.length > 0 && (
-          <span className="rounded-full bg-red-500/20 border border-red-500/30 px-2 py-0.5 text-[10px] font-bold text-red-400">
-            {openIssues.length}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {openIssues.length > 0 && (
+            <span className="rounded-full bg-red-500/20 border border-red-500/30 px-2 py-0.5 text-[10px] font-bold text-red-400">
+              {openIssues.length}
+            </span>
+          )}
+          <button
+            onClick={fetchIssues}
+            className="rounded px-1.5 py-0.5 text-[9px] text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
+            title="Refresh issues"
+          >
+            ↻
+          </button>
+        </div>
       </div>
 
       {openIssues.length === 0 ? (
