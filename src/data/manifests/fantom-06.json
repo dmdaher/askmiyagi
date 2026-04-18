@@ -2069,7 +2069,7 @@
     },
     {
       "id": "label-tone-cat-4",
-      "text": "GUITAR/BASS",
+      "text": "KEYS",
       "x": 1101,
       "y": 215,
       "w": 60,
@@ -2124,7 +2124,7 @@
     },
     {
       "id": "label-tone-cat-9",
-      "text": "BELL/MALLET",
+      "text": "WIND",
       "x": 1453,
       "y": 184,
       "w": 48,
@@ -2135,7 +2135,7 @@
     },
     {
       "id": "label-tone-cat-10",
-      "text": "HIT/OTHER",
+      "text": "CHOIR",
       "x": 1451,
       "y": 160,
       "w": 48,
@@ -2168,7 +2168,7 @@
     },
     {
       "id": "label-tone-cat-13",
-      "text": "S.N.S",
+      "text": "FX",
       "x": 1354,
       "y": 159,
       "w": 48,
@@ -2190,7 +2190,7 @@
     },
     {
       "id": "label-tone-cat-15",
-      "text": "MODEL",
+      "text": "USER",
       "x": 1417,
       "y": 158,
       "w": 48,
@@ -2201,7 +2201,7 @@
     },
     {
       "id": "label-tone-cat-16",
-      "text": "DRUM",
+      "text": "ASSIGN",
       "x": 1341,
       "y": 215,
       "w": 60,
