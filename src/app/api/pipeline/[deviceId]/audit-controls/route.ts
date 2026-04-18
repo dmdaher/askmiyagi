@@ -5,6 +5,9 @@ import { readState } from '@/lib/pipeline/state-machine';
 import { invokeAgent } from '@/lib/pipeline/runner';
 import { getDeviceIssues, putDeviceIssues } from '@/lib/hosted-storage';
 
+// Allow up to 5 minutes for the audit agent to run
+export const maxDuration = 300;
+
 /**
  * POST /api/pipeline/{deviceId}/audit-controls
  *

@@ -48,11 +48,15 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
     setAuditRunning(issue.id);
     setAuditResult(prev => ({ ...prev, [issue.id]: '' }));
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120000); // 2 min timeout
       const res = await fetch(`/api/pipeline/${deviceId}/audit-controls`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description: issue.description, issueId: issue.id }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Audit failed');
       if (data.findings?.length > 0) {
