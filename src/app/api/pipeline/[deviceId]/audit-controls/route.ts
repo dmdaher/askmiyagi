@@ -128,9 +128,9 @@ Rules:
         const issues = await getDeviceIssues(deviceId);
         const updated = issues.map(i => i.id === issueId ? {
           ...i,
-          status: (findings.length > 0 ? 'open' : 'resolved') as 'open' | 'resolved',
+          status: 'open' as const,
           findings: findings.length > 0 ? findings : undefined,
-          resolution: findings.length === 0 ? 'Audit found no missing controls' : undefined,
+          resolution: findings.length === 0 ? 'Audit completed — no missing controls found' : undefined,
         } : i);
         await putDeviceIssues(deviceId, updated);
       } catch { /* best effort */ }

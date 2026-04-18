@@ -197,10 +197,10 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
                 </div>
               )}
 
-              {/* Result message */}
-              {auditResult[issue.id] && !auditFindings[issue.id]?.length && auditRunning !== issue.id && (
-                <p className={`text-[10px] mb-2 ${auditResult[issue.id].startsWith('✓') ? 'text-green-400' : auditResult[issue.id].startsWith('Error') ? 'text-red-400' : 'text-gray-400'}`}>
-                  {auditResult[issue.id]}
+              {/* Result message (local state or Blob resolution) */}
+              {!auditFindings[issue.id]?.length && !issue.findings?.length && auditRunning !== issue.id && issue.status !== 'investigating' && (auditResult[issue.id] || issue.resolution) && (
+                <p className={`text-[10px] mb-2 ${(auditResult[issue.id] ?? '').startsWith('✓') ? 'text-green-400' : (auditResult[issue.id] ?? '').startsWith('Error') ? 'text-red-400' : 'text-gray-400'}`}>
+                  {auditResult[issue.id] || issue.resolution}
                 </p>
               )}
 

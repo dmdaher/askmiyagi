@@ -422,10 +422,10 @@ export default function ContractorSubmissions() {
                               </div>
                             )}
 
-                            {/* Audit result message */}
-                            {auditResult[issue.id] && !auditFindings[issue.id]?.length && !issue.findings?.length && auditRunning !== issue.id && issue.status !== 'investigating' && (
-                              <p className={`mt-2 text-[11px] ${auditResult[issue.id].startsWith('✓') ? 'text-green-400' : auditResult[issue.id].startsWith('Error') ? 'text-red-400' : 'text-gray-400'}`}>
-                                {auditResult[issue.id]}
+                            {/* Audit result message (local state or Blob resolution) */}
+                            {!auditFindings[issue.id]?.length && !issue.findings?.length && auditRunning !== issue.id && issue.status !== 'investigating' && (auditResult[issue.id] || issue.resolution) && (
+                              <p className={`mt-2 text-[11px] ${(auditResult[issue.id] ?? '').startsWith('✓') ? 'text-green-400' : (auditResult[issue.id] ?? '').startsWith('Error') ? 'text-red-400' : 'text-gray-400'}`}>
+                                {auditResult[issue.id] || issue.resolution}
                               </p>
                             )}
 
