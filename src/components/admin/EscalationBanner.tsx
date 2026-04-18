@@ -12,12 +12,6 @@ const ESCALATION_CONFIG: Record<
   EscalationType,
   { bg: string; border: string; buttons: { label: string; resolution: string; variant: 'primary' | 'secondary' | 'danger' }[]; hasLink?: boolean }
 > = {
-  'panel-pr-review': {
-    bg: 'rgba(245, 158, 11, 0.1)',
-    border: '#f59e0b',
-    hasLink: true,
-    buttons: [{ label: 'I Approved', resolution: 'approved', variant: 'primary' }],
-  },
   'topology-deadlock': {
     bg: 'rgba(239, 68, 68, 0.1)',
     border: '#ef4444',

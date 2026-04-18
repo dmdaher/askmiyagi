@@ -86,18 +86,32 @@ function GuideTab() {
       <CollapsibleSection title="Properties Panel">
         <p>Appears on the right when you select a control. Shows and lets you edit all properties.</p>
         <p><strong className="text-white/80">Type</strong> &mdash; Change what kind of control this is (button, knob, slider, pad, etc.).</p>
-        <p><strong className="text-white/80">Label</strong> &mdash; Edit label text and choose position: above, below, left, right, on the button, or hidden.</p>
+        <p><strong className="text-white/80">Shape</strong> &mdash; For buttons only: rectangle or circle.</p>
+        <p><strong className="text-white/80">Label</strong> &mdash; Edit label text and choose position: above, below, left, right, on the button, or hidden. Secondary label adds a second line (e.g., &ldquo;PLAY/CUE&rdquo;).</p>
+        <p><strong className="text-white/80">Rotation</strong> &mdash; Rotate a control: 0&deg;, 90&deg;, 180&deg;, or 270&deg;.</p>
         <p><strong className="text-white/80">X, Y, W, H</strong> &mdash; Set exact pixel position and size. Good for fine-tuning after dragging.</p>
+        <p><strong className="text-white/80">Match Sizes</strong> &mdash; Select 2+ controls, click Match Sizes to make them all the same width and height as the first one selected.</p>
         <p><strong className="text-white/80">Align tools</strong> &mdash; Select 2+ controls, then align them: left edges, centers, or right edges (horizontal); top, middle, or bottom (vertical). &ldquo;Align&rdquo; means &ldquo;straighten into a line.&rdquo;</p>
         <p><strong className="text-white/80">Distribute</strong> &mdash; Select 3+ controls to space them equally. Horizontal distribute makes even gaps left-to-right; vertical does top-to-bottom.</p>
-        <p><strong className="text-white/80">Gap</strong> &mdash; Set an exact pixel distance between selected controls. Type a number, hit enter.</p>
+        <p><strong className="text-white/80">Gap</strong> &mdash; Set an exact pixel distance between selected controls. Type a number, hit enter. Supports negative values for overlapping.</p>
+        <p><strong className="text-white/80">Align Columns / Align Rows</strong> &mdash; Advanced: when you have 2+ rows of controls, Align Columns snaps them to the topmost row&rsquo;s column positions. Align Rows does the same vertically. Great for making a grid perfectly even.</p>
+        <p><strong className="text-white/80">Normalize Label Spacing</strong> &mdash; Select 2+ controls with labels. Snaps all labels to the tightest distance from their controls, grouped by position (above/below) and line count.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Labels">
+        <p><strong className="text-white/80">Label positions</strong> &mdash; Each control&rsquo;s label can be above, below, left, right, on the button, or hidden. Change in the Properties panel.</p>
+        <p><strong className="text-white/80">Center on control</strong> &mdash; Select a label, press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">C</kbd> to center it horizontally on its control. Figma-style center alignment.</p>
+        <p><strong className="text-white/80">Inline editing</strong> &mdash; Double-click any label to edit its text directly. Press Escape or click away to save.</p>
+        <p><strong className="text-white/80">Standalone labels</strong> &mdash; Click <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">+L</kbd> in the toolbar to add a free-floating text label. Not linked to any control.</p>
+        <p><strong className="text-white/80">Font size</strong> &mdash; Use the Sz dropdown in the toolbar to set font size for all labels, or set individually in the Properties panel.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Grouping Controls">
         <p>Select 2+ controls and press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+G</kbd> to group them. Groups:</p>
         <p>&bull; Move together when you drag any member</p>
         <p>&bull; Align as a unit with the alignment tools</p>
-        <p>&bull; Show as a unit in the Layers panel</p>
+        <p>&bull; Show as a unit in the Layers panel with a violet border</p>
+        <p>&bull; Auto-dissolve if a group drops below 2 members</p>
         <p>Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+Shift+G</kbd> to ungroup.</p>
       </CollapsibleSection>
     </div>
@@ -133,6 +147,11 @@ function ShortcutsTab() {
         <ShortcutRow action="Distribute vertical" keys="Cmd+Shift+V" />
       </div>
       <div>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Labels</h4>
+        <ShortcutRow action="Center label on control" keys="C" />
+        <ShortcutRow action="Double-click to edit label" keys="Dbl-click" />
+      </div>
+      <div>
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Grouping</h4>
         <ShortcutRow action="Group selected" keys="Cmd+G" />
         <ShortcutRow action="Ungroup" keys="Cmd+Shift+G" />
@@ -149,6 +168,7 @@ function WorkflowTab() {
     { title: 'Align rows and columns', desc: 'Select a row of controls, press Shift+H to align their centers. Select a column, press Shift+V. This straightens everything into clean lines.' },
     { title: 'Distribute for even spacing', desc: 'Select 3+ controls in a row/column, then Cmd+Shift+H (horizontal) or Cmd+Shift+V (vertical) to space them equally.' },
     { title: 'Fine-tune with Gap inputs', desc: 'In the Properties panel, use the Gap (H/V) inputs to set exact pixel spacing between controls. Good for knob rows that need uniform gaps.' },
+    { title: 'Fix labels', desc: 'Click a label and press C to center it on its control. Double-click to edit text. Use Normalize Label Spacing in Properties panel (2+ selected) to make label distances consistent.' },
     { title: 'Group related controls', desc: 'Select controls that belong together (e.g., a row of channel faders) and press Cmd+G. Groups move together and won\'t accidentally get misaligned.' },
     { title: 'Preview your work', desc: 'Click Preview in the toolbar to see the panel as the end user will see it. Check that labels are readable and nothing overlaps.' },
     { title: 'Submit for review', desc: 'Click Submit for Review. Add an optional note about any tricky areas. The editor locks while the admin reviews. You\'ll see feedback on the instrument list if changes are needed.' },

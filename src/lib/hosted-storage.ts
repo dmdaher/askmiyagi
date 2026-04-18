@@ -177,6 +177,42 @@ export async function putPhoto(deviceId: string, name: string, data: Buffer | Ui
   return blob.url;
 }
 
+// ─── Issues operations (separate blob — contractor reports) ────────────────
+
+export interface DeviceIssue {
+  id: string;
+  type: 'missing-control' | 'wrong-type' | 'wrong-data' | 'other';
+  description: string;
+  controlId?: string;
+  createdAt: string;
+  status: 'open' | 'investigating' | 'resolved';
+  resolution?: string;
+}
+
+function issuesPath(deviceId: string) {
+  return `${PREFIX}/${deviceId}/issues.json`;
+}
+
+export async function getDeviceIssues(deviceId: string): Promise<DeviceIssue[]> {
+  try {
+    const meta = await head(issuesPath(deviceId));
+    const res = await fetchFresh(meta.url);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function putDeviceIssues(deviceId: string, issues: DeviceIssue[]): Promise<void> {
+  await put(issuesPath(deviceId), JSON.stringify(issues), {
+    access: 'public',
+    contentType: 'application/json',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+}
+
 // ─── Init device (writes both blobs) ────────────────────────────────────────
 
 export async function initDevice(
