@@ -402,7 +402,6 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
         if (splits.anchor !== undefined && splits.anchor > 1.0) splits.anchor = splits.anchor / 100;
         if (splits.gap !== undefined && splits.gap > 1.0) splits.gap = splits.gap / 100;
         errors.push(`Section "${s.id}" heightSplits auto-corrected from integers to decimals (${JSON.stringify(splits)})`);
-        score -= 0.5; // Deduct less since auto-corrected
       }
     }
   }
@@ -438,27 +437,24 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
     }
   }
 
-  // 11. Visual enrichment soft enforcement — deductions, not hard rejection
+  // 11. Visual enrichment — log warnings but DON'T deduct score.
+  // These fields (shape, sizeClass, labelDisplay) are auto-fixed to sensible defaults
+  // by the completeness validator. Penalizing what gets auto-corrected causes unnecessary
+  // gatekeeper failures on otherwise valid manifests.
   const totalControls = controls.length;
   if (totalControls > 0) {
     const missingShape = controls.filter(c => !c.shape).length;
     const missingSizeClass = controls.filter(c => !c.sizeClass).length;
     const missingLabelDisplay = controls.filter(c => !c.labelDisplay).length;
-    const pctMissingShape = missingShape / totalControls;
-    const pctMissingSizeClass = missingSizeClass / totalControls;
-    const pctMissingLabelDisplay = missingLabelDisplay / totalControls;
 
-    if (pctMissingShape > 0.2) {
-      errors.push(`${missingShape}/${totalControls} controls missing shape (${(pctMissingShape * 100).toFixed(0)}%)`);
-      score -= 1.0;
+    if (missingShape > 0) {
+      errors.push(`${missingShape}/${totalControls} controls missing shape (auto-fixed)`);
     }
-    if (pctMissingSizeClass > 0.2) {
-      errors.push(`${missingSizeClass}/${totalControls} controls missing sizeClass (${(pctMissingSizeClass * 100).toFixed(0)}%)`);
-      score -= 0.5;
+    if (missingSizeClass > 0) {
+      errors.push(`${missingSizeClass}/${totalControls} controls missing sizeClass (auto-fixed)`);
     }
-    if (pctMissingLabelDisplay > 0.2) {
-      errors.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (${(pctMissingLabelDisplay * 100).toFixed(0)}%)`);
-      score -= 0.5;
+    if (missingLabelDisplay > 0) {
+      errors.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (auto-fixed)`);
     }
   }
 
