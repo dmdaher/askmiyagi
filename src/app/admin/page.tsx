@@ -1,12 +1,22 @@
 'use client';
 
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { usePipelineStore } from '@/store/pipelineStore';
 import PipelineDashboard from '@/components/admin/PipelineDashboard';
 import UploadZone from '@/components/admin/UploadZone';
 import ContractorSubmissions from '@/components/admin/ContractorSubmissions';
+import type { PipelineRunSummary, RunStatus } from '@/lib/pipeline/types';
+
+type SortOption = 'status' | 'manufacturer' | 'cost' | 'recent';
+
+const STATUS_ORDER: Record<RunStatus, number> = {
+  running: 0,
+  paused: 1,
+  failed: 2,
+  completed: 3,
+};
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -36,7 +46,55 @@ export default function AdminPage() {
     [fetchRuns, router],
   );
 
+  const [sortBy, setSortBy] = useState<SortOption>('status');
+  const [filterManufacturer, setFilterManufacturer] = useState<string>('all');
+  const [filterEditorReady, setFilterEditorReady] = useState(false);
+
+  // Get unique manufacturers for filter dropdown
+  const manufacturers = useMemo(() => {
+    const set = new Set(Object.values(runs).map(r => r.manufacturer).filter(Boolean));
+    return Array.from(set).sort();
+  }, [runs]);
+
+  // Apply filters and sort
+  const filteredRuns = useMemo(() => {
+    let entries = Object.entries(runs);
+
+    // Filter: manufacturer
+    if (filterManufacturer !== 'all') {
+      entries = entries.filter(([, r]) => r.manufacturer === filterManufacturer);
+    }
+
+    // Filter: ready for editor (paused at layout-engine)
+    if (filterEditorReady) {
+      entries = entries.filter(([, r]) =>
+        r.status === 'paused' && r.currentPhase === 'phase-0-layout-engine'
+      );
+    }
+
+    // Sort
+    entries.sort(([, a], [, b]) => {
+      switch (sortBy) {
+        case 'status':
+          return (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9);
+        case 'manufacturer':
+          return (a.manufacturer || '').localeCompare(b.manufacturer || '') || a.deviceName.localeCompare(b.deviceName);
+        case 'cost':
+          return ((b.totalActualCostUsd || b.totalCostUsd) ?? 0) - ((a.totalActualCostUsd || a.totalCostUsd) ?? 0);
+        case 'recent':
+          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+        default:
+          return 0;
+      }
+    });
+
+    return Object.fromEntries(entries) as Record<string, PipelineRunSummary>;
+  }, [runs, sortBy, filterManufacturer, filterEditorReady]);
+
   const hasRuns = Object.keys(runs).length > 0;
+  const editorReadyCount = Object.values(runs).filter(r =>
+    r.status === 'paused' && r.currentPhase === 'phase-0-layout-engine'
+  ).length;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
@@ -59,7 +117,52 @@ export default function AdminPage() {
       <ContractorSubmissions />
 
       {hasRuns ? (
-        /* Grid layout: upload zone first, then pipeline cards */
+        <>
+        {/* Sort & Filter bar */}
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className="h-8 rounded-lg border border-gray-700 bg-[var(--card-bg)] px-3 text-xs text-gray-300 outline-none"
+          >
+            <option value="status">Sort: Status</option>
+            <option value="manufacturer">Sort: Manufacturer</option>
+            <option value="cost">Sort: Cost</option>
+            <option value="recent">Sort: Recent</option>
+          </select>
+
+          {manufacturers.length > 1 && (
+            <select
+              value={filterManufacturer}
+              onChange={(e) => setFilterManufacturer(e.target.value)}
+              className="h-8 rounded-lg border border-gray-700 bg-[var(--card-bg)] px-3 text-xs text-gray-300 outline-none"
+            >
+              <option value="all">All Manufacturers</option>
+              {manufacturers.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          )}
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={filterEditorReady}
+              onChange={(e) => setFilterEditorReady(e.target.checked)}
+              className="h-3.5 w-3.5 rounded border-gray-600 bg-gray-800 accent-blue-500"
+            />
+            <span className="text-xs text-gray-400">
+              Ready for Editor
+              {editorReadyCount > 0 && (
+                <span className="ml-1 rounded-full bg-green-500/20 border border-green-500/30 px-1.5 py-0.5 text-[10px] font-bold text-green-400">
+                  {editorReadyCount}
+                </span>
+              )}
+            </span>
+          </label>
+        </div>
+
+        {/* Grid layout: upload zone first, then pipeline cards */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {/* Upload zone as the first card */}
           <motion.div
@@ -71,10 +174,11 @@ export default function AdminPage() {
           </motion.div>
 
           <PipelineDashboard
-            runs={runs}
+            runs={filteredRuns}
             onSelectPipeline={handleSelectPipeline}
           />
         </div>
+        </>
       ) : (
         /* Empty state: centered upload zone */
         <motion.div
