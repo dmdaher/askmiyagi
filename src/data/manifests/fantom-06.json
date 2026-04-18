@@ -2,72 +2,72 @@
   "deviceId": "fantom-06",
   "deviceName": "FANTOM-06",
   "manufacturer": "Roland",
-  "panelWidth": 1875,
-  "panelHeight": 564,
+  "panelWidth": 1500,
+  "panelHeight": 451,
   "controlScale": 0.3,
   "keyboard": {
     "keys": 61,
     "startNote": "C2",
     "type": "standard",
-    "panelHeightPercent": 54.5,
+    "panelHeightPercent": 53.7,
     "leftPercent": 9.5,
     "widthPercent": 90.5
   },
   "editorSections": [
     {
       "id": "controller",
-      "x": 0.5454530806107942,
-      "y": 1.7272668678977272,
-      "w": 176,
-      "h": 564
+      "x": 1,
+      "y": 2,
+      "w": 141,
+      "h": 451
     },
     {
       "id": "zone",
       "headerLabel": "ZONE",
-      "x": 177.54544329667522,
-      "y": 0.9090909090909085,
-      "w": 500,
-      "h": 304
+      "x": 142,
+      "y": 1,
+      "w": 400,
+      "h": 243
     },
     {
       "id": "common",
       "headerLabel": "COMMON",
-      "x": 680.9999775024417,
-      "y": 0.909090909090909,
-      "w": 376,
-      "h": 304
+      "x": 545,
+      "y": 1,
+      "w": 301,
+      "h": 243
     },
     {
       "id": "scene",
-      "headerLabel": "SCENE CTRL",
-      "x": 1059.818115607244,
-      "y": 1.1818208337957208,
-      "w": 140,
-      "h": 304
+      "headerLabel": "SCENE",
+      "x": 848,
+      "y": 1,
+      "w": 112,
+      "h": 243
     },
     {
       "id": "synth",
       "headerLabel": "SYNTH CTRL",
-      "x": 1200.818203546697,
-      "y": 0.3636307969249375,
-      "w": 184,
-      "h": 304
+      "x": 961,
+      "y": 0,
+      "w": 147,
+      "h": 243
     },
     {
       "id": "sequencer",
       "headerLabel": "SEQUENCER",
-      "x": 1386.2727541281956,
-      "y": -0.45454545454545414,
-      "w": 280,
-      "h": 304
+      "x": 1109,
+      "y": -1,
+      "w": 224,
+      "h": 243
     },
     {
       "id": "pad",
       "headerLabel": "PAD",
-      "x": 1666.4546331889203,
-      "y": -0.45454545454545436,
-      "w": 212,
-      "h": 304
+      "x": 1333,
+      "y": -1,
+      "w": 170,
+      "h": 243
     }
   ],
   "controls": [
@@ -76,10 +76,10 @@
       "type": "wheel",
       "label": "WHEEL1",
       "editorPosition": {
-        "x": 60.54545454545455,
-        "y": 85.72727272727272,
-        "w": 68,
-        "h": 333
+        "x": 49,
+        "y": 69,
+        "w": 54,
+        "h": 266
       },
       "labelPosition": "below"
     },
@@ -88,10 +88,10 @@
       "type": "wheel",
       "label": "WHEEL2",
       "editorPosition": {
-        "x": 122.54545454545455,
-        "y": 85.72727272727272,
-        "w": 67,
-        "h": 330
+        "x": 98,
+        "y": 69,
+        "w": 54,
+        "h": 264
       },
       "labelPosition": "below"
     },
@@ -100,10 +100,10 @@
       "type": "button",
       "label": "S1",
       "editorPosition": {
-        "x": 44.54545454545455,
-        "y": 337.72727272727275,
-        "w": 108,
-        "h": 68
+        "x": 36,
+        "y": 270,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -112,10 +112,10 @@
       "type": "button",
       "label": "S2",
       "editorPosition": {
-        "x": 89.54545454545455,
-        "y": 337.72727272727275,
-        "w": 108,
-        "h": 68
+        "x": 72,
+        "y": 270,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -124,10 +124,10 @@
       "type": "lever",
       "label": "PITCH BEND/MOD",
       "editorPosition": {
-        "x": 60.54545454545455,
-        "y": 377.72727272727275,
-        "w": 288,
-        "h": 288
+        "x": 49,
+        "y": 302,
+        "w": 230,
+        "h": 230
       },
       "labelPosition": "below"
     },
@@ -136,10 +136,10 @@
       "type": "button",
       "label": "SPLIT",
       "editorPosition": {
-        "x": 205.54545454545462,
-        "y": 194.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 165,
+        "y": 153,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -148,10 +148,10 @@
       "type": "button",
       "label": "CHORD\nMEMORY",
       "editorPosition": {
-        "x": 247.54545454545462,
-        "y": 194.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 198,
+        "y": 153,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -160,10 +160,10 @@
       "type": "button",
       "label": "ARPEGGIO",
       "editorPosition": {
-        "x": 285.5454545454546,
-        "y": 195.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 229,
+        "y": 153,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -172,10 +172,10 @@
       "type": "button",
       "label": "TRANSPOSE",
       "editorPosition": {
-        "x": 205.54545454545462,
-        "y": 235.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 165,
+        "y": 189,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -184,10 +184,10 @@
       "type": "button",
       "label": "DOWN",
       "editorPosition": {
-        "x": 247.54545454545462,
-        "y": 235.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 198,
+        "y": 189,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -196,10 +196,10 @@
       "type": "button",
       "label": "UP",
       "editorPosition": {
-        "x": 285.5454545454546,
-        "y": 235.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 229,
+        "y": 189,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -208,106 +208,106 @@
       "type": "knob",
       "label": "1",
       "editorPosition": {
-        "x": 337.5454826216264,
-        "y": 65.27271628639915,
-        "w": 108,
-        "h": 108
+        "x": 270,
+        "y": 53,
+        "w": 86,
+        "h": 86
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "knob-2",
       "type": "knob",
       "label": "2",
       "editorPosition": {
-        "x": 379.5454862837358,
-        "y": 65.27271750710227,
-        "w": 108,
-        "h": 108
+        "x": 303,
+        "y": 53,
+        "w": 86,
+        "h": 86
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "knob-3",
       "type": "knob",
       "label": "3",
       "editorPosition": {
-        "x": 422.5454826216264,
-        "y": 65.27271628639915,
-        "w": 108,
-        "h": 108
+        "x": 338,
+        "y": 53,
+        "w": 86,
+        "h": 86
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "knob-4",
       "type": "knob",
       "label": "4",
       "editorPosition": {
-        "x": 463.5454826216264,
-        "y": 65.27271628639915,
-        "w": 108,
-        "h": 108
+        "x": 370,
+        "y": 53,
+        "w": 86,
+        "h": 86
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "knob-5",
       "type": "knob",
       "label": "5",
       "editorPosition": {
-        "x": 507.5455302290481,
-        "y": 65.27273337624291,
-        "w": 107,
-        "h": 107
+        "x": 406,
+        "y": 53,
+        "w": 86,
+        "h": 86
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "knob-6",
       "type": "knob",
       "label": "6",
       "editorPosition": {
-        "x": 548.5454826216263,
-        "y": 65.27271628639915,
-        "w": 108,
-        "h": 108
+        "x": 439,
+        "y": 53,
+        "w": 86,
+        "h": 86
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "knob-7",
       "type": "knob",
       "label": "7",
       "editorPosition": {
-        "x": 590.5454826216263,
-        "y": 65.27271628639915,
-        "w": 108,
-        "h": 108
+        "x": 472,
+        "y": 53,
+        "w": 86,
+        "h": 86
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "knob-8",
       "type": "knob",
       "label": "8",
       "editorPosition": {
-        "x": 632.5454826216263,
-        "y": 65.27271628639915,
-        "w": 108,
-        "h": 108
+        "x": 506,
+        "y": 53,
+        "w": 86,
+        "h": 86
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "master-volume",
       "type": "knob",
       "label": "MASTER VOLUME",
       "editorPosition": {
-        "x": 200.54545454545462,
-        "y": 108.90909090909089,
-        "w": 130,
-        "h": 108
+        "x": 161,
+        "y": 87,
+        "w": 104,
+        "h": 86
       },
       "labelPosition": "above"
     },
@@ -316,10 +316,10 @@
       "type": "slider",
       "label": "1",
       "editorPosition": {
-        "x": 340.54542917313967,
-        "y": 169.18187886907398,
-        "w": 67,
-        "h": 307
+        "x": 273,
+        "y": 135,
+        "w": 54,
+        "h": 246
       },
       "labelPosition": "hidden"
     },
@@ -328,10 +328,10 @@
       "type": "slider",
       "label": "2",
       "editorPosition": {
-        "x": 384.5454545454543,
-        "y": 169.18187886907398,
-        "w": 67,
-        "h": 307
+        "x": 308,
+        "y": 135,
+        "w": 54,
+        "h": 246
       },
       "labelPosition": "hidden"
     },
@@ -340,10 +340,10 @@
       "type": "slider",
       "label": "3",
       "editorPosition": {
-        "x": 427.5454545454543,
-        "y": 169.18187886907398,
-        "w": 67,
-        "h": 307
+        "x": 342,
+        "y": 135,
+        "w": 54,
+        "h": 246
       },
       "labelPosition": "hidden"
     },
@@ -352,10 +352,10 @@
       "type": "slider",
       "label": "4",
       "editorPosition": {
-        "x": 469.5454545454543,
-        "y": 169.18187886907398,
-        "w": 67,
-        "h": 307
+        "x": 376,
+        "y": 135,
+        "w": 54,
+        "h": 246
       },
       "labelPosition": "hidden"
     },
@@ -364,10 +364,10 @@
       "type": "slider",
       "label": "5",
       "editorPosition": {
-        "x": 512.5454545454543,
-        "y": 169.18187886907398,
-        "w": 67,
-        "h": 307
+        "x": 410,
+        "y": 135,
+        "w": 54,
+        "h": 246
       },
       "labelPosition": "hidden"
     },
@@ -376,10 +376,10 @@
       "type": "slider",
       "label": "6",
       "editorPosition": {
-        "x": 553.5454545454543,
-        "y": 169.18187886907398,
-        "w": 67,
-        "h": 307
+        "x": 443,
+        "y": 135,
+        "w": 54,
+        "h": 246
       },
       "labelPosition": "hidden"
     },
@@ -388,10 +388,10 @@
       "type": "slider",
       "label": "7",
       "editorPosition": {
-        "x": 595.5454545454543,
-        "y": 169.18187886907398,
-        "w": 67,
-        "h": 307
+        "x": 476,
+        "y": 135,
+        "w": 54,
+        "h": 246
       },
       "labelPosition": "hidden"
     },
@@ -400,10 +400,10 @@
       "type": "slider",
       "label": "8",
       "editorPosition": {
-        "x": 637.5454545454543,
-        "y": 169.18187886907398,
-        "w": 67,
-        "h": 307
+        "x": 510,
+        "y": 135,
+        "w": 54,
+        "h": 246
       },
       "labelPosition": "hidden"
     },
@@ -412,10 +412,10 @@
       "type": "button",
       "label": "PAN/\nLEVEL",
       "editorPosition": {
-        "x": 248.54545454545462,
-        "y": 73.90909090909089,
-        "w": 108,
-        "h": 68
+        "x": 198,
+        "y": 59,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -424,10 +424,10 @@
       "type": "button",
       "label": "CTRL",
       "editorPosition": {
-        "x": 285.5454545454546,
-        "y": 73.90909090909089,
-        "w": 108,
-        "h": 68
+        "x": 229,
+        "y": 59,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -436,10 +436,10 @@
       "type": "button",
       "label": "ASSIGN",
       "editorPosition": {
-        "x": 285.5454545454546,
-        "y": 114.90909090909089,
-        "w": 108,
-        "h": 68
+        "x": 229,
+        "y": 92,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -448,10 +448,10 @@
       "type": "button",
       "label": "ZONE 9-16",
       "editorPosition": {
-        "x": 247.54545454545462,
-        "y": 155.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 198,
+        "y": 124,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -460,10 +460,10 @@
       "type": "button",
       "label": "ZONE\nSELECT",
       "editorPosition": {
-        "x": 285.5454545454546,
-        "y": 154.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 229,
+        "y": 124,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -472,10 +472,10 @@
       "type": "button",
       "label": "1",
       "editorPosition": {
-        "x": 335.5454545454546,
-        "y": 129.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 268,
+        "y": 104,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -484,10 +484,10 @@
       "type": "button",
       "label": "2",
       "editorPosition": {
-        "x": 377.5454545454546,
-        "y": 129.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 302,
+        "y": 104,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -496,10 +496,10 @@
       "type": "button",
       "label": "3",
       "editorPosition": {
-        "x": 419.5454545454546,
-        "y": 129.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 335,
+        "y": 104,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -508,10 +508,10 @@
       "type": "button",
       "label": "4",
       "editorPosition": {
-        "x": 462.5454545454546,
-        "y": 129.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 370,
+        "y": 104,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -520,10 +520,10 @@
       "type": "button",
       "label": "5",
       "editorPosition": {
-        "x": 503.5454545454546,
-        "y": 129.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 402,
+        "y": 104,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -532,10 +532,10 @@
       "type": "button",
       "label": "6",
       "editorPosition": {
-        "x": 545.5454545454546,
-        "y": 129.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 437,
+        "y": 104,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -544,10 +544,10 @@
       "type": "button",
       "label": "7",
       "editorPosition": {
-        "x": 587.5454545454546,
-        "y": 129.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 470,
+        "y": 104,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -556,10 +556,10 @@
       "type": "button",
       "label": "8",
       "editorPosition": {
-        "x": 629.5454545454546,
-        "y": 129.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 504,
+        "y": 104,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -568,10 +568,10 @@
       "type": "screen",
       "label": "Display",
       "editorPosition": {
-        "x": 739.0000000000005,
-        "y": 45.90909090909091,
-        "w": 938,
-        "h": 560
+        "x": 591,
+        "y": 37,
+        "w": 750,
+        "h": 448
       },
       "labelPosition": "below"
     },
@@ -580,10 +580,10 @@
       "type": "button",
       "label": "SCENE SELECT",
       "editorPosition": {
-        "x": 1043.8181818181806,
-        "y": 94.18181818181819,
-        "w": 100,
-        "h": 63
+        "x": 831,
+        "y": 55,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -592,10 +592,10 @@
       "type": "button",
       "label": "SCENE CHAIN",
       "editorPosition": {
-        "x": 1039.8181818181806,
-        "y": 128.1818181818182,
-        "w": 100,
-        "h": 63
+        "x": 831,
+        "y": 90,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -604,10 +604,10 @@
       "type": "button",
       "label": "ZONE VIEW",
       "editorPosition": {
-        "x": 1035.8181818181806,
-        "y": 164.1818181818182,
-        "w": 100,
-        "h": 63
+        "x": 831,
+        "y": 126,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -616,10 +616,10 @@
       "type": "button",
       "label": "SINGLE TONE",
       "editorPosition": {
-        "x": 1039.8181818181806,
-        "y": 204.1818181818182,
-        "w": 100,
-        "h": 63
+        "x": 831,
+        "y": 161,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -628,10 +628,10 @@
       "type": "knob",
       "label": "CUTOFF",
       "editorPosition": {
-        "x": 1276.1818670099447,
-        "y": 205.09091519442464,
-        "w": 100,
-        "h": 100
+        "x": 1009,
+        "y": 30,
+        "w": 288,
+        "h": 224
       },
       "labelPosition": "below"
     },
@@ -640,10 +640,10 @@
       "type": "knob",
       "label": "RESONANCE",
       "editorPosition": {
-        "x": 1208.9091348544032,
-        "y": 248.72727898337604,
-        "w": 100,
-        "h": 100
+        "x": 968,
+        "y": 91,
+        "w": 138,
+        "h": 118
       },
       "labelPosition": "below"
     },
@@ -652,10 +652,10 @@
       "type": "button",
       "label": "OSC",
       "editorPosition": {
-        "x": 1214.8181818181802,
-        "y": 87.36363636363637,
-        "w": 100,
-        "h": 63
+        "x": 974,
+        "y": 43,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -664,10 +664,10 @@
       "type": "button",
       "label": "FILTER TYPE",
       "editorPosition": {
-        "x": 1264.8181818181802,
-        "y": 87.36363636363637,
-        "w": 100,
-        "h": 63
+        "x": 1028.9999588964622,
+        "y": 151.00000427246098,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -676,10 +676,10 @@
       "type": "button",
       "label": "PARAM",
       "editorPosition": {
-        "x": 1336.6366468394876,
-        "y": 163.7272776100852,
-        "w": 100,
-        "h": 63
+        "x": 976,
+        "y": 151,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -688,10 +688,10 @@
       "type": "button",
       "label": "AMP",
       "editorPosition": {
-        "x": 1214.8181818181802,
-        "y": 124.36363636363637,
-        "w": 100,
-        "h": 63
+        "x": 1155,
+        "y": 44,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -700,10 +700,10 @@
       "type": "button",
       "label": "FX",
       "editorPosition": {
-        "x": 1264.8181818181802,
-        "y": 124.36363636363637,
-        "w": 100,
-        "h": 60
+        "x": 1195,
+        "y": 43,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -712,10 +712,10 @@
       "type": "button",
       "label": "LFO",
       "editorPosition": {
-        "x": 1263.9093561229572,
-        "y": 47.99998751550294,
-        "w": 100,
-        "h": 60
+        "x": 1235,
+        "y": 44,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -724,10 +724,10 @@
       "type": "button",
       "label": "PATTERN",
       "editorPosition": {
-        "x": 1413.2727272727268,
-        "y": 12.545454545454543,
-        "w": 100,
-        "h": 63
+        "x": 1155.0000122070614,
+        "y": 79.99999566650294,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -736,10 +736,10 @@
       "type": "button",
       "label": "GROUP",
       "editorPosition": {
-        "x": 1413.2727272727268,
-        "y": 12.545454545454543,
-        "w": 100,
-        "h": 60
+        "x": 1195,
+        "y": 79,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -748,10 +748,10 @@
       "type": "button",
       "label": "SONG",
       "editorPosition": {
-        "x": 1468.2727272727268,
-        "y": 12.545454545454543,
-        "w": 100,
-        "h": 63
+        "x": 1235,
+        "y": 80,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -760,10 +760,10 @@
       "type": "button",
       "label": "TR-REC",
       "editorPosition": {
-        "x": 1468.2727272727268,
-        "y": 12.545454545454543,
-        "w": 100,
-        "h": 63
+        "x": 1155,
+        "y": 116,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -772,10 +772,10 @@
       "type": "button",
       "label": "RHYTHM PTN",
       "editorPosition": {
-        "x": 1505.2727272727268,
-        "y": 12.545454545454543,
-        "w": 100,
-        "h": 63
+        "x": 1235,
+        "y": 116,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -784,10 +784,10 @@
       "type": "button",
       "label": "STOP",
       "editorPosition": {
-        "x": 1556.2727272727268,
-        "y": 12.545454545454543,
-        "w": 100,
-        "h": 63
+        "x": 1155,
+        "y": 150,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -796,10 +796,10 @@
       "type": "button",
       "label": "PLAY",
       "editorPosition": {
-        "x": 1581.2727272727268,
-        "y": 12.545454545454543,
-        "w": 100,
-        "h": 63
+        "x": 1195,
+        "y": 150,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -808,10 +808,10 @@
       "type": "button",
       "label": "REC",
       "editorPosition": {
-        "x": 1608.2727272727268,
-        "y": 12.545454545454543,
-        "w": 100,
-        "h": 63
+        "x": 1235,
+        "y": 150,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -820,118 +820,118 @@
       "type": "button",
       "label": "A.PIANO",
       "editorPosition": {
-        "x": 1398.2727272727268,
-        "y": 137.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 975.9999385742096,
+        "y": 196.00005966796306,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "tone-cat-2",
       "type": "button",
       "label": "E.PIANO",
       "editorPosition": {
-        "x": 1457.2727272727268,
-        "y": 137.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1023.9999385742096,
+        "y": 196.00005966796306,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "tone-cat-3",
       "type": "button",
       "label": "ORGAN",
       "editorPosition": {
-        "x": 1498.2727272727268,
-        "y": 137.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1071.0000206054585,
+        "y": 196.00005832518934,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "tone-cat-4",
       "type": "button",
-      "label": "GUITAR/BASS",
+      "label": "KEYS",
       "editorPosition": {
-        "x": 1580.2727272727268,
-        "y": 137.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1118.9999122070199,
+        "y": 196.0000806640548,
+        "w": 83,
+        "h": 53
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "tone-cat-5",
       "type": "button",
       "label": "STRINGS",
       "editorPosition": {
-        "x": 1398.2727272727268,
-        "y": 168.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1166.000061132804,
+        "y": 196.00005966796306,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "tone-cat-6",
       "type": "button",
       "label": "BRASS",
       "editorPosition": {
-        "x": 1457.2727272727268,
-        "y": 168.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1213.999988574211,
+        "y": 196.000034472653,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "tone-cat-7",
       "type": "button",
       "label": "SYNTH LEAD",
       "editorPosition": {
-        "x": 1498.2727272727268,
-        "y": 168.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1261.9999886718674,
+        "y": 196.00003237304384,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "tone-cat-8",
       "type": "button",
       "label": "SYNTH PAD",
       "editorPosition": {
-        "x": 1580.2727272727268,
-        "y": 168.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1309.9999980468724,
+        "y": 196.00012265623826,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "tone-cat-9",
       "type": "button",
-      "label": "BELL/MALLET",
+      "label": "WIND",
       "editorPosition": {
-        "x": 1398.2727272727268,
-        "y": 199.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1465.1818206232233,
+        "y": 193.18181818181824,
+        "w": 80,
+        "h": 50
       },
       "labelPosition": "above"
     },
     {
       "id": "tone-cat-10",
       "type": "button",
-      "label": "HIT/OTHER",
+      "label": "CHOIR",
       "editorPosition": {
-        "x": 1457.2727272727268,
-        "y": 199.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1463.091153231535,
+        "y": 170.09090909090924,
+        "w": 80,
+        "h": 50
       },
       "labelPosition": "above"
     },
@@ -940,10 +940,10 @@
       "type": "button",
       "label": "RHYTHM",
       "editorPosition": {
-        "x": 1498.2727272727268,
-        "y": 199.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1429.909093350495,
+        "y": 189.54545454545473,
+        "w": 80,
+        "h": 50
       },
       "labelPosition": "above"
     },
@@ -952,22 +952,22 @@
       "type": "button",
       "label": "S.N. ACOUSTIC",
       "editorPosition": {
-        "x": 1580.2727272727268,
-        "y": 199.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1400.5454496626423,
+        "y": 188.90912142666912,
+        "w": 80,
+        "h": 50
       },
       "labelPosition": "above"
     },
     {
       "id": "tone-cat-13",
       "type": "button",
-      "label": "S.N.S",
+      "label": "FX",
       "editorPosition": {
-        "x": 1398.2727272727268,
-        "y": 230.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1366.7273313210228,
+        "y": 167.4545918412648,
+        "w": 80,
+        "h": 50
       },
       "labelPosition": "above"
     },
@@ -976,46 +976,46 @@
       "type": "button",
       "label": "VTW",
       "editorPosition": {
-        "x": 1457.2727272727268,
-        "y": 230.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1396.7275168678973,
+        "y": 168.7273191139917,
+        "w": 80,
+        "h": 50
       },
       "labelPosition": "above"
     },
     {
       "id": "tone-cat-15",
       "type": "button",
-      "label": "MODEL",
+      "label": "USER",
       "editorPosition": {
-        "x": 1498.2727272727268,
-        "y": 230.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1429.0911532315329,
+        "y": 167.45456986860796,
+        "w": 80,
+        "h": 40
       },
       "labelPosition": "above"
     },
     {
       "id": "tone-cat-16",
       "type": "button",
-      "label": "DRUM",
+      "label": "ASSIGN",
       "editorPosition": {
-        "x": 1580.2727272727268,
-        "y": 230.54545454545456,
-        "w": 100,
-        "h": 63
+        "x": 1357.9999990234362,
+        "y": 196.00003806151983,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "above"
+      "labelPosition": "below"
     },
     {
       "id": "sampling",
       "type": "button",
       "label": "SAMPLING",
       "editorPosition": {
-        "x": 1679.4545454545457,
-        "y": 12.545454545454545,
-        "w": 100,
-        "h": 63
+        "x": 1337.999996582031,
+        "y": 38.99999389648437,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1024,10 +1024,10 @@
       "type": "button",
       "label": "PAD MODE",
       "editorPosition": {
-        "x": 1729.4545454545457,
-        "y": 12.545454545454545,
-        "w": 100,
-        "h": 63
+        "x": 1338,
+        "y": 67,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1036,10 +1036,10 @@
       "type": "button",
       "label": "CLIP BOARD",
       "editorPosition": {
-        "x": 1758.4545454545457,
-        "y": 12.545454545454545,
-        "w": 100,
-        "h": 63
+        "x": 1338,
+        "y": 95,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1048,10 +1048,10 @@
       "type": "button",
       "label": "BANK",
       "editorPosition": {
-        "x": 1783.4545454545457,
-        "y": 12.545454545454545,
-        "w": 100,
-        "h": 60
+        "x": 1338,
+        "y": 123,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1060,10 +1060,10 @@
       "type": "button",
       "label": "HOLD",
       "editorPosition": {
-        "x": 1836.4545454545457,
-        "y": 12.545454545454545,
-        "w": 100,
-        "h": 60
+        "x": 1338.000097656257,
+        "y": 151.000048828125,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1072,10 +1072,10 @@
       "type": "pad",
       "label": "1",
       "editorPosition": {
-        "x": 1679.4545454545457,
-        "y": 137.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1370,
+        "y": 34,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1084,10 +1084,10 @@
       "type": "pad",
       "label": "2",
       "editorPosition": {
-        "x": 1731.4545454545457,
-        "y": 137.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1403,
+        "y": 34,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1096,10 +1096,10 @@
       "type": "pad",
       "label": "3",
       "editorPosition": {
-        "x": 1785.4545454545457,
-        "y": 137.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1437,
+        "y": 34,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1108,10 +1108,10 @@
       "type": "pad",
       "label": "4",
       "editorPosition": {
-        "x": 1836.4545454545457,
-        "y": 137.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1470,
+        "y": 34,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1120,10 +1120,10 @@
       "type": "pad",
       "label": "5",
       "editorPosition": {
-        "x": 1679.4545454545457,
-        "y": 168.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1370,
+        "y": 68,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1132,10 +1132,10 @@
       "type": "pad",
       "label": "6",
       "editorPosition": {
-        "x": 1731.4545454545457,
-        "y": 168.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1403,
+        "y": 68,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1144,10 +1144,10 @@
       "type": "pad",
       "label": "7",
       "editorPosition": {
-        "x": 1785.4545454545457,
-        "y": 168.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1437,
+        "y": 68,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1156,10 +1156,10 @@
       "type": "pad",
       "label": "8",
       "editorPosition": {
-        "x": 1836.4545454545457,
-        "y": 168.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1470,
+        "y": 68,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1168,10 +1168,10 @@
       "type": "pad",
       "label": "9",
       "editorPosition": {
-        "x": 1679.4545454545457,
-        "y": 199.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1370,
+        "y": 102,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1180,10 +1180,10 @@
       "type": "pad",
       "label": "10",
       "editorPosition": {
-        "x": 1731.4545454545457,
-        "y": 199.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1403,
+        "y": 102,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1192,10 +1192,10 @@
       "type": "pad",
       "label": "11",
       "editorPosition": {
-        "x": 1785.4545454545457,
-        "y": 199.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1437,
+        "y": 102,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1204,10 +1204,10 @@
       "type": "pad",
       "label": "12",
       "editorPosition": {
-        "x": 1836.4545454545457,
-        "y": 199.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1470,
+        "y": 102,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1216,10 +1216,10 @@
       "type": "pad",
       "label": "13",
       "editorPosition": {
-        "x": 1679.4545454545457,
-        "y": 230.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1370,
+        "y": 135,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1228,10 +1228,10 @@
       "type": "pad",
       "label": "14",
       "editorPosition": {
-        "x": 1731.4545454545457,
-        "y": 230.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1403,
+        "y": 135,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1240,10 +1240,10 @@
       "type": "pad",
       "label": "15",
       "editorPosition": {
-        "x": 1785.4545454545457,
-        "y": 230.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1437,
+        "y": 135,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1252,10 +1252,10 @@
       "type": "pad",
       "label": "16",
       "editorPosition": {
-        "x": 1836.4545454545457,
-        "y": 230.54545454545453,
-        "w": 100,
-        "h": 100
+        "x": 1470,
+        "y": 135,
+        "w": 80,
+        "h": 80
       },
       "labelPosition": "on-button"
     },
@@ -1264,10 +1264,10 @@
       "type": "button",
       "label": "WRITE",
       "editorPosition": {
-        "x": 693.0000000000005,
-        "y": 64.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 551,
+        "y": 52,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1276,10 +1276,10 @@
       "type": "button",
       "label": "MASTER FX",
       "editorPosition": {
-        "x": 693.0000000000005,
-        "y": 108.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 551,
+        "y": 87,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1288,10 +1288,10 @@
       "type": "button",
       "label": "MOTIONAL PAD",
       "editorPosition": {
-        "x": 694.0000000000005,
-        "y": 153.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 551,
+        "y": 123,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1300,10 +1300,10 @@
       "type": "button",
       "label": "DAW CTRL",
       "editorPosition": {
-        "x": 694.0000000000005,
-        "y": 196.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 551,
+        "y": 158,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1312,10 +1312,10 @@
       "type": "button",
       "label": "MENU",
       "editorPosition": {
-        "x": 695.0000000000005,
-        "y": 240.9090909090909,
-        "w": 108,
-        "h": 68
+        "x": 551,
+        "y": 193,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1324,94 +1324,94 @@
       "type": "knob",
       "label": "E1",
       "editorPosition": {
-        "x": 765.0000000000005,
-        "y": 227.9090909090909,
-        "w": 80,
-        "h": 80
+        "x": 612,
+        "y": 182,
+        "w": 64,
+        "h": 64
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "e2",
       "type": "knob",
       "label": "E2",
       "editorPosition": {
-        "x": 805.0000000000005,
-        "y": 227.9090909090909,
-        "w": 80,
-        "h": 80
+        "x": 644,
+        "y": 182,
+        "w": 64,
+        "h": 64
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "e3",
       "type": "knob",
       "label": "E3",
       "editorPosition": {
-        "x": 845.0000000000005,
-        "y": 227.9090909090909,
-        "w": 80,
-        "h": 80
+        "x": 676,
+        "y": 182,
+        "w": 64,
+        "h": 64
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "e4",
       "type": "knob",
       "label": "E4",
       "editorPosition": {
-        "x": 885.0000000000005,
-        "y": 227.9090909090909,
-        "w": 80,
-        "h": 80
+        "x": 708,
+        "y": 182,
+        "w": 64,
+        "h": 64
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "e5",
       "type": "knob",
       "label": "E5",
       "editorPosition": {
-        "x": 925.0000000000005,
-        "y": 227.9090909090909,
-        "w": 80,
-        "h": 80
+        "x": 740,
+        "y": 182,
+        "w": 64,
+        "h": 64
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "e6",
       "type": "knob",
       "label": "E6",
       "editorPosition": {
-        "x": 965.0000000000005,
-        "y": 227.9090909090909,
-        "w": 80,
-        "h": 80
+        "x": 772,
+        "y": 182,
+        "w": 64,
+        "h": 64
       },
-      "labelPosition": "hidden"
+      "labelPosition": "below"
     },
     {
       "id": "tempo",
       "type": "button",
       "label": "TEMPO",
       "editorPosition": {
-        "x": 1090.0000000000005,
-        "y": 244.9090909090909,
-        "w": 80,
-        "h": 50
+        "x": 831,
+        "y": 196,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     },
     {
       "id": "value-dial",
       "type": "encoder",
       "label": "VALUE",
       "editorPosition": {
-        "x": 1072.727516867896,
-        "y": 39.45453324751408,
-        "w": 407,
-        "h": 353
+        "x": 867,
+        "y": 31,
+        "w": 278,
+        "h": 278
       },
       "labelPosition": "below"
     },
@@ -1420,34 +1420,34 @@
       "type": "button",
       "label": "DEC",
       "editorPosition": {
-        "x": 1215.4545454545437,
-        "y": 193.9999945068359,
-        "w": 80,
-        "h": 50
+        "x": 866,
+        "y": 125,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     },
     {
       "id": "inc",
       "type": "button",
       "label": "INC",
       "editorPosition": {
-        "x": 1134.0000000000005,
-        "y": 157.9090909090909,
-        "w": 80,
-        "h": 50
+        "x": 930,
+        "y": 125,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     },
     {
       "id": "cursor-up",
       "type": "button",
-      "label": "helllo",
+      "label": "upper arrow",
       "editorPosition": {
-        "x": 1100.9999731445314,
-        "y": 157.90910433682527,
-        "w": 80,
-        "h": 50
+        "x": 898,
+        "y": 125,
+        "w": 86,
+        "h": 54
       },
       "labelPosition": "above"
     },
@@ -1456,586 +1456,589 @@
       "type": "button",
       "label": "CURSOR DOWN",
       "editorPosition": {
-        "x": 1100.0000000000005,
-        "y": 193.9090909090909,
-        "w": 80,
-        "h": 50
+        "x": 898,
+        "y": 151,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     },
     {
       "id": "cursor-left",
       "type": "button",
       "label": "CURSOR LEFT",
       "editorPosition": {
-        "x": 1070.0000000000005,
-        "y": 193.9090909090909,
-        "w": 80,
-        "h": 50
+        "x": 866,
+        "y": 151,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     },
     {
       "id": "cursor-right",
       "type": "button",
-      "label": "CURSOR RIGHT",
+      "label": "right",
       "editorPosition": {
-        "x": 1134.0000000000005,
-        "y": 193.9090909090909,
-        "w": 80,
-        "h": 50
+        "x": 929.9999331298834,
+        "y": 151.00001601685852,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     },
     {
       "id": "shift",
       "type": "button",
       "label": "SHIFT",
       "editorPosition": {
-        "x": 1068.0000000000005,
-        "y": 230.9090909090909,
-        "w": 80,
-        "h": 50
+        "x": 863,
+        "y": 195,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     },
     {
       "id": "exit",
       "type": "button",
       "label": "EXIT",
       "editorPosition": {
-        "x": 1150.0000000000005,
-        "y": 266.90909090909093,
-        "w": 80,
-        "h": 50
+        "x": 895,
+        "y": 195,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     },
     {
       "id": "enter",
       "type": "button",
       "label": "ENTER",
       "editorPosition": {
-        "x": 1134.0000000000005,
-        "y": 232.9090909090909,
-        "w": 80,
-        "h": 50
+        "x": 927,
+        "y": 195,
+        "w": 86,
+        "h": 54
       },
-      "labelPosition": "below"
+      "labelPosition": "above"
     }
   ],
   "editorLabels": [
     {
       "id": "label-wheel-1",
       "text": "WHEEL1",
-      "x": 41,
-      "y": 189,
-      "w": 60,
-      "fontSize": 5,
+      "x": 33,
+      "y": 151,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-wheel-2",
       "text": "WHEEL2",
-      "x": 103,
-      "y": 189,
-      "w": 60,
-      "fontSize": 5,
+      "x": 82,
+      "y": 151,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-s1",
       "text": "S1",
-      "x": 31,
-      "y": 327,
-      "w": 60,
-      "fontSize": 5,
+      "x": 25,
+      "y": 262,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-s2",
       "text": "S2",
-      "x": 76,
-      "y": 327,
-      "w": 60,
-      "fontSize": 5,
+      "x": 61,
+      "y": 262,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-pitch-bend-lever",
       "text": "PITCH BEND/MOD",
-      "x": 61,
-      "y": 467,
-      "w": 86,
-      "fontSize": 5,
+      "x": 49,
+      "y": 374,
+      "w": 69,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-split",
       "text": "SPLIT",
-      "x": 193,
-      "y": 184,
-      "w": 60,
-      "fontSize": 5,
+      "x": 154,
+      "y": 145,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-chord-memory",
       "text": "CHORD\nMEMORY",
-      "x": 234,
-      "y": 176,
-      "w": 60,
-      "fontSize": 5,
+      "x": 187,
+      "y": 139,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-arpeggio",
       "text": "ARPEGGIO",
-      "x": 273,
-      "y": 184,
-      "w": 60,
-      "fontSize": 5,
+      "x": 218,
+      "y": 145,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-transpose",
       "text": "TRANSPOSE",
-      "x": 193,
-      "y": 225,
-      "w": 60,
-      "fontSize": 5,
+      "x": 154,
+      "y": 181,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-octave-down",
       "text": "DOWN",
-      "x": 234,
-      "y": 225,
-      "w": 60,
-      "fontSize": 5,
+      "x": 187,
+      "y": 181,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-octave-up",
       "text": "UP",
-      "x": 273,
-      "y": 225,
-      "w": 60,
-      "fontSize": 5,
+      "x": 218,
+      "y": 181,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-master-volume",
       "text": "MASTER\nVOLUME",
-      "x": 190,
-      "y": 90,
-      "w": 60,
-      "fontSize": 5,
+      "x": 152,
+      "y": 72,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-pan-level",
       "text": "PAN/\nLEVEL",
-      "x": 235,
-      "y": 55,
-      "w": 60,
-      "fontSize": 5,
+      "x": 187,
+      "y": 46,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-ctrl",
       "text": "CTRL",
-      "x": 273,
-      "y": 64,
-      "w": 60,
-      "fontSize": 5,
+      "x": 218,
+      "y": 51,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-assign",
       "text": "ASSIGN",
-      "x": 273,
-      "y": 104,
-      "w": 60,
-      "fontSize": 5,
+      "x": 218,
+      "y": 84,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-9-16",
       "text": "ZONE 9-16",
-      "x": 234,
-      "y": 145,
-      "w": 60,
-      "fontSize": 5,
+      "x": 187,
+      "y": 116,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-select",
       "text": "ZONE\nSELECT",
-      "x": 273,
-      "y": 136,
-      "w": 60,
-      "fontSize": 5,
+      "x": 218,
+      "y": 110,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-int-ext-1",
       "text": "1",
-      "x": 323,
-      "y": 119,
-      "w": 60,
-      "fontSize": 5,
+      "x": 258,
+      "y": 95,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-int-ext-2",
       "text": "2",
-      "x": 364,
-      "y": 119,
-      "w": 60,
-      "fontSize": 5,
+      "x": 291,
+      "y": 95,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-int-ext-3",
       "text": "3",
-      "x": 406,
-      "y": 119,
-      "w": 60,
-      "fontSize": 5,
+      "x": 325,
+      "y": 95,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-int-ext-4",
       "text": "4",
-      "x": 448,
-      "y": 119,
-      "w": 60,
-      "fontSize": 5,
+      "x": 358,
+      "y": 95,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-int-ext-5",
       "text": "5",
-      "x": 490,
-      "y": 119,
-      "w": 60,
-      "fontSize": 5,
+      "x": 392,
+      "y": 95,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-int-ext-6",
       "text": "6",
-      "x": 533,
-      "y": 119,
-      "w": 60,
-      "fontSize": 5,
+      "x": 426,
+      "y": 95,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-int-ext-7",
       "text": "7",
-      "x": 574,
-      "y": 119,
-      "w": 60,
-      "fontSize": 5,
+      "x": 459,
+      "y": 95,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-int-ext-8",
       "text": "8",
-      "x": 618,
-      "y": 119,
-      "w": 60,
-      "fontSize": 5,
+      "x": 494,
+      "y": 95,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-display",
       "text": "Display",
-      "x": 740,
-      "y": 219,
-      "w": 281,
-      "fontSize": 5,
+      "x": 592,
+      "y": 175,
+      "w": 225,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-scene-select",
       "text": "SCENE SELECT",
-      "x": 1029,
-      "y": 84,
-      "w": 60,
-      "fontSize": 5,
+      "x": 820,
+      "y": 46,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-scene-chain",
       "text": "SCENE CHAIN",
-      "x": 1025,
-      "y": 118,
-      "w": 60,
-      "fontSize": 5,
+      "x": 820,
+      "y": 82,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-zone-view",
       "text": "ZONE VIEW",
-      "x": 1022,
-      "y": 154,
-      "w": 60,
-      "fontSize": 5,
+      "x": 820,
+      "y": 117,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-single-tone",
       "text": "SINGLE TONE",
-      "x": 1025,
-      "y": 193,
-      "w": 60,
-      "fontSize": 5,
+      "x": 820,
+      "y": 152,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-cutoff",
       "text": "CUTOFF",
-      "x": 1261,
-      "y": 238,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1009,
+      "y": 99,
+      "w": 86,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-resonance",
       "text": "RESONANCE",
-      "x": 1194,
-      "y": 282,
-      "w": 60,
-      "fontSize": 5,
+      "x": 964,
+      "y": 130,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-osc",
       "text": "OSC",
-      "x": 1200,
-      "y": 76,
-      "w": 60,
-      "fontSize": 5,
+      "x": 963,
+      "y": 34,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-filter-type",
       "text": "FILTER TYPE",
-      "x": 1250,
-      "y": 76,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1018,
+      "y": 142,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-param",
       "text": "PARAM",
-      "x": 1321,
-      "y": 153,
-      "w": 60,
-      "fontSize": 5,
+      "x": 965,
+      "y": 142,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-amp",
       "text": "AMP",
-      "x": 1200,
-      "y": 114,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1144,
+      "y": 36,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-fx",
       "text": "FX",
-      "x": 1250,
-      "y": 114,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1184,
+      "y": 35,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-lfo",
       "text": "LFO",
-      "x": 1250,
-      "y": 37,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1224,
+      "y": 36,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-pattern",
       "text": "PATTERN",
-      "x": 1398,
-      "y": 2,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1144,
+      "y": 72,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-group",
       "text": "GROUP",
-      "x": 1398,
-      "y": 2,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1184,
+      "y": 71,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-song",
       "text": "SONG",
-      "x": 1453,
-      "y": 2,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1224,
+      "y": 72,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tr-rec",
       "text": "TR-REC",
-      "x": 1455,
-      "y": 1,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1144,
+      "y": 108,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-rhythm-ptn",
       "text": "RHYTHM PTN",
-      "x": 1490,
-      "y": 2,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1224,
+      "y": 108,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-stop",
-      "text": "STOP",
-      "x": 1541,
-      "y": 2,
-      "w": 60,
-      "fontSize": 5,
+      "text": "",
+      "icon": "stop",
+      "x": 1144,
+      "y": 142,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-play",
-      "text": "PLAY",
-      "x": 1566,
-      "y": 2,
-      "w": 60,
-      "fontSize": 5,
+      "text": "",
+      "icon": "play",
+      "x": 1184,
+      "y": 142,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-rec",
-      "text": "REC",
-      "x": 1593,
-      "y": 2,
-      "w": 60,
-      "fontSize": 5,
+      "text": "",
+      "icon": "record",
+      "x": 1224,
+      "y": 142,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tone-cat-1",
       "text": "A.PIANO",
-      "x": 1383,
-      "y": 127,
+      "x": 959,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2045,8 +2048,8 @@
     {
       "id": "label-tone-cat-2",
       "text": "E.PIANO",
-      "x": 1442,
-      "y": 127,
+      "x": 1007,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2056,8 +2059,8 @@
     {
       "id": "label-tone-cat-3",
       "text": "ORGAN",
-      "x": 1483,
-      "y": 127,
+      "x": 1054,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2067,8 +2070,8 @@
     {
       "id": "label-tone-cat-4",
       "text": "GUITAR/BASS",
-      "x": 1565,
-      "y": 127,
+      "x": 1101,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2078,8 +2081,8 @@
     {
       "id": "label-tone-cat-5",
       "text": "STRINGS",
-      "x": 1383,
-      "y": 157,
+      "x": 1149,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2089,8 +2092,8 @@
     {
       "id": "label-tone-cat-6",
       "text": "BRASS",
-      "x": 1442,
-      "y": 157,
+      "x": 1197,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2100,8 +2103,8 @@
     {
       "id": "label-tone-cat-7",
       "text": "SYNTH LEAD",
-      "x": 1483,
-      "y": 157,
+      "x": 1245,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2111,8 +2114,8 @@
     {
       "id": "label-tone-cat-8",
       "text": "SYNTH PAD",
-      "x": 1565,
-      "y": 157,
+      "x": 1293,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2122,85 +2125,85 @@
     {
       "id": "label-tone-cat-9",
       "text": "BELL/MALLET",
-      "x": 1383,
-      "y": 188,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1453,
+      "y": 184,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tone-cat-10",
       "text": "HIT/OTHER",
-      "x": 1442,
-      "y": 188,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1451,
+      "y": 160,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tone-cat-11",
       "text": "RHYTHM",
-      "x": 1483,
-      "y": 188,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1418,
+      "y": 181,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tone-cat-12",
       "text": "S.N. ACOUSTIC",
-      "x": 1565,
-      "y": 188,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1389,
+      "y": 180,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tone-cat-13",
       "text": "S.N.S",
-      "x": 1383,
-      "y": 219,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1354,
+      "y": 159,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tone-cat-14",
       "text": "VTW",
-      "x": 1442,
-      "y": 219,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1385,
+      "y": 159,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tone-cat-15",
       "text": "MODEL",
-      "x": 1483,
-      "y": 219,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1417,
+      "y": 158,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tone-cat-16",
       "text": "DRUM",
-      "x": 1565,
-      "y": 219,
+      "x": 1341,
+      "y": 215,
       "w": 60,
       "fontSize": 5,
       "align": "center",
@@ -2210,302 +2213,391 @@
     {
       "id": "label-sampling",
       "text": "SAMPLING",
-      "x": 1664,
-      "y": 3,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1327,
+      "y": 31,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-pad-mode",
       "text": "PAD MODE",
-      "x": 1714,
-      "y": 3,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1327,
+      "y": 59,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-clip-board",
       "text": "CLIP BOARD",
-      "x": 1743,
-      "y": 3,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1327,
+      "y": 87,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-bank",
       "text": "BANK",
-      "x": 1768,
-      "y": 3,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1327,
+      "y": 115,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-hold",
       "text": "HOLD",
-      "x": 1821,
-      "y": 3,
-      "w": 60,
-      "fontSize": 5,
+      "x": 1327,
+      "y": 143,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-write",
       "text": "WRITE",
-      "x": 679,
-      "y": 54,
-      "w": 60,
-      "fontSize": 5,
+      "x": 540,
+      "y": 44,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-motional-pad",
-      "text": "MOTIONAL\nPAD",
-      "x": 680,
-      "y": 134,
-      "w": 60,
-      "fontSize": 5,
+      "text": "MOTIONAL PAD",
+      "x": 540,
+      "y": 115,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-daw-ctrl",
       "text": "DAW CTRL",
-      "x": 680,
-      "y": 186,
-      "w": 60,
-      "fontSize": 5,
+      "x": 540,
+      "y": 150,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-e2",
       "text": "E2",
-      "x": 787,
-      "y": 259,
-      "w": 60,
-      "fontSize": 5,
+      "x": 630,
+      "y": 204,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-e3",
       "text": "E3",
-      "x": 827,
-      "y": 209,
-      "w": 60,
-      "fontSize": 5,
+      "x": 662,
+      "y": 204,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-e4",
       "text": "E4",
-      "x": 867,
-      "y": 259,
-      "w": 60,
-      "fontSize": 5,
+      "x": 694,
+      "y": 204,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-e5",
       "text": "E5",
-      "x": 907,
-      "y": 259,
-      "w": 60,
-      "fontSize": 5,
+      "x": 726,
+      "y": 204,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-e6",
       "text": "E6",
-      "x": 947,
-      "y": 259,
-      "w": 60,
-      "fontSize": 5,
+      "x": 758,
+      "y": 204,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-tempo",
       "text": "TEMPO",
-      "x": 1072,
-      "y": 264,
-      "w": 60,
-      "fontSize": 5,
+      "x": 820,
+      "y": 187,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-value-dial",
       "text": "VALUE",
-      "x": 1055,
-      "y": 67,
-      "w": 60,
-      "fontSize": 5,
+      "x": 853,
+      "y": 54,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-inc",
       "text": "INC",
-      "x": 1117,
-      "y": 177,
-      "w": 60,
-      "fontSize": 5,
+      "x": 918,
+      "y": 116,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-cursor-down",
       "text": "",
       "icon": "arrow-down",
-      "x": 1082,
-      "y": 213,
-      "w": 60,
-      "fontSize": 5,
+      "x": 887,
+      "y": 143,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-cursor-left",
       "text": "",
       "icon": "arrow-left",
-      "x": 1052,
-      "y": 213,
-      "w": 60,
-      "fontSize": 5,
+      "x": 855,
+      "y": 143,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-cursor-right",
       "text": "",
-      "x": 1117,
-      "y": 213,
-      "w": 60,
-      "fontSize": 5,
+      "icon": "arrow-right",
+      "x": 919,
+      "y": 143,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-shift",
       "text": "SHIFT",
-      "x": 1050,
-      "y": 250,
-      "w": 60,
-      "fontSize": 5,
+      "x": 852,
+      "y": 188,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-exit",
       "text": "EXIT",
-      "x": 1133,
-      "y": 286,
-      "w": 60,
-      "fontSize": 5,
+      "x": 884,
+      "y": 188,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-enter",
       "text": "ENTER",
-      "x": 1116,
-      "y": 221,
-      "w": 60,
-      "fontSize": 5,
+      "x": 916,
+      "y": 188,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-master-fx",
       "text": "MASTER FX",
-      "x": 679,
-      "y": 99,
-      "w": 60,
-      "fontSize": 5,
+      "x": 540,
+      "y": 79,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-menu",
       "text": "MENU",
-      "x": 681,
-      "y": 230,
-      "w": 60,
-      "fontSize": 5,
+      "x": 540,
+      "y": 185,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-e1",
       "text": "E1",
-      "x": 747,
-      "y": 259,
-      "w": 60,
-      "fontSize": 5,
+      "x": 598,
+      "y": 204,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-dec",
       "text": "DEC",
-      "x": 1198,
-      "y": 213,
-      "w": 60,
-      "fontSize": 5,
+      "x": 854,
+      "y": 116,
+      "w": 48,
+      "fontSize": 4,
       "align": "center",
       "hidden": false,
-      "lineHeight": 7
+      "lineHeight": 6
     },
     {
       "id": "label-cursor-up",
       "text": "",
       "icon": "arrow-up",
-      "x": 1083,
-      "y": 147,
-      "w": 60,
-      "fontSize": 6,
+      "x": 886,
+      "y": 116,
+      "w": 48,
+      "fontSize": 5,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 7
+    },
+    {
+      "id": "label-knob-1",
+      "text": "attack",
+      "x": 259,
+      "y": 80,
+      "w": 48,
+      "fontSize": 4,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 6
+    },
+    {
+      "id": "label-knob-2",
+      "text": "release",
+      "x": 293,
+      "y": 81,
+      "w": 48,
+      "fontSize": 4,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 6
+    },
+    {
+      "id": "label-knob-3",
+      "text": "reverb",
+      "x": 327,
+      "y": 81,
+      "w": 48,
+      "fontSize": 4,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 6
+    },
+    {
+      "id": "label-knob-4",
+      "text": "chorus",
+      "x": 360,
+      "y": 81,
+      "w": 48,
+      "fontSize": 4,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 6
+    },
+    {
+      "id": "label-knob-5",
+      "text": "low gain",
+      "x": 395,
+      "y": 80,
+      "w": 48,
+      "fontSize": 4,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 6
+    },
+    {
+      "id": "label-knob-6",
+      "text": "mid gain",
+      "x": 428,
+      "y": 81,
+      "w": 48,
+      "fontSize": 4,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 6
+    },
+    {
+      "id": "label-knob-7",
+      "text": "high gain",
+      "x": 462,
+      "y": 81,
+      "w": 48,
+      "fontSize": 4,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 6
+    },
+    {
+      "id": "label-knob-8",
+      "text": "eq cw",
+      "x": 495,
+      "y": 81,
+      "w": 48,
+      "fontSize": 4,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 6
     }
   ],
   "groupLabels": []
