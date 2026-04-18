@@ -432,14 +432,12 @@ export default function ContractorSubmissions() {
                             {/* Action buttons */}
                             {auditRunning !== issue.id && issue.status !== 'investigating' && !auditFindings[issue.id]?.length && !issue.findings?.length && (
                               <div className="mt-2 flex items-center gap-2">
-                                {issue.type === 'missing-control' && (
-                                  <button
-                                    onClick={() => handleRunAudit(d.deviceId, issue)}
-                                    className="rounded border border-blue-600/40 bg-blue-700/20 px-2.5 py-1 text-[10px] font-medium text-blue-300 hover:bg-blue-700/40 transition-colors"
-                                  >
-                                    Run Audit
-                                  </button>
-                                )}
+                                <button
+                                  onClick={() => handleRunAudit(d.deviceId, issue)}
+                                  className="rounded border border-blue-600/40 bg-blue-700/20 px-2.5 py-1 text-[10px] font-medium text-blue-300 hover:bg-blue-700/40 transition-colors"
+                                >
+                                  Run Audit
+                                </button>
                                 <button
                                   onClick={() => handleDismissIssue(d.deviceId, issue.id)}
                                   className="rounded border border-gray-700 px-2.5 py-1 text-[10px] text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
