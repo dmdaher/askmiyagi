@@ -20,6 +20,7 @@ interface DeviceIssue {
   createdAt: string;
   status: 'open' | 'investigating' | 'resolved';
   resolution?: string;
+  findings?: AuditFinding[];
 }
 
 interface AuditFinding {
@@ -157,11 +158,15 @@ export default function ContractorSubmissions() {
     setAuditRunning(issue.id);
     setAuditResult(prev => ({ ...prev, [issue.id]: '' }));
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120000); // 2 min timeout
       const res = await fetch(`/api/pipeline/${deviceId}/audit-controls`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: issue.description }),
+        body: JSON.stringify({ description: issue.description, issueId: issue.id }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Audit failed');
       if (data.findings && data.findings.length > 0) {
@@ -170,6 +175,7 @@ export default function ContractorSubmissions() {
       } else {
         setAuditResult(prev => ({ ...prev, [issue.id]: 'No missing controls found in manual' }));
       }
+      fetchDevices(); // Refresh from Blob
     } catch (err) {
       setAuditResult(prev => ({ ...prev, [issue.id]: `Error: ${(err as Error).message}` }));
     }
@@ -378,46 +384,53 @@ export default function ContractorSubmissions() {
                               </div>
                             </div>
 
-                            {/* Audit running state */}
-                            {auditRunning === issue.id && (
+                            {/* Audit running state (local OR Blob status) */}
+                            {(auditRunning === issue.id || issue.status === 'investigating') && (
                               <div className="mt-2 flex items-center gap-2 text-[11px] text-blue-400">
                                 <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
                                 Checking manual...
                               </div>
                             )}
 
-                            {/* Audit findings */}
-                            {auditFindings[issue.id] && auditFindings[issue.id].length > 0 && (
+                            {/* Audit findings (from local state or Blob) */}
+                            {((auditFindings[issue.id] && auditFindings[issue.id].length > 0) || issue.findings?.length) && (
                               <div className="mt-2 rounded border border-green-800/30 bg-green-900/10 px-3 py-2">
-                                <p className="text-[11px] font-medium text-green-400 mb-1.5">
-                                  Found {auditFindings[issue.id].length} missing controls
-                                </p>
-                                <div className="flex flex-wrap gap-1.5 mb-2">
-                                  {auditFindings[issue.id].map((f) => (
-                                    <span key={f.id} className="rounded bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-[10px] text-green-300">
-                                      {f.label} ({f.type})
-                                    </span>
-                                  ))}
-                                </div>
-                                <button
-                                  onClick={() => handleAddAndSend(d.deviceId, issue.id)}
-                                  disabled={auditRunning === issue.id}
-                                  className="rounded bg-green-600 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-green-500 transition-colors disabled:opacity-50"
-                                >
-                                  Add {auditFindings[issue.id].length} Controls & Send to Contractor
-                                </button>
+                                {(() => {
+                                  const findings = auditFindings[issue.id] ?? issue.findings ?? [];
+                                  return (
+                                    <>
+                                      <p className="text-[11px] font-medium text-green-400 mb-1.5">
+                                        Found {findings.length} missing controls
+                                      </p>
+                                      <div className="flex flex-wrap gap-1.5 mb-2">
+                                        {findings.map((f) => (
+                                          <span key={f.id} className="rounded bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-[10px] text-green-300">
+                                            {f.label} ({f.type})
+                                          </span>
+                                        ))}
+                                      </div>
+                                      <button
+                                        onClick={() => handleAddAndSend(d.deviceId, issue.id)}
+                                        disabled={auditRunning === issue.id}
+                                        className="rounded bg-green-600 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-green-500 transition-colors disabled:opacity-50"
+                                      >
+                                        Add {findings.length} Controls & Send to Contractor
+                                      </button>
+                                    </>
+                                  );
+                                })()}
                               </div>
                             )}
 
                             {/* Audit result message */}
-                            {auditResult[issue.id] && !auditFindings[issue.id]?.length && auditRunning !== issue.id && (
+                            {auditResult[issue.id] && !auditFindings[issue.id]?.length && !issue.findings?.length && auditRunning !== issue.id && issue.status !== 'investigating' && (
                               <p className={`mt-2 text-[11px] ${auditResult[issue.id].startsWith('✓') ? 'text-green-400' : auditResult[issue.id].startsWith('Error') ? 'text-red-400' : 'text-gray-400'}`}>
                                 {auditResult[issue.id]}
                               </p>
                             )}
 
                             {/* Action buttons */}
-                            {auditRunning !== issue.id && !auditFindings[issue.id]?.length && (
+                            {auditRunning !== issue.id && issue.status !== 'investigating' && !auditFindings[issue.id]?.length && !issue.findings?.length && (
                               <div className="mt-2 flex items-center gap-2">
                                 {issue.type === 'missing-control' && (
                                   <button

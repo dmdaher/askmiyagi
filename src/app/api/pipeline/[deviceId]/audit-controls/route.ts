@@ -3,6 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import { readState } from '@/lib/pipeline/state-machine';
 import { invokeAgent } from '@/lib/pipeline/runner';
+import { getDeviceIssues, putDeviceIssues } from '@/lib/hosted-storage';
+
+// Allow up to 5 minutes for the audit agent to run
+export const maxDuration = 300;
 
 /**
  * POST /api/pipeline/{deviceId}/audit-controls
@@ -20,10 +24,19 @@ export async function POST(
 ) {
   const { deviceId } = await params;
   const body = await request.json();
-  const { description } = body as { description: string };
+  const { description, issueId } = body as { description: string; issueId?: string };
 
   if (!description || description.trim().length < 5) {
     return NextResponse.json({ error: 'Description is required (min 5 chars)' }, { status: 400 });
+  }
+
+  // Mark issue as 'investigating' in Blob so both panels see it
+  if (issueId) {
+    try {
+      const issues = await getDeviceIssues(deviceId);
+      const updated = issues.map(i => i.id === issueId ? { ...i, status: 'investigating' as const } : i);
+      await putDeviceIssues(deviceId, updated);
+    } catch { /* best effort */ }
   }
 
   const state = readState(deviceId);
@@ -109,6 +122,20 @@ Rules:
     // Filter out any controls already in the manifest
     findings = findings.filter(f => !currentControlIds.includes(f.id));
 
+    // Save findings to Blob issue so both panels can display them
+    if (issueId) {
+      try {
+        const issues = await getDeviceIssues(deviceId);
+        const updated = issues.map(i => i.id === issueId ? {
+          ...i,
+          status: (findings.length > 0 ? 'open' : 'resolved') as 'open' | 'resolved',
+          findings: findings.length > 0 ? findings : undefined,
+          resolution: findings.length === 0 ? 'Audit found no missing controls' : undefined,
+        } : i);
+        await putDeviceIssues(deviceId, updated);
+      } catch { /* best effort */ }
+    }
+
     return NextResponse.json({
       ok: true,
       findings,
@@ -116,6 +143,14 @@ Rules:
       agentOutput: result.output.substring(0, 2000), // Truncated for debugging
     });
   } catch (err) {
+    // On failure, reset issue status back to open
+    if (issueId) {
+      try {
+        const issues = await getDeviceIssues(deviceId);
+        const updated = issues.map(i => i.id === issueId ? { ...i, status: 'open' as const } : i);
+        await putDeviceIssues(deviceId, updated);
+      } catch { /* best effort */ }
+    }
     return NextResponse.json(
       { error: 'Audit agent failed', details: (err as Error).message },
       { status: 500 },

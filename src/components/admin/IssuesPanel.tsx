@@ -9,6 +9,7 @@ interface DeviceIssue {
   createdAt: string;
   status: 'open' | 'investigating' | 'resolved';
   resolution?: string;
+  findings?: AuditFinding[];
 }
 
 interface AuditFinding {
@@ -47,11 +48,15 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
     setAuditRunning(issue.id);
     setAuditResult(prev => ({ ...prev, [issue.id]: '' }));
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120000); // 2 min timeout
       const res = await fetch(`/api/pipeline/${deviceId}/audit-controls`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: issue.description }),
+        body: JSON.stringify({ description: issue.description, issueId: issue.id }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Audit failed');
       if (data.findings?.length > 0) {
@@ -60,6 +65,7 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
       } else {
         setAuditResult(prev => ({ ...prev, [issue.id]: 'No missing controls found in manual' }));
       }
+      fetchIssues(); // Refresh from Blob
     } catch (err) {
       setAuditResult(prev => ({ ...prev, [issue.id]: `Error: ${(err as Error).message}` }));
     }
@@ -99,6 +105,19 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
     } catch { /* best effort */ }
   };
 
+  // Load findings from Blob into local state on fetch
+  useEffect(() => {
+    const blobFindings: Record<string, AuditFinding[]> = {};
+    for (const issue of issues) {
+      if (issue.findings?.length) {
+        blobFindings[issue.id] = issue.findings;
+      }
+    }
+    if (Object.keys(blobFindings).length > 0) {
+      setAuditFindings(prev => ({ ...prev, ...blobFindings }));
+    }
+  }, [issues]);
+
   const openIssues = issues.filter(i => i.status !== 'resolved');
 
   if (loading) return null;
@@ -115,11 +134,20 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
         >
           Issues
         </h3>
-        {openIssues.length > 0 && (
-          <span className="rounded-full bg-red-500/20 border border-red-500/30 px-2 py-0.5 text-[10px] font-bold text-red-400">
-            {openIssues.length}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {openIssues.length > 0 && (
+            <span className="rounded-full bg-red-500/20 border border-red-500/30 px-2 py-0.5 text-[10px] font-bold text-red-400">
+              {openIssues.length}
+            </span>
+          )}
+          <button
+            onClick={fetchIssues}
+            className="rounded px-1.5 py-0.5 text-[9px] text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
+            title="Refresh issues"
+          >
+            ↻
+          </button>
+        </div>
       </div>
 
       {openIssues.length === 0 ? (
@@ -138,8 +166,8 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
               </div>
               <p className="text-[11px] text-gray-300 whitespace-pre-wrap mb-2">{issue.description}</p>
 
-              {/* Audit running */}
-              {auditRunning === issue.id && (
+              {/* Audit running (local state or Blob status) */}
+              {(auditRunning === issue.id || issue.status === 'investigating') && (
                 <div className="flex items-center gap-2 text-[11px] text-blue-400 mb-2">
                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
                   Checking manual...
@@ -177,7 +205,7 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
               )}
 
               {/* Action buttons */}
-              {auditRunning !== issue.id && !auditFindings[issue.id]?.length && (
+              {auditRunning !== issue.id && issue.status !== 'investigating' && !auditFindings[issue.id]?.length && (
                 <div className="flex items-center gap-2">
                   {issue.type === 'missing-control' && (
                     <button
