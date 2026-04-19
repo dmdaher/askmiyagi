@@ -40,6 +40,7 @@ interface ManifestControl {
   positions?: number;
   positionLabels?: string[];
   rotation?: number;
+  labelFontSize?: number;
   editorPosition?: { x: number; y: number; w: number; h: number };
 }
 
@@ -306,7 +307,8 @@ function renderControl(
           <PadButton id={control.id}
             label={control.labelPosition === 'on-button' ? control.label : ''}
             highlighted={highlighted} active={active}
-            width={w} height={h} onClick={onClick} />
+            width={w} height={h} onClick={onClick}
+            labelFontSize={control.labelFontSize} />
         </div>
       );
     case 'encoder':

@@ -11,6 +11,7 @@ interface PadButtonProps {
   onClick?: () => void;
   width?: number;
   height?: number;
+  labelFontSize?: number;
 }
 
 const highlightAnimation = {
@@ -37,6 +38,7 @@ export default function PadButton({
   onClick,
   width = 64,
   height = 64,
+  labelFontSize,
 }: PadButtonProps) {
   return (
       <motion.button
@@ -70,7 +72,10 @@ export default function PadButton({
               : 'radial-gradient(circle at 40% 35%, rgba(255,255,255,0.06) 0%, transparent 60%)',
           }}
         />
-        <span className="absolute bottom-1.5 right-2 text-[11px] font-bold text-gray-400 z-10">
+        <span
+          className="absolute bottom-1.5 right-2 font-bold text-gray-400 z-10"
+          style={{ fontSize: labelFontSize ?? 11 }}
+        >
           {label}
         </span>
       </motion.button>
