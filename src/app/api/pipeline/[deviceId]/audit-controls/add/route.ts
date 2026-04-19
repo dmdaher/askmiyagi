@@ -2,13 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { readState } from '@/lib/pipeline/state-machine';
-import { initDevice, getDeviceIssues, putDeviceIssues } from '@/lib/hosted-storage';
+import { initDevice, getDeviceIssues, putDeviceIssues, backupManifest } from '@/lib/hosted-storage';
 
 /**
  * POST /api/pipeline/{deviceId}/audit-controls/add
  *
- * Injects missing controls into manifest-editor.json and re-sends
- * to Vercel Blob so the contractor sees them in the editor.
+ * Applies audit findings to manifest-editor.json:
+ * - action "add": injects missing controls at (0,0)
+ * - action "fix": updates existing control label/type + matching editorLabel
+ *
+ * Then re-sends to Vercel Blob so the contractor sees the changes.
  */
 export async function POST(
   request: NextRequest,
@@ -17,7 +20,7 @@ export async function POST(
   const { deviceId } = await params;
   const body = await request.json();
   const { controls, issueId } = body as {
-    controls: Array<{ id: string; label: string; type: string; section?: string }>;
+    controls: Array<{ id: string; label: string; type: string; section?: string; action?: 'add' | 'fix'; details?: string }>;
     issueId?: string;
   };
 
@@ -39,53 +42,135 @@ export async function POST(
 
   const manifest = JSON.parse(fs.readFileSync(editorPath, 'utf-8'));
 
-  // Get existing control IDs to avoid duplicates
+  // Build lookup for existing controls
+  const controlsArray = Array.isArray(manifest.controls);
   const existingIds = new Set<string>();
-  if (Array.isArray(manifest.controls)) {
+  if (controlsArray) {
     for (const c of manifest.controls) existingIds.add(c.id);
   } else if (manifest.controls && typeof manifest.controls === 'object') {
     for (const id of Object.keys(manifest.controls)) existingIds.add(id);
   }
 
-  // Add new controls (skip duplicates)
   const added: string[] = [];
+  const fixed: string[] = [];
+
   for (const ctrl of controls) {
-    if (existingIds.has(ctrl.id)) continue;
+    const action = ctrl.action ?? (existingIds.has(ctrl.id) ? 'fix' : 'add');
 
-    const newControl = {
-      id: ctrl.id,
-      label: ctrl.label,
-      type: ctrl.type,
-      x: 0,
-      y: 0,
-      w: 40,
-      h: 40,
-      sectionId: ctrl.section ?? '',
-      locked: false,
-      labelPosition: ctrl.type === 'pad' ? 'on-button' : 'above',
-    };
+    if (action === 'add' && !existingIds.has(ctrl.id)) {
+      // Add new control at default position
+      const newControl = {
+        id: ctrl.id,
+        label: ctrl.label,
+        type: ctrl.type,
+        x: 0,
+        y: 0,
+        w: 40,
+        h: 40,
+        sectionId: ctrl.section ?? '',
+        locked: false,
+        labelPosition: ctrl.type === 'pad' ? 'on-button' : 'above',
+      };
 
-    if (Array.isArray(manifest.controls)) {
-      manifest.controls.push(newControl);
-    } else {
-      manifest.controls[ctrl.id] = newControl;
+      if (controlsArray) {
+        manifest.controls.push(newControl);
+      } else {
+        manifest.controls[ctrl.id] = newControl;
+      }
+
+      // Create editorLabel so the control's label is visible in the editor
+      if (Array.isArray(manifest.editorLabels)) {
+        manifest.editorLabels.push({
+          text: ctrl.label,
+          controlId: ctrl.id,
+          x: 0,
+          y: -15,
+          w: Math.max(ctrl.label.length * 7, 40),
+          h: 14,
+          fontSize: 9,
+        });
+      }
+
+      added.push(ctrl.id);
+
+    } else if (action === 'fix' && existingIds.has(ctrl.id)) {
+      // Update existing control's label and/or type
+      if (controlsArray) {
+        const existing = manifest.controls.find((c: { id: string }) => c.id === ctrl.id);
+        if (existing) {
+          if (ctrl.label) existing.label = ctrl.label;
+          if (ctrl.type) existing.type = ctrl.type;
+        }
+      } else {
+        const existing = manifest.controls[ctrl.id];
+        if (existing) {
+          if (ctrl.label) existing.label = ctrl.label;
+          if (ctrl.type) existing.type = ctrl.type;
+        }
+      }
+
+      // Also update matching editorLabel (the floating text rendered over the control)
+      if (ctrl.label && Array.isArray(manifest.editorLabels)) {
+        for (const el of manifest.editorLabels) {
+          if (el.controlId === ctrl.id) {
+            el.text = ctrl.label;
+          }
+        }
+      }
+
+      fixed.push(ctrl.id);
     }
-    added.push(ctrl.id);
   }
 
-  if (added.length === 0) {
-    return NextResponse.json({ ok: true, controlsAdded: 0, message: 'All controls already exist' });
+  if (added.length === 0 && fixed.length === 0) {
+    return NextResponse.json({ ok: true, controlsAdded: 0, controlsFixed: 0, message: 'No changes needed' });
+  }
+
+  // Also update production manifest if it exists
+  const prodPath = path.join(process.cwd(), 'src', 'data', 'manifests', `${deviceId}.json`);
+  if (fs.existsSync(prodPath)) {
+    const prodManifest = JSON.parse(fs.readFileSync(prodPath, 'utf-8'));
+    // Apply same fixes to production manifest
+    const prodControlIds = new Set<string>();
+    if (Array.isArray(prodManifest.controls)) {
+      for (const c of prodManifest.controls) prodControlIds.add(c.id);
+    }
+    for (const ctrl of controls) {
+      const action = ctrl.action ?? (prodControlIds.has(ctrl.id) ? 'fix' : 'add');
+      if (action === 'fix') {
+        // Fix control label
+        if (Array.isArray(prodManifest.controls)) {
+          const existing = prodManifest.controls.find((c: { id: string }) => c.id === ctrl.id);
+          if (existing && ctrl.label) existing.label = ctrl.label;
+          if (existing && ctrl.type) existing.type = ctrl.type;
+        }
+        // Fix editorLabel
+        if (ctrl.label && Array.isArray(prodManifest.editorLabels)) {
+          for (const el of prodManifest.editorLabels) {
+            if (el.controlId === ctrl.id) el.text = ctrl.label;
+          }
+        }
+      }
+    }
+    fs.writeFileSync(prodPath, JSON.stringify(prodManifest, null, 2) + '\n');
   }
 
   // Save updated manifest locally
   manifest._source = 'editor';
   fs.writeFileSync(editorPath, JSON.stringify(manifest, null, 2));
 
-  // Re-send to Blob with admin note
-  const adminNote = `Added ${added.length} controls from audit: ${added.join(', ')}`;
+  // Build admin note
+  const parts: string[] = [];
+  if (added.length > 0) parts.push(`Added ${added.length}: ${added.join(', ')}`);
+  if (fixed.length > 0) parts.push(`Fixed ${fixed.length}: ${fixed.join(', ')}`);
+  const adminNote = `Audit: ${parts.join('. ')}`;
+
+  // Backup contractor's current manifest before overwriting
+  await backupManifest(deviceId);
+
+  // Re-send to Blob
   const deviceName = state.deviceName || deviceId;
   const manufacturer = state.manufacturer || '';
-
   await initDevice(deviceId, deviceName, manufacturer, manifest, { adminNote });
 
   // Mark issue as resolved in Blob if provided
@@ -104,7 +189,9 @@ export async function POST(
   return NextResponse.json({
     ok: true,
     controlsAdded: added.length,
-    controlIds: added,
+    controlsFixed: fixed.length,
+    addedIds: added,
+    fixedIds: fixed,
     sentToContractor: true,
     adminNote,
   });

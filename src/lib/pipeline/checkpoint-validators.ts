@@ -402,7 +402,6 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
         if (splits.anchor !== undefined && splits.anchor > 1.0) splits.anchor = splits.anchor / 100;
         if (splits.gap !== undefined && splits.gap > 1.0) splits.gap = splits.gap / 100;
         errors.push(`Section "${s.id}" heightSplits auto-corrected from integers to decimals (${JSON.stringify(splits)})`);
-        score -= 0.5; // Deduct less since auto-corrected
       }
     }
   }
@@ -438,27 +437,24 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
     }
   }
 
-  // 11. Visual enrichment soft enforcement — deductions, not hard rejection
+  // 11. Visual enrichment — log warnings but DON'T deduct score.
+  // These fields (shape, sizeClass, labelDisplay) are auto-fixed to sensible defaults
+  // by the completeness validator. Penalizing what gets auto-corrected causes unnecessary
+  // gatekeeper failures on otherwise valid manifests.
   const totalControls = controls.length;
   if (totalControls > 0) {
     const missingShape = controls.filter(c => !c.shape).length;
     const missingSizeClass = controls.filter(c => !c.sizeClass).length;
     const missingLabelDisplay = controls.filter(c => !c.labelDisplay).length;
-    const pctMissingShape = missingShape / totalControls;
-    const pctMissingSizeClass = missingSizeClass / totalControls;
-    const pctMissingLabelDisplay = missingLabelDisplay / totalControls;
 
-    if (pctMissingShape > 0.2) {
-      errors.push(`${missingShape}/${totalControls} controls missing shape (${(pctMissingShape * 100).toFixed(0)}%)`);
-      score -= 1.0;
+    if (missingShape > 0) {
+      errors.push(`${missingShape}/${totalControls} controls missing shape (auto-fixed)`);
     }
-    if (pctMissingSizeClass > 0.2) {
-      errors.push(`${missingSizeClass}/${totalControls} controls missing sizeClass (${(pctMissingSizeClass * 100).toFixed(0)}%)`);
-      score -= 0.5;
+    if (missingSizeClass > 0) {
+      errors.push(`${missingSizeClass}/${totalControls} controls missing sizeClass (auto-fixed)`);
     }
-    if (pctMissingLabelDisplay > 0.2) {
-      errors.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (${(pctMissingLabelDisplay * 100).toFixed(0)}%)`);
-      score -= 0.5;
+    if (missingLabelDisplay > 0) {
+      errors.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (auto-fixed)`);
     }
   }
 
@@ -479,11 +475,11 @@ export function validateArchetypeGeometry(
   const mismatches: Array<{ sectionId: string; archetype: string; reason: string; suggestion: string }> = [];
 
   let manifest: { sections: Array<{ id: string; archetype: string; controls: string[] }> };
-  let blueprint: { sections: Array<{ sectionId: string; controls: Array<{ id: number; centroid: { x: number; y: number } }> }> };
+  let blueprint: Blueprint;
 
   try {
     manifest = JSON.parse(manifestJson);
-    blueprint = JSON.parse(blueprintJson);
+    blueprint = normalizeBlueprint(JSON.parse(blueprintJson));
   } catch {
     return { valid: false, errors: ['Could not parse JSON'], mismatches: [] };
   }
@@ -495,7 +491,7 @@ export function validateArchetypeGeometry(
     );
     if (!bSection || bSection.controls.length < 2) continue;
 
-    const centroids = bSection.controls.map(c => c.centroid).filter(Boolean);
+    const centroids = bSection.controls.map(c => c.centroid).filter((c): c is { x: number; y: number } => !!c);
     if (centroids.length < 2) continue;
 
     // Compute spread: how much do centroids vary in X vs Y?
@@ -577,11 +573,11 @@ export function validateNeighborDirections(
   const flipped: Array<{ control: string; neighbor: string; direction: string; expected: string }> = [];
 
   let manifest: { sections: Array<{ id: string; controls: string[] }>; controls: Array<{ id: string; spatialNeighbors?: Record<string, string | null> }> };
-  let blueprint: { sections: Array<{ sectionId: string; controls: Array<{ id: number; centroid: { x: number; y: number } }> }> };
+  let blueprint: Blueprint;
 
   try {
     manifest = JSON.parse(manifestJson);
-    blueprint = JSON.parse(blueprintJson);
+    blueprint = normalizeBlueprint(JSON.parse(blueprintJson));
   } catch {
     return { valid: false, errors: ['Could not parse manifest or blueprint JSON'], flippedNeighbors: [] };
   }
@@ -703,6 +699,22 @@ interface Blueprint {
   sections: BlueprintSection[];
 }
 
+/** Normalize blueprint.sections — agent may output as object or array */
+function normalizeBlueprint(raw: Record<string, unknown>): Blueprint {
+  let sections: BlueprintSection[] = [];
+  if (Array.isArray(raw.sections)) {
+    sections = raw.sections;
+  } else if (raw.sections && typeof raw.sections === 'object') {
+    // Convert object { sectionId: { controls: [...] } } to array
+    sections = Object.entries(raw.sections as Record<string, unknown>).map(([key, val]) => ({
+      sectionId: key,
+      controls: (val as { controls?: BlueprintControl[] })?.controls ?? [],
+      ...(val as Record<string, unknown>),
+    })) as BlueprintSection[];
+  }
+  return { ...raw, sections } as Blueprint;
+}
+
 /**
  * Validate manifest completeness after the Visual Extractor, before the Layout Engine.
  *
@@ -733,7 +745,7 @@ export function validateManifestCompleteness(
   let blueprint: Blueprint | null = null;
   if (blueprintJson) {
     try {
-      blueprint = JSON.parse(blueprintJson) as Blueprint;
+      blueprint = normalizeBlueprint(JSON.parse(blueprintJson));
     } catch {
       // Non-fatal — geometric checks will be skipped
     }

@@ -29,6 +29,8 @@ interface AuditFinding {
   type: string;
   manualPage?: string;
   section?: string;
+  action?: 'add' | 'fix';
+  details?: string;
 }
 
 const STATUS_LABELS: Record<string, { text: string; dot: string }> = {
@@ -59,6 +61,9 @@ export default function ContractorSubmissions() {
   const [auditRunning, setAuditRunning] = useState<string | null>(null);
   const [auditFindings, setAuditFindings] = useState<Record<string, AuditFinding[]>>({});
   const [auditResult, setAuditResult] = useState<Record<string, string>>({});
+  const [deviceHistory, setDeviceHistory] = useState<Record<string, Array<{ name: string; url: string; timestamp: string; sizeBytes: number }>>>({});
+  const [expandedHistory, setExpandedHistory] = useState<Set<string>>(new Set());
+  const [restoring, setRestoring] = useState<string | null>(null);
 
   const fetchDevices = useCallback(() => {
     fetch('/api/hosted/panels')
@@ -214,6 +219,34 @@ export default function ContractorSubmissions() {
       });
       setDeviceIssues(prev => ({ ...prev, [deviceId]: updated }));
     } catch { /* best effort */ }
+  };
+
+  // ── History Actions ───────────────────────────────────────────────────────
+
+  const fetchHistory = async (did: string) => {
+    try {
+      const res = await fetch(`/api/hosted/panels/${did}/history`);
+      const data = await res.json();
+      setDeviceHistory(prev => ({ ...prev, [did]: Array.isArray(data) ? data : [] }));
+    } catch { /* ignore */ }
+  };
+
+  const handleRestore = async (did: string, url: string) => {
+    if (!confirm('Restore this backup? Current manifest will be backed up first.')) return;
+    setRestoring(did);
+    try {
+      const res = await fetch(`/api/hosted/panels/${did}/history`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      if (!res.ok) throw new Error('Restore failed');
+      setResult(prev => ({ ...prev, [did]: '✓ Restored from backup' }));
+      fetchDevices();
+    } catch (err) {
+      setResult(prev => ({ ...prev, [did]: `✗ ${(err as Error).message}` }));
+    }
+    setRestoring(null);
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -397,24 +430,44 @@ export default function ContractorSubmissions() {
                               <div className="mt-2 rounded border border-green-800/30 bg-green-900/10 px-3 py-2">
                                 {(() => {
                                   const findings = auditFindings[issue.id] ?? issue.findings ?? [];
+                                  const adds = findings.filter(f => f.action === 'add' || (!f.action && !f.details));
+                                  const fixes = findings.filter(f => f.action === 'fix');
+                                  const buttonLabel = adds.length > 0 && fixes.length > 0
+                                    ? `Add ${adds.length} + Fix ${fixes.length} & Send`
+                                    : adds.length > 0 ? `Add ${adds.length} & Send to Contractor`
+                                    : `Fix ${fixes.length} & Send to Contractor`;
                                   return (
                                     <>
-                                      <p className="text-[11px] font-medium text-green-400 mb-1.5">
-                                        Found {findings.length} missing controls
-                                      </p>
-                                      <div className="flex flex-wrap gap-1.5 mb-2">
-                                        {findings.map((f) => (
-                                          <span key={f.id} className="rounded bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-[10px] text-green-300">
-                                            {f.label} ({f.type})
-                                          </span>
-                                        ))}
-                                      </div>
+                                      {adds.length > 0 && (
+                                        <>
+                                          <p className="text-[11px] font-medium text-green-400 mb-1.5">Missing ({adds.length})</p>
+                                          <div className="flex flex-wrap gap-1.5 mb-2">
+                                            {adds.map((f) => (
+                                              <span key={f.id} className="rounded bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-[10px] text-green-300">
+                                                {f.label} ({f.type})
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </>
+                                      )}
+                                      {fixes.length > 0 && (
+                                        <>
+                                          <p className="text-[11px] font-medium text-amber-400 mb-1.5">Needs fix ({fixes.length})</p>
+                                          <div className="flex flex-wrap gap-1.5 mb-2">
+                                            {fixes.map((f) => (
+                                              <span key={f.id} className="rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300" title={f.details}>
+                                                {f.id}: → {f.label} ({f.type})
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </>
+                                      )}
                                       <button
                                         onClick={() => handleAddAndSend(d.deviceId, issue.id)}
                                         disabled={auditRunning === issue.id}
                                         className="rounded bg-green-600 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-green-500 transition-colors disabled:opacity-50"
                                       >
-                                        Add {findings.length} Controls & Send to Contractor
+                                        {buttonLabel}
                                       </button>
                                     </>
                                   );
@@ -432,14 +485,12 @@ export default function ContractorSubmissions() {
                             {/* Action buttons */}
                             {auditRunning !== issue.id && issue.status !== 'investigating' && !auditFindings[issue.id]?.length && !issue.findings?.length && (
                               <div className="mt-2 flex items-center gap-2">
-                                {issue.type === 'missing-control' && (
-                                  <button
-                                    onClick={() => handleRunAudit(d.deviceId, issue)}
-                                    className="rounded border border-blue-600/40 bg-blue-700/20 px-2.5 py-1 text-[10px] font-medium text-blue-300 hover:bg-blue-700/40 transition-colors"
-                                  >
-                                    Run Audit
-                                  </button>
-                                )}
+                                <button
+                                  onClick={() => handleRunAudit(d.deviceId, issue)}
+                                  className="rounded border border-blue-600/40 bg-blue-700/20 px-2.5 py-1 text-[10px] font-medium text-blue-300 hover:bg-blue-700/40 transition-colors"
+                                >
+                                  Run Audit
+                                </button>
                                 <button
                                   onClick={() => handleDismissIssue(d.deviceId, issue.id)}
                                   className="rounded border border-gray-700 px-2.5 py-1 text-[10px] text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
@@ -455,6 +506,47 @@ export default function ContractorSubmissions() {
                   </>
                 );
               })()}
+
+              {/* History section */}
+              <button
+                onClick={() => {
+                  const next = new Set(expandedHistory);
+                  if (next.has(d.deviceId)) {
+                    next.delete(d.deviceId);
+                  } else {
+                    next.add(d.deviceId);
+                    fetchHistory(d.deviceId);
+                  }
+                  setExpandedHistory(next);
+                }}
+                className="mt-2 text-[11px] text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                History {expandedHistory.has(d.deviceId) ? '▾' : '▸'}
+              </button>
+
+              {expandedHistory.has(d.deviceId) && (
+                <div className="mt-1.5 space-y-1">
+                  {(deviceHistory[d.deviceId] ?? []).length === 0 ? (
+                    <p className="text-[10px] text-gray-600">No backups yet</p>
+                  ) : (
+                    (deviceHistory[d.deviceId] ?? []).map((h) => (
+                      <div key={h.name} className="flex items-center justify-between text-[10px]">
+                        <span className="text-gray-500">
+                          {new Date(h.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          <span className="text-gray-600 ml-1">({Math.round(h.sizeBytes / 1024)}KB)</span>
+                        </span>
+                        <button
+                          onClick={() => handleRestore(d.deviceId, h.url)}
+                          disabled={restoring === d.deviceId}
+                          className="text-blue-400 hover:text-blue-300 transition-colors disabled:opacity-50"
+                        >
+                          Restore
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           );
         })}

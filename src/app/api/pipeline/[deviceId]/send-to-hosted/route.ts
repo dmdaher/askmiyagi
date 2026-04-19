@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { initDevice, putPhoto } from '@/lib/hosted-storage';
+import { initDevice, putPhoto, backupManifest } from '@/lib/hosted-storage';
 import fs from 'fs';
 import path from 'path';
 
@@ -45,6 +45,9 @@ export async function POST(
       const body = await _request.json();
       note = body?.note;
     } catch { /* no body is fine */ }
+
+    // Backup contractor's current manifest before overwriting
+    await backupManifest(deviceId);
 
     // Write both blobs (status.json + manifest.json)
     await initDevice(

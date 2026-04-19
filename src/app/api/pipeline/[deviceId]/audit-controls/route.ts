@@ -77,8 +77,9 @@ export async function POST(
 A contractor reports: "${description.trim()}"
 
 Your task:
-1. Read the manual PDF(s) to verify whether the reported controls exist on the real hardware.
-2. Cross-reference against the current manifest controls to confirm they are missing.
+1. Read the manual PDF(s) to understand the hardware controls.
+2. Investigate what the contractor is reporting — they may be reporting missing controls, wrong control types, incorrect labels, or other issues.
+3. Cross-reference against the current manifest controls.
 
 Manual PDF location(s):
 ${manualPathsList.map((p: string) => `- ${p}`).join('\n')}
@@ -86,18 +87,20 @@ ${manualPathsList.map((p: string) => `- ${p}`).join('\n')}
 Current manifest controls (${currentControlIds.length} total):
 ${currentControlIds.join(', ')}
 
-For EACH confirmed missing control, output a JSON array at the end of your response in a code block:
+For EACH control that needs to be ADDED (missing from manifest) or CORRECTED (wrong type/label), output a JSON array at the end of your response in a code block:
 \`\`\`json
 [
-  { "id": "control-id", "label": "LABEL TEXT", "type": "button|knob|slider|pad|wheel|encoder|dial|lever", "manualPage": "page number or range", "section": "which section it belongs to" }
+  { "id": "control-id", "label": "LABEL TEXT", "type": "button|knob|slider|pad|wheel|encoder|dial|lever", "manualPage": "page number or range", "section": "which section it belongs to", "action": "add|fix", "details": "explanation of what's wrong and what should change" }
 ]
 \`\`\`
 
 Rules:
-- Only include controls you CONFIRMED exist in the manual
+- Only include controls you CONFIRMED in the manual
 - Use kebab-case for IDs (e.g., "zone-1", "pitch-bend")
 - Use the exact label text from the manual
-- If you cannot confirm the controls exist, return an empty array: []
+- "action": "add" for controls missing from the manifest
+- "action": "fix" for controls that exist but have wrong type, label, or other issues
+- If everything looks correct, return an empty array: []
 - Do NOT invent controls that aren't in the manual`;
 
     const result = await invokeAgent({
