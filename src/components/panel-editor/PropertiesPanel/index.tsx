@@ -178,6 +178,26 @@ function SectionProperties({ section }: { section: SectionDef }) {
         )}
       </div>
 
+      {/* Hide section frame in preview/production */}
+      <div className="flex items-center justify-between">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">
+          Hide Frame
+        </label>
+        <button
+          onClick={() => {
+            pushSnapshot();
+            useEditorStore.getState().updateSection(section.id, { hidden: !section.hidden });
+          }}
+          className={`text-[9px] px-1.5 py-0.5 rounded transition-colors ${
+            section.hidden
+              ? 'bg-amber-600/30 text-amber-300 border border-amber-600'
+              : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
+          }`}
+        >
+          {section.hidden ? 'Hidden' : 'Visible'}
+        </button>
+      </div>
+
       {/* Divider */}
       <div className="h-px bg-gray-800" />
 
@@ -644,6 +664,7 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         label={labelMixed ? '' : labels[0]}
         labelPosition={positionMixed ? 'below' : positions[0]}
         secondaryLabel={secondaryMixed ? undefined : secondaryLabels[0]}
+        labelFontSize={controls[0]?.labelFontSize}
         labelMixed={labelMixed}
         positionMixed={positionMixed}
         secondaryMixed={secondaryMixed}
@@ -652,6 +673,7 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
+        onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
       />
 
       <div className="h-px bg-gray-800" />

@@ -86,7 +86,8 @@ export type EscalationType =
   | 'geometric-mismatch'
   | 'two-strike-halt'
   | 'physical-impossibility'
-  | 'template-review';
+  | 'template-review'
+  | 'editor-ready';
 
 export interface Escalation {
   id: string;

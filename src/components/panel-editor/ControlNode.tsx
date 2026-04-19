@@ -466,6 +466,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             highlighted={isSelected}
             width={visW}
             height={visH}
+            labelFontSize={control.labelFontSize}
           />
         </div>
       );

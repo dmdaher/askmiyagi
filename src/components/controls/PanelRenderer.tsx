@@ -40,6 +40,7 @@ interface ManifestControl {
   positions?: number;
   positionLabels?: string[];
   rotation?: number;
+  labelFontSize?: number;
   editorPosition?: { x: number; y: number; w: number; h: number };
 }
 
@@ -59,6 +60,7 @@ interface ManifestLabel {
 interface ManifestSection {
   id: string;
   headerLabel?: string;
+  hidden?: boolean;
   x: number;
   y: number;
   w: number;
@@ -305,7 +307,8 @@ function renderControl(
           <PadButton id={control.id}
             label={control.labelPosition === 'on-button' ? control.label : ''}
             highlighted={highlighted} active={active}
-            width={w} height={h} onClick={onClick} />
+            width={w} height={h} onClick={onClick}
+            labelFontSize={control.labelFontSize} />
         </div>
       );
     case 'encoder':
@@ -374,7 +377,7 @@ export default function PanelRenderer({
       keyboard={manifest.keyboard}
     >
       {/* Section backgrounds */}
-      {(manifest.editorSections ?? []).map((s) => (
+      {(manifest.editorSections ?? []).filter((s) => !s.hidden).map((s) => (
         <SectionContainer key={s.id} id={s.id}
           x={s.x} y={s.y} w={s.w} h={s.h}
           headerLabel={s.headerLabel} />

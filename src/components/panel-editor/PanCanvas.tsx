@@ -31,6 +31,7 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
     editorSections: sections.map((s) => ({
       id: s.id,
       headerLabel: s.headerLabel ?? undefined,
+      hidden: s.hidden,
       x: s.x,
       y: s.y,
       w: s.w,

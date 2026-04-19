@@ -86,6 +86,13 @@ const ESCALATION_CONFIG: Record<
       { label: 'Cancel', resolution: 'cancel', variant: 'danger' },
     ],
   },
+  'editor-ready': {
+    bg: 'rgba(34, 197, 94, 0.1)',
+    border: '#22c55e',
+    buttons: [
+      { label: 'Send to Contractor', resolution: 'send-to-contractor', variant: 'primary' },
+    ],
+  },
 };
 
 const BUTTON_STYLES: Record<string, { bg: string; text: string; hover: string }> = {
