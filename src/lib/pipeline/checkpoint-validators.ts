@@ -401,7 +401,7 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
         if (splits.cluster !== undefined && splits.cluster > 1.0) splits.cluster = splits.cluster / 100;
         if (splits.anchor !== undefined && splits.anchor > 1.0) splits.anchor = splits.anchor / 100;
         if (splits.gap !== undefined && splits.gap > 1.0) splits.gap = splits.gap / 100;
-        errors.push(`Section "${s.id}" heightSplits auto-corrected from integers to decimals (${JSON.stringify(splits)})`);
+        // Tracked as auto-fix, not a real error (appended after valid check)
       }
     }
   }
@@ -437,25 +437,44 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
     }
   }
 
-  // 11. Visual enrichment — log warnings but DON'T deduct score.
-  // These fields (shape, sizeClass, labelDisplay) are auto-fixed to sensible defaults
-  // by the completeness validator. Penalizing what gets auto-corrected causes unnecessary
-  // gatekeeper failures on otherwise valid manifests.
+  // 11. Visual enrichment — log as info only (NOT errors).
+  // These fields are auto-fixed by the completeness validator. Including them in
+  // errors[] makes valid=false which blocks the pipeline even when score >= 9.0.
   const totalControls = controls.length;
   if (totalControls > 0) {
     const missingShape = controls.filter(c => !c.shape).length;
     const missingSizeClass = controls.filter(c => !c.sizeClass).length;
     const missingLabelDisplay = controls.filter(c => !c.labelDisplay).length;
 
+    // Log as info in errors array with "(auto-fixed)" suffix so they show in logs
+    // but DON'T affect the valid flag — use a separate warnings array
+    const autoFixInfo: string[] = [];
     if (missingShape > 0) {
-      errors.push(`${missingShape}/${totalControls} controls missing shape (auto-fixed)`);
+      autoFixInfo.push(`${missingShape}/${totalControls} controls missing shape (auto-fixed)`);
     }
     if (missingSizeClass > 0) {
-      errors.push(`${missingSizeClass}/${totalControls} controls missing sizeClass (auto-fixed)`);
+      autoFixInfo.push(`${missingSizeClass}/${totalControls} controls missing sizeClass (auto-fixed)`);
     }
     if (missingLabelDisplay > 0) {
-      errors.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (auto-fixed)`);
+      autoFixInfo.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (auto-fixed)`);
     }
+
+    // Check for heightSplits auto-corrections
+    for (const s of sections) {
+      const splits = s.heightSplits as { cluster?: number; anchor?: number; gap?: number } | undefined;
+      if (splits) {
+        const values = [splits.cluster, splits.anchor, splits.gap].filter(v => v !== undefined) as number[];
+        if (values.some(v => v > 1.0)) {
+          autoFixInfo.push(`Section "${s.id}" heightSplits auto-corrected`);
+        }
+      }
+    }
+
+    // valid is based on real errors only — auto-fix info is appended after for logging
+    const valid = errors.length === 0;
+    errors.push(...autoFixInfo);
+    score = Math.max(0, score);
+    return { valid, errors, score };
   }
 
   score = Math.max(0, score);
