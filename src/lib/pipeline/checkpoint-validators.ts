@@ -818,6 +818,20 @@ export function validateManifestCompleteness(
       c.shape = 'square';
     }
 
+    // Rule 16: Missing shape on any remaining type → default shape
+    if (!c.shape) {
+      const defaultShape = (['knob', 'encoder', 'wheel', 'dial'].includes(c.type)) ? 'circle' : 'rectangle';
+      autoFixes.push({ controlId: c.id, field: 'shape', from: c.shape, to: defaultShape, rule: 'default-shape-fallback' });
+      c.shape = defaultShape;
+    }
+
+    // Rule 17: Missing labelDisplay → default based on type
+    if (!c.labelDisplay) {
+      const defaultDisplay = c.type === 'led' ? 'below' : c.type === 'port' || c.type === 'slot' ? 'hidden' : 'above';
+      autoFixes.push({ controlId: c.id, field: 'labelDisplay', from: c.labelDisplay, to: defaultDisplay, rule: 'default-labelDisplay-fallback' });
+      c.labelDisplay = defaultDisplay;
+    }
+
     // Rule 6: Missing orientation on fader/slider → orientation = "vertical"
     if ((c.type === 'fader' || c.type === 'slider') && !c.orientation) {
       autoFixes.push({ controlId: c.id, field: 'orientation', from: c.orientation, to: 'vertical', rule: 'default-orientation-fader-slider' });
@@ -942,15 +956,20 @@ export function validateManifestCompleteness(
   for (const c of controls) {
     if (duplicateIds.has(c.id)) continue; // Already penalized
 
-    // shape, sizeClass, labelDisplay — auto-fixed to defaults, don't penalize
+    // shape, sizeClass, labelDisplay — scored AFTER auto-fixes have run.
+    // Only penalize if still missing after auto-fix (e.g., button without shape
+    // has no auto-fix rule, so it's a real gap from the gatekeeper).
     if (!c.shape) {
-      missing.push({ controlId: c.id, field: 'shape', severity: 'minor' });
+      score -= 0.5;
+      missing.push({ controlId: c.id, field: 'shape', severity: 'major' });
     }
     if (!c.sizeClass) {
-      missing.push({ controlId: c.id, field: 'sizeClass', severity: 'minor' });
+      score -= 0.5;
+      missing.push({ controlId: c.id, field: 'sizeClass', severity: 'major' });
     }
     if (!c.labelDisplay) {
-      missing.push({ controlId: c.id, field: 'labelDisplay', severity: 'minor' });
+      score -= 0.5;
+      missing.push({ controlId: c.id, field: 'labelDisplay', severity: 'major' });
     }
 
     // buttonStyle on buttons
