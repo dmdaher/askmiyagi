@@ -158,7 +158,7 @@ export async function listManifestHistory(deviceId: string): Promise<Array<{ nam
       .map(b => ({
         name: b.pathname.split('/').pop() ?? b.pathname,
         url: b.url,
-        timestamp: b.uploadedAt.toISOString(),
+        timestamp: typeof b.uploadedAt === 'string' ? b.uploadedAt : new Date(b.uploadedAt).toISOString(),
         sizeBytes: b.size,
       }));
   } catch {
@@ -170,7 +170,7 @@ export async function listManifestHistory(deviceId: string): Promise<Array<{ nam
 export async function restoreFromHistory(deviceId: string, historyUrl: string): Promise<boolean> {
   try {
     await backupManifest(deviceId);
-    await copy(historyUrl, manifestPath(deviceId), { access: 'public', addRandomSuffix: false });
+    await copy(historyUrl, manifestPath(deviceId), { access: 'public', addRandomSuffix: false, allowOverwrite: true });
     return true;
   } catch {
     return false;

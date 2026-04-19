@@ -131,8 +131,12 @@ export async function POST(
   if (fs.existsSync(prodPath)) {
     const prodManifest = JSON.parse(fs.readFileSync(prodPath, 'utf-8'));
     // Apply same fixes to production manifest
+    const prodControlIds = new Set<string>();
+    if (Array.isArray(prodManifest.controls)) {
+      for (const c of prodManifest.controls) prodControlIds.add(c.id);
+    }
     for (const ctrl of controls) {
-      const action = ctrl.action ?? 'add';
+      const action = ctrl.action ?? (prodControlIds.has(ctrl.id) ? 'fix' : 'add');
       if (action === 'fix') {
         // Fix control label
         if (Array.isArray(prodManifest.controls)) {
