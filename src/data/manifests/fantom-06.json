@@ -866,7 +866,7 @@
     {
       "id": "tone-cat-5",
       "type": "button",
-      "label": "STRINGS",
+      "label": "GUITAR",
       "editorPosition": {
         "x": 1166.000061132804,
         "y": 196.00005966796306,
@@ -878,7 +878,7 @@
     {
       "id": "tone-cat-6",
       "type": "button",
-      "label": "BRASS",
+      "label": "BASS",
       "editorPosition": {
         "x": 1213.999988574211,
         "y": 196.000034472653,
@@ -890,7 +890,7 @@
     {
       "id": "tone-cat-7",
       "type": "button",
-      "label": "SYNTH LEAD",
+      "label": "STRINGS",
       "editorPosition": {
         "x": 1261.9999886718674,
         "y": 196.00003237304384,
@@ -902,7 +902,7 @@
     {
       "id": "tone-cat-8",
       "type": "button",
-      "label": "SYNTH PAD",
+      "label": "BRASS",
       "editorPosition": {
         "x": 1309.9999980468724,
         "y": 196.00012265623826,
@@ -938,7 +938,7 @@
     {
       "id": "tone-cat-11",
       "type": "button",
-      "label": "RHYTHM",
+      "label": "SYNTH",
       "editorPosition": {
         "x": 1429.909093350495,
         "y": 189.54545454545473,
@@ -950,12 +950,12 @@
     {
       "id": "tone-cat-12",
       "type": "button",
-      "label": "S.N. ACOUSTIC",
+      "label": "PAD",
       "editorPosition": {
-        "x": 1400.5454496626423,
-        "y": 188.90912142666912,
+        "x": 1400.5453887251408,
+        "y": 188.90910921963751,
         "w": 80,
-        "h": 50
+        "h": 53
       },
       "labelPosition": "above"
     },
@@ -974,7 +974,7 @@
     {
       "id": "tone-cat-14",
       "type": "button",
-      "label": "VTW",
+      "label": "DRUMS",
       "editorPosition": {
         "x": 1396.7275168678973,
         "y": 168.7273191139917,
@@ -2069,7 +2069,7 @@
     },
     {
       "id": "label-tone-cat-4",
-      "text": "KEYS",
+      "text": "GUITAR/BASS",
       "x": 1101,
       "y": 215,
       "w": 60,
@@ -2124,7 +2124,7 @@
     },
     {
       "id": "label-tone-cat-9",
-      "text": "WIND",
+      "text": "BELL/MALLET",
       "x": 1453,
       "y": 184,
       "w": 48,
@@ -2135,7 +2135,7 @@
     },
     {
       "id": "label-tone-cat-10",
-      "text": "CHOIR",
+      "text": "HIT/OTHER",
       "x": 1451,
       "y": 160,
       "w": 48,
@@ -2168,7 +2168,7 @@
     },
     {
       "id": "label-tone-cat-13",
-      "text": "FX",
+      "text": "S.N.S",
       "x": 1354,
       "y": 159,
       "w": 48,
@@ -2190,7 +2190,7 @@
     },
     {
       "id": "label-tone-cat-15",
-      "text": "USER",
+      "text": "MODEL",
       "x": 1417,
       "y": 158,
       "w": 48,
@@ -2201,7 +2201,7 @@
     },
     {
       "id": "label-tone-cat-16",
-      "text": "ASSIGN",
+      "text": "DRUM",
       "x": 1341,
       "y": 215,
       "w": 60,
