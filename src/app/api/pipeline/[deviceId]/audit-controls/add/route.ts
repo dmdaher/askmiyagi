@@ -77,6 +77,20 @@ export async function POST(
       } else {
         manifest.controls[ctrl.id] = newControl;
       }
+
+      // Create editorLabel so the control's label is visible in the editor
+      if (Array.isArray(manifest.editorLabels)) {
+        manifest.editorLabels.push({
+          text: ctrl.label,
+          controlId: ctrl.id,
+          x: 0,
+          y: -15,
+          w: Math.max(ctrl.label.length * 7, 40),
+          h: 14,
+          fontSize: 9,
+        });
+      }
+
       added.push(ctrl.id);
 
     } else if (action === 'fix' && existingIds.has(ctrl.id)) {
