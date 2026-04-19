@@ -664,6 +664,7 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         label={labelMixed ? '' : labels[0]}
         labelPosition={positionMixed ? 'below' : positions[0]}
         secondaryLabel={secondaryMixed ? undefined : secondaryLabels[0]}
+        labelFontSize={controls[0]?.labelFontSize}
         labelMixed={labelMixed}
         positionMixed={positionMixed}
         secondaryMixed={secondaryMixed}
@@ -672,6 +673,7 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
+        onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
       />
 
       <div className="h-px bg-gray-800" />
