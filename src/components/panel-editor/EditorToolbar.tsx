@@ -1,12 +1,86 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useEditorStore } from './store';
 import type { SnapGrid } from './store';
 import VersionHistoryDropdown from './VersionHistoryDropdown';
 import { isHosted } from '@/lib/env';
 
 const SNAP_OPTIONS: SnapGrid[] = [1, 2, 4, 8, 16, 32];
+
+/** Blob version history for contractor (hosted mode) */
+function HostedHistoryButton({ deviceId }: { deviceId: string }) {
+  const [open, setOpen] = useState(false);
+  const [history, setHistory] = useState<Array<{ name: string; url: string; timestamp: string; sizeBytes: number }>>([]);
+  const [restoring, setRestoring] = useState(false);
+
+  const fetchHistory = useCallback(() => {
+    fetch(`/api/hosted/panels/${deviceId}/history`)
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setHistory(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, [deviceId]);
+
+  useEffect(() => {
+    if (open) fetchHistory();
+  }, [open, fetchHistory]);
+
+  const handleRestore = async (url: string) => {
+    if (!confirm('Restore this version? Your current work will be backed up first.')) return;
+    setRestoring(true);
+    try {
+      await fetch(`/api/hosted/panels/${deviceId}/history`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      window.location.reload();
+    } catch {
+      alert('Restore failed');
+    }
+    setRestoring(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex h-7 items-center rounded px-2 text-[10px] text-gray-400 border border-gray-700 hover:bg-gray-800 transition-colors"
+        title="Version history"
+      >
+        ↺
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-[99]" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-8 z-[100] w-64 rounded-lg border border-gray-700 bg-[#111122] p-3 shadow-2xl">
+            <h4 className="text-[11px] font-semibold text-gray-300 mb-2">Version History</h4>
+            {history.length === 0 ? (
+              <p className="text-[10px] text-gray-600">No backups yet</p>
+            ) : (
+              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                {history.map((h) => (
+                  <div key={h.name} className="flex items-center justify-between text-[10px]">
+                    <span className="text-gray-400">
+                      {new Date(h.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    <button
+                      onClick={() => handleRestore(h.url)}
+                      disabled={restoring}
+                      className="text-blue-400 hover:text-blue-300 disabled:opacity-50 transition-colors"
+                    >
+                      Restore
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 /** Submit for Review button with note modal */
 function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disabled: boolean }) {
@@ -436,8 +510,9 @@ export default function EditorToolbar({
             Practice Mode
           </span>
         ) : isHosted ? (
-          <div data-tutorial="submit">
+          <div data-tutorial="submit" className="flex items-center gap-1.5">
             <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
+            <HostedHistoryButton deviceId={deviceId} />
           </div>
         ) : (
           <button
