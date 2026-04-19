@@ -1182,7 +1182,7 @@ async function doPhase0LayoutEngine(state: PipelineState) {
     );
     if (!editorPending) {
       // Re-create escalation (shouldn't happen, but defensive)
-      createEscalation(state, 'agent-failure',
+      createEscalation(state, 'editor-ready',
         `Pipeline ready for editor. Click "Send to Contractor" to upload the manifest for the contractor to edit. ` +
         `Resume the pipeline after the panel is approved to start QA.\n` +
         `Manifest: .pipeline/${deviceId}/manifest.json\n` +
@@ -1271,7 +1271,7 @@ async function doPhase0LayoutEngine(state: PipelineState) {
       completePhase(state, 'phase-0-layout-engine', 10, true);
       // Pause for editor — the contractor positions controls via the hosted editor.
       // Use "Send to Contractor" on the pipeline detail page to upload to Blob.
-      createEscalation(state, 'agent-failure',
+      createEscalation(state, 'editor-ready',
         `Pipeline ready for editor. Click "Send to Contractor" to upload the manifest for the contractor to edit. ` +
         `Resume the pipeline after the panel is approved to start QA.\n` +
         `Manifest: .pipeline/${deviceId}/manifest.json\n` +
