@@ -3,6 +3,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
+interface StatusEvent {
+  type: string;
+  timestamp: string;
+  note?: string;
+  by: 'admin' | 'contractor';
+}
+
 interface DeviceState {
   deviceId: string;
   deviceName: string;
@@ -11,6 +18,7 @@ interface DeviceState {
   updatedAt: string;
   adminNote?: string;
   contractorNote?: string;
+  events?: StatusEvent[];
 }
 
 interface DeviceIssue {
@@ -323,12 +331,22 @@ export default function ContractorSubmissions() {
                       {d.manufacturer} {d.deviceName}
                     </span>
                     <p className={`text-[10px] ${style.text}`}>{label}</p>
-                    {d.contractorNote && d.status === 'submitted' && (
-                      <p className="text-[11px] text-blue-400/70 mt-0.5">Contractor: {d.contractorNote}</p>
-                    )}
-                    {d.adminNote && d.status === 'in-progress' && (
-                      <p className="text-[11px] text-amber-400/70 mt-0.5">Your feedback: {d.adminNote}</p>
-                    )}
+                    {d.contractorNote && d.status === 'submitted' && (() => {
+                      const submitEvent = [...(d.events ?? [])].reverse().find(e => e.type === 'submitted');
+                      return (
+                        <p className="text-[11px] text-blue-400/70 mt-0.5">
+                          Contractor{submitEvent ? ` (${new Date(submitEvent.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })})` : ''}: {d.contractorNote}
+                        </p>
+                      );
+                    })()}
+                    {d.adminNote && d.status === 'in-progress' && (() => {
+                      const reviewEvent = [...(d.events ?? [])].reverse().find(e => e.type === 'changes-requested');
+                      return (
+                        <p className="text-[11px] text-amber-400/70 mt-0.5">
+                          Your feedback{reviewEvent ? ` (${new Date(reviewEvent.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })})` : ''}: {d.adminNote}
+                        </p>
+                      );
+                    })()}
                   </div>
                 </div>
 
