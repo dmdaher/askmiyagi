@@ -174,24 +174,19 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
       {previewMode && (
         <div className="flex h-10 items-center justify-between border-b border-amber-700/40 bg-amber-900/20 px-4">
           <span className="text-sm text-amber-300 truncate">
-            {isHosted && (typeof window !== 'undefined' && (window as any).__submittedForReview)
-              ? '✓ Submitted for review — let the owner know you\'re done'
-              : buildStatus === 'approved' && exportMessage
-                ? `✓ ${exportMessage}`
-                : buildStatus === 'approved'
-                  ? '✓ Panel exported'
-                  : 'Preview Mode — clean panel view (click Preview to exit)'}
+            {buildStatus === 'approved' && exportMessage
+              ? `✓ ${exportMessage}`
+              : buildStatus === 'approved'
+                ? '✓ Panel exported'
+                : 'Preview Mode — clean panel view (click Preview to exit)'}
           </span>
           <div className="flex items-center gap-2">
-            {/* Hide "Back to Editor" after submit in hosted mode — contractor is locked out */}
-            {!(isHosted && typeof window !== 'undefined' && (window as any).__submittedForReview) && (
-              <button
-                onClick={() => { setPreviewMode(false); setBuildStatus('idle'); setExportMessage(null); }}
-                className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
-              >
-                Back to Editor
+            <button
+              onClick={() => { setPreviewMode(false); setBuildStatus('idle'); setExportMessage(null); }}
+              className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
+            >
+              Back to Editor
               </button>
-            )}
           </div>
         </div>
       )}
@@ -342,21 +337,10 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
           // Initialize labels from controls if not yet done (migration)
           useEditorStore.getState().initLabelsFromControls();
 
-          // In hosted mode, capture admin note and lock/unlock based on status
+          // In hosted mode, capture admin note. Editor stays unlocked —
+          // contractor can keep editing and re-submit at any time.
           if (isHosted) {
             setAdminNote(data._adminNote ?? null);
-            if (data._status === 'submitted' || data._status === 'approved') {
-              useEditorStore.getState().setPreviewMode(true);
-              if (typeof window !== 'undefined') {
-                (window as any).__submittedForReview = true;
-              }
-            } else {
-              // Unlock — admin may have sent changes back
-              useEditorStore.getState().setPreviewMode(false);
-              if (typeof window !== 'undefined') {
-                (window as any).__submittedForReview = false;
-              }
-            }
           }
 
           setLoading(false);

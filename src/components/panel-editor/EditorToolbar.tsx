@@ -13,12 +13,10 @@ function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disab
   const [showModal, setShowModal] = useState(false);
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    // Lock editor IMMEDIATELY — blocks queued auto-save timers
-    useEditorStore.getState().setPreviewMode(true);
-    useEditorStore.getState().setSelectedIds([]);
     try {
       const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
         method: 'PATCH',
@@ -26,12 +24,11 @@ function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disab
         body: JSON.stringify({ status: 'submitted', contractorNote: note.trim() || undefined }),
       });
       if (!res.ok) throw new Error('Submit failed');
-      if (typeof window !== 'undefined') {
-        (window as any).__submittedForReview = true;
-      }
+      setSubmitted(true);
       setShowModal(false);
+      // Auto-clear the submitted badge after 3 seconds so they can re-submit
+      setTimeout(() => setSubmitted(false), 3000);
     } catch {
-      useEditorStore.getState().setPreviewMode(false);
       alert('Failed to submit — please try again.');
     }
     setSubmitting(false);
@@ -41,11 +38,15 @@ function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disab
     <>
       <button
         onClick={() => setShowModal(true)}
-        disabled={disabled}
-        className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
+        disabled={disabled || submitted}
+        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors ${
+          submitted
+            ? 'border border-green-700 bg-green-700/20 text-green-400'
+            : 'border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30'
+        }`}
         title="Submit panel for owner review"
       >
-        Submit for Review
+        {submitted ? 'Submitted ✓' : 'Submit for Review'}
       </button>
 
       {showModal && (
@@ -426,13 +427,7 @@ export default function EditorToolbar({
           </span>
         ) : isHosted ? (
           <div data-tutorial="submit">
-            {(typeof window !== 'undefined' && (window as any).__submittedForReview) ? (
-              <span className="flex h-7 items-center px-3 text-[10px] font-medium text-green-400 border border-green-700 bg-green-700/20 rounded whitespace-nowrap">
-                Submitted ✓
-              </span>
-            ) : (
-              <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
-            )}
+            <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
           </div>
         ) : (
           <button

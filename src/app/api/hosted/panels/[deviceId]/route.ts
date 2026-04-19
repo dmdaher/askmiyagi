@@ -50,10 +50,11 @@ export async function PUT(
     return NextResponse.json({ error: 'Device not found' }, { status: 404 });
   }
 
-  // Server-side lock: reject saves when panel is under review or approved
-  if (status.status === 'submitted' || status.status === 'approved') {
+  // Server-side lock: only reject saves when approved (final state).
+  // Contractor can keep editing and re-submitting while in 'submitted' status.
+  if (status.status === 'approved') {
     return NextResponse.json(
-      { error: 'Panel is locked for review', status: status.status },
+      { error: 'Panel is approved — no further edits', status: status.status },
       { status: 403 },
     );
   }

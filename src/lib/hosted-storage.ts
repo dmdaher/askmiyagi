@@ -49,7 +49,7 @@ export interface DeviceSummary {
 const VALID_TRANSITIONS: Record<DeviceStatus, DeviceStatus[]> = {
   'ready': ['in-progress', 'submitted'],
   'in-progress': ['submitted'],
-  'submitted': ['approved', 'in-progress'],
+  'submitted': ['approved', 'in-progress', 'submitted'],
   'approved': ['in-progress'],
 };
 
