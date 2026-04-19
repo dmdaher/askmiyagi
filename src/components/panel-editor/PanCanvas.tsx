@@ -130,7 +130,7 @@ export default function PanCanvas() {
           <DragSelectRect />
 
           {/* Section frames — visual boxes + banners only (no child controls) */}
-          {sectionEntries.map((section, index) => (
+          {sectionEntries.filter((s) => !s.hidden).map((section, index) => (
             <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
           ))}
 
