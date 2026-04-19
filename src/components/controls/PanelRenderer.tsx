@@ -59,6 +59,7 @@ interface ManifestLabel {
 interface ManifestSection {
   id: string;
   headerLabel?: string;
+  hidden?: boolean;
   x: number;
   y: number;
   w: number;
@@ -374,7 +375,7 @@ export default function PanelRenderer({
       keyboard={manifest.keyboard}
     >
       {/* Section backgrounds */}
-      {(manifest.editorSections ?? []).map((s) => (
+      {(manifest.editorSections ?? []).filter((s) => !s.hidden).map((s) => (
         <SectionContainer key={s.id} id={s.id}
           x={s.x} y={s.y} w={s.w} h={s.h}
           headerLabel={s.headerLabel} />

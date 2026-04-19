@@ -144,6 +144,7 @@ export interface SectionDef {
   gridRows?: number;
   widthPercent?: number;
   complexity?: string;
+  hidden?: boolean; // Hide section frame in preview/production — controls still render
 }
 
 // ─── Slice interface ────────────────────────────────────────────────────────
@@ -181,6 +182,7 @@ export interface ManifestSlice {
   resizeSection: (id: string, w: number, h: number) => void;
   setSectionPosition: (id: string, x: number, y: number) => void;
   setSectionLabel: (id: string, label: string | null) => void;
+  updateSection: (id: string, updates: Partial<SectionDef>) => void;
   moveSelectedControls: (dx: number, dy: number) => void;
   updateControlProp: (ids: string[], field: string, value: unknown) => void;
   duplicateSelected: () => void;
@@ -902,6 +904,17 @@ export const createManifestSlice: StateCreator<
       sections: {
         ...s.sections,
         [id]: { ...section, headerLabel: label },
+      },
+    }));
+  },
+
+  updateSection: (id, updates) => {
+    const section = get().sections[id];
+    if (!section) return;
+    set((s) => ({
+      sections: {
+        ...s.sections,
+        [id]: { ...section, ...updates },
       },
     }));
   },
