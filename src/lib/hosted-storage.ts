@@ -22,6 +22,15 @@ const PREFIX = 'devices';
 
 export type DeviceStatus = 'ready' | 'in-progress' | 'submitted' | 'approved';
 
+export type StatusEventType = 'sent-to-contractor' | 'submitted' | 'changes-requested' | 'approved';
+
+export interface StatusEvent {
+  type: StatusEventType;
+  timestamp: string;
+  note?: string;
+  by: 'admin' | 'contractor';
+}
+
 export interface DeviceStatusData {
   deviceId: string;
   deviceName: string;
@@ -30,6 +39,7 @@ export interface DeviceStatusData {
   adminNote?: string;       // admin → contractor (feedback, instructions)
   contractorNote?: string;  // contractor → admin (submission notes)
   isSandbox?: boolean;      // practice instrument — no submit, hidden from admin
+  events?: StatusEvent[];   // timeline of all submissions, reviews, approvals
   updatedAt: string;
 }
 
@@ -42,6 +52,7 @@ export interface DeviceSummary {
   adminNote?: string;
   contractorNote?: string;
   isSandbox?: boolean;
+  events?: StatusEvent[];
 }
 
 // ─── Valid state transitions ────────────────────────────────────────────────
@@ -198,6 +209,7 @@ export async function listDevices(opts?: { sandbox?: boolean }): Promise<DeviceS
             adminNote: data.adminNote,
             contractorNote: data.contractorNote,
             isSandbox: data.isSandbox,
+            events: data.events,
           } as DeviceSummary;
         } catch {
           return null;
