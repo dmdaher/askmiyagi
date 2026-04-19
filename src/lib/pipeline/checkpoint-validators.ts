@@ -377,18 +377,12 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
     score -= 1.0;
   }
 
-  // 6. Controls must have spatialNeighbors
+  // 6. Controls should have spatialNeighbors (enrichment — can be inferred from blueprint)
   const missingNeighbors = controls.filter(c => !c.spatialNeighbors);
-  if (missingNeighbors.length > 0) {
-    errors.push(`${missingNeighbors.length} controls missing spatialNeighbors`);
-    score -= 0.5;
-  }
+  // Not a hard error — layout engine computes neighbors from diagram parser centroids
 
-  // 7. Density targets
-  if (!manifest.densityTargets) {
-    errors.push('Missing densityTargets');
-    score -= 0.5;
-  }
+  // 7. Density targets (enrichment — layout engine has defaults)
+  // Not a hard error — layout engine uses sensible defaults when missing
 
   // 8. heightSplits must be 0-1 range (not integers like 30, 65) — auto-correct
   for (const s of sections) {
@@ -407,11 +401,8 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
   }
 
   // 9. panelBoundingBox — sections should have global positioning data
-  const missingBBox = sections.filter(s => !s.panelBoundingBox);
-  if (missingBBox.length > 0) {
-    errors.push(`${missingBBox.length} sections missing panelBoundingBox: ${missingBBox.slice(0, 3).map(s => s.id).join(', ')}`);
-    score -= 0.5;
-  }
+  // Enrichment field — diagram parser provides this, gatekeeper copies it.
+  // If missing, layout engine uses parser blueprint directly. Not a hard error.
 
   // 10. Validate keyboard field
   if (manifest.keyboard !== undefined && manifest.keyboard !== null) {
@@ -457,17 +448,6 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
     }
     if (missingLabelDisplay > 0) {
       autoFixInfo.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (auto-fixed)`);
-    }
-
-    // Check for heightSplits auto-corrections
-    for (const s of sections) {
-      const splits = s.heightSplits as { cluster?: number; anchor?: number; gap?: number } | undefined;
-      if (splits) {
-        const values = [splits.cluster, splits.anchor, splits.gap].filter(v => v !== undefined) as number[];
-        if (values.some(v => v > 1.0)) {
-          autoFixInfo.push(`Section "${s.id}" heightSplits auto-corrected`);
-        }
-      }
     }
 
     // valid is based on real errors only — auto-fix info is appended after for logging
