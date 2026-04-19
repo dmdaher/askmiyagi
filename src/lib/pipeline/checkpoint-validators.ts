@@ -942,22 +942,15 @@ export function validateManifestCompleteness(
   for (const c of controls) {
     if (duplicateIds.has(c.id)) continue; // Already penalized
 
-    // shape
+    // shape, sizeClass, labelDisplay — auto-fixed to defaults, don't penalize
     if (!c.shape) {
-      score -= 0.5;
-      missing.push({ controlId: c.id, field: 'shape', severity: 'major' });
+      missing.push({ controlId: c.id, field: 'shape', severity: 'minor' });
     }
-
-    // sizeClass
     if (!c.sizeClass) {
-      score -= 0.5;
-      missing.push({ controlId: c.id, field: 'sizeClass', severity: 'major' });
+      missing.push({ controlId: c.id, field: 'sizeClass', severity: 'minor' });
     }
-
-    // labelDisplay
     if (!c.labelDisplay) {
-      score -= 0.5;
-      missing.push({ controlId: c.id, field: 'labelDisplay', severity: 'major' });
+      missing.push({ controlId: c.id, field: 'labelDisplay', severity: 'minor' });
     }
 
     // buttonStyle on buttons
