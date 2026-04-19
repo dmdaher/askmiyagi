@@ -14,7 +14,7 @@
  * 2. Every fetch() from Blob URL MUST use cache buster + { cache: 'no-store' }
  */
 
-import { put, list, head } from '@vercel/blob';
+import { put, list, head, copy, del } from '@vercel/blob';
 
 const PREFIX = 'devices';
 
@@ -114,6 +114,67 @@ export async function putDeviceManifest(deviceId: string, manifest: Record<strin
     addRandomSuffix: false,
     allowOverwrite: true,
   });
+}
+
+// ─── Manifest history (backup before admin overwrites) ─────────────────────
+
+const MAX_HISTORY = 5;
+
+function historyPrefix(deviceId: string) {
+  return `${PREFIX}/${deviceId}/history/`;
+}
+
+/** Backup the current manifest to history before overwriting. Best-effort. */
+export async function backupManifest(deviceId: string): Promise<string | null> {
+  try {
+    const meta = await head(manifestPath(deviceId));
+    const historyPath = `${historyPrefix(deviceId)}${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+    await copy(meta.url, historyPath, { access: 'public' });
+
+    // Prune old backups beyond MAX_HISTORY
+    const { blobs } = await list({ prefix: historyPrefix(deviceId) });
+    if (blobs.length > MAX_HISTORY) {
+      const sorted = [...blobs].sort((a, b) =>
+        new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+      );
+      const toDelete = sorted.slice(MAX_HISTORY);
+      for (const blob of toDelete) {
+        await del(blob.url);
+      }
+    }
+
+    return historyPath;
+  } catch {
+    return null; // Backup is best-effort — don't block the overwrite
+  }
+}
+
+/** List manifest backups for a device, newest first. */
+export async function listManifestHistory(deviceId: string): Promise<Array<{ name: string; url: string; timestamp: string; sizeBytes: number }>> {
+  try {
+    const { blobs } = await list({ prefix: historyPrefix(deviceId) });
+    return [...blobs]
+      .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
+      .map(b => ({
+        name: b.pathname.split('/').pop() ?? b.pathname,
+        url: b.url,
+        timestamp: b.uploadedAt.toISOString(),
+        sizeBytes: b.size,
+      }));
+  } catch {
+    return [];
+  }
+}
+
+/** Restore a manifest from history. Backs up current first as safety net. */
+export async function restoreFromHistory(deviceId: string, historyUrl: string): Promise<boolean> {
+  try {
+    await backupManifest(deviceId);
+    await copy(historyUrl, manifestPath(deviceId), { access: 'public', addRandomSuffix: false });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // ─── List operations ────────────────────────────────────────────────────────
