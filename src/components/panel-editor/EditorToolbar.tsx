@@ -18,6 +18,16 @@ function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disab
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
+      // Flush current editor state to Blob BEFORE changing status.
+      // Prevents race where submit fires before the 2.5s auto-save debounce.
+      const state = useEditorStore.getState();
+      const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = state;
+      await fetch(`/api/hosted/panels/${deviceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard }),
+      });
+
       const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
