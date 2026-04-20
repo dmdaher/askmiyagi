@@ -383,24 +383,25 @@ export default function PanelRenderer({
         if (mode === 'hidden') return null;
         if (mode === 'header-only') {
           // Floating title only — no container background
+          // Section coords are in pixels (same as SectionContainer), no scale needed
           return s.headerLabel ? (
             <div
               key={s.id}
               style={{
                 position: 'absolute',
-                left: s.x * scale,
-                top: s.y * scale,
-                width: s.w * scale,
-                height: 20 * scale,
+                left: s.x,
+                top: s.y,
+                width: s.w,
+                height: 20,
                 display: 'flex',
                 alignItems: 'center',
-                paddingLeft: 8 * scale,
+                paddingLeft: 8,
                 pointerEvents: 'none',
                 zIndex: 0,
               }}
             >
               <span style={{
-                fontSize: 8 * scale,
+                fontSize: 8,
                 fontWeight: 500,
                 textTransform: 'uppercase',
                 letterSpacing: '0.15em',
