@@ -268,37 +268,55 @@ function SectionItem({ sectionId }: { sectionId: string }) {
         </button>
 
         {/* Section name + metadata */}
-        <button
-          onClick={handleSectionClick}
-          className={`flex flex-1 items-center gap-1.5 py-1 pr-2 text-left text-[11px] font-medium ${
-            section.hidden ? 'text-gray-600 italic' : isSelected ? 'text-white' : 'text-gray-300'
-          }`}
-        >
-          <span className="flex-1 truncate">{truncate(displayName, 18)}</span>
-          {section.hidden && (
-            <span className="flex-shrink-0 text-[8px] text-amber-500/60">hidden</span>
-          )}
-          <span className="flex-shrink-0 text-[9px] text-gray-500">{controlCount}</span>
-          <span className="flex-shrink-0 rounded bg-gray-700/60 px-1 py-0.5 text-[8px] text-gray-400 uppercase leading-none">
-            {truncate(section.archetype, 10)}
-          </span>
-        </button>
+        {(() => {
+          const mode = section.frameMode ?? (section.hidden ? 'hidden' : 'full');
+          return (
+            <button
+              onClick={handleSectionClick}
+              className={`flex flex-1 items-center gap-1.5 py-1 pr-2 text-left text-[11px] font-medium ${
+                mode === 'hidden' ? 'text-gray-600 italic'
+                : mode === 'header-only' ? 'text-blue-300/70'
+                : isSelected ? 'text-white' : 'text-gray-300'
+              }`}
+            >
+              <span className="flex-1 truncate">{truncate(displayName, 18)}</span>
+              {mode === 'hidden' && (
+                <span className="flex-shrink-0 text-[8px] text-amber-500/60">hidden</span>
+              )}
+              {mode === 'header-only' && (
+                <span className="flex-shrink-0 text-[8px] text-blue-400/60">title</span>
+              )}
+              <span className="flex-shrink-0 text-[9px] text-gray-500">{controlCount}</span>
+              <span className="flex-shrink-0 rounded bg-gray-700/60 px-1 py-0.5 text-[8px] text-gray-400 uppercase leading-none">
+                {truncate(section.archetype, 10)}
+              </span>
+            </button>
+          );
+        })()}
 
-        {/* Visibility toggle */}
+        {/* Frame mode cycle toggle: full → header-only → hidden → full */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             useEditorStore.getState().pushSnapshot();
-            useEditorStore.getState().updateSection(sectionId, { hidden: !section.hidden });
+            const mode = section.frameMode ?? (section.hidden ? 'hidden' : 'full');
+            const next = mode === 'full' ? 'header-only' : mode === 'header-only' ? 'hidden' : 'full';
+            useEditorStore.getState().updateSection(sectionId, { frameMode: next });
           }}
           className={`flex h-7 w-5 flex-shrink-0 items-center justify-center transition-colors ${
-            section.hidden ? 'text-amber-500/60 hover:text-amber-400' : 'text-gray-600 hover:text-gray-300'
+            (section.frameMode ?? (section.hidden ? 'hidden' : 'full')) === 'hidden'
+              ? 'text-amber-500/60 hover:text-amber-400'
+              : (section.frameMode === 'header-only')
+                ? 'text-blue-400/60 hover:text-blue-300'
+                : 'text-gray-600 hover:text-gray-300'
           }`}
-          title={section.hidden ? 'Show section' : 'Hide section'}
+          title={`Frame mode: ${section.frameMode ?? (section.hidden ? 'hidden' : 'full')} (click to cycle)`}
         >
           <svg className="h-3 w-3" viewBox="0 0 16 16" fill="currentColor">
-            {section.hidden ? (
-              <path d="M13.5 8s-2.2 3.5-5.5 3.5S2.5 8 2.5 8s2.2-3.5 5.5-3.5S13.5 8 13.5 8zM8 10a2 2 0 100-4 2 2 0 000 4z" opacity="0.4" />
+            {(section.frameMode ?? (section.hidden ? 'hidden' : 'full')) === 'hidden' ? (
+              <path d="M13.5 8s-2.2 3.5-5.5 3.5S2.5 8 2.5 8s2.2-3.5 5.5-3.5S13.5 8 13.5 8zM8 10a2 2 0 100-4 2 2 0 000 4z" opacity="0.3" />
+            ) : (section.frameMode === 'header-only') ? (
+              <path d="M13.5 8s-2.2 3.5-5.5 3.5S2.5 8 2.5 8s2.2-3.5 5.5-3.5S13.5 8 13.5 8zM8 10a2 2 0 100-4 2 2 0 000 4z" opacity="0.6" />
             ) : (
               <path d="M13.5 8s-2.2 3.5-5.5 3.5S2.5 8 2.5 8s2.2-3.5 5.5-3.5S13.5 8 13.5 8zM8 10a2 2 0 100-4 2 2 0 000 4z" />
             )}
