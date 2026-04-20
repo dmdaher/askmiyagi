@@ -33,6 +33,11 @@ export async function POST(
       fs.mkdirSync(pipelineDir, { recursive: true });
     }
     const editorPath = path.join(pipelineDir, 'manifest-editor.json');
+    // Backup local manifest before overwriting with Blob version
+    if (fs.existsSync(editorPath)) {
+      const backupPath = path.join(pipelineDir, `manifest-editor-backup-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+      fs.copyFileSync(editorPath, backupPath);
+    }
     fs.writeFileSync(editorPath, JSON.stringify(manifest, null, 2));
 
     // Run export-manifest to write production JSON
