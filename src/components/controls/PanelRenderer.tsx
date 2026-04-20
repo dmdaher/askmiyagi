@@ -61,6 +61,7 @@ interface ManifestSection {
   id: string;
   headerLabel?: string;
   hidden?: boolean;
+  frameMode?: 'full' | 'header-only' | 'hidden';
   x: number;
   y: number;
   w: number;
@@ -377,11 +378,46 @@ export default function PanelRenderer({
       keyboard={manifest.keyboard}
     >
       {/* Section backgrounds */}
-      {(manifest.editorSections ?? []).filter((s) => !s.hidden).map((s) => (
-        <SectionContainer key={s.id} id={s.id}
-          x={s.x} y={s.y} w={s.w} h={s.h}
-          headerLabel={s.headerLabel} />
-      ))}
+      {(manifest.editorSections ?? []).map((s) => {
+        const mode = s.frameMode ?? (s.hidden ? 'hidden' : 'full');
+        if (mode === 'hidden') return null;
+        if (mode === 'header-only') {
+          // Floating title only — no container background
+          return s.headerLabel ? (
+            <div
+              key={s.id}
+              style={{
+                position: 'absolute',
+                left: s.x * scale,
+                top: s.y * scale,
+                width: s.w * scale,
+                height: 20 * scale,
+                display: 'flex',
+                alignItems: 'center',
+                paddingLeft: 8 * scale,
+                pointerEvents: 'none',
+                zIndex: 0,
+              }}
+            >
+              <span style={{
+                fontSize: 8 * scale,
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+                color: '#666',
+              }}>
+                {s.headerLabel}
+              </span>
+            </div>
+          ) : null;
+        }
+        // Full mode — render SectionContainer
+        return (
+          <SectionContainer key={s.id} id={s.id}
+            x={s.x} y={s.y} w={s.w} h={s.h}
+            headerLabel={s.headerLabel} />
+        );
+      })}
 
       {/* Controls */}
       {topLevelControls.map((ctrl) => {
