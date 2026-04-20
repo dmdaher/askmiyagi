@@ -3,6 +3,7 @@
 import { useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { useEditorStore } from './store';
+import { getFrameMode } from './store/manifestSlice';
 
 interface SectionFrameProps {
   sectionId: string;
@@ -72,6 +73,43 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
 
   if (!section) return null;
 
+  const mode = getFrameMode(section);
+
+  // Header-only mode: just a floating header bar, no body/border
+  if (mode === 'header-only') {
+    return (
+      <Rnd
+        position={{ x: section.x, y: section.y }}
+        size={{ width: section.w, height: 28 }}
+        scale={zoom}
+        dragGrid={[snapGrid, snapGrid]}
+        dragHandleClassName="section-drag-handle"
+        onDragStop={handleDragStop}
+        enableResizing={false}
+        style={{
+          zIndex: isSelected ? 100 : focusedSectionId === sectionId ? 99 : zIndex,
+        }}
+        onClick={handleClick}
+      >
+        <div
+          className="section-drag-handle flex items-center gap-2 px-2 h-7 cursor-grab active:cursor-grabbing select-none rounded"
+          style={{
+            backgroundColor: isSelected ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
+            border: isSelected ? '1px solid rgba(59,130,246,0.5)' : '1px dashed rgba(255,255,255,0.15)',
+            transition: 'border-color 0.15s, background-color 0.15s',
+          }}
+        >
+          <span className="text-[10px] text-gray-400">⋮⋮</span>
+          <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider truncate">
+            {section.headerLabel ?? sectionId}
+          </span>
+          <span className="text-[10px] text-gray-600 ml-auto">{(section.childIds ?? []).length}</span>
+        </div>
+      </Rnd>
+    );
+  }
+
+  // Full mode: border + header + resize
   return (
     <Rnd
       position={{ x: section.x, y: section.y }}

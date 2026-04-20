@@ -178,24 +178,35 @@ function SectionProperties({ section }: { section: SectionDef }) {
         )}
       </div>
 
-      {/* Hide section frame in preview/production */}
-      <div className="flex items-center justify-between">
+      {/* Section frame mode */}
+      <div className="space-y-1">
         <label className="text-[10px] uppercase tracking-wide text-gray-500">
-          Hide Frame
+          Frame Mode
         </label>
-        <button
-          onClick={() => {
-            pushSnapshot();
-            useEditorStore.getState().updateSection(section.id, { hidden: !section.hidden });
-          }}
-          className={`text-[9px] px-1.5 py-0.5 rounded transition-colors ${
-            section.hidden
-              ? 'bg-amber-600/30 text-amber-300 border border-amber-600'
-              : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
-          }`}
-        >
-          {section.hidden ? 'Hidden' : 'Visible'}
-        </button>
+        <div className="flex gap-1">
+          {([['full', 'Full'], ['header-only', 'Title Only'], ['hidden', 'Hidden']] as const).map(([mode, label]) => {
+            const currentMode = section.frameMode ?? (section.hidden ? 'hidden' : 'full');
+            const isActive = currentMode === mode;
+            return (
+              <button
+                key={mode}
+                onClick={() => {
+                  pushSnapshot();
+                  useEditorStore.getState().updateSection(section.id, { frameMode: mode });
+                }}
+                className={`flex-1 rounded px-1.5 py-1 text-[9px] font-medium transition-colors ${
+                  isActive
+                    ? mode === 'hidden' ? 'bg-amber-600/30 text-amber-300 border border-amber-600'
+                      : mode === 'header-only' ? 'bg-blue-600/30 text-blue-300 border border-blue-600'
+                      : 'bg-gray-600/30 text-gray-200 border border-gray-500'
+                    : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Divider */}
