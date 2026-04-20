@@ -1195,31 +1195,14 @@ export const createManifestSlice: StateCreator<
         };
       }
 
-      // Scale all label positions, widths, and font sizes.
-      // For linked labels, compute position from the already-rounded control
-      // to prevent rounding drift between label and its control.
-      const updatedLabels = (s.editorLabels as EditorLabel[]).map(l => {
-        const scaled = {
-          ...l,
-          x: Math.round(l.x * factor),
-          y: Math.round(l.y * factor),
-          w: l.w != null ? Math.round(l.w * factor) : l.w,
-          fontSize: Math.max(Math.round(l.fontSize * factor), 4),
-        };
-
-        if (l.controlId) {
-          const oldCtrl = s.controls[l.controlId];
-          const newCtrl = updatedControls[l.controlId];
-          if (oldCtrl && newCtrl) {
-            const offsetX = l.x - oldCtrl.x;
-            const offsetY = l.y - oldCtrl.y;
-            scaled.x = Math.round(newCtrl.x + offsetX * factor);
-            scaled.y = Math.round(newCtrl.y + offsetY * factor);
-          }
-        }
-
-        return scaled;
-      });
+      // Scale all label positions, widths, and font sizes
+      const updatedLabels = (s.editorLabels as EditorLabel[]).map(l => ({
+        ...l,
+        x: Math.round(l.x * factor),
+        y: Math.round(l.y * factor),
+        w: l.w != null ? Math.round(l.w * factor) : l.w,
+        fontSize: Math.max(Math.round(l.fontSize * factor), 4),
+      }));
 
       return {
         controls: updatedControls,
