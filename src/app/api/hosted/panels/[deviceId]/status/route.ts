@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDeviceStatus, putDeviceStatus, isValidTransition, type DeviceStatus } from '@/lib/hosted-storage';
+import { getDeviceStatus, putDeviceStatus, isValidTransition, backupManifest, type DeviceStatus, type StatusEvent } from '@/lib/hosted-storage';
 
 const VALID_STATUSES: DeviceStatus[] = ['ready', 'in-progress', 'submitted', 'approved'];
 
 /**
  * PATCH /api/hosted/panels/{deviceId}/status
  * Writes ONLY to status.json blob — completely independent of manifest.
+ * Appends a StatusEvent on every transition for timeline tracking.
  */
 export async function PATCH(
   request: NextRequest,
@@ -31,14 +32,39 @@ export async function PATCH(
     );
   }
 
+  // Backup manifest on contractor submit (creates restore point)
+  if (status === 'submitted') {
+    await backupManifest(deviceId);
+  }
+
+  // Build timeline event
+  const now = new Date().toISOString();
+  const event: StatusEvent = {
+    type: status === 'submitted' ? 'submitted'
+      : status === 'approved' ? 'approved'
+      : status === 'in-progress' && adminNote ? 'changes-requested'
+      : 'sent-to-contractor',
+    timestamp: now,
+    by: status === 'submitted' ? 'contractor' : 'admin',
+    note: status === 'submitted' ? (contractorNote?.trim() || undefined)
+      : (adminNote?.trim() || undefined),
+  };
+
+  // Deduplicate: if last event is same type, update it instead of appending.
+  // Prevents unbounded growth from rapid re-submits (submitted→submitted).
+  const prevEvents = existing.events ?? [];
+  const lastEvent = prevEvents[prevEvents.length - 1];
+  const events = (lastEvent && lastEvent.type === event.type && lastEvent.by === event.by)
+    ? [...prevEvents.slice(0, -1), event]  // Replace last
+    : [...prevEvents, event];              // Append new
+
   await putDeviceStatus(deviceId, {
     ...existing,
     status,
-    // Admin note: set on request-changes, preserved through submitted, cleared on approved
     adminNote: status === 'approved' ? undefined : (adminNote ?? existing.adminNote),
-    // Contractor note: set on submit, cleared when admin acts
     contractorNote: status === 'submitted' ? (contractorNote ?? existing.contractorNote) : undefined,
-    updatedAt: new Date().toISOString(),
+    events,
+    updatedAt: now,
   });
 
   return NextResponse.json({ ok: true, status });

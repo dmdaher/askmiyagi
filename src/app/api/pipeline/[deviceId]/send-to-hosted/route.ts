@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { initDevice, putPhoto, backupManifest } from '@/lib/hosted-storage';
+import { initDevice, putPhoto, backupManifest, getDeviceStatus, putDeviceStatus, type StatusEvent } from '@/lib/hosted-storage';
 import fs from 'fs';
 import path from 'path';
 
@@ -49,14 +49,24 @@ export async function POST(
     // Backup contractor's current manifest before overwriting
     await backupManifest(deviceId);
 
+    // Preserve existing events and append sent-to-contractor event
+    const existingStatus = await getDeviceStatus(deviceId);
+    const sentEvent: StatusEvent = {
+      type: 'sent-to-contractor',
+      timestamp: new Date().toISOString(),
+      by: 'admin',
+      note: note?.trim() || undefined,
+    };
+    const events = [...(existingStatus?.events ?? []), sentEvent];
+
     // Write both blobs (status.json + manifest.json)
-    await initDevice(
-      deviceId,
-      deviceName,
-      manufacturer,
-      manifest,
-      { adminNote: note },
-    );
+    await initDevice(deviceId, deviceName, manufacturer, manifest, { adminNote: note });
+
+    // Immediately re-apply preserved events (initDevice creates fresh status without them)
+    const freshStatus = await getDeviceStatus(deviceId);
+    if (freshStatus) {
+      await putDeviceStatus(deviceId, { ...freshStatus, events, isSandbox: existingStatus?.isSandbox });
+    }
 
     // Upload photos
     let photoCount = 0;

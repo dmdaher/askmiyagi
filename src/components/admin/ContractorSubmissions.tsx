@@ -3,6 +3,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
+interface StatusEvent {
+  type: string;
+  timestamp: string;
+  note?: string;
+  by: 'admin' | 'contractor';
+}
+
 interface DeviceState {
   deviceId: string;
   deviceName: string;
@@ -11,6 +18,7 @@ interface DeviceState {
   updatedAt: string;
   adminNote?: string;
   contractorNote?: string;
+  events?: StatusEvent[];
 }
 
 interface DeviceIssue {
@@ -136,12 +144,17 @@ export default function ContractorSubmissions() {
   };
 
   const handleReview = async (deviceId: string) => {
+    if (!confirm('This will pull the contractor\'s latest version from Blob. Any local edits you made will be overwritten. Continue?')) return;
     setActing(deviceId);
     try {
       await fetch(`/api/pipeline/${deviceId}/pull-from-hosted`, { method: 'POST' });
     } catch { /* pull failed — open editor with local state */ }
     setActing(null);
-    // Force fresh load — bypass Zustand store cache from previous session
+    window.open(`/admin/${deviceId}/editor?reload=${Date.now()}`, '_blank');
+  };
+
+  const handleOpenEditor = (deviceId: string) => {
+    // Open editor WITHOUT pulling from Blob — preserves local admin edits
     window.open(`/admin/${deviceId}/editor?reload=${Date.now()}`, '_blank');
   };
 
@@ -318,12 +331,22 @@ export default function ContractorSubmissions() {
                       {d.manufacturer} {d.deviceName}
                     </span>
                     <p className={`text-[10px] ${style.text}`}>{label}</p>
-                    {d.contractorNote && d.status === 'submitted' && (
-                      <p className="text-[11px] text-blue-400/70 mt-0.5">Contractor: {d.contractorNote}</p>
-                    )}
-                    {d.adminNote && d.status === 'in-progress' && (
-                      <p className="text-[11px] text-amber-400/70 mt-0.5">Your feedback: {d.adminNote}</p>
-                    )}
+                    {d.contractorNote && d.status === 'submitted' && (() => {
+                      const submitEvent = [...(d.events ?? [])].reverse().find(e => e.type === 'submitted');
+                      return (
+                        <p className="text-[11px] text-blue-400/70 mt-0.5">
+                          Contractor{submitEvent ? ` (${new Date(submitEvent.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })})` : ''}: {d.contractorNote}
+                        </p>
+                      );
+                    })()}
+                    {d.adminNote && d.status === 'in-progress' && (() => {
+                      const reviewEvent = [...(d.events ?? [])].reverse().find(e => e.type === 'changes-requested');
+                      return (
+                        <p className="text-[11px] text-amber-400/70 mt-0.5">
+                          Your feedback{reviewEvent ? ` (${new Date(reviewEvent.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })})` : ''}: {d.adminNote}
+                        </p>
+                      );
+                    })()}
                   </div>
                 </div>
 
@@ -334,7 +357,7 @@ export default function ContractorSubmissions() {
                     </span>
                   )}
 
-                  {/* Open/Review — always available */}
+                  {/* Pull & Review — pulls contractor's latest from Blob then opens editor */}
                   <button
                     onClick={() => handleReview(d.deviceId)}
                     disabled={acting === d.deviceId}
@@ -343,8 +366,18 @@ export default function ContractorSubmissions() {
                         ? 'border border-amber-600 bg-amber-700/30 text-amber-300 hover:bg-amber-700/50'
                         : 'border border-gray-600 bg-gray-800 text-gray-400 hover:bg-gray-700'
                     }`}
+                    title="Pull contractor's latest edits from Blob, then open editor"
                   >
-                    {acting === d.deviceId ? 'Loading...' : isSubmitted ? 'Review →' : 'Open →'}
+                    {acting === d.deviceId ? 'Pulling...' : isSubmitted ? 'Pull & Review' : 'Pull Latest'}
+                  </button>
+
+                  {/* Open Editor — opens with local state, no Blob pull */}
+                  <button
+                    onClick={() => handleOpenEditor(d.deviceId)}
+                    className="rounded px-3 py-1.5 text-[10px] font-medium border border-gray-600 bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors"
+                    title="Open editor with local state — won't overwrite your edits"
+                  >
+                    Edit →
                   </button>
 
                   {/* Approve + Request Changes — submitted only */}

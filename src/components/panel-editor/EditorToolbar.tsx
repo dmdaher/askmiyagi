@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useEditorStore } from './store';
 import type { SnapGrid } from './store';
 import VersionHistoryDropdown from './VersionHistoryDropdown';
@@ -8,30 +8,111 @@ import { isHosted } from '@/lib/env';
 
 const SNAP_OPTIONS: SnapGrid[] = [1, 2, 4, 8, 16, 32];
 
+/** Blob version history for contractor (hosted mode) */
+function HostedHistoryButton({ deviceId }: { deviceId: string }) {
+  const [open, setOpen] = useState(false);
+  const [history, setHistory] = useState<Array<{ name: string; url: string; timestamp: string; sizeBytes: number }>>([]);
+  const [restoring, setRestoring] = useState(false);
+
+  const fetchHistory = useCallback(() => {
+    fetch(`/api/hosted/panels/${deviceId}/history`)
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setHistory(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, [deviceId]);
+
+  useEffect(() => {
+    if (open) fetchHistory();
+  }, [open, fetchHistory]);
+
+  const handleRestore = async (url: string) => {
+    if (!confirm('Restore this version? Your current work will be backed up first.')) return;
+    setRestoring(true);
+    try {
+      await fetch(`/api/hosted/panels/${deviceId}/history`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      window.location.reload();
+    } catch {
+      alert('Restore failed');
+    }
+    setRestoring(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex h-7 items-center rounded px-2 text-[10px] text-gray-400 border border-gray-700 hover:bg-gray-800 transition-colors"
+        title="Version history"
+      >
+        ↺
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-[99]" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-8 z-[100] w-64 rounded-lg border border-gray-700 bg-[#111122] p-3 shadow-2xl">
+            <h4 className="text-[11px] font-semibold text-gray-300 mb-2">Version History</h4>
+            {history.length === 0 ? (
+              <p className="text-[10px] text-gray-600">No backups yet</p>
+            ) : (
+              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                {history.map((h) => (
+                  <div key={h.name} className="flex items-center justify-between text-[10px]">
+                    <span className="text-gray-400">
+                      {new Date(h.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    <button
+                      onClick={() => handleRestore(h.url)}
+                      disabled={restoring}
+                      className="text-blue-400 hover:text-blue-300 disabled:opacity-50 transition-colors"
+                    >
+                      Restore
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 /** Submit for Review button with note modal */
 function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disabled: boolean }) {
   const [showModal, setShowModal] = useState(false);
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    // Lock editor IMMEDIATELY — blocks queued auto-save timers
-    useEditorStore.getState().setPreviewMode(true);
-    useEditorStore.getState().setSelectedIds([]);
     try {
+      // Flush current editor state to Blob BEFORE changing status.
+      // Prevents race where submit fires before the 2.5s auto-save debounce.
+      const state = useEditorStore.getState();
+      const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = state;
+      await fetch(`/api/hosted/panels/${deviceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard }),
+      });
+
       const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'submitted', contractorNote: note.trim() || undefined }),
       });
       if (!res.ok) throw new Error('Submit failed');
-      if (typeof window !== 'undefined') {
-        (window as any).__submittedForReview = true;
-      }
+      setSubmitted(true);
       setShowModal(false);
+      // Auto-clear the submitted badge after 3 seconds so they can re-submit
+      setTimeout(() => setSubmitted(false), 3000);
     } catch {
-      useEditorStore.getState().setPreviewMode(false);
       alert('Failed to submit — please try again.');
     }
     setSubmitting(false);
@@ -41,11 +122,15 @@ function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disab
     <>
       <button
         onClick={() => setShowModal(true)}
-        disabled={disabled}
-        className="flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30"
+        disabled={disabled || submitted}
+        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors ${
+          submitted
+            ? 'border border-green-700 bg-green-700/20 text-green-400'
+            : 'border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50 disabled:opacity-30'
+        }`}
         title="Submit panel for owner review"
       >
-        Submit for Review
+        {submitted ? 'Submitted ✓' : 'Submit for Review'}
       </button>
 
       {showModal && (
@@ -425,14 +510,9 @@ export default function EditorToolbar({
             Practice Mode
           </span>
         ) : isHosted ? (
-          <div data-tutorial="submit">
-            {(typeof window !== 'undefined' && (window as any).__submittedForReview) ? (
-              <span className="flex h-7 items-center px-3 text-[10px] font-medium text-green-400 border border-green-700 bg-green-700/20 rounded whitespace-nowrap">
-                Submitted ✓
-              </span>
-            ) : (
-              <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
-            )}
+          <div data-tutorial="submit" className="flex items-center gap-1.5">
+            <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
+            <HostedHistoryButton deviceId={deviceId} />
           </div>
         ) : (
           <button

@@ -1269,6 +1269,107 @@ async function doPhase0LayoutEngine(state: PipelineState) {
         message: `Layout Engine: ${templateCount} templates generated for ${controlCount} controls`,
       });
       completePhase(state, 'phase-0-layout-engine', 10, true);
+
+      // Generate manifest-editor.json from gatekeeper manifest so the editor
+      // can load it immediately. Without this, "Send to Contractor" fails because
+      // manifest-editor.json doesn't exist until the admin makes a manual edit.
+      const editorManifestPath = path.join(pipelineDir, 'manifest-editor.json');
+      if (!fs.existsSync(editorManifestPath)) {
+        try {
+          const gkManifest = JSON.parse(fs.readFileSync(paths().manifest, 'utf-8'));
+          const dims = gkManifest.deviceDimensions ?? { widthMm: 800, depthMm: 400 };
+          const aspect = dims.widthMm / dims.depthMm;
+          const canvasWidth = Math.round(Math.max(1200, Math.min(2400, aspect * 800)));
+          const canvasHeight = Math.round(canvasWidth / aspect);
+
+          const sections: Record<string, any> = {};
+          const controls: Record<string, any> = {};
+          const editorLabels: any[] = [];
+
+          // Convert sections: percentage bounding boxes → pixel positions
+          for (const s of (gkManifest.sections ?? [])) {
+            const bbox = s.panelBoundingBox ?? { x: 0, y: 0, w: 100, h: 100 };
+            sections[s.id] = {
+              id: s.id,
+              headerLabel: s.headerLabel ?? s.id.toUpperCase(),
+              archetype: s.archetype ?? 'single-column',
+              x: Math.round((bbox.x / 100) * canvasWidth),
+              y: Math.round((bbox.y / 100) * canvasHeight),
+              w: Math.round((bbox.w / 100) * canvasWidth),
+              h: Math.round((bbox.h / 100) * canvasHeight),
+              childIds: s.controls ?? [],
+            };
+          }
+
+          // Convert controls: distribute within their section bounds
+          for (const c of (gkManifest.controls ?? [])) {
+            const sectionId = c.section ?? '';
+            const section = sections[sectionId];
+            const sectionControls = section?.childIds ?? [];
+            const idx = sectionControls.indexOf(c.id);
+            const count = sectionControls.length || 1;
+
+            // Grid layout within section
+            const cols = Math.ceil(Math.sqrt(count));
+            const row = Math.floor(idx / cols);
+            const col = idx % cols;
+            const cellW = (section?.w ?? 200) / cols;
+            const cellH = (section?.h ?? 200) / Math.ceil(count / cols);
+
+            controls[c.id] = {
+              id: c.id,
+              label: c.verbatimLabel ?? c.id,
+              type: c.type ?? 'button',
+              x: Math.round((section?.x ?? 0) + col * cellW + cellW * 0.1),
+              y: Math.round((section?.y ?? 0) + row * cellH + cellH * 0.1),
+              w: Math.round(cellW * 0.8),
+              h: Math.round(cellH * 0.8),
+              sectionId,
+              labelPosition: c.type === 'pad' ? 'on-button' : 'above',
+              locked: false,
+            };
+
+            // Create editorLabel
+            editorLabels.push({
+              text: c.verbatimLabel ?? c.id,
+              controlId: c.id,
+              x: Math.round((section?.x ?? 0) + col * cellW + cellW * 0.1),
+              y: Math.round((section?.y ?? 0) + row * cellH - 12),
+              w: Math.max((c.verbatimLabel ?? c.id).length * 7, 40),
+              h: 14,
+              fontSize: 9,
+            });
+          }
+
+          const editorManifest = {
+            _source: 'editor',
+            deviceId: gkManifest.deviceId ?? deviceId,
+            deviceName: gkManifest.deviceName ?? state.deviceName,
+            manufacturer: gkManifest.manufacturer ?? state.manufacturer,
+            sections,
+            controls,
+            editorLabels,
+            controlGroups: [],
+            canvasWidth,
+            canvasHeight,
+            controlScale: 1.0,
+            zoom: 1.0,
+            keyboard: gkManifest.keyboard ?? null,
+          };
+
+          fs.writeFileSync(editorManifestPath, JSON.stringify(editorManifest, null, 2));
+          appendLog(deviceId, {
+            level: 'info',
+            message: `Generated manifest-editor.json (${Object.keys(controls).length} controls, ${Object.keys(sections).length} sections, ${canvasWidth}x${canvasHeight} canvas)`,
+          });
+        } catch (genErr) {
+          appendLog(deviceId, {
+            level: 'warn',
+            message: `Could not generate manifest-editor.json: ${(genErr as Error).message}. Admin can create it by opening the editor.`,
+          });
+        }
+      }
+
       // Pause for editor — the contractor positions controls via the hosted editor.
       // Use "Send to Contractor" on the pipeline detail page to upload to Blob.
       createEscalation(state, 'editor-ready',

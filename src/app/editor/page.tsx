@@ -3,6 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+interface StatusEvent {
+  type: string;
+  timestamp: string;
+  note?: string;
+  by: 'admin' | 'contractor';
+}
+
 interface DeviceSummary {
   deviceId: string;
   deviceName: string;
@@ -11,6 +18,7 @@ interface DeviceSummary {
   updatedAt: string;
   adminNote?: string;
   contractorNote?: string;
+  events?: StatusEvent[];
 }
 
 const STATUS_CONFIG: Record<string, { label: string; dot: string }> = {
@@ -117,6 +125,38 @@ export default function EditorListPage() {
                     <div className="mt-3 rounded border border-amber-600/30 bg-amber-900/15 px-3 py-2">
                       <p className="text-[10px] text-amber-400 font-medium mb-0.5">Feedback from reviewer:</p>
                       <p className="text-xs text-amber-300/80 whitespace-pre-wrap">{d.adminNote}</p>
+                    </div>
+                  )}
+
+                  {/* Timeline */}
+                  {(d.events ?? []).length > 0 && (
+                    <div className="mt-3 space-y-1">
+                      <p className="text-[10px] text-gray-500 font-medium">Activity</p>
+                      {[...(d.events ?? [])].reverse().slice(0, 5).map((ev, i) => (
+                        <div key={i} className="flex items-start gap-2 text-[10px]">
+                          <span className={`mt-0.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                            ev.type === 'submitted' ? 'bg-blue-400'
+                            : ev.type === 'approved' ? 'bg-green-400'
+                            : ev.type === 'changes-requested' ? 'bg-amber-400'
+                            : 'bg-gray-400'
+                          }`} />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-gray-400">
+                              {ev.by === 'contractor' ? 'You' : 'Reviewer'}
+                              {ev.type === 'submitted' ? ' submitted'
+                                : ev.type === 'approved' ? ' approved'
+                                : ev.type === 'changes-requested' ? ' requested changes'
+                                : ' sent to you'}
+                            </span>
+                            <span className="text-gray-600 ml-1">
+                              {new Date(ev.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            {ev.note && (
+                              <p className="text-gray-500 truncate mt-0.5">{ev.note}</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
