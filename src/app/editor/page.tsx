@@ -104,16 +104,18 @@ export default function EditorListPage() {
                       </div>
                     </div>
 
-                    {(d.status === 'ready' || d.status === 'in-progress') && (
-                      <Link
-                        href={`/editor/${d.deviceId}`}
-                        className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 transition-colors"
-                      >
-                        {d.status === 'ready' ? 'Edit →' : 'Continue →'}
-                      </Link>
-                    )}
-                    {d.status === 'submitted' && (
-                      <span className="text-[11px] text-amber-400">Waiting for review</span>
+                    {(d.status === 'ready' || d.status === 'in-progress' || d.status === 'submitted') && (
+                      <div className="flex items-center gap-2">
+                        {d.status === 'submitted' && (
+                          <span className="text-[11px] text-amber-400">Submitted</span>
+                        )}
+                        <Link
+                          href={`/editor/${d.deviceId}`}
+                          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 transition-colors"
+                        >
+                          {d.status === 'ready' ? 'Edit →' : 'Continue →'}
+                        </Link>
+                      </div>
                     )}
                     {d.status === 'approved' && (
                       <span className="text-[11px] text-green-400">✓ Complete</span>
