@@ -32,6 +32,7 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       id: s.id,
       headerLabel: s.headerLabel ?? undefined,
       hidden: s.hidden,
+      frameMode: s.frameMode,
       x: s.x,
       y: s.y,
       w: s.w,
@@ -130,7 +131,10 @@ export default function PanCanvas() {
           <DragSelectRect />
 
           {/* Section frames — visual boxes + banners only (no child controls) */}
-          {sectionEntries.filter((s) => !s.hidden).map((section, index) => (
+          {sectionEntries.filter((s) => {
+            const mode = s.frameMode ?? (s.hidden ? 'hidden' : 'full');
+            return mode !== 'hidden';
+          }).map((section, index) => (
             <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
           ))}
 
