@@ -49,7 +49,6 @@ export async function POST(
     // Backup contractor's current manifest before overwriting
     await backupManifest(deviceId);
 
-    // Write both blobs (status.json + manifest.json)
     // Preserve existing events and append sent-to-contractor event
     const existingStatus = await getDeviceStatus(deviceId);
     const sentEvent: StatusEvent = {
@@ -60,20 +59,13 @@ export async function POST(
     };
     const events = [...(existingStatus?.events ?? []), sentEvent];
 
-    await initDevice(
-      deviceId,
-      deviceName,
-      manufacturer,
-      manifest,
-      { adminNote: note },
-    );
+    // Write both blobs (status.json + manifest.json)
+    await initDevice(deviceId, deviceName, manufacturer, manifest, { adminNote: note });
 
-    // initDevice creates fresh status — re-write with preserved events
-    if (existingStatus || events.length > 0) {
-      const freshStatus = await getDeviceStatus(deviceId);
-      if (freshStatus) {
-        await putDeviceStatus(deviceId, { ...freshStatus, events });
-      }
+    // Immediately re-apply preserved events (initDevice creates fresh status without them)
+    const freshStatus = await getDeviceStatus(deviceId);
+    if (freshStatus) {
+      await putDeviceStatus(deviceId, { ...freshStatus, events, isSandbox: existingStatus?.isSandbox });
     }
 
     // Upload photos

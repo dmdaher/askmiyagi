@@ -50,7 +50,13 @@ export async function PATCH(
       : (adminNote?.trim() || undefined),
   };
 
-  const events = [...(existing.events ?? []), event];
+  // Deduplicate: if last event is same type, update it instead of appending.
+  // Prevents unbounded growth from rapid re-submits (submitted→submitted).
+  const prevEvents = existing.events ?? [];
+  const lastEvent = prevEvents[prevEvents.length - 1];
+  const events = (lastEvent && lastEvent.type === event.type && lastEvent.by === event.by)
+    ? [...prevEvents.slice(0, -1), event]  // Replace last
+    : [...prevEvents, event];              // Append new
 
   await putDeviceStatus(deviceId, {
     ...existing,
