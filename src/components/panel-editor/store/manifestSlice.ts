@@ -1179,6 +1179,7 @@ export const createManifestSlice: StateCreator<
           y: Math.round(ctrl.y * factor),
           w: Math.round(ctrl.w * factor),
           h: Math.round(ctrl.h * factor),
+          labelFontSize: ctrl.labelFontSize ? Math.max(Math.round(ctrl.labelFontSize * factor), 4) : ctrl.labelFontSize,
         };
       }
 
