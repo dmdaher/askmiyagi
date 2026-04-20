@@ -144,7 +144,17 @@ export interface SectionDef {
   gridRows?: number;
   widthPercent?: number;
   complexity?: string;
-  hidden?: boolean; // Hide section frame in preview/production — controls still render
+  hidden?: boolean; // Legacy — use frameMode instead
+  frameMode?: 'full' | 'header-only' | 'hidden';
+}
+
+export type SectionFrameMode = 'full' | 'header-only' | 'hidden';
+
+/** Backwards-compatible frame mode reader */
+export function getFrameMode(section: SectionDef): SectionFrameMode {
+  if (section.frameMode) return section.frameMode;
+  if (section.hidden) return 'hidden';
+  return 'full';
 }
 
 // ─── Slice interface ────────────────────────────────────────────────────────
@@ -911,6 +921,10 @@ export const createManifestSlice: StateCreator<
   updateSection: (id, updates) => {
     const section = get().sections[id];
     if (!section) return;
+    // Sync hidden boolean with frameMode for backwards compatibility
+    if (updates.frameMode) {
+      updates.hidden = updates.frameMode === 'hidden' ? true : undefined;
+    }
     set((s) => ({
       sections: {
         ...s.sections,
