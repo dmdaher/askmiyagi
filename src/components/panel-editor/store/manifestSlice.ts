@@ -1179,6 +1179,7 @@ export const createManifestSlice: StateCreator<
           y: Math.round(ctrl.y * factor),
           w: Math.round(ctrl.w * factor),
           h: Math.round(ctrl.h * factor),
+          labelFontSize: ctrl.labelFontSize ? Math.max(Math.round(ctrl.labelFontSize * factor), 4) : ctrl.labelFontSize,
         };
       }
 
@@ -1194,14 +1195,28 @@ export const createManifestSlice: StateCreator<
         };
       }
 
-      // Scale all label positions, widths, and font sizes
-      const updatedLabels = (s.editorLabels as EditorLabel[]).map(l => ({
-        ...l,
-        x: Math.round(l.x * factor),
-        y: Math.round(l.y * factor),
-        w: l.w != null ? Math.round(l.w * factor) : l.w,
-        fontSize: Math.max(Math.round(l.fontSize * factor), 4),
-      }));
+      // Scale all label positions, widths, and font sizes.
+      // Linked labels compute position from their already-rounded control
+      // to prevent drift between label and control after repeated resizes.
+      const updatedLabels = (s.editorLabels as EditorLabel[]).map(l => {
+        const base = {
+          ...l,
+          x: Math.round(l.x * factor),
+          y: Math.round(l.y * factor),
+          w: l.w != null ? Math.round(l.w * factor) : l.w,
+          fontSize: Math.max(Math.round(l.fontSize * factor), 4),
+        };
+
+        // For linked labels, recompute from the rounded control position
+        const oldCtrl = l.controlId ? s.controls[l.controlId] : undefined;
+        const newCtrl = l.controlId ? updatedControls[l.controlId] : undefined;
+        if (oldCtrl && newCtrl) {
+          base.x = Math.round(newCtrl.x + (l.x - oldCtrl.x) * factor);
+          base.y = Math.round(newCtrl.y + (l.y - oldCtrl.y) * factor);
+        }
+
+        return base;
+      });
 
       return {
         controls: updatedControls,

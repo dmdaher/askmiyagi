@@ -478,7 +478,7 @@ export default function EditorToolbar({
               const val = parseInt(e.target.value, 10);
               if (!isNaN(val) && val !== canvasWidth && val >= 400) {
                 pushSnapshot();
-                setCanvasSize(val, canvasHeight);
+                scaleCanvas(val / canvasWidth);
               }
             }}
             onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
@@ -495,7 +495,7 @@ export default function EditorToolbar({
               const val = parseInt(e.target.value, 10);
               if (!isNaN(val) && val !== canvasHeight && val >= 300) {
                 pushSnapshot();
-                setCanvasSize(canvasWidth, val);
+                scaleCanvas(val / canvasHeight);
               }
             }}
             onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
