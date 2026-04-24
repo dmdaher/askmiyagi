@@ -79,6 +79,7 @@ export interface ControlDef {
   sectionId: string;
   labelPosition: 'above' | 'below' | 'left' | 'right' | 'on-button' | 'hidden';
   locked: boolean;
+  resizeLocked?: boolean; // Size locked — can move but can't resize
   rotation?: number; // 0, 90, 180, 270 degrees
   secondaryLabel?: string;
   spatialNeighbors?: {
@@ -198,6 +199,7 @@ export interface ManifestSlice {
   duplicateSelected: () => void;
   deleteSelected: () => void;
   toggleLock: (id: string) => void;
+  setLockMode: (ids: string[], mode: 'unlocked' | 'size-locked' | 'fully-locked') => void;
   setSelectedIds: (ids: string[]) => void;
   toggleSelected: (id: string) => void;
   setFocusedSection: (id: string | null) => void;
@@ -845,7 +847,7 @@ export const createManifestSlice: StateCreator<
 
   resizeControl: (id, w, h) => {
     const ctrl = get().controls[id];
-    if (!ctrl || ctrl.locked) return;
+    if (!ctrl || ctrl.locked || ctrl.resizeLocked) return;
     set((s) => ({
       controls: {
         ...s.controls,
@@ -968,7 +970,18 @@ export const createManifestSlice: StateCreator<
         controls[id] = { ...ctrl, [field]: value };
       }
     }
-    set({ controls });
+    // Sync labelFontSize → linked editorLabel.fontSize
+    if (field === 'labelFontSize') {
+      const idSet = new Set(ids);
+      const updatedLabels = (get().editorLabels as EditorLabel[]).map((l) =>
+        l.controlId && idSet.has(l.controlId)
+          ? { ...l, fontSize: value as number }
+          : l,
+      );
+      set({ controls, editorLabels: updatedLabels });
+    } else {
+      set({ controls });
+    }
   },
 
   duplicateSelected: () => {
@@ -1015,11 +1028,15 @@ export const createManifestSlice: StateCreator<
     const { selectedIds, controls, sections } = get();
     if (selectedIds.length === 0) return;
 
-    const deleteSet = new Set(selectedIds);
+    // Skip fully locked controls — they can't be deleted
+    const deletable = selectedIds.filter(id => !controls[id]?.locked);
+    if (deletable.length === 0) return;
+
+    const deleteSet = new Set(deletable);
     const updatedControls = { ...controls };
     const updatedSections = { ...sections };
 
-    for (const id of selectedIds) {
+    for (const id of deletable) {
       const ctrl = updatedControls[id];
       if (!ctrl) continue;
 
@@ -1060,19 +1077,55 @@ export const createManifestSlice: StateCreator<
 
   toggleLock: (id) => {
     const { lockedIds, controls } = get();
-    const isLocked = lockedIds.includes(id);
     const ctrl = controls[id];
     if (!ctrl) return;
 
-    set({
-      lockedIds: isLocked
-        ? lockedIds.filter((lid) => lid !== id)
-        : [...lockedIds, id],
-      controls: {
-        ...controls,
-        [id]: { ...ctrl, locked: !isLocked },
-      },
-    });
+    // Cycle: unlocked → size-locked → fully-locked → unlocked
+    if (!ctrl.locked && !ctrl.resizeLocked) {
+      // Unlocked → Size Locked
+      set({
+        controls: { ...controls, [id]: { ...ctrl, resizeLocked: true } },
+      });
+    } else if (ctrl.resizeLocked && !ctrl.locked) {
+      // Size Locked → Fully Locked
+      set({
+        lockedIds: [...lockedIds.filter(lid => lid !== id), id],
+        controls: { ...controls, [id]: { ...ctrl, locked: true, resizeLocked: false } },
+      });
+    } else {
+      // Fully Locked → Unlocked
+      set({
+        lockedIds: lockedIds.filter((lid) => lid !== id),
+        controls: { ...controls, [id]: { ...ctrl, locked: false, resizeLocked: false } },
+      });
+    }
+  },
+
+  setLockMode: (ids, mode) => {
+    const { controls, lockedIds } = get();
+    const updated = { ...controls };
+    let newLockedIds = [...lockedIds];
+
+    for (const id of ids) {
+      const ctrl = updated[id];
+      if (!ctrl) continue;
+      switch (mode) {
+        case 'unlocked':
+          updated[id] = { ...ctrl, locked: false, resizeLocked: false };
+          newLockedIds = newLockedIds.filter(lid => lid !== id);
+          break;
+        case 'size-locked':
+          updated[id] = { ...ctrl, locked: false, resizeLocked: true };
+          newLockedIds = newLockedIds.filter(lid => lid !== id);
+          break;
+        case 'fully-locked':
+          updated[id] = { ...ctrl, locked: true, resizeLocked: false };
+          if (!newLockedIds.includes(id)) newLockedIds.push(id);
+          break;
+      }
+    }
+
+    set({ controls: updated, lockedIds: newLockedIds });
   },
 
   setSelectedIds: (ids) => set({ selectedIds: ids, selectedLabelId: ids.length > 0 ? null : get().selectedLabelId }),

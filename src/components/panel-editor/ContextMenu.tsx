@@ -112,6 +112,8 @@ export default function ContextMenu() {
   if (!control) return null;
 
   const isLocked = control.locked;
+  const isResizeLocked = control.resizeLocked;
+  const lockLabel = isLocked ? 'Unlock' : isResizeLocked ? 'Lock Fully' : 'Lock Size';
   const selectedCount = useEditorStore.getState().selectedIds.length;
 
   return createPortal(
@@ -135,8 +137,11 @@ export default function ContextMenu() {
 
         {/* Delete */}
         <button
-          className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-red-400 transition-colors text-left"
-          onClick={handleDelete}
+          className={`flex w-full items-center justify-between px-3 py-1.5 transition-colors text-left ${
+            isLocked ? 'text-gray-600 cursor-not-allowed' : 'hover:bg-gray-800 hover:text-red-400'
+          }`}
+          onClick={isLocked ? undefined : handleDelete}
+          disabled={isLocked}
         >
           <span>Delete</span>
           <span className="text-gray-600 ml-4">Del</span>
@@ -145,12 +150,12 @@ export default function ContextMenu() {
         {/* Separator */}
         <div className="my-1 h-px bg-gray-800" />
 
-        {/* Lock / Unlock */}
+        {/* Lock cycle: Unlocked → Size Locked → Fully Locked → Unlocked */}
         <button
           className="flex w-full items-center px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
           onClick={handleToggleLock}
         >
-          {isLocked ? 'Unlock' : 'Lock'}
+          {lockLabel}
         </button>
 
         {/* Multi-select: Alignment & Grouping */}

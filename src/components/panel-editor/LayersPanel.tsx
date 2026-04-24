@@ -41,6 +41,9 @@ function ControlItem({ controlId }: { controlId: string }) {
 
   if (!control) return null;
 
+  const isLocked = control.locked;
+  const isResizeLocked = control.resizeLocked;
+
   return (
     <button
       ref={itemRef}
@@ -48,10 +51,18 @@ function ControlItem({ controlId }: { controlId: string }) {
       className={`flex w-full items-center gap-1 rounded px-2 py-1 text-left text-[10px] transition-colors ${
         isSelected
           ? 'bg-blue-600/30 text-white'
-          : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+          : isLocked
+            ? 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
+            : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
       }`}
     >
-      <span className="flex-1 truncate">{truncate(control.label || control.id, 22)}</span>
+      {(isLocked || isResizeLocked) && (
+        <svg className={`h-2.5 w-2.5 flex-shrink-0 ${isLocked ? 'text-yellow-500' : 'text-blue-500'}`} viewBox="0 0 16 16" fill="currentColor">
+          <path d="M3 9a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9z" />
+          {isLocked && <path d="M6 5a2 2 0 1 1 4 0v3H6V5z" />}
+        </svg>
+      )}
+      <span className="flex-1 truncate">{truncate(control.label || control.id, isLocked || isResizeLocked ? 18 : 22)}</span>
       <span className="flex-shrink-0 text-[8px] text-gray-600 uppercase">{control.type}</span>
     </button>
   );

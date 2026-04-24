@@ -475,14 +475,35 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
       {/* Divider */}
       <div className="h-px bg-gray-800" />
 
-      {/* Lock status */}
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-wide text-gray-500">
-          Locked
-        </span>
-        <span className="text-xs text-gray-400">
-          {control.locked ? 'Yes' : 'No'}
-        </span>
+      {/* Lock mode */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">
+          Lock
+        </label>
+        <div className="flex gap-1">
+          {([['unlocked', 'Unlocked'], ['size-locked', 'Size'], ['fully-locked', 'Full']] as const).map(([mode, label]) => {
+            const currentMode = control.locked ? 'fully-locked' : control.resizeLocked ? 'size-locked' : 'unlocked';
+            const isActive = currentMode === mode;
+            return (
+              <button
+                key={mode}
+                onClick={() => {
+                  pushSnapshot();
+                  useEditorStore.getState().setLockMode(ids, mode);
+                }}
+                className={`flex-1 rounded px-1.5 py-1 text-[9px] font-medium transition-colors ${
+                  isActive
+                    ? mode === 'fully-locked' ? 'bg-yellow-600/30 text-yellow-300 border border-yellow-600'
+                      : mode === 'size-locked' ? 'bg-blue-600/30 text-blue-300 border border-blue-600'
+                      : 'bg-gray-600/30 text-gray-200 border border-gray-500'
+                    : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -893,6 +914,39 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
           </div>
         </>
       )}
+
+      {/* ── Lock Mode ─────────────────────────────────────────────── */}
+      <div className="h-px bg-gray-800" />
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">
+          Lock
+        </label>
+        <div className="flex gap-1">
+          {([['unlocked', 'Unlocked'], ['size-locked', 'Size'], ['fully-locked', 'Full']] as const).map(([mode, label]) => {
+            const modes = controls.map(c => c.locked ? 'fully-locked' : c.resizeLocked ? 'size-locked' : 'unlocked');
+            const isActive = modes.every(m => m === mode);
+            const isMixed = !allSame(modes);
+            return (
+              <button
+                key={mode}
+                onClick={() => {
+                  pushSnapshot();
+                  useEditorStore.getState().setLockMode(ids, mode);
+                }}
+                className={`flex-1 rounded px-1.5 py-1 text-[9px] font-medium transition-colors ${
+                  isActive
+                    ? mode === 'fully-locked' ? 'bg-yellow-600/30 text-yellow-300 border border-yellow-600'
+                      : mode === 'size-locked' ? 'bg-blue-600/30 text-blue-300 border border-blue-600'
+                      : 'bg-gray-600/30 text-gray-200 border border-gray-500'
+                    : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* ── Group / Ungroup ────────────────────────────────────────── */}
       {controls.length >= 2 && (
