@@ -17,6 +17,7 @@ interface PanelButtonProps {
   labelPosition?: 'on' | 'above' | 'below';
   surfaceColor?: string;
   iconContent?: string;
+  labelFontSize?: number;
   onClick?: () => void;
 }
 
@@ -96,6 +97,7 @@ export default function PanelButton({
   labelPosition = 'on',
   surfaceColor,
   iconContent,
+  labelFontSize,
   onClick,
 }: PanelButtonProps) {
   // Fluid mode: when width/height are provided, compute all visuals proportionally.
@@ -109,7 +111,7 @@ export default function PanelButton({
   const isFlatKey = variant === 'flat-key';
 
   // ── Fluid sizing computations ──────────────────────────────────────────
-  const fluidFontSize = isFluid ? Math.max(Math.round(height! * 0.35), 6) : undefined;
+  const fluidFontSize = isFluid ? (labelFontSize ?? Math.max(Math.round(height! * 0.35), 6)) : undefined;
   const fluidBorderRadius = isFluid
     ? (isTransport ? '50%' : Math.max(Math.round(Math.min(width!, height!) * 0.15), 2))
     : undefined;

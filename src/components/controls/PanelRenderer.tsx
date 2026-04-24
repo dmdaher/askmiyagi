@@ -109,11 +109,11 @@ function renderLabelText(text: string): React.ReactNode {
 
 function inferPortVariant(label: string): string {
   const l = label.toLowerCase();
-  if (l.includes('usb')) return 'usb';
-  if (l.includes('midi')) return 'midi';
+  if (l.includes('usb')) return 'usb-a';
   if (l.includes('sd') || l.includes('card')) return 'sd-card';
-  if (l.includes('power') || l.includes('dc')) return 'power';
-  return 'audio';
+  if (l.includes('ethernet') || l.includes('lan')) return 'ethernet';
+  if (l.includes('rca') || l.includes('phono')) return 'rca';
+  return 'usb-a';
 }
 
 // ─── Control Renderer ───────────────────────────────────────────────────────
@@ -162,7 +162,7 @@ function renderControl(
             >
               {showInside && (
                 <span className="font-medium text-gray-300 uppercase text-center leading-tight px-1"
-                  style={{ fontSize: isIcon ? 14 : 8 }}>
+                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8) }}>
                   {displayText}
                 </span>
               )}
@@ -200,6 +200,7 @@ function renderControl(
             hasLed={control.hasLed && control.ledPosition === 'inside'}
             ledOn={ledOn}
             ledColor={control.ledColor ?? undefined}
+            labelFontSize={control.labelFontSize}
             onClick={onClick}
           />
         </div>

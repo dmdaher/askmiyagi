@@ -259,7 +259,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
               {showInside && (
                 <span
                   className="font-medium text-gray-300 uppercase text-center leading-tight px-1"
-                  style={{ fontSize: isIcon ? 14 : 8 }}
+                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8) }}
                 >
                   {text}
                 </span>
@@ -294,6 +294,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             hasLed={control.hasLed && control.ledPosition !== 'inside'}
             ledColor={control.ledColor ?? undefined}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
+            labelFontSize={control.labelFontSize}
           />
         </div>
       );
@@ -650,6 +651,10 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       // Rnd reports the visual size (scaled). Divide by controlScale to get the stored "full size".
       const newW = Math.round(parseInt(ref.style.width, 10) / controlScale);
       const newH = Math.round(parseInt(ref.style.height, 10) / controlScale);
+      // Ignore micro-resizes (< 3px in both dimensions) to prevent accidental resizes
+      const deltaW = Math.abs(newW - control.w);
+      const deltaH = Math.abs(newH - control.h);
+      if (deltaW < 3 && deltaH < 3) return;
       // Snapshot BEFORE mutation so undo restores the previous state
       pushSnapshot();
       // Handle position shift from top/left resize handles
@@ -779,6 +784,8 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   if (control.nestedIn && allControls[control.nestedIn]) return null;
 
   const isLocked = control.locked;
+  const isResizeLocked = control.resizeLocked;
+  const canResize = !isLocked && !isResizeLocked;
 
   // Controls can be dragged freely — section boundaries are decorative only.
 
@@ -792,8 +799,11 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         resizeGrid={[snapGrid, snapGrid]}
         lockAspectRatio={shiftHeld}
         disableDragging={isLocked}
-        enableResizing={!isLocked}
-        resizeHandleStyles={isSelected ? {
+        enableResizing={canResize ? {
+          topRight: true, bottomRight: true, bottomLeft: true, topLeft: true,
+          top: false, right: false, bottom: false, left: false,
+        } : false}
+        resizeHandleStyles={isSelected && canResize ? {
           bottomRight: { width: 10, height: 10, right: -5, bottom: -5, background: '#3b82f6', borderRadius: '50%', cursor: 'nwse-resize' },
           bottomLeft: { width: 10, height: 10, left: -5, bottom: -5, background: '#3b82f6', borderRadius: '50%', cursor: 'nesw-resize' },
           topRight: { width: 10, height: 10, right: -5, top: -5, background: '#3b82f6', borderRadius: '50%', cursor: 'nesw-resize' },
@@ -804,13 +814,13 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         onResizeStop={handleResizeStop}
         style={{
           outline: isSelected
-            ? '2px solid rgba(59,130,246,0.8)'
+            ? `2px solid ${isLocked ? 'rgba(234,179,8,0.6)' : 'rgba(59,130,246,0.8)'}`
             : 'none',
           outlineOffset: 1,
           borderRadius: 2,
           zIndex: isSelected ? 50 : isGrouped ? 10 : 5,
           boxShadow: isSelected
-            ? '0 0 8px 2px rgba(59,130,246,0.3)'
+            ? isLocked ? '0 0 8px 2px rgba(234,179,8,0.2)' : '0 0 8px 2px rgba(59,130,246,0.3)'
             : 'none',
           opacity: isLocked ? 0.5 : controlScale < 1 ? (isSelected ? 1 : 0.7) : 1,
           cursor: isLocked ? 'not-allowed' : 'move',
@@ -822,13 +832,22 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         className="control-node"
       >
         {/* Lock icon badge (top-right) */}
-        {isLocked && (
+        {(isLocked || isResizeLocked) && (
           <div
-            className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-[8px] text-yellow-400 border border-gray-600 pointer-events-none"
+            className={`absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border pointer-events-none ${
+              isLocked
+                ? 'bg-yellow-900/80 text-yellow-400 border-yellow-600'
+                : 'bg-blue-900/80 text-blue-400 border-blue-600'
+            }`}
             style={{ zIndex: 20 }}
-            title="Locked"
+            title={isLocked ? 'Fully Locked' : 'Size Locked'}
           >
-            L
+            <svg className="h-2.5 w-2.5" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M3 9a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9z" />
+              {isLocked && (
+                <path d="M6 5a2 2 0 1 1 4 0v3H6V5z" />
+              )}
+            </svg>
           </div>
         )}
 
