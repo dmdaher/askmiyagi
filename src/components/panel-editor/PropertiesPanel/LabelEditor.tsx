@@ -73,7 +73,7 @@ export default function LabelEditor({
 
   // Dual-label mode: two separate inputs for top/bottom of dual-label LED
   if (isDualLabel) {
-    const parts = label.split(/[\/\n]/).map(s => s.trim());
+    const parts = label.split(/[\/\n]/);
     const topValue = parts[0] ?? '';
     const bottomValue = parts[1] ?? '';
     const stripSlash = (v: string) => v.replace(/\//g, '');
