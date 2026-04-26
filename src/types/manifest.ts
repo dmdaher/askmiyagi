@@ -34,6 +34,7 @@ export type LabelDisplay = 'on-button' | 'above' | 'below' | 'left' | 'right' | 
 export type LEDBehavior = 'steady' | 'blink-on-activity' | 'dynamic-color';
 export type LEDPosition = 'above' | 'below' | 'inside' | 'ring';
 export type LEDVariant = 'dot' | 'dual-label' | 'bar';
+export type LEDStyle = 'integrated' | 'dot';
 export type InteractionType = 'momentary' | 'toggle' | 'hold' | 'rotary' | 'slide' | 'touch';
 
 export type SubZone = string[] | { controls: string[]; direction: 'row' | 'column' };
@@ -72,6 +73,7 @@ export interface ManifestControl {
   ledBehavior?: LEDBehavior;
   ledPosition?: LEDPosition;
   ledVariant?: LEDVariant;
+  ledStyle?: LEDStyle;  // integrated = button face glows, dot = separate LED indicator
 
   // Interaction Model (Visual Extractor)
   interactionType?: InteractionType;

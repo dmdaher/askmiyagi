@@ -335,7 +335,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       const ledColor = control.ledColor ?? '#22c55e';
       if (control.ledVariant === 'dual-label') {
         // Dual-label indicator (e.g., VINYL/CDJ -- top and bottom rows)
-        const parts = control.label.split('/').map(s => s.trim());
+        const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
         const topLabel = parts[0] || 'MODE A';
         const bottomLabel = parts[1] || 'MODE B';
         return (

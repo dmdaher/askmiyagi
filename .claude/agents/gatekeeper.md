@@ -214,6 +214,7 @@ For EVERY control in the manifest, populate these visual properties by reading t
 - `icon`: Standard keys: `"play"`, `"pause"`, `"play-pause"`, `"stop"`, `"record"`, `"fast-forward"`, `"rewind"`, `"skip-forward"`, `"skip-backward"`, `"arrow-left"`, `"arrow-right"`, `"eject"`. Only set if `labelDisplay` is `"icon-only"`.
 - `hasLed`: `true` if manual says "lights up", "blinks", "indicator". Transport/performance buttons usually have LEDs.
 - `ledColor`: Color from manual. CUE LED=orange, PLAY LED=green, SYNC LED=blue. `null` if unknown.
+- `ledStyle`: `"integrated"` if the button face itself lights up (manual says "button lights up", "illuminates", button changes color). `"dot"` if a separate physical LED indicator sits above/below the button. Default to `"integrated"` for transport buttons (PLAY, CUE), performance pads (HOT CUE), and mode toggles (SLIP, QUANTIZE, SYNC). Default to `"dot"` for synth panel controls with LED rings or separate indicator dots.
 - `interactionType`: `"momentary"` (press), `"toggle"` (press to switch), `"hold"` (press and hold), `"rotary"` (knobs), `"slide"` (faders). From manual functional descriptions.
 - `pairedWith`: For paired controls (SEARCH ◀◀/▶▶, BEAT JUMP ◀/▶). **Must be symmetric** — if A.pairedWith=B, then B.pairedWith=A.
 - `groupLabels`: Top-level array of labels spanning multiple controls (e.g., "HOT CUE" spanning pads A-H).
