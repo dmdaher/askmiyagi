@@ -355,8 +355,11 @@ function SectionItem({ sectionId }: { sectionId: string }) {
               }
             }
 
-            // Ungrouped controls
-            const ungroupedIds = childIds.filter((id) => !groupedIds.has(id));
+            // Ungrouped controls — sorted by zOrder (highest first = top of list, like Figma)
+            const controls = useEditorStore.getState().controls;
+            const ungroupedIds = childIds
+              .filter((id) => !groupedIds.has(id))
+              .sort((a, b) => (controls[b]?.zOrder ?? 0) - (controls[a]?.zOrder ?? 0));
 
             return (
               <>

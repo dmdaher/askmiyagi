@@ -424,6 +424,40 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         </>
       )}
 
+      {/* LED Style (buttons/pads with hasLed) */}
+      {control.hasLed && (control.type === 'button' || control.type === 'pad') && (
+        <>
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wide text-gray-500">LED Style</label>
+            <div className="flex gap-1.5">
+              <button
+                onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledStyle', 'integrated'); }}
+                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                  control.ledStyle === 'integrated'
+                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                }`}
+              >
+                <div className="w-4 h-3 rounded-sm border border-green-500 bg-green-500/20" />
+                Glow
+              </button>
+              <button
+                onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledStyle', 'dot'); }}
+                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                  (control.ledStyle ?? 'dot') === 'dot'
+                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                }`}
+              >
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                Dot
+              </button>
+            </div>
+          </div>
+          <div className="h-px bg-gray-800" />
+        </>
+      )}
+
       {/* Label */}
       <LabelEditor
         label={control.label}
@@ -503,6 +537,31 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* Layer order */}
+      <div className="h-px bg-gray-800" />
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-wide text-gray-500">
+          Layer
+        </span>
+        <div className="flex items-center gap-1">
+          <span className="text-[10px] text-gray-400 mr-1">{control.zOrder ?? 0}</span>
+          <button
+            onClick={() => { pushSnapshot(); useEditorStore.getState().bringForward(); }}
+            className="flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-white/10 hover:text-gray-300"
+            title="Bring Forward (Cmd+Alt+])"
+          >
+            <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor"><path d="M6 2l4 4H2z" /></svg>
+          </button>
+          <button
+            onClick={() => { pushSnapshot(); useEditorStore.getState().sendBackward(); }}
+            className="flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-white/10 hover:text-gray-300"
+            title="Send Backward (Cmd+Alt+[)"
+          >
+            <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor"><path d="M6 10l4-4H2z" /></svg>
+          </button>
         </div>
       </div>
     </div>

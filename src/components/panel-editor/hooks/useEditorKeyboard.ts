@@ -154,8 +154,27 @@ export function useEditorKeyboard() {
         }
       }
 
-      // [ and ] shortcuts removed — controlScale hidden for now (redundant with Zoom).
-      // Use Cmd+= / Cmd+- for Zoom instead.
+      // ── Z-order: Cmd+] / Cmd+[ / Cmd+Alt+] / Cmd+Alt+[ ─────────────────
+      if (e.key === ']' && isMod) {
+        e.preventDefault();
+        store.pushSnapshot();
+        if (e.altKey) {
+          store.bringForward();
+        } else {
+          store.bringToFront();
+        }
+        return;
+      }
+      if (e.key === '[' && isMod) {
+        e.preventDefault();
+        store.pushSnapshot();
+        if (e.altKey) {
+          store.sendBackward();
+        } else {
+          store.sendToBack();
+        }
+        return;
+      }
 
       // ── Help drawer: ? (Shift+/) ─────────────────────────────────────────
       if (e.key === '?' && !isMod) {

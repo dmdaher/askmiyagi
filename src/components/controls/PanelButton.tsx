@@ -18,6 +18,7 @@ interface PanelButtonProps {
   surfaceColor?: string;
   iconContent?: string;
   labelFontSize?: number;
+  ledStyle?: 'integrated' | 'dot';
   onClick?: () => void;
 }
 
@@ -98,6 +99,7 @@ export default function PanelButton({
   surfaceColor,
   iconContent,
   labelFontSize,
+  ledStyle,
   onClick,
 }: PanelButtonProps) {
   // Fluid mode: when width/height are provided, compute all visuals proportionally.
@@ -170,6 +172,13 @@ export default function PanelButton({
     transform: active ? 'translateY(1px)' : 'translateY(0)',
   };
 
+  // ── Integrated LED glow (button face illuminates in ledColor) ───────────
+  const integratedGlow = (ledStyle === 'integrated' && hasLed && ledColor) ? {
+    backgroundColor: `${ledColor}18`,
+    border: `1px solid ${ledColor}50`,
+    boxShadow: `0 0 6px ${ledColor}40, inset 0 0 3px ${ledColor}20`,
+  } : undefined;
+
   // ── Fluid button style (inline, replaces Tailwind classes) ─────────────
   const fluidButtonStyle = isFluid ? {
     width: width!,
@@ -177,7 +186,8 @@ export default function PanelButton({
     borderRadius: fluidBorderRadius,
     overflow: 'hidden' as const,
     ...customStyle,
-  } : customStyle;
+    ...integratedGlow,
+  } : { ...customStyle, ...integratedGlow };
 
   // Text style — fluid or preset
   const textClass = isFluid ? '' : sizeStyle.text;
@@ -195,8 +205,8 @@ export default function PanelButton({
         </span>
       )}
 
-      {/* LED indicator */}
-      {hasLed && (
+      {/* LED dot indicator (dot style only — integrated LEDs glow via button face) */}
+      {hasLed && ledStyle !== 'integrated' && (
         <div
           className={`${isFluid ? '' : sizeStyle.led} rounded-full transition-all duration-150`}
           style={{

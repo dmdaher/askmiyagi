@@ -16,7 +16,8 @@ import type { PanelManifest } from '@/components/controls/PanelRenderer';
 
 /** Convert editor Zustand store state to PanelManifest for PanelRenderer */
 function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): PanelManifest {
-  const controls = Object.values(state.controls);
+  const controls = Object.values(state.controls)
+    .sort((a, b) => (a.zOrder ?? 0) - (b.zOrder ?? 0));
   const sections = Object.values(state.sections);
   const scale = state.controlScale ?? 1;
 
@@ -59,6 +60,7 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       positionLabels: c.positionLabels,
       rotation: c.rotation,
       labelFontSize: c.labelFontSize,
+      ledStyle: c.ledStyle,
       editorPosition: { x: c.x, y: c.y, w: c.w, h: c.h },
     })),
     editorLabels: (state.editorLabels ?? []).map((l: any) => ({

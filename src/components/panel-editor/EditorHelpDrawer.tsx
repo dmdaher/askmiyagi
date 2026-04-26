@@ -87,9 +87,12 @@ function GuideTab() {
         <p>Appears on the right when you select a control. Shows and lets you edit all properties.</p>
         <p><strong className="text-white/80">Type</strong> &mdash; Change what kind of control this is (button, knob, slider, pad, etc.).</p>
         <p><strong className="text-white/80">Shape</strong> &mdash; For buttons only: rectangle or circle.</p>
-        <p><strong className="text-white/80">Label</strong> &mdash; Edit label text and choose position: above, below, left, right, on the button, or hidden. Secondary label adds a second line (e.g., &ldquo;PLAY/CUE&rdquo;).</p>
+        <p><strong className="text-white/80">LED Style</strong> &mdash; For buttons/pads with LEDs: <em>Glow</em> makes the button face illuminate in its LED color (like PLAY/CUE on a CDJ). <em>Dot</em> renders a separate small LED dot above the button.</p>
+        <p><strong className="text-white/80">Label</strong> &mdash; Edit label text and choose position: above, below, left, right, on the button, or hidden. Secondary label adds a second line (e.g., &ldquo;PLAY/CUE&rdquo;). Font size slider adjusts label size for all positions.</p>
         <p><strong className="text-white/80">Rotation</strong> &mdash; Rotate a control: 0&deg;, 90&deg;, 180&deg;, or 270&deg;.</p>
         <p><strong className="text-white/80">X, Y, W, H</strong> &mdash; Set exact pixel position and size. Good for fine-tuning after dragging.</p>
+        <p><strong className="text-white/80">Lock</strong> &mdash; Three modes: <em>Unlocked</em> (free move &amp; resize), <em>Size</em> (can move but can&rsquo;t resize), <em>Full</em> (frozen &mdash; can&rsquo;t move, resize, or delete). Use to protect controls you&rsquo;re happy with.</p>
+        <p><strong className="text-white/80">Layer</strong> &mdash; Shows the control&rsquo;s z-order position. Use the up/down arrows to move controls forward or backward in the stack. Higher numbers render on top.</p>
         <p><strong className="text-white/80">Match Sizes</strong> &mdash; Select 2+ controls, click Match Sizes to make them all the same width and height as the first one selected.</p>
         <p><strong className="text-white/80">Align tools</strong> &mdash; Select 2+ controls, then align them: left edges, centers, or right edges (horizontal); top, middle, or bottom (vertical). &ldquo;Align&rdquo; means &ldquo;straighten into a line.&rdquo;</p>
         <p><strong className="text-white/80">Distribute</strong> &mdash; Select 3+ controls to space them equally. Horizontal distribute makes even gaps left-to-right; vertical does top-to-bottom.</p>
@@ -152,6 +155,13 @@ function ShortcutsTab() {
         <ShortcutRow action="Double-click to edit label" keys="Dbl-click" />
       </div>
       <div>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Layer Order</h4>
+        <ShortcutRow action="Bring to Front" keys="Cmd+]" />
+        <ShortcutRow action="Bring Forward" keys="Cmd+Alt+]" />
+        <ShortcutRow action="Send Backward" keys="Cmd+Alt+[" />
+        <ShortcutRow action="Send to Back" keys="Cmd+[" />
+      </div>
+      <div>
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Grouping</h4>
         <ShortcutRow action="Group selected" keys="Cmd+G" />
         <ShortcutRow action="Ungroup" keys="Cmd+Shift+G" />
@@ -170,6 +180,8 @@ function WorkflowTab() {
     { title: 'Fine-tune with Gap inputs', desc: 'In the Properties panel, use the Gap (H/V) inputs to set exact pixel spacing between controls. Good for knob rows that need uniform gaps.' },
     { title: 'Fix labels', desc: 'Click a label and press C to center it on its control. Double-click to edit text. Use Normalize Label Spacing in Properties panel (2+ selected) to make label distances consistent.' },
     { title: 'Group related controls', desc: 'Select controls that belong together (e.g., a row of channel faders) and press Cmd+G. Groups move together and won\'t accidentally get misaligned.' },
+    { title: 'Lock finished controls', desc: 'Once you\'re happy with a control\'s position and size, set it to Size Lock (can still move, can\'t resize) or Full Lock (frozen). Use the Lock pills in the Properties panel or right-click menu.' },
+    { title: 'Fix layer ordering', desc: 'If a control appears behind another (e.g., a jog display behind its wheel), select it and press Cmd+] to bring it to front. Use right-click > Bring to Front/Send to Back for precise control.' },
     { title: 'Preview your work', desc: 'Click Preview in the toolbar to see the panel as the end user will see it. Check that labels are readable and nothing overlaps.' },
     { title: 'Submit for review', desc: 'Click Submit for Review. Add an optional note about any tricky areas. The editor locks while the admin reviews. You\'ll see feedback on the instrument list if changes are needed.' },
   ];

@@ -12,7 +12,10 @@ export default function ControlLayer() {
   const controls = useEditorStore((s) => s.controls);
 
   // Filter out nested controls (rendered by their parent ControlNode)
-  const topLevelControls = Object.values(controls).filter((c) => !c.nestedIn);
+  // Sort by zOrder so higher values render later (visually on top)
+  const topLevelControls = Object.values(controls)
+    .filter((c) => !c.nestedIn)
+    .sort((a, b) => (a.zOrder ?? 0) - (b.zOrder ?? 0) || a.id.localeCompare(b.id));
 
   return (
     <div className="absolute inset-0" style={{ zIndex: 200, pointerEvents: 'none' }}>
