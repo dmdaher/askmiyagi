@@ -184,9 +184,11 @@ function renderFloatingLabel(
   );
 }
 
-/** Render a small LED dot indicator for buttons with hasLed */
+/** Render a small LED dot indicator for buttons with hasLed (dot style only) */
 function renderButtonLed(control: ControlDef) {
   if (!control.hasLed || (control.type !== 'button' && control.type !== 'pad')) return null;
+  // Integrated LED buttons glow via PanelButton styling — no separate dot
+  if (control.ledStyle === 'integrated') return null;
   const color = control.ledColor ?? '#22c55e';
   const position = control.ledPosition ?? 'above';
 
@@ -210,8 +212,12 @@ function renderButtonLed(control: ControlDef) {
       </div>
     );
   }
-  // For 'above', 'below', 'ring' — render above by default (handled by PanelButton's hasLed prop)
-  return null;
+  // For 'above', 'below', 'ring' — render above the control as absolute overlay
+  return (
+    <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 5 }}>
+      {ledDot}
+    </div>
+  );
 }
 
 /** Infer Port variant from label text */
@@ -291,10 +297,10 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
             iconContent={iconContent}
-            hasLed={control.hasLed && control.ledPosition !== 'inside'}
             ledColor={control.ledColor ?? undefined}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
             labelFontSize={control.labelFontSize}
+            ledStyle={control.ledStyle}
           />
         </div>
       );
@@ -818,7 +824,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
             : 'none',
           outlineOffset: 1,
           borderRadius: 2,
-          zIndex: isSelected ? 50 : isGrouped ? 10 : 5,
+          zIndex: isSelected ? (control.zOrder ?? 0) + 55 : (control.zOrder ?? 0) + 5,
           boxShadow: isSelected
             ? isLocked ? '0 0 8px 2px rgba(234,179,8,0.2)' : '0 0 8px 2px rgba(59,130,246,0.3)'
             : 'none',
@@ -853,7 +859,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
 
         {/* Control rendering — fills the container (container = visual) */}
         <div
-          className="flex h-full w-full items-center justify-center pointer-events-none overflow-hidden"
+          className="flex h-full w-full items-center justify-center pointer-events-none overflow-visible"
           style={{
             transform: control.rotation ? `rotate(${control.rotation}deg)` : undefined,
             transformOrigin: control.rotation ? 'center' : undefined,

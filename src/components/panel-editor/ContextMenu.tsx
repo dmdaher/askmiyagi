@@ -106,6 +106,13 @@ export default function ContextMenu() {
     setMenu(null);
   }, []);
 
+  const handleZOrder = useCallback((action: 'bringToFront' | 'sendToBack' | 'bringForward' | 'sendBackward') => {
+    const store = useEditorStore.getState();
+    store.pushSnapshot();
+    store[action]();
+    setMenu(null);
+  }, []);
+
   if (!menu) return null;
 
   const control = useEditorStore.getState().controls[menu.controlId];
@@ -156,6 +163,37 @@ export default function ContextMenu() {
           onClick={handleToggleLock}
         >
           {lockLabel}
+        </button>
+
+        {/* Z-Order */}
+        <div className="my-1 h-px bg-gray-800" />
+        <button
+          className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
+          onClick={() => handleZOrder('bringToFront')}
+        >
+          <span>Bring to Front</span>
+          <span className="text-gray-600 ml-4 text-[9px]">&#8984;]</span>
+        </button>
+        <button
+          className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
+          onClick={() => handleZOrder('bringForward')}
+        >
+          <span>Bring Forward</span>
+          <span className="text-gray-600 ml-4 text-[9px]">&#8984;&#8997;]</span>
+        </button>
+        <button
+          className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
+          onClick={() => handleZOrder('sendBackward')}
+        >
+          <span>Send Backward</span>
+          <span className="text-gray-600 ml-4 text-[9px]">&#8984;&#8997;[</span>
+        </button>
+        <button
+          className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
+          onClick={() => handleZOrder('sendToBack')}
+        >
+          <span>Send to Back</span>
+          <span className="text-gray-600 ml-4 text-[9px]">&#8984;[</span>
         </button>
 
         {/* Multi-select: Alignment & Grouping */}

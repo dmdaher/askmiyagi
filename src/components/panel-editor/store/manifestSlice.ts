@@ -113,6 +113,7 @@ export interface ControlDef {
   ledBehavior?: LEDBehavior;
   ledPosition?: LEDPosition;
   ledVariant?: LEDVariant;
+  ledStyle?: 'integrated' | 'dot';  // integrated = button face glows, dot = separate LED dot above
 
   // Interaction Model (enriched fields)
   interactionType?: InteractionType;
@@ -121,6 +122,9 @@ export interface ControlDef {
   positionLabels?: string[];
   encoderHasPush?: boolean;
   orientation?: 'vertical' | 'horizontal';
+
+  // Z-ordering (editor-only)
+  zOrder?: number;  // Persistent z-order — higher values render on top
 
   // Relationships (enriched fields)
   pairedWith?: string | null;
@@ -223,6 +227,10 @@ export interface ManifestSlice {
   ungroupControls: () => void;
   setHoveredGroup: (id: string | null) => void;
   setSelectedLabel: (id: string | null) => void;
+  bringToFront: () => void;
+  sendToBack: () => void;
+  bringForward: () => void;
+  sendBackward: () => void;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -1003,6 +1011,7 @@ export const createManifestSlice: StateCreator<
         x: original.x + 16,
         y: original.y + 16,
         locked: false,
+        zOrder: (original.zOrder ?? 0) + 1,
       };
       updatedControls[copyId] = copy;
       newIds.push(copyId);
@@ -1688,6 +1697,54 @@ export const createManifestSlice: StateCreator<
     } else {
       set({ selectedLabelId: null });
     }
+  },
+
+  bringToFront: () => {
+    const { selectedIds, controls } = get();
+    if (selectedIds.length === 0) return;
+    const allOrders = Object.values(controls).map(c => c.zOrder ?? 0);
+    const maxOrder = allOrders.length > 0 ? Math.max(...allOrders) : 0;
+    const updated = { ...controls };
+    for (const id of selectedIds) {
+      const ctrl = updated[id];
+      if (ctrl) updated[id] = { ...ctrl, zOrder: maxOrder + 1 };
+    }
+    set({ controls: updated });
+  },
+
+  sendToBack: () => {
+    const { selectedIds, controls } = get();
+    if (selectedIds.length === 0) return;
+    const allOrders = Object.values(controls).map(c => c.zOrder ?? 0);
+    const minOrder = allOrders.length > 0 ? Math.min(...allOrders) : 0;
+    const updated = { ...controls };
+    for (const id of selectedIds) {
+      const ctrl = updated[id];
+      if (ctrl) updated[id] = { ...ctrl, zOrder: Math.max(0, minOrder - 1) };
+    }
+    set({ controls: updated });
+  },
+
+  bringForward: () => {
+    const { selectedIds, controls } = get();
+    if (selectedIds.length === 0) return;
+    const updated = { ...controls };
+    for (const id of selectedIds) {
+      const ctrl = updated[id];
+      if (ctrl) updated[id] = { ...ctrl, zOrder: (ctrl.zOrder ?? 0) + 1 };
+    }
+    set({ controls: updated });
+  },
+
+  sendBackward: () => {
+    const { selectedIds, controls } = get();
+    if (selectedIds.length === 0) return;
+    const updated = { ...controls };
+    for (const id of selectedIds) {
+      const ctrl = updated[id];
+      if (ctrl) updated[id] = { ...ctrl, zOrder: Math.max(0, (ctrl.zOrder ?? 0) - 1) };
+    }
+    set({ controls: updated });
   },
 
   initLabelsFromControls: () => {

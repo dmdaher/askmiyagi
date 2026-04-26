@@ -41,6 +41,7 @@ interface ManifestControl {
   positionLabels?: string[];
   rotation?: number;
   labelFontSize?: number;
+  ledStyle?: 'integrated' | 'dot';
   editorPosition?: { x: number; y: number; w: number; h: number };
 }
 
@@ -137,9 +138,11 @@ function renderControl(
         const showInside = control.labelPosition === 'on-button' || control.labelDisplay === 'icon-only';
         const displayText = iconContent ?? control.label;
         const isIcon = !!iconContent;
+        const isIntegrated = control.ledStyle === 'integrated' && control.hasLed;
+        const intColor = control.ledColor ?? '#22c55e';
         return (
           <div className="relative" data-control-id={control.id}>
-            {control.hasLed && control.ledPosition !== 'inside' && (
+            {control.hasLed && control.ledPosition !== 'inside' && control.ledStyle !== 'integrated' && (
               <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 1 }}>
                 <div className="rounded-full" style={{
                   width: 6, height: 6,
@@ -152,11 +155,13 @@ function renderControl(
               className="rounded-full flex items-center justify-center cursor-pointer"
               style={{
                 width: diameter, height: diameter,
-                backgroundColor: active ? '#3a3a3a' : '#2a2a2a',
-                border: `3px solid ${control.surfaceColor ?? '#444'}`,
-                boxShadow: control.surfaceColor
-                  ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40`
-                  : 'inset 0 2px 4px rgba(0,0,0,0.4)',
+                backgroundColor: isIntegrated ? `${intColor}18` : (active ? '#3a3a3a' : '#2a2a2a'),
+                border: isIntegrated ? `1px solid ${intColor}50` : `3px solid ${control.surfaceColor ?? '#444'}`,
+                boxShadow: isIntegrated
+                  ? `0 0 6px ${intColor}40, inset 0 0 3px ${intColor}20`
+                  : (control.surfaceColor
+                    ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40`
+                    : 'inset 0 2px 4px rgba(0,0,0,0.4)'),
               }}
               onClick={onClick}
             >
@@ -178,7 +183,7 @@ function renderControl(
 
       return (
         <div className="relative">
-          {control.hasLed && control.ledPosition !== 'inside' && (
+          {control.hasLed && control.ledPosition !== 'inside' && control.ledStyle !== 'integrated' && (
             <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 1 }}>
               <div className="rounded-full" style={{
                 width: 6, height: 6,
@@ -201,6 +206,7 @@ function renderControl(
             ledOn={ledOn}
             ledColor={control.ledColor ?? undefined}
             labelFontSize={control.labelFontSize}
+            ledStyle={control.ledStyle}
             onClick={onClick}
           />
         </div>
