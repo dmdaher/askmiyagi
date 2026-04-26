@@ -464,6 +464,7 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         labelPosition={control.labelPosition}
         secondaryLabel={control.secondaryLabel}
         labelFontSize={control.labelFontSize}
+        isDualLabel={control.ledVariant === 'dual-label'}
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}

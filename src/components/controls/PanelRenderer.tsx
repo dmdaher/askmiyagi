@@ -229,7 +229,7 @@ function renderControl(
     case 'indicator': {
       const ledColor = control.ledColor ?? '#22c55e';
       if (control.ledVariant === 'dual-label') {
-        const parts = control.label.split('/').map(s => s.trim());
+        const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
         return (
           <div className="flex flex-col rounded overflow-hidden"
             style={{ width: Math.max(w, 48), border: '1px solid #333' }}>
