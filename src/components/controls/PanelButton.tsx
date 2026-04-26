@@ -174,9 +174,11 @@ export default function PanelButton({
 
   // ── Integrated LED glow (button face illuminates in ledColor) ───────────
   const integratedGlow = (ledStyle === 'integrated' && hasLed && ledColor) ? {
-    backgroundColor: `${ledColor}18`,
-    border: `1px solid ${ledColor}50`,
-    boxShadow: `0 0 6px ${ledColor}40, inset 0 0 3px ${ledColor}20`,
+    backgroundColor: ledOn ? `${ledColor}40` : `${ledColor}18`,
+    border: `1px solid ${ledOn ? ledColor : `${ledColor}50`}`,
+    boxShadow: ledOn
+      ? `0 0 10px ${ledColor}80, inset 0 0 6px ${ledColor}40`
+      : `0 0 6px ${ledColor}40, inset 0 0 3px ${ledColor}20`,
   } : undefined;
 
   // ── Fluid button style (inline, replaces Tailwind classes) ─────────────
