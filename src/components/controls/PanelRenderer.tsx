@@ -155,10 +155,10 @@ function renderControl(
               className="rounded-full flex items-center justify-center cursor-pointer"
               style={{
                 width: diameter, height: diameter,
-                backgroundColor: isIntegrated ? `${intColor}18` : (active ? '#3a3a3a' : '#2a2a2a'),
-                border: isIntegrated ? `1px solid ${intColor}50` : `3px solid ${control.surfaceColor ?? '#444'}`,
+                backgroundColor: isIntegrated ? (ledOn ? `${intColor}40` : `${intColor}18`) : (active ? '#3a3a3a' : '#2a2a2a'),
+                border: isIntegrated ? `1px solid ${ledOn ? intColor : `${intColor}50`}` : `3px solid ${control.surfaceColor ?? '#444'}`,
                 boxShadow: isIntegrated
-                  ? `0 0 6px ${intColor}40, inset 0 0 3px ${intColor}20`
+                  ? (ledOn ? `0 0 10px ${intColor}80, inset 0 0 6px ${intColor}40` : `0 0 6px ${intColor}40, inset 0 0 3px ${intColor}20`)
                   : (control.surfaceColor
                     ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40`
                     : 'inset 0 2px 4px rgba(0,0,0,0.4)'),
@@ -230,27 +230,37 @@ function renderControl(
       const ledColor = control.ledColor ?? '#22c55e';
       if (control.ledVariant === 'dual-label') {
         const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
+        // ledOn=true → top row lit; ledOn=false → bottom row lit (mode toggle)
+        const topActive = ledOn !== false;
         return (
           <div className="flex flex-col rounded overflow-hidden"
             style={{ width: Math.max(w, 48), border: '1px solid #333' }}>
             <div className="flex items-center justify-center py-1 px-2"
-              style={{ backgroundColor: '#0a2e1a', borderBottom: '1px solid #333' }}>
+              style={{ backgroundColor: topActive ? '#0a2e1a' : '#1a1a2a', borderBottom: '1px solid #333' }}>
               <div className="flex items-center gap-1.5">
                 <div className="rounded-full" style={{
-                  width: 6, height: 6, backgroundColor: ledColor,
-                  boxShadow: `0 0 4px ${ledColor}`,
+                  width: 6, height: 6,
+                  backgroundColor: topActive ? ledColor : `${ledColor}33`,
+                  boxShadow: topActive ? `0 0 4px ${ledColor}` : 'none',
+                  border: topActive ? 'none' : `1px solid ${ledColor}66`,
                 }} />
-                <span className="text-[8px] font-medium text-green-400 uppercase">{parts[0] || 'MODE A'}</span>
+                <span className="text-[8px] font-medium uppercase" style={{
+                  color: topActive ? '#4ade80' : `${ledColor}88`,
+                }}>{parts[0] || 'MODE A'}</span>
               </div>
             </div>
             <div className="flex items-center justify-center py-1 px-2"
-              style={{ backgroundColor: '#1a1a2a' }}>
+              style={{ backgroundColor: !topActive ? '#0a2e1a' : '#1a1a2a' }}>
               <div className="flex items-center gap-1.5">
                 <div className="rounded-full" style={{
-                  width: 6, height: 6, backgroundColor: `${ledColor}33`,
-                  border: `1px solid ${ledColor}66`,
+                  width: 6, height: 6,
+                  backgroundColor: !topActive ? ledColor : `${ledColor}33`,
+                  boxShadow: !topActive ? `0 0 4px ${ledColor}` : 'none',
+                  border: !topActive ? 'none' : `1px solid ${ledColor}66`,
                 }} />
-                <span className="text-[8px] font-medium uppercase" style={{ color: `${ledColor}88` }}>
+                <span className="text-[8px] font-medium uppercase" style={{
+                  color: !topActive ? '#4ade80' : `${ledColor}88`,
+                }}>
                   {parts[1] || 'MODE B'}
                 </span>
               </div>
@@ -264,7 +274,8 @@ function renderControl(
             style={{ backgroundColor: '#1a1a2a', padding: 4 }}>
             <div className="rounded-sm" style={{
               width: Math.max(w - 8, 16), height: 6,
-              backgroundColor: ledColor, boxShadow: `0 0 6px ${ledColor}`,
+              backgroundColor: ledOn ? ledColor : '#333',
+              boxShadow: ledOn ? `0 0 6px ${ledColor}` : 'none',
             }} />
             <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
               {renderLabelText(control.label)}
@@ -276,9 +287,12 @@ function renderControl(
         <div className="flex flex-col items-center justify-center gap-1 rounded"
           style={{ backgroundColor: '#1a1a2a', padding: 4 }}>
           <div className="rounded-full" style={{
-            width: 20, height: 20, backgroundColor: ledColor,
-            border: `3px solid ${ledColor}44`,
-            boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.2)',
+            width: 20, height: 20,
+            backgroundColor: ledOn ? ledColor : '#333',
+            border: `3px solid ${ledOn ? `${ledColor}44` : '#222'}`,
+            boxShadow: ledOn
+              ? 'inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.2)'
+              : 'inset 0 1px 3px rgba(0,0,0,0.5)',
           }} />
           <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
             {renderLabelText(control.label)}
