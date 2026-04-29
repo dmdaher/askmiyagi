@@ -61,6 +61,8 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       rotation: c.rotation,
       labelFontSize: c.labelFontSize,
       ledStyle: c.ledStyle,
+      labelAlign: c.labelAlign,
+      labelColor: c.labelColor,
       editorPosition: { x: c.x, y: c.y, w: c.w, h: c.h },
     })),
     editorLabels: (state.editorLabels ?? []).map((l: any) => ({

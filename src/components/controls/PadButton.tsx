@@ -12,6 +12,8 @@ interface PadButtonProps {
   width?: number;
   height?: number;
   labelFontSize?: number;
+  labelAlign?: string;
+  labelColor?: string;
 }
 
 const highlightAnimation = {
@@ -39,6 +41,8 @@ export default function PadButton({
   width = 64,
   height = 64,
   labelFontSize,
+  labelAlign,
+  labelColor,
 }: PadButtonProps) {
   return (
       <motion.button
@@ -73,8 +77,18 @@ export default function PadButton({
           }}
         />
         <span
-          className="absolute bottom-1.5 right-2 font-bold text-gray-400 z-10"
-          style={{ fontSize: labelFontSize ?? 11 }}
+          className={`absolute font-bold z-10 overflow-hidden ${
+            labelAlign === 'top-left' ? 'top-1 left-1.5' :
+            labelAlign === 'top-center' ? 'top-1 left-0 right-0 text-center' :
+            labelAlign === 'top-right' ? 'top-1 right-2' :
+            labelAlign === 'middle-left' ? 'top-1/2 -translate-y-1/2 left-1.5' :
+            labelAlign === 'center' ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' :
+            labelAlign === 'middle-right' ? 'top-1/2 -translate-y-1/2 right-2' :
+            labelAlign === 'bottom-left' ? 'bottom-1.5 left-1.5' :
+            labelAlign === 'bottom-center' ? 'bottom-1.5 left-0 right-0 text-center' :
+            'bottom-1.5 right-2'
+          }`}
+          style={{ fontSize: labelFontSize ?? 11, color: labelColor ?? undefined }}
         >
           {label}
         </span>

@@ -75,6 +75,10 @@ export interface ManifestControl {
   ledVariant?: LEDVariant;
   ledStyle?: LEDStyle;  // integrated = button face glows, dot = separate LED indicator
 
+  // Label Appearance
+  labelAlign?: string;   // on-button position: 'center' | 'top-left' | ... | 'bottom-right'
+  labelColor?: string;   // hex color for on-button text
+
   // Interaction Model (Visual Extractor)
   interactionType?: InteractionType;
   secondaryFunction?: string | null;

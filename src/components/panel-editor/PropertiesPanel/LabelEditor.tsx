@@ -26,11 +26,30 @@ interface LabelEditorProps {
   /** Count of distinct values when labelMixed is true (for warning label) */
   labelDistinctCount?: number;
   secondaryDistinctCount?: number;
+  labelAlign?: string;
+  labelColor?: string;
   onLabelChange: (value: string) => void;
   onPositionChange: (value: ControlDef['labelPosition']) => void;
   onSecondaryLabelChange: (value: string) => void;
   onFontSizeChange?: (value: number) => void;
+  onAlignChange?: (value: string) => void;
+  onColorChange?: (value: string) => void;
 }
+
+const ALIGN_POSITIONS = [
+  'top-left', 'top-center', 'top-right',
+  'middle-left', 'center', 'middle-right',
+  'bottom-left', 'bottom-center', 'bottom-right',
+] as const;
+
+const COLOR_PRESETS = [
+  '#e5e5e5', // white
+  '#9ca3af', // gray
+  '#f59e0b', // amber
+  '#22d3ee', // cyan
+  '#22c55e', // green
+  '#ef4444', // red
+];
 
 export default function LabelEditor({
   label,
@@ -38,6 +57,8 @@ export default function LabelEditor({
   secondaryLabel,
   labelFontSize,
   isDualLabel,
+  labelAlign,
+  labelColor,
   labelMixed,
   positionMixed,
   secondaryMixed,
@@ -47,6 +68,8 @@ export default function LabelEditor({
   onPositionChange,
   onSecondaryLabelChange,
   onFontSizeChange,
+  onAlignChange,
+  onColorChange,
 }: LabelEditorProps) {
   const handleLabelChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,6 +212,62 @@ export default function LabelEditor({
               className="h-1 flex-1 cursor-pointer accent-blue-500"
             />
             <span className="text-[10px] text-gray-500 w-6">{labelFontSize ?? 8}px</span>
+          </div>
+        </div>
+      )}
+
+      {/* On-button alignment grid + color (only when on-button) */}
+      {labelPosition === 'on-button' && onAlignChange && (
+        <div className="space-y-1.5">
+          <label className="text-[10px] text-gray-500">Alignment</label>
+          <div className="inline-grid grid-cols-3 gap-1 p-1 rounded border border-gray-700 bg-gray-900">
+            {ALIGN_POSITIONS.map((pos) => (
+              <button
+                key={pos}
+                onClick={() => onAlignChange(pos)}
+                className="flex h-2 w-2 items-center justify-center"
+                title={pos}
+              >
+                <div className={`rounded-full transition-colors ${
+                  (labelAlign ?? 'center') === pos
+                    ? 'w-2 h-2 bg-blue-500 shadow-[0_0_0_2px_rgba(59,130,246,0.3)]'
+                    : 'w-1.5 h-1.5 bg-gray-600 hover:bg-gray-400'
+                }`} />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {labelPosition === 'on-button' && onColorChange && (
+        <div className="space-y-1">
+          <label className="text-[10px] text-gray-500">Text Color</label>
+          <div className="flex items-center gap-1.5">
+            {COLOR_PRESETS.map((color) => (
+              <button
+                key={color}
+                onClick={() => onColorChange(color)}
+                className={`w-4 h-4 rounded-sm border transition-colors ${
+                  labelColor === color ? 'border-blue-500 ring-1 ring-blue-500/30' : 'border-gray-600 hover:border-gray-400'
+                }`}
+                style={{ backgroundColor: color }}
+                title={color}
+              />
+            ))}
+            <input
+              type="text"
+              value={labelColor ?? ''}
+              placeholder="#hex"
+              onChange={(e) => {
+                const v = e.target.value;
+                if (/^#[0-9a-fA-F]{0,6}$/.test(v) || v === '') onColorChange(v || '');
+              }}
+              onBlur={(e) => {
+                const v = e.target.value;
+                if (v && !/^#[0-9a-fA-F]{6}$/.test(v)) onColorChange('');
+              }}
+              className="w-16 h-5 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 outline-none focus:border-blue-500 font-mono"
+            />
           </div>
         </div>
       )}

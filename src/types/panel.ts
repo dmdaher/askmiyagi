@@ -39,6 +39,7 @@ export interface PanelLayout {
 export interface ButtonState {
   active: boolean;
   ledOn?: boolean;
+  ledBlink?: boolean;  // FUTURE: CSS blink animation — inert until render path is built
   ledColor?: string;
   value?: number;
 }

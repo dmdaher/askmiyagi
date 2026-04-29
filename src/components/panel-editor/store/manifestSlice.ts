@@ -132,6 +132,8 @@ export interface ControlDef {
   groupId?: string | null;
   nestedIn?: string | null;
   labelFontSize?: number;  // px, defaults based on sizeClass
+  labelAlign?: string;     // on-button position: 'center' | 'top-left' | ... | 'bottom-right'
+  labelColor?: string;     // hex color for on-button text
 }
 
 export interface SectionDef {

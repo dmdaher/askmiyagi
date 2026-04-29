@@ -1273,7 +1273,7 @@ async function doPhase0LayoutEngine(state: PipelineState) {
       // Generate manifest-editor.json from gatekeeper manifest so the editor
       // can load it immediately. Without this, "Send to Contractor" fails because
       // manifest-editor.json doesn't exist until the admin makes a manual edit.
-      const editorManifestPath = path.join(pipelineDir, 'manifest-editor.json');
+      const editorManifestPath = path.join('.pipeline', deviceId, 'manifest-editor.json');
       if (!fs.existsSync(editorManifestPath)) {
         try {
           const gkManifest = JSON.parse(fs.readFileSync(paths().manifest, 'utf-8'));
