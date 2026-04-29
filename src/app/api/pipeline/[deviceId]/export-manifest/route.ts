@@ -52,6 +52,8 @@ export async function POST(
       editorSections: (sectionList as any[]).map((s: any) => ({
         id: s.id,
         headerLabel: s.headerLabel ?? undefined,
+        frameMode: s.frameMode,
+        hidden: s.hidden,
         x: s.x, y: s.y, w: s.w, h: s.h,
       })),
       controls: (controlList as any[]).map((c: any) => {
@@ -66,6 +68,7 @@ export async function POST(
           'shape', 'surfaceColor', 'buttonStyle', 'labelPosition', 'labelDisplay',
           'icon', 'secondaryLabel', 'ledVariant', 'ledColor', 'hasLed', 'ledPosition',
           'nestedIn', 'encoderHasPush', 'positions', 'positionLabels', 'rotation',
+          'ledStyle', 'labelFontSize', 'zOrder', 'ledBehavior', 'labelAlign', 'labelColor',
         ]) {
           if (c[field] != null) ctrl[field] = c[field];
         }

@@ -301,6 +301,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
             labelFontSize={control.labelFontSize}
             ledStyle={control.ledStyle}
+            labelAlign={control.labelAlign}
+            labelColor={control.labelColor}
           />
         </div>
       );
@@ -474,6 +476,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             width={visW}
             height={visH}
             labelFontSize={control.labelFontSize}
+            labelAlign={control.labelAlign}
+            labelColor={control.labelColor}
           />
         </div>
       );

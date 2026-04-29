@@ -42,6 +42,8 @@ interface ManifestControl {
   rotation?: number;
   labelFontSize?: number;
   ledStyle?: 'integrated' | 'dot';
+  labelAlign?: string;
+  labelColor?: string;
   editorPosition?: { x: number; y: number; w: number; h: number };
 }
 
@@ -207,6 +209,8 @@ function renderControl(
             ledColor={control.ledColor ?? undefined}
             labelFontSize={control.labelFontSize}
             ledStyle={control.ledStyle}
+            labelAlign={control.labelAlign}
+            labelColor={control.labelColor}
             onClick={onClick}
           />
         </div>
@@ -330,7 +334,9 @@ function renderControl(
             label={control.labelPosition === 'on-button' ? control.label : ''}
             highlighted={highlighted} active={active}
             width={w} height={h} onClick={onClick}
-            labelFontSize={control.labelFontSize} />
+            labelFontSize={control.labelFontSize}
+            labelAlign={control.labelAlign}
+            labelColor={control.labelColor} />
         </div>
       );
     case 'encoder':

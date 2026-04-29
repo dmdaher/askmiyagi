@@ -19,6 +19,8 @@ interface PanelButtonProps {
   iconContent?: string;
   labelFontSize?: number;
   ledStyle?: 'integrated' | 'dot';
+  labelAlign?: string;
+  labelColor?: string;
   onClick?: () => void;
 }
 
@@ -100,6 +102,8 @@ export default function PanelButton({
   iconContent,
   labelFontSize,
   ledStyle,
+  labelAlign,
+  labelColor,
   onClick,
 }: PanelButtonProps) {
   // Fluid mode: when width/height are provided, compute all visuals proportionally.
@@ -228,7 +232,9 @@ export default function PanelButton({
           isFluid ? '' : (isTransport ? '' : 'rounded-md'),
           'border',
           'cursor-pointer select-none',
-          'flex items-center justify-center',
+          'flex',
+          labelAlign?.startsWith('top') ? 'items-start pt-1' : labelAlign?.startsWith('bottom') ? 'items-end pb-1' : 'items-center',
+          labelAlign?.endsWith('left') ? 'justify-start pl-1.5' : labelAlign?.endsWith('right') ? 'justify-end pr-1.5' : 'justify-center',
           'transition-colors duration-100',
           active ? variantStyle.active : variantStyle.base,
         ].join(' ')}
@@ -239,15 +245,15 @@ export default function PanelButton({
         {iconContent ? (
           <span
             className="text-gray-200 leading-none text-center select-none"
-            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16) }}
+            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16), color: labelColor }}
           >
             {iconContent}
           </span>
         ) : (
           labelPosition === 'on' && (
             <span
-              className={`${textClass} font-medium text-gray-200 leading-tight text-center px-1 tracking-wide uppercase`}
-              style={textStyle}
+              className={`${textClass} font-medium leading-tight px-1 tracking-wide uppercase${labelAlign && labelAlign !== 'center' ? ' overflow-hidden' : ''}`}
+              style={{ ...textStyle, color: labelColor ?? '#e5e7eb', textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center' }}
             >
               {label}
             </span>

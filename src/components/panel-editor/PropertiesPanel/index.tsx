@@ -465,10 +465,14 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         secondaryLabel={control.secondaryLabel}
         labelFontSize={control.labelFontSize}
         isDualLabel={control.ledVariant === 'dual-label'}
+        labelAlign={control.labelAlign}
+        labelColor={control.labelColor}
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
         onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
+        onAlignChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelAlign', val); }}
+        onColorChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelColor', val || undefined); }}
       />
 
       {/* Divider */}
