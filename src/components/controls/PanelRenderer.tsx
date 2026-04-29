@@ -140,6 +140,41 @@ function renderControl(
 ): React.ReactNode {
   switch (control.type) {
     case 'button': {
+      // Dual-label buttons render as LED indicator regardless of type
+      if (control.ledVariant === 'dual-label') {
+        const ledColor = control.ledColor ?? '#22c55e';
+        const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
+        const topActive = ledOn !== false;
+        return (
+          <div className="flex flex-col rounded overflow-hidden"
+            style={{ width: Math.max(w, 48), border: '1px solid #333' }}>
+            <div className="flex items-center justify-center py-1 px-2"
+              style={{ backgroundColor: topActive ? '#0a2e1a' : '#1a1a2a', borderBottom: '1px solid #333' }}>
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{
+                  width: 6, height: 6,
+                  backgroundColor: topActive ? ledColor : `${ledColor}33`,
+                  boxShadow: topActive ? `0 0 4px ${ledColor}` : 'none',
+                  border: topActive ? 'none' : `1px solid ${ledColor}66`,
+                }} />
+                <span className="text-[8px] font-medium uppercase" style={{ color: topActive ? '#4ade80' : `${ledColor}88` }}>{parts[0] || 'MODE A'}</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-center py-1 px-2"
+              style={{ backgroundColor: !topActive ? '#0a2e1a' : '#1a1a2a' }}>
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{
+                  width: 6, height: 6,
+                  backgroundColor: !topActive ? ledColor : `${ledColor}33`,
+                  boxShadow: !topActive ? `0 0 4px ${ledColor}` : 'none',
+                  border: !topActive ? 'none' : `1px solid ${ledColor}66`,
+                }} />
+                <span className="text-[8px] font-medium uppercase" style={{ color: !topActive ? '#4ade80' : `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
+              </div>
+            </div>
+          </div>
+        );
+      }
       if (control.shape === 'circle') {
         const diameter = Math.min(w, h);
         const iconKey = control.icon;
