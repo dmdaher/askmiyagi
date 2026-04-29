@@ -203,16 +203,20 @@ export default function ContextMenu() {
   const lockLabel = isLocked ? 'Unlock' : isResizeLocked ? 'Lock Fully' : 'Lock Size';
   const selectedCount = useEditorStore.getState().selectedIds.length;
 
+  // Clamp menu position so it doesn't overflow the viewport
+  const menuTop = Math.min(menu.y, window.innerHeight - 400);
+  const menuLeft = Math.min(menu.x, window.innerWidth - 200);
+
   return createPortal(
     <div
       className="fixed"
       style={{
-        left: menu.x,
-        top: menu.y,
+        left: menuLeft,
+        top: Math.max(8, menuTop),
         zIndex: 9999,
       }}
     >
-      <div className="min-w-[160px] rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300">
+      <div className="min-w-[160px] max-h-[80vh] overflow-y-auto rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300">
         {/* Duplicate */}
         <button
           className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"

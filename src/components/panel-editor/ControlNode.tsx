@@ -706,6 +706,22 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+
+      // Alt+Click: select container underneath this control
+      if (e.altKey) {
+        const store = useEditorStore.getState();
+        const containers = store.controlContainers ?? [];
+        const cx = control?.x ?? 0;
+        const cy = control?.y ?? 0;
+        const hit = containers.find(c =>
+          cx >= c.x && cx <= c.x + c.w && cy >= c.y && cy <= c.y + c.h
+        );
+        if (hit) {
+          setSelectedIds([hit.id]);
+          return;
+        }
+      }
+
       // Focus the parent section so it raises above other sections
       setFocusedSection(sectionId);
 
