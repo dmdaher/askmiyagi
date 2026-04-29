@@ -323,6 +323,7 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
               controls,
               editorLabels: data.editorLabels ?? [],
               controlGroups: data.controlGroups ?? [],
+              controlContainers: data.controlContainers ?? [],
               selectedIds: [],
               lockedIds: [],
               keyboard: data.keyboard ?? null,

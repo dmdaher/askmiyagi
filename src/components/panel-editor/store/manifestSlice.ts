@@ -157,6 +157,20 @@ export interface SectionDef {
 
 export type SectionFrameMode = 'full' | 'header-only' | 'hidden';
 
+export type ContainerStyle = 'recessed' | 'raised' | 'outlined' | 'filled';
+
+export interface ControlContainer {
+  id: string;
+  controlIds: string[];
+  style: ContainerStyle;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  borderRadius?: number;
+  label?: string;
+}
+
 /** Backwards-compatible frame mode reader */
 export function getFrameMode(section: SectionDef): SectionFrameMode {
   if (section.frameMode) return section.frameMode;
@@ -180,6 +194,7 @@ export interface ManifestSlice {
   controls: Record<string, ControlDef>;
   editorLabels: EditorLabel[];
   controlGroups: ControlGroup[];
+  controlContainers: ControlContainer[];
   selectedIds: string[];
   lockedIds: string[];
   keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
@@ -233,6 +248,11 @@ export interface ManifestSlice {
   sendToBack: () => void;
   bringForward: () => void;
   sendBackward: () => void;
+  addContainer: (x: number, y: number, w: number, h: number, controlIds?: string[]) => string;
+  updateContainer: (id: string, updates: Partial<ControlContainer>) => void;
+  deleteContainer: (id: string) => void;
+  moveContainer: (id: string, dx: number, dy: number) => void;
+  resizeContainer: (id: string, w: number, h: number) => void;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -428,6 +448,7 @@ export const createManifestSlice: StateCreator<
   controls: {},
   editorLabels: [],
   controlGroups: [],
+  controlContainers: [],
   selectedIds: [],
   lockedIds: [],
   keyboard: null,
@@ -1747,6 +1768,46 @@ export const createManifestSlice: StateCreator<
       if (ctrl) updated[id] = { ...ctrl, zOrder: Math.max(0, (ctrl.zOrder ?? 0) - 1) };
     }
     set({ controls: updated });
+  },
+
+  // ── Container CRUD ──────────────────────────────────────────────────────
+
+  addContainer: (x, y, w, h, controlIds = []) => {
+    const id = `container-${Date.now()}`;
+    const container: ControlContainer = {
+      id, controlIds, style: 'recessed',
+      x, y, w, h, borderRadius: 4,
+    };
+    set({ controlContainers: [...get().controlContainers, container] });
+    return id;
+  },
+
+  updateContainer: (id, updates) => {
+    set({
+      controlContainers: get().controlContainers.map(c =>
+        c.id === id ? { ...c, ...updates } : c
+      ),
+    });
+  },
+
+  deleteContainer: (id) => {
+    set({ controlContainers: get().controlContainers.filter(c => c.id !== id) });
+  },
+
+  moveContainer: (id, dx, dy) => {
+    set({
+      controlContainers: get().controlContainers.map(c =>
+        c.id === id ? { ...c, x: c.x + dx, y: c.y + dy } : c
+      ),
+    });
+  },
+
+  resizeContainer: (id, w, h) => {
+    set({
+      controlContainers: get().controlContainers.map(c =>
+        c.id === id ? { ...c, w: Math.max(20, w), h: Math.max(20, h) } : c
+      ),
+    });
   },
 
   initLabelsFromControls: () => {

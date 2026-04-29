@@ -50,6 +50,7 @@ export function useAutoSave(deviceId: string) {
           state.controls === prevState.controls &&
           state.editorLabels === prevState.editorLabels &&
           state.controlGroups === prevState.controlGroups &&
+          state.controlContainers === prevState.controlContainers &&
           state.controlScale === prevState.controlScale &&
           state.zoom === prevState.zoom &&
           state.cleanupGap === prevState.cleanupGap &&
@@ -83,12 +84,12 @@ export function useAutoSave(deviceId: string) {
           // Double-check: previewMode may have been set while debounce was pending
           if (isHosted && useEditorStore.getState().previewMode) return;
 
-          const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
+          const { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
           const useHostedApi = isHosted || deviceId.startsWith('sandbox-');
           fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard }),
+            body: JSON.stringify({ sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard }),
           }).catch(() => {
             // Silent fail — auto-save is best-effort
           });

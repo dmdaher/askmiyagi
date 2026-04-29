@@ -79,6 +79,13 @@ export interface PanelManifest {
   editorSections?: ManifestSection[];
   editorLabels?: ManifestLabel[];
   groupLabels?: GroupLabel[];
+  controlContainers?: {
+    id: string;
+    style: string;
+    x: number; y: number; w: number; h: number;
+    borderRadius?: number;
+    label?: string;
+  }[];
   keyboard?: {
     keys: number;
     startNote: string;
@@ -444,6 +451,34 @@ export default function PanelRenderer({
           <SectionContainer key={s.id} id={s.id}
             x={s.x} y={s.y} w={s.w} h={s.h}
             headerLabel={s.headerLabel} />
+        );
+      })}
+
+      {/* Containers (visual grouping boxes) */}
+      {(manifest.controlContainers ?? []).map((c) => {
+        const containerStyles: Record<string, React.CSSProperties> = {
+          recessed: { background: 'rgba(0,0,0,0.15)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' },
+          raised: { background: 'rgba(255,255,255,0.03)', boxShadow: '0 2px 6px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)' },
+          outlined: { background: 'transparent', border: '1px solid rgba(255,255,255,0.12)' },
+          filled: { background: 'rgba(0,0,0,0.1)', border: 'none' },
+        };
+        return (
+          <div
+            key={c.id}
+            className="absolute"
+            style={{
+              left: c.x, top: c.y, width: c.w, height: c.h,
+              borderRadius: c.borderRadius ?? 4,
+              zIndex: 2,
+              ...containerStyles[c.style] ?? containerStyles.recessed,
+            }}
+          >
+            {c.label && (
+              <span className="absolute -top-3.5 left-1 text-[7px] font-medium text-gray-500 uppercase tracking-wider pointer-events-none">
+                {c.label}
+              </span>
+            )}
+          </div>
         );
       })}
 

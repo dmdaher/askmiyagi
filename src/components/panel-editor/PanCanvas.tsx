@@ -11,6 +11,7 @@ import GridOverlay from './GridOverlay';
 import PhotoOverlay from './PhotoOverlay';
 import DragSelectRect from './DragSelectRect';
 import KeyboardSection from './KeyboardSection';
+import ContainerNode from './ContainerNode';
 import PanelRenderer from '@/components/controls/PanelRenderer';
 import type { PanelManifest } from '@/components/controls/PanelRenderer';
 
@@ -78,6 +79,16 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       lineHeight: l.fontSize + 2,
     })),
     groupLabels: state.groupLabels ?? [],
+    controlContainers: (state.controlContainers ?? []).map((c) => ({
+      id: c.id,
+      style: c.style,
+      x: c.x,
+      y: c.y,
+      w: c.w,
+      h: c.h,
+      borderRadius: c.borderRadius,
+      label: c.label,
+    })),
   };
 }
 
@@ -89,6 +100,7 @@ export default function PanCanvas() {
   const canvasHeight = useEditorStore((s) => s.canvasHeight);
   const sections = useEditorStore((s) => s.sections);
   const groupLabels = useEditorStore((s) => s.groupLabels);
+  const controlContainers = useEditorStore((s) => s.controlContainers);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const previewMode = useEditorStore((s) => s.previewMode);
 
@@ -114,6 +126,15 @@ export default function PanCanvas() {
         position: 'relative',
       }}
       onClick={() => setSelectedIds([])}
+      onContextMenu={(e) => {
+        // Only fire for canvas background clicks (not bubbled from controls)
+        if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.control-node, [data-section-id]') === null) {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('editor-context-menu', {
+            detail: { controlId: '__canvas__', clientX: e.clientX, clientY: e.clientY },
+          }));
+        }
+      }}
     >
       {previewMode && manifest ? (
         /* Preview mode — PanelRenderer shows exact production output */
@@ -141,6 +162,11 @@ export default function PanCanvas() {
             return mode !== 'hidden';
           }).map((section, index) => (
             <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
+          ))}
+
+          {/* Visual containers — between sections and controls (z=2-4) */}
+          {controlContainers.map((c) => (
+            <ContainerNode key={c.id} container={c} />
           ))}
 
           {/* All controls — flat layer above sections, never blocked by overlap */}

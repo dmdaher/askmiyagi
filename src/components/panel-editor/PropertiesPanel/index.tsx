@@ -1123,6 +1123,98 @@ function EmptyStatePanel() {
   );
 }
 
+// ─── Container Properties ───────────────────────────────────────────────────
+
+function ContainerProperties({ container }: { container: import('../store/manifestSlice').ControlContainer }) {
+  const updateContainer = useEditorStore((s) => s.updateContainer);
+  const deleteContainer = useEditorStore((s) => s.deleteContainer);
+  const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
+  const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="border-b border-gray-800 pb-2">
+        <h3 className="text-sm font-medium text-gray-200">Container</h3>
+        <p className="text-xs text-gray-500 mt-0.5">{container.id}</p>
+      </div>
+
+      {/* Style preset */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Style</label>
+        <div className="flex gap-1">
+          {([['recessed', 'Recessed'], ['raised', 'Raised'], ['outlined', 'Outlined'], ['filled', 'Filled']] as const).map(([style, label]) => (
+            <button
+              key={style}
+              onClick={() => { pushSnapshot(); updateContainer(container.id, { style }); }}
+              className={`flex-1 rounded px-1 py-1 text-[9px] font-medium transition-colors ${
+                container.style === style
+                  ? 'bg-gray-600/30 text-gray-200 border border-gray-500'
+                  : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Label */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Label</label>
+        <input
+          type="text"
+          value={container.label ?? ''}
+          placeholder="Optional label"
+          onChange={(e) => updateContainer(container.id, { label: e.target.value || undefined })}
+          onBlur={() => pushSnapshot()}
+          className="h-7 w-full rounded border border-gray-700 bg-gray-900 px-2 text-xs text-gray-300 outline-none focus:border-blue-500 placeholder:text-gray-600"
+        />
+      </div>
+
+      {/* Border radius */}
+      <div className="space-y-1">
+        <label className="text-[10px] text-gray-500">Border Radius</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min={0}
+            max={16}
+            value={container.borderRadius ?? 4}
+            onChange={(e) => { pushSnapshot(); updateContainer(container.id, { borderRadius: Number(e.target.value) }); }}
+            className="h-1 flex-1 cursor-pointer accent-blue-500"
+          />
+          <span className="text-[10px] text-gray-500 w-6">{container.borderRadius ?? 4}px</span>
+        </div>
+      </div>
+
+      {/* Position */}
+      <div className="h-px bg-gray-800" />
+      <div className="grid grid-cols-4 gap-1">
+        {(['x', 'y', 'w', 'h'] as const).map((field) => (
+          <div key={field} className="space-y-0.5">
+            <label className="text-[9px] text-gray-600 uppercase">{field}</label>
+            <input
+              type="number"
+              value={Math.round(container[field])}
+              onChange={(e) => { pushSnapshot(); updateContainer(container.id, { [field]: Number(e.target.value) }); }}
+              className="w-full h-6 rounded border border-gray-700 bg-gray-800 px-1 text-[10px] text-gray-200 text-center outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Delete */}
+      <div className="h-px bg-gray-800" />
+      <button
+        onClick={() => { pushSnapshot(); deleteContainer(container.id); setSelectedIds([]); }}
+        className="flex h-7 items-center justify-center rounded border border-red-700/30 bg-red-900/10 text-[10px] text-red-400 hover:bg-red-900/20 transition-colors"
+      >
+        Delete Container
+      </button>
+    </div>
+  );
+}
+
 // ─── Main Properties Panel ──────────────────────────────────────────────────
 
 // ─── Label Properties ────────────────────────────────────────────────────────
@@ -1309,6 +1401,15 @@ export default function PropertiesPanel() {
     return editorLabels.find((l: any) => l.id === selectedLabelId) ?? null;
   }, [selectedLabelId, editorLabels]);
 
+  // Check if a container is selected
+  const controlContainers = useEditorStore((s) => s.controlContainers);
+  const selectedContainer = useMemo(() => {
+    if (selectedIds.length === 1) {
+      return controlContainers.find(c => c.id === selectedIds[0]) ?? null;
+    }
+    return null;
+  }, [selectedIds, controlContainers]);
+
   // Render based on selection state
   let content: React.ReactNode;
 
@@ -1318,6 +1419,9 @@ export default function PropertiesPanel() {
   } else if (selectedIds.length === 0) {
     // Nothing selected — show keyboard offset if keyboard exists
     content = <EmptyStatePanel />;
+  } else if (selectedContainer) {
+    // A container is selected — show container properties
+    content = <ContainerProperties container={selectedContainer} />;
   } else if (selectedSection && selectedControls.length === 0) {
     // A section is selected (not a control)
     content = <SectionProperties section={selectedSection} />;

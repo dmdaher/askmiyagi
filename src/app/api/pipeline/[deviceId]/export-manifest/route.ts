@@ -86,6 +86,7 @@ export async function POST(
         lineHeight: (l.fontSize ?? 8) + 2,
       })),
       groupLabels: mainManifest.groupLabels ?? [],
+      controlContainers: editorData.controlContainers ?? [],
     };
 
     // Write to committed location
