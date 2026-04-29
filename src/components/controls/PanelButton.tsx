@@ -233,8 +233,8 @@ export default function PanelButton({
           'border',
           'cursor-pointer select-none',
           'flex',
-          labelAlign?.startsWith('top') ? 'items-start pt-1.5' : labelAlign?.startsWith('bottom') ? 'items-end pb-1.5' : 'items-center',
-          labelAlign?.endsWith('left') ? 'justify-start pl-2' : labelAlign?.endsWith('right') ? 'justify-end pr-2' : 'justify-center',
+          labelAlign?.startsWith('top') ? 'items-start pt-1' : labelAlign?.startsWith('bottom') ? 'items-end pb-1' : 'items-center',
+          labelAlign?.endsWith('left') ? 'justify-start pl-1.5' : labelAlign?.endsWith('right') ? 'justify-end pr-1.5' : 'justify-center',
           'transition-colors duration-100',
           active ? variantStyle.active : variantStyle.base,
         ].join(' ')}
