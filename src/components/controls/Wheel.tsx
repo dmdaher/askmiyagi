@@ -125,20 +125,6 @@ function JogWheel({
           }}
         />
 
-        {/* Position indicator dot (rotates with value) */}
-        <div
-          className="absolute"
-          style={{
-            width: 6,
-            height: 6,
-            borderRadius: '50%',
-            backgroundColor: '#888',
-            boxShadow: '0 0 4px rgba(255,255,255,0.2)',
-            left: size / 2 - 3 + Math.cos((rotation - 90) * Math.PI / 180) * (size * 0.38),
-            top: size / 2 - 3 + Math.sin((rotation - 90) * Math.PI / 180) * (size * 0.38),
-          }}
-        />
-
         {/* Grip texture — radial lines around the edge */}
         {Array.from({ length: 24 }, (_, i) => {
           const angle = (i * 15) * Math.PI / 180;
