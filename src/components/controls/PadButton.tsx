@@ -78,15 +78,15 @@ export default function PadButton({
         />
         <span
           className={`absolute font-bold z-10 overflow-hidden ${
-            labelAlign === 'top-left' ? 'top-1 left-1.5' :
-            labelAlign === 'top-center' ? 'top-1 left-0 right-0 text-center' :
-            labelAlign === 'top-right' ? 'top-1 right-2' :
-            labelAlign === 'middle-left' ? 'top-1/2 -translate-y-1/2 left-1.5' :
+            labelAlign === 'top-left' ? 'top-2 left-2' :
+            labelAlign === 'top-center' ? 'top-2 left-0 right-0 text-center' :
+            labelAlign === 'top-right' ? 'top-2 right-2' :
+            labelAlign === 'middle-left' ? 'top-1/2 -translate-y-1/2 left-2' :
             labelAlign === 'center' ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' :
             labelAlign === 'middle-right' ? 'top-1/2 -translate-y-1/2 right-2' :
-            labelAlign === 'bottom-left' ? 'bottom-1.5 left-1.5' :
-            labelAlign === 'bottom-center' ? 'bottom-1.5 left-0 right-0 text-center' :
-            'bottom-1.5 right-2'
+            labelAlign === 'bottom-left' ? 'bottom-2 left-2' :
+            labelAlign === 'bottom-center' ? 'bottom-2 left-0 right-0 text-center' :
+            'bottom-2 right-2'
           }`}
           style={{ fontSize: labelFontSize ?? 11, color: labelColor ?? undefined }}
         >
