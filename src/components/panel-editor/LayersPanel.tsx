@@ -383,6 +383,9 @@ function SectionItem({ sectionId }: { sectionId: string }) {
 export default function LayersPanel() {
   const sections = useEditorStore((s) => s.sections);
   const controlGroups = useEditorStore((s) => s.controlGroups) as ControlGroup[];
+  const controlContainers = useEditorStore((s) => s.controlContainers);
+  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const showLayers = useEditorStore((s) => s.showLayers);
   const toggleLayers = useEditorStore((s) => s.toggleLayers);
 
@@ -442,11 +445,43 @@ export default function LayersPanel() {
         )}
       </div>
 
+      {/* Containers */}
+      {controlContainers.length > 0 && (
+        <div className="border-t border-gray-800 px-1 py-1 space-y-0.5">
+          <div className="px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-gray-600">
+            Containers
+          </div>
+          {controlContainers.map((c) => {
+            const isSelected = selectedIds.includes(c.id);
+            return (
+              <button
+                key={c.id}
+                onClick={(e) => { e.stopPropagation(); setSelectedIds([c.id]); }}
+                className={`flex w-full items-center gap-1 rounded px-2 py-1 text-left text-[10px] transition-colors ${
+                  isSelected
+                    ? 'bg-gray-600/30 text-white'
+                    : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+                }`}
+              >
+                <svg className="h-3 w-3 flex-shrink-0 text-gray-500" viewBox="0 0 12 12" fill="none">
+                  <rect x="0.5" y="0.5" width="11" height="11" rx="1.5" stroke="currentColor" strokeWidth="1" />
+                </svg>
+                <span className="flex-1 truncate">{c.label || truncate(c.id, 16)}</span>
+                <span className="flex-shrink-0 text-[8px] text-gray-600 uppercase">{c.style}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Footer summary */}
       <div className="border-t border-gray-800 px-3 py-2 text-[10px] text-gray-600">
         {sortedSectionIds.length} sections
         {controlGroups.length > 0 && (
           <span className="text-violet-500"> &middot; {controlGroups.length} group{controlGroups.length !== 1 ? 's' : ''}</span>
+        )}
+        {controlContainers.length > 0 && (
+          <span className="text-gray-500"> &middot; {controlContainers.length} container{controlContainers.length !== 1 ? 's' : ''}</span>
         )}
       </div>
     </div>
