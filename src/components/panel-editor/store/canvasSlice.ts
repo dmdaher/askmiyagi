@@ -26,6 +26,7 @@ export interface CanvasSlice {
   panelScale: number;  // 0.5-2.0 — scales entire generated panel proportionally
   previewMode: boolean;  // clean panel view — hides edit chrome
   showRulers: boolean;
+  guides: { id: string; orientation: 'horizontal' | 'vertical'; position: number }[];
 
   // Actions
   setZoom: (z: number) => void;
@@ -45,6 +46,10 @@ export interface CanvasSlice {
   setPanelScale: (s: number) => void;
   setPreviewMode: (on: boolean) => void;
   toggleRulers: () => void;
+  addGuide: (orientation: 'horizontal' | 'vertical', position: number) => void;
+  moveGuide: (id: string, position: number) => void;
+  deleteGuide: (id: string) => void;
+  clearGuides: () => void;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────
@@ -76,6 +81,7 @@ export const createCanvasSlice: StateCreator<
   panelScale: 1.0, // 100% default panel scale
   previewMode: false,
   showRulers: false,
+  guides: [],
 
   // Actions
   setZoom: (z) => set({ zoom: Math.max(0.1, Math.min(5, z)) }),
@@ -107,4 +113,14 @@ export const createCanvasSlice: StateCreator<
 
   setPreviewMode: (on) => set({ previewMode: on }),
   toggleRulers: () => set((s) => ({ showRulers: !s.showRulers })),
+  addGuide: (orientation, position) => set((s) => ({
+    guides: [...s.guides, { id: `guide-${Date.now()}`, orientation, position }],
+  })),
+  moveGuide: (id, position) => set((s) => ({
+    guides: s.guides.map(g => g.id === id ? { ...g, position } : g),
+  })),
+  deleteGuide: (id) => set((s) => ({
+    guides: s.guides.filter(g => g.id !== id),
+  })),
+  clearGuides: () => set({ guides: [] }),
 });

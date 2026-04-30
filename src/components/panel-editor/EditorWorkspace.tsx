@@ -127,6 +127,8 @@ function CanvasWithRulers({ readOnly, onPointerDown, onPointerMove, onPointerUp 
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const controls = useEditorStore((s) => s.controls);
   const controlScale = useEditorStore((s) => s.controlScale);
+  const snapGrid = useEditorStore((s) => s.snapGrid);
+  const addGuide = useEditorStore((s) => s.addGuide);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
 
@@ -168,6 +170,8 @@ function CanvasWithRulers({ readOnly, onPointerDown, onPointerMove, onPointerUp 
             pan={panX}
             selectionMin={selBounds?.minX}
             selectionMax={selBounds?.maxX}
+            snapGrid={snapGrid}
+            onCreateGuide={addGuide}
           />
         </div>
       )}
@@ -182,6 +186,8 @@ function CanvasWithRulers({ readOnly, onPointerDown, onPointerMove, onPointerUp 
             pan={panY}
             selectionMin={selBounds?.minY}
             selectionMax={selBounds?.maxY}
+            snapGrid={snapGrid}
+            onCreateGuide={addGuide}
           />
         </div>
       )}

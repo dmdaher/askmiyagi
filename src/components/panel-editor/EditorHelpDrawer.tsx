@@ -128,6 +128,7 @@ function GuideTab() {
         <p><strong className="text-white/80">Reading positions</strong> &mdash; Numbers show canvas coordinates in pixels. Use rulers to verify exact control positions and check alignment across rows and columns.</p>
         <p><strong className="text-white/80">Selection markers</strong> &mdash; When you select a control, blue lines appear on both rulers showing the control&rsquo;s position and extent (width/height).</p>
         <p><strong className="text-white/80">Zoom-adaptive</strong> &mdash; Tick mark density adjusts automatically as you zoom in and out. More detail at higher zoom levels.</p>
+        <p><strong className="text-white/80">Guide lines</strong> &mdash; Click and drag from the ruler onto the canvas to create a red reference line. Guide lines snap to the grid interval. Use them to check if controls across different sections are aligned. Drag a guide to reposition it. To delete: drag it back onto the ruler, or right-click it.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Containers">
