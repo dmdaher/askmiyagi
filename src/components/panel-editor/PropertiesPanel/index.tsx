@@ -424,36 +424,67 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         </>
       )}
 
-      {/* LED Style (buttons/pads with hasLed) */}
-      {control.hasLed && (control.type === 'button' || control.type === 'pad') && (
+      {/* LED — unified selector for all buttons/pads */}
+      {(control.type === 'button' || control.type === 'pad') && (
         <>
           <div className="space-y-1.5">
-            <label className="text-[10px] uppercase tracking-wide text-gray-500">LED Style</label>
-            <div className="flex gap-1.5">
-              <button
-                onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledStyle', 'integrated'); }}
-                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
-                  control.ledStyle === 'integrated'
-                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
-                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
-                }`}
-              >
-                <div className="w-4 h-3 rounded-sm border border-green-500 bg-green-500/20" />
-                Glow
-              </button>
-              <button
-                onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledStyle', 'dot'); }}
-                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
-                  (control.ledStyle ?? 'dot') === 'dot'
-                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
-                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
-                }`}
-              >
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                Dot
-              </button>
+            <label className="text-[10px] uppercase tracking-wide text-gray-500">LED</label>
+            <div className="flex gap-1">
+              {([
+                ['none', 'None', null] as const,
+                ['dot', 'Dot', <div key="d" className="w-2 h-2 rounded-full bg-green-500" />] as const,
+                ['glow', 'Glow', <div key="g" className="w-3.5 h-2.5 rounded-sm border border-green-500 bg-green-500/20" />] as const,
+              ]).map(([mode, label, icon]) => {
+                const currentMode = !control.hasLed ? 'none' : control.ledStyle === 'integrated' ? 'glow' : 'dot';
+                const isActive = currentMode === mode;
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => {
+                      pushSnapshot();
+                      if (mode === 'none') {
+                        updateControlProp(ids, 'hasLed', false);
+                        updateControlProp(ids, 'ledStyle', undefined);
+                      } else if (mode === 'dot') {
+                        updateControlProp(ids, 'hasLed', true);
+                        updateControlProp(ids, 'ledStyle', 'dot');
+                      } else {
+                        updateControlProp(ids, 'hasLed', true);
+                        updateControlProp(ids, 'ledStyle', 'integrated');
+                      }
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                      isActive
+                        ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                        : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                    }`}
+                  >
+                    {icon}
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
+          {/* LED Color — only when Dot or Glow is selected */}
+          {control.hasLed && (
+            <div className="space-y-1">
+              <label className="text-[10px] text-gray-500">LED Color</label>
+              <div className="flex items-center gap-1.5">
+                {['#22c55e', '#f59e0b', '#3b82f6', '#ef4444', '#ec4899', '#ffffff'].map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledColor', color); }}
+                    className={`w-4 h-4 rounded-full border transition-colors ${
+                      (control.ledColor ?? '#22c55e') === color ? 'border-blue-500 ring-1 ring-blue-500/30' : 'border-gray-600 hover:border-gray-400'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
           <div className="h-px bg-gray-800" />
         </>
       )}

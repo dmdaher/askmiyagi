@@ -322,6 +322,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
             iconContent={iconContent}
+            hasLed={control.hasLed && control.ledStyle === 'integrated'}
             ledColor={control.ledColor ?? undefined}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
             labelFontSize={control.labelFontSize}
