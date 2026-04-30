@@ -180,7 +180,7 @@ function ShortcutsTab() {
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Grouping</h4>
         <ShortcutRow action="Group selected" keys="Cmd+G" />
         <ShortcutRow action="Ungroup" keys="Cmd+Shift+G" />
-        <ShortcutRow action="Select container behind control" keys="Alt+Click" />
+        <ShortcutRow action="Select container behind control" keys="Option+Click (Alt+Click)" />
       </div>
     </div>
   );
