@@ -12,6 +12,7 @@ import PhotoOverlay from './PhotoOverlay';
 import DragSelectRect from './DragSelectRect';
 import KeyboardSection from './KeyboardSection';
 import ContainerNode from './ContainerNode';
+import GuideLayer from './GuideLayer';
 import PanelRenderer from '@/components/controls/PanelRenderer';
 import type { PanelManifest } from '@/components/controls/PanelRenderer';
 
@@ -179,6 +180,9 @@ export default function PanCanvas() {
           {groupLabels.map((gl) => (
             <GroupLabelNode key={gl.id} groupLabel={gl} />
           ))}
+
+          {/* Guide lines — between controls and labels */}
+          <GuideLayer />
 
           {/* Floating labels — rendered above controls */}
           <LabelLayer />

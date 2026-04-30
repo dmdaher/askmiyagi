@@ -215,6 +215,8 @@ export default function EditorToolbar({
   const setSnapGrid = useEditorStore((s) => s.setSnapGrid);
   const setControlScale = useEditorStore((s) => s.setControlScale);
   const toggleGrid = useEditorStore((s) => s.toggleGrid);
+  const showRulers = useEditorStore((s) => s.showRulers);
+  const toggleRulers = useEditorStore((s) => s.toggleRulers);
   const togglePhoto = useEditorStore((s) => s.togglePhoto);
   const setPhotoMode = useEditorStore((s) => s.setPhotoMode);
   const setPhotoOpacity = useEditorStore((s) => s.setPhotoOpacity);
@@ -289,6 +291,7 @@ export default function EditorToolbar({
       {/* Grid toggle + snap size — grouped so the relationship is obvious */}
       <div className="flex items-center gap-0.5" data-tutorial="grid">
         <button onClick={toggleGrid} className={toggleBtn(showGrid)} title="Grid (G)" disabled={previewMode}>Grid</button>
+        <button onClick={toggleRulers} className={toggleBtn(showRulers)} title="Rulers (R)" disabled={previewMode}>Ruler</button>
         <select
           value={snapGrid}
           onChange={(e) => setSnapGrid(Number(e.target.value) as SnapGrid)}

@@ -13,6 +13,8 @@ interface RulerProps {
   pan: number;
   selectionMin?: number;
   selectionMax?: number;
+  snapGrid?: number;
+  onCreateGuide?: (orientation: 'horizontal' | 'vertical', position: number) => void;
 }
 
 function computeMajorInterval(zoom: number): number {
@@ -29,6 +31,8 @@ const Ruler = React.memo(function Ruler({
   pan,
   selectionMin,
   selectionMax,
+  snapGrid = 4,
+  onCreateGuide,
 }: RulerProps) {
   const isH = orientation === 'horizontal';
   const majorInterval = computeMajorInterval(zoom);
@@ -140,11 +144,39 @@ const Ruler = React.memo(function Ruler({
     ? <line x1={0} y1={RULER_THICKNESS} x2={length} y2={RULER_THICKNESS} stroke="rgba(255,255,255,0.08)" strokeWidth={1} />
     : <line x1={RULER_THICKNESS} y1={0} x2={RULER_THICKNESS} y2={length} stroke="rgba(255,255,255,0.08)" strokeWidth={1} />;
 
+  const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!onCreateGuide) return;
+    e.preventDefault();
+    const startClient = isH ? e.clientY : e.clientX;
+
+    const handleMouseMove = (me: MouseEvent) => {
+      // Only show visual feedback — guide is created on mouseup
+    };
+
+    const handleMouseUp = (me: MouseEvent) => {
+      const endClient = isH ? me.clientY : me.clientX;
+      const dragDistance = Math.abs(endClient - startClient);
+      // Only create guide if dragged at least 10px away from ruler
+      if (dragDistance > 10) {
+        const clientPos = isH ? me.clientY : me.clientX;
+        const canvasPos = (clientPos - pan) / zoom;
+        const snapped = Math.round(canvasPos / snapGrid) * snapGrid;
+        onCreateGuide(orientation, snapped);
+      }
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   return (
     <svg
       width={isH ? length : RULER_THICKNESS}
       height={isH ? RULER_THICKNESS : length}
-      style={{ display: 'block', pointerEvents: 'none', backgroundColor: '#0d0d1a' }}
+      style={{ display: 'block', pointerEvents: onCreateGuide ? 'auto' : 'none', backgroundColor: '#0d0d1a', cursor: isH ? 'ns-resize' : 'ew-resize' }}
+      onMouseDown={handleMouseDown}
     >
       {borderLine}
       {ticks}
