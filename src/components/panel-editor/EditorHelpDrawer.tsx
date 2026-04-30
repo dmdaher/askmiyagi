@@ -123,6 +123,13 @@ function GuideTab() {
         <p>Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+Shift+G</kbd> to ungroup.</p>
       </CollapsibleSection>
 
+      <CollapsibleSection title="Rulers">
+        <p>Pixel rulers along the top and left edges of the canvas. Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">R</kbd> to toggle.</p>
+        <p><strong className="text-white/80">Reading positions</strong> &mdash; Numbers show canvas coordinates in pixels. Use rulers to verify exact control positions and check alignment across rows and columns.</p>
+        <p><strong className="text-white/80">Selection markers</strong> &mdash; When you select a control, blue lines appear on both rulers showing the control&rsquo;s position and extent (width/height).</p>
+        <p><strong className="text-white/80">Zoom-adaptive</strong> &mdash; Tick mark density adjusts automatically as you zoom in and out. More detail at higher zoom levels.</p>
+      </CollapsibleSection>
+
       <CollapsibleSection title="Containers">
         <p>Visual boxes that group related controls, like the recessed rectangles on real hardware that hold button clusters (e.g., BEAT SYNC / MASTER / KEY SYNC on CDJ-3000).</p>
         <p><strong className="text-white/80">Creating from controls</strong> &mdash; Select 2+ controls, right-click &rarr; &ldquo;Wrap in Container&rdquo;. A box appears wrapping the selected controls.</p>
@@ -149,6 +156,7 @@ function ShortcutsTab() {
       </div>
       <div>
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">View Toggles</h4>
+        <ShortcutRow action="Rulers" keys="R" />
         <ShortcutRow action="Grid overlay" keys="G" />
         <ShortcutRow action="Photo overlay" keys="P" />
         <ShortcutRow action="Layers panel" keys="L" />
