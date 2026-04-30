@@ -88,7 +88,7 @@ export default function PadButton({
             labelAlign === 'bottom-center' ? 'bottom-2 left-0 right-0 text-center' :
             'bottom-2 right-2'
           }`}
-          style={{ fontSize: labelFontSize ?? 11, color: labelColor ?? undefined }}
+          style={{ fontSize: labelFontSize ?? 11, color: labelColor ?? undefined, overflowWrap: 'break-word' }}
         >
           {label}
         </span>

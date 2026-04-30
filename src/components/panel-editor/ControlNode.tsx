@@ -289,8 +289,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             >
               {showInside && (
                 <span
-                  className="font-medium text-gray-300 uppercase text-center leading-tight px-1"
-                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8) }}
+                  className="font-medium uppercase text-center leading-tight px-1 w-full"
+                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8), color: control.labelColor ?? '#d1d5db', overflowWrap: 'break-word' }}
                 >
                   {text}
                 </span>

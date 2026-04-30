@@ -252,8 +252,8 @@ export default function PanelButton({
         ) : (
           labelPosition === 'on' && (
             <span
-              className={`${textClass} font-medium leading-tight px-1 tracking-wide uppercase${labelAlign && labelAlign !== 'center' ? ' overflow-hidden' : ''}`}
-              style={{ ...textStyle, color: labelColor ?? '#e5e7eb', textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center' }}
+              className={`${textClass} font-medium leading-tight px-1 tracking-wide uppercase w-full${labelAlign && labelAlign !== 'center' ? ' overflow-hidden' : ''}`}
+              style={{ ...textStyle, color: labelColor ?? '#e5e7eb', textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center', overflowWrap: 'break-word' }}
             >
               {label}
             </span>
