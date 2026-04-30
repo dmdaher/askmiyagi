@@ -87,7 +87,10 @@ function GuideTab() {
         <p>Appears on the right when you select a control. Shows and lets you edit all properties.</p>
         <p><strong className="text-white/80">Type</strong> &mdash; Change what kind of control this is (button, knob, slider, pad, etc.).</p>
         <p><strong className="text-white/80">Shape</strong> &mdash; For buttons only: rectangle or circle.</p>
-        <p><strong className="text-white/80">LED Style</strong> &mdash; For buttons/pads with LEDs: <em>Glow</em> makes the button face illuminate in its LED color (like PLAY/CUE on a CDJ). <em>Dot</em> renders a separate small LED dot above the button.</p>
+        <p><strong className="text-white/80">LED</strong> &mdash; All buttons and pads have a 3-option LED selector: <em>None</em> (no LED), <em>Dot</em> (separate LED dot above the button), <em>Glow</em> (button face illuminates in LED color, like PLAY/CUE on a CDJ). When Dot or Glow is selected, a LED Color picker appears with 6 presets (green, amber, blue, red, pink, white).</p>
+        <p><strong className="text-white/80">LED Variant (led/indicator type only)</strong> &mdash; When a control&rsquo;s type is set to &ldquo;led&rdquo; or &ldquo;indicator&rdquo;, a variant selector appears: <em>Dot</em> (single LED circle), <em>Dual</em> (two-row indicator like VINYL/CDJ with separate top and bottom labels).</p>
+        <p><strong className="text-white/80">Dual Label</strong> &mdash; When a control has the Dual LED variant, two separate text inputs appear for the top and bottom rows (e.g., &ldquo;VINYL&rdquo; on top, &ldquo;CDJ&rdquo; on bottom).</p>
+        <p><strong className="text-white/80">Sections</strong> &mdash; Click a section in the Layers panel to edit it. Frame mode controls visibility: <em>Full</em> (visible border + header), <em>Title Only</em> (floating title, no border), <em>Hidden</em> (invisible). Cycle with the eye icon in the Layers panel.</p>
         <p><strong className="text-white/80">Label</strong> &mdash; Edit label text and choose position: above, below, left, right, on the button, or hidden. Secondary label adds a second line (e.g., &ldquo;PLAY/CUE&rdquo;). Font size slider adjusts label size for all positions.</p>
         <p><strong className="text-white/80">Label Alignment</strong> &mdash; When label is set to &ldquo;on-button&rdquo;, a 3&times;3 dot grid appears. Click any dot to position text within the button face: top-left, center, bottom-right, etc. Default is center for buttons, bottom-right for pads.</p>
         <p><strong className="text-white/80">Label Color</strong> &mdash; Pick from 6 preset colors (white, gray, amber, cyan, green, red) or enter a custom hex value. Changes the on-button text color to match the hardware&rsquo;s silk-screen printing.</p>
@@ -177,6 +180,7 @@ function ShortcutsTab() {
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Grouping</h4>
         <ShortcutRow action="Group selected" keys="Cmd+G" />
         <ShortcutRow action="Ungroup" keys="Cmd+Shift+G" />
+        <ShortcutRow action="Select container behind control" keys="Alt+Click" />
       </div>
     </div>
   );
