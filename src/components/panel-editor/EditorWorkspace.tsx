@@ -5,6 +5,7 @@ import { useZoomPan } from './hooks/useZoomPan';
 import { useEditorStore } from './store';
 import { isHosted } from '@/lib/env';
 import PanCanvas from './PanCanvas';
+import Ruler, { RULER_THICKNESS } from './Ruler';
 
 interface EditorWorkspaceProps {
   deviceId: string;
@@ -107,22 +108,104 @@ export default function EditorWorkspace({ deviceId, readOnly }: EditorWorkspaceP
         </>
       )}
 
-      {/* Canvas */}
+      {/* Canvas + Rulers */}
+      <CanvasWithRulers readOnly={readOnly} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} />
+    </div>
+  );
+}
+
+function CanvasWithRulers({ readOnly, onPointerDown, onPointerMove, onPointerUp }: {
+  readOnly?: boolean;
+  onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
+  onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => void;
+  onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => void;
+}) {
+  const showRulers = useEditorStore((s) => s.showRulers);
+  const zoom = useEditorStore((s) => s.zoom);
+  const panX = useEditorStore((s) => s.panX);
+  const panY = useEditorStore((s) => s.panY);
+  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const controls = useEditorStore((s) => s.controls);
+  const controlScale = useEditorStore((s) => s.controlScale);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
+
+  // Track container size for ruler length
+  useEffect(() => {
+    const el = canvasContainerRef.current;
+    if (!el) return;
+    const obs = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      setContainerSize({ w: width, h: height });
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Compute selection bounds for ruler markers
+  const selBounds = (() => {
+    if (selectedIds.length === 0) return null;
+    const ctrls = selectedIds.map(id => controls[id]).filter(Boolean);
+    if (ctrls.length === 0) return null;
+    const scale = controlScale ?? 1;
+    return {
+      minX: Math.min(...ctrls.map(c => c.x)),
+      minY: Math.min(...ctrls.map(c => c.y)),
+      maxX: Math.max(...ctrls.map(c => c.x + c.w * scale)),
+      maxY: Math.max(...ctrls.map(c => c.y + c.h * scale)),
+    };
+  })();
+
+  return (
+    <div ref={canvasContainerRef} className="relative flex-1 overflow-hidden">
+      {/* Top ruler */}
+      {showRulers && containerSize.w > 0 && (
+        <div className="absolute top-0 z-40" style={{ left: RULER_THICKNESS, right: 0 }}>
+          <Ruler
+            orientation="horizontal"
+            length={containerSize.w - RULER_THICKNESS}
+            zoom={zoom}
+            pan={panX}
+            selectionMin={selBounds?.minX}
+            selectionMax={selBounds?.maxX}
+          />
+        </div>
+      )}
+
+      {/* Left ruler */}
+      {showRulers && containerSize.h > 0 && (
+        <div className="absolute left-0 z-40" style={{ top: RULER_THICKNESS, bottom: 0 }}>
+          <Ruler
+            orientation="vertical"
+            length={containerSize.h - RULER_THICKNESS}
+            zoom={zoom}
+            pan={panY}
+            selectionMin={selBounds?.minY}
+            selectionMax={selBounds?.maxY}
+          />
+        </div>
+      )}
+
+      {/* Corner square */}
+      {showRulers && (
+        <div
+          className="absolute top-0 left-0 z-40"
+          style={{ width: RULER_THICKNESS, height: RULER_THICKNESS, backgroundColor: '#0a0a14' }}
+        />
+      )}
+
+      {/* Canvas scroll container */}
       <div
-        className={`relative flex-1 overflow-auto ${
-          readOnly
-            ? 'cursor-default'
-            : 'cursor-grab active:cursor-grabbing'
+        className={`absolute inset-0 overflow-auto ${
+          readOnly ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
         }`}
+        style={showRulers ? { top: RULER_THICKNESS, left: RULER_THICKNESS } : undefined}
         onPointerDown={readOnly ? undefined : onPointerDown}
         onPointerMove={readOnly ? undefined : onPointerMove}
         onPointerUp={readOnly ? undefined : onPointerUp}
       >
         {readOnly && (
-          <div
-            className="absolute inset-0 z-50"
-            style={{ pointerEvents: 'auto' }}
-          />
+          <div className="absolute inset-0 z-50" style={{ pointerEvents: 'auto' }} />
         )}
         <PanCanvas />
       </div>

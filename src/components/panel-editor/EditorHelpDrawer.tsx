@@ -87,8 +87,13 @@ function GuideTab() {
         <p>Appears on the right when you select a control. Shows and lets you edit all properties.</p>
         <p><strong className="text-white/80">Type</strong> &mdash; Change what kind of control this is (button, knob, slider, pad, etc.).</p>
         <p><strong className="text-white/80">Shape</strong> &mdash; For buttons only: rectangle or circle.</p>
-        <p><strong className="text-white/80">LED Style</strong> &mdash; For buttons/pads with LEDs: <em>Glow</em> makes the button face illuminate in its LED color (like PLAY/CUE on a CDJ). <em>Dot</em> renders a separate small LED dot above the button.</p>
+        <p><strong className="text-white/80">LED</strong> &mdash; All buttons and pads have a 3-option LED selector: <em>None</em> (no LED), <em>Dot</em> (separate LED dot above the button), <em>Glow</em> (button face illuminates in LED color, like PLAY/CUE on a CDJ). When Dot or Glow is selected, a LED Color picker appears with 6 presets (green, amber, blue, red, pink, white).</p>
+        <p><strong className="text-white/80">LED Variant (led/indicator type only)</strong> &mdash; When a control&rsquo;s type is set to &ldquo;led&rdquo; or &ldquo;indicator&rdquo;, a variant selector appears: <em>Dot</em> (single LED circle), <em>Dual</em> (two-row indicator like VINYL/CDJ with separate top and bottom labels).</p>
+        <p><strong className="text-white/80">Dual Label</strong> &mdash; When a control has the Dual LED variant, two separate text inputs appear for the top and bottom rows (e.g., &ldquo;VINYL&rdquo; on top, &ldquo;CDJ&rdquo; on bottom).</p>
+        <p><strong className="text-white/80">Sections</strong> &mdash; Click a section in the Layers panel to edit it. Frame mode controls visibility: <em>Full</em> (visible border + header), <em>Title Only</em> (floating title, no border), <em>Hidden</em> (invisible). Cycle with the eye icon in the Layers panel.</p>
         <p><strong className="text-white/80">Label</strong> &mdash; Edit label text and choose position: above, below, left, right, on the button, or hidden. Secondary label adds a second line (e.g., &ldquo;PLAY/CUE&rdquo;). Font size slider adjusts label size for all positions.</p>
+        <p><strong className="text-white/80">Label Alignment</strong> &mdash; When label is set to &ldquo;on-button&rdquo;, a 3&times;3 dot grid appears. Click any dot to position text within the button face: top-left, center, bottom-right, etc. Default is center for buttons, bottom-right for pads.</p>
+        <p><strong className="text-white/80">Label Color</strong> &mdash; Pick from 6 preset colors (white, gray, amber, cyan, green, red) or enter a custom hex value. Changes the on-button text color to match the hardware&rsquo;s silk-screen printing.</p>
         <p><strong className="text-white/80">Rotation</strong> &mdash; Rotate a control: 0&deg;, 90&deg;, 180&deg;, or 270&deg;.</p>
         <p><strong className="text-white/80">X, Y, W, H</strong> &mdash; Set exact pixel position and size. Good for fine-tuning after dragging.</p>
         <p><strong className="text-white/80">Lock</strong> &mdash; Three modes: <em>Unlocked</em> (free move &amp; resize), <em>Size</em> (can move but can&rsquo;t resize), <em>Full</em> (frozen &mdash; can&rsquo;t move, resize, or delete). Use to protect controls you&rsquo;re happy with.</p>
@@ -117,6 +122,23 @@ function GuideTab() {
         <p>&bull; Auto-dissolve if a group drops below 2 members</p>
         <p>Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+Shift+G</kbd> to ungroup.</p>
       </CollapsibleSection>
+
+      <CollapsibleSection title="Rulers">
+        <p>Pixel rulers along the top and left edges of the canvas. Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">R</kbd> to toggle.</p>
+        <p><strong className="text-white/80">Reading positions</strong> &mdash; Numbers show canvas coordinates in pixels. Use rulers to verify exact control positions and check alignment across rows and columns.</p>
+        <p><strong className="text-white/80">Selection markers</strong> &mdash; When you select a control, blue lines appear on both rulers showing the control&rsquo;s position and extent (width/height).</p>
+        <p><strong className="text-white/80">Zoom-adaptive</strong> &mdash; Tick mark density adjusts automatically as you zoom in and out. More detail at higher zoom levels.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Containers">
+        <p>Visual boxes that group related controls, like the recessed rectangles on real hardware that hold button clusters (e.g., BEAT SYNC / MASTER / KEY SYNC on CDJ-3000).</p>
+        <p><strong className="text-white/80">Creating from controls</strong> &mdash; Select 2+ controls, right-click &rarr; &ldquo;Wrap in Container&rdquo;. A box appears wrapping the selected controls.</p>
+        <p><strong className="text-white/80">Creating empty</strong> &mdash; Right-click on empty canvas &rarr; &ldquo;Add Container&rdquo;. A default-sized box appears at the click position. Resize and position it manually.</p>
+        <p><strong className="text-white/80">Container styles</strong> &mdash; Four presets in the Properties panel: <em>Recessed</em> (dark inset, most common on DJ hardware), <em>Raised</em> (slight elevation), <em>Outlined</em> (thin border only), <em>Filled</em> (flat colored background).</p>
+        <p><strong className="text-white/80">Editing</strong> &mdash; Click a container to select it. If controls are covering the container, hold <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Alt</kbd> and click any control inside &mdash; this selects the container underneath. Properties panel shows style selector, optional label, and border radius. Drag to reposition, drag corners to resize.</p>
+        <p><strong className="text-white/80">Deleting</strong> &mdash; Right-click the container &rarr; &ldquo;Delete Container&rdquo;, or use the Delete button in the Properties panel. Deleting a container does NOT delete the controls inside.</p>
+        <p><strong className="text-white/80">Containers vs Groups</strong> &mdash; Groups (<kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+G</kbd>) make controls move together. Containers add a visual box. They are independent &mdash; you can have a group without a container, a container without a group, or both.</p>
+      </CollapsibleSection>
     </div>
   );
 }
@@ -134,6 +156,7 @@ function ShortcutsTab() {
       </div>
       <div>
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">View Toggles</h4>
+        <ShortcutRow action="Rulers" keys="R" />
         <ShortcutRow action="Grid overlay" keys="G" />
         <ShortcutRow action="Photo overlay" keys="P" />
         <ShortcutRow action="Layers panel" keys="L" />
@@ -165,6 +188,7 @@ function ShortcutsTab() {
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Grouping</h4>
         <ShortcutRow action="Group selected" keys="Cmd+G" />
         <ShortcutRow action="Ungroup" keys="Cmd+Shift+G" />
+        <ShortcutRow action="Select container behind control" keys="Option+Click (Alt+Click)" />
       </div>
     </div>
   );
@@ -180,6 +204,7 @@ function WorkflowTab() {
     { title: 'Fine-tune with Gap inputs', desc: 'In the Properties panel, use the Gap (H/V) inputs to set exact pixel spacing between controls. Good for knob rows that need uniform gaps.' },
     { title: 'Fix labels', desc: 'Click a label and press C to center it on its control. Double-click to edit text. Use Normalize Label Spacing in Properties panel (2+ selected) to make label distances consistent.' },
     { title: 'Group related controls', desc: 'Select controls that belong together (e.g., a row of channel faders) and press Cmd+G. Groups move together and won\'t accidentally get misaligned.' },
+    { title: 'Add visual containers', desc: 'If the reference photo shows controls inside a recessed or beveled rectangle, select those controls and right-click \u2192 "Wrap in Container". Choose Recessed for dark inset boxes (most common on DJ hardware) or Raised for elevated sections.' },
     { title: 'Lock finished controls', desc: 'Once you\'re happy with a control\'s position and size, set it to Size Lock (can still move, can\'t resize) or Full Lock (frozen). Use the Lock pills in the Properties panel or right-click menu.' },
     { title: 'Fix layer ordering', desc: 'If a control appears behind another (e.g., a jog display behind its wheel), select it and press Cmd+] to bring it to front. Use right-click > Bring to Front/Send to Back for precise control.' },
     { title: 'Preview your work', desc: 'Click Preview in the toolbar to see the panel as the end user will see it. Check that labels are readable and nothing overlaps.' },

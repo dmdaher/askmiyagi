@@ -79,6 +79,13 @@ export interface PanelManifest {
   editorSections?: ManifestSection[];
   editorLabels?: ManifestLabel[];
   groupLabels?: GroupLabel[];
+  controlContainers?: {
+    id: string;
+    style: string;
+    x: number; y: number; w: number; h: number;
+    borderRadius?: number;
+    label?: string;
+  }[];
   keyboard?: {
     keys: number;
     startNote: string;
@@ -133,6 +140,41 @@ function renderControl(
 ): React.ReactNode {
   switch (control.type) {
     case 'button': {
+      // Dual-label buttons render as LED indicator regardless of type
+      if (control.ledVariant === 'dual-label') {
+        const ledColor = control.ledColor ?? '#22c55e';
+        const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
+        const topActive = ledOn !== false;
+        return (
+          <div className="flex flex-col rounded overflow-hidden"
+            style={{ width: Math.max(w, 48), border: '1px solid #333' }}>
+            <div className="flex items-center justify-center py-1 px-2"
+              style={{ backgroundColor: topActive ? '#0a2e1a' : '#1a1a2a', borderBottom: '1px solid #333' }}>
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{
+                  width: 6, height: 6,
+                  backgroundColor: topActive ? ledColor : `${ledColor}33`,
+                  boxShadow: topActive ? `0 0 4px ${ledColor}` : 'none',
+                  border: topActive ? 'none' : `1px solid ${ledColor}66`,
+                }} />
+                <span className="text-[8px] font-medium uppercase" style={{ color: topActive ? '#4ade80' : `${ledColor}88` }}>{parts[0] || 'MODE A'}</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-center py-1 px-2"
+              style={{ backgroundColor: !topActive ? '#0a2e1a' : '#1a1a2a' }}>
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{
+                  width: 6, height: 6,
+                  backgroundColor: !topActive ? ledColor : `${ledColor}33`,
+                  boxShadow: !topActive ? `0 0 4px ${ledColor}` : 'none',
+                  border: !topActive ? 'none' : `1px solid ${ledColor}66`,
+                }} />
+                <span className="text-[8px] font-medium uppercase" style={{ color: !topActive ? '#4ade80' : `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
+              </div>
+            </div>
+          </div>
+        );
+      }
       if (control.shape === 'circle') {
         const diameter = Math.min(w, h);
         const iconKey = control.icon;
@@ -168,8 +210,8 @@ function renderControl(
               onClick={onClick}
             >
               {showInside && (
-                <span className="font-medium text-gray-300 uppercase text-center leading-tight px-1"
-                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8) }}>
+                <span className="font-medium uppercase text-center leading-tight px-1 w-full"
+                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8), color: control.labelColor ?? '#d1d5db', overflowWrap: 'break-word' }}>
                   {displayText}
                 </span>
               )}
@@ -444,6 +486,34 @@ export default function PanelRenderer({
           <SectionContainer key={s.id} id={s.id}
             x={s.x} y={s.y} w={s.w} h={s.h}
             headerLabel={s.headerLabel} />
+        );
+      })}
+
+      {/* Containers (visual grouping boxes) */}
+      {(manifest.controlContainers ?? []).map((c) => {
+        const containerStyles: Record<string, React.CSSProperties> = {
+          recessed: { background: 'rgba(0,0,0,0.15)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' },
+          raised: { background: 'rgba(255,255,255,0.03)', boxShadow: '0 2px 6px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)' },
+          outlined: { background: 'transparent', border: '1px solid rgba(255,255,255,0.12)' },
+          filled: { background: 'rgba(0,0,0,0.1)', border: 'none' },
+        };
+        return (
+          <div
+            key={c.id}
+            className="absolute"
+            style={{
+              left: c.x, top: c.y, width: c.w, height: c.h,
+              borderRadius: c.borderRadius ?? 4,
+              zIndex: 2,
+              ...containerStyles[c.style] ?? containerStyles.recessed,
+            }}
+          >
+            {c.label && (
+              <span className="absolute -top-3.5 left-1 text-[7px] font-medium text-gray-500 uppercase tracking-wider pointer-events-none">
+                {c.label}
+              </span>
+            )}
+          </div>
         );
       })}
 

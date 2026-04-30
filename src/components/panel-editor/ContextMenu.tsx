@@ -113,26 +113,110 @@ export default function ContextMenu() {
     setMenu(null);
   }, []);
 
+  const handleWrapInContainer = useCallback(() => {
+    const store = useEditorStore.getState();
+    const ids = store.selectedIds;
+    if (ids.length < 2) return;
+    const ctrls = ids.map(id => store.controls[id]).filter(Boolean);
+    if (ctrls.length < 2) return;
+    const scale = store.controlScale ?? 1;
+    const padding = 8;
+    const minX = Math.min(...ctrls.map(c => c.x));
+    const minY = Math.min(...ctrls.map(c => c.y));
+    const maxX = Math.max(...ctrls.map(c => c.x + c.w * scale));
+    const maxY = Math.max(...ctrls.map(c => c.y + c.h * scale));
+    store.pushSnapshot();
+    store.addContainer(
+      Math.round(minX - padding),
+      Math.round(minY - padding),
+      Math.round(maxX - minX + padding * 2),
+      Math.round(maxY - minY + padding * 2),
+      ids,
+    );
+    setMenu(null);
+  }, []);
+
+  const handleAddEmptyContainer = useCallback(() => {
+    if (!menu) return;
+    const store = useEditorStore.getState();
+    const zoom = store.zoom;
+    const panX = store.panX;
+    const panY = store.panY;
+    // Convert screen coords to canvas coords
+    const x = (menu.x - panX) / zoom;
+    const y = (menu.y - panY) / zoom;
+    store.pushSnapshot();
+    store.addContainer(Math.round(x), Math.round(y), 120, 80);
+    setMenu(null);
+  }, [menu]);
+
+  const handleDeleteContainer = useCallback(() => {
+    if (!menu) return;
+    const store = useEditorStore.getState();
+    store.pushSnapshot();
+    store.deleteContainer(menu.controlId);
+    store.setSelectedIds([]);
+    setMenu(null);
+  }, [menu]);
+
   if (!menu) return null;
 
   const control = useEditorStore.getState().controls[menu.controlId];
-  if (!control) return null;
+  const isContainer = (menu as any).isContainer === true;
+
+  // Container context menu
+  if (isContainer) {
+    return createPortal(
+      <div className="fixed" style={{ left: menu.x, top: menu.y, zIndex: 9999 }}>
+        <div className="min-w-[160px] rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300">
+          <button
+            className="flex w-full items-center px-3 py-1.5 hover:bg-gray-800 hover:text-red-400 transition-colors text-left"
+            onClick={handleDeleteContainer}
+          >
+            Delete Container
+          </button>
+        </div>
+      </div>,
+      document.body,
+    );
+  }
+
+  if (!control) {
+    // Empty canvas right-click — show "Add Container"
+    return createPortal(
+      <div className="fixed" style={{ left: menu.x, top: menu.y, zIndex: 9999 }}>
+        <div className="min-w-[160px] rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300">
+          <button
+            className="flex w-full items-center px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
+            onClick={handleAddEmptyContainer}
+          >
+            Add Container
+          </button>
+        </div>
+      </div>,
+      document.body,
+    );
+  }
 
   const isLocked = control.locked;
   const isResizeLocked = control.resizeLocked;
   const lockLabel = isLocked ? 'Unlock' : isResizeLocked ? 'Lock Fully' : 'Lock Size';
   const selectedCount = useEditorStore.getState().selectedIds.length;
 
+  // Clamp menu position so it doesn't overflow the viewport
+  const menuTop = Math.min(menu.y, window.innerHeight - 400);
+  const menuLeft = Math.min(menu.x, window.innerWidth - 200);
+
   return createPortal(
     <div
       className="fixed"
       style={{
-        left: menu.x,
-        top: menu.y,
+        left: menuLeft,
+        top: Math.max(8, menuTop),
         zIndex: 9999,
       }}
     >
-      <div className="min-w-[160px] rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300">
+      <div className="min-w-[160px] max-h-[80vh] overflow-y-auto rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300">
         {/* Duplicate */}
         <button
           className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
@@ -280,6 +364,15 @@ export default function ContextMenu() {
             >
               <span>Ungroup</span>
               <span className="text-gray-600 ml-4 text-[9px]">&#8984;&#8679;G</span>
+            </button>
+
+            {/* Wrap in Container */}
+            <div className="my-1 h-px bg-gray-800" />
+            <button
+              className="flex w-full items-center px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
+              onClick={handleWrapInContainer}
+            >
+              Wrap in Container
             </button>
           </>
         )}

@@ -154,6 +154,12 @@ export function useEditorKeyboard() {
         }
       }
 
+      // ── Toggle rulers: R ──────────────────────────────────────────────
+      if ((e.key === 'r' || e.key === 'R') && !isMod) {
+        store.toggleRulers();
+        return;
+      }
+
       // ── Z-order: Cmd+] / Cmd+[ / Cmd+Alt+] / Cmd+Alt+[ ─────────────────
       if (e.key === ']' && isMod) {
         e.preventDefault();

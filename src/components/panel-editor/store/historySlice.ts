@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import type { ControlDef, SectionDef } from './manifestSlice';
+import type { ControlDef, SectionDef, ControlContainer } from './manifestSlice';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -27,6 +27,7 @@ export interface ManifestSnapshot {
   controls: Record<string, ControlDef>;
   editorLabels?: EditorLabel[];
   controlGroups?: ControlGroup[];
+  controlContainers?: ControlContainer[];
   canvasWidth?: number;
   canvasHeight?: number;
   keyboard?: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
@@ -66,6 +67,10 @@ function cloneSnapshot(snapshot: ManifestSnapshot): ManifestSnapshot {
       ...g,
       controlIds: [...g.controlIds],
     })) ?? [],
+    controlContainers: snapshot.controlContainers?.map((c) => ({
+      ...c,
+      controlIds: [...c.controlIds],
+    })) ?? [],
     canvasWidth: snapshot.canvasWidth,
     canvasHeight: snapshot.canvasHeight,
     keyboard: snapshot.keyboard ? { ...snapshot.keyboard } : undefined,
@@ -79,6 +84,7 @@ interface ManifestFields {
   controls: Record<string, ControlDef>;
   editorLabels: unknown[];
   controlGroups: unknown[];
+  controlContainers: unknown[];
   hasUserEdited: boolean;
   canvasWidth: number;
   canvasHeight: number;
@@ -101,8 +107,8 @@ export const createHistorySlice: StateCreator<
     if (!get().hasUserEdited) {
       set({ hasUserEdited: true });
     }
-    const { sections, controls, past, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups } = get();
-    const snapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], canvasWidth, canvasHeight, keyboard });
+    const { sections, controls, past, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers } = get();
+    const snapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], canvasWidth, canvasHeight, keyboard });
     const newPast = [...past, snapshot];
     if (newPast.length > MAX_HISTORY) {
       newPast.splice(0, newPast.length - MAX_HISTORY);
@@ -111,10 +117,10 @@ export const createHistorySlice: StateCreator<
   },
 
   undo: () => {
-    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups } = get();
+    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers } = get();
     if (past.length === 0) return;
 
-    const currentSnapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], canvasWidth, canvasHeight, keyboard });
+    const currentSnapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], canvasWidth, canvasHeight, keyboard });
     const previous = past[past.length - 1];
     const restored = cloneSnapshot(previous);
 
@@ -125,6 +131,7 @@ export const createHistorySlice: StateCreator<
       controls: restored.controls,
       editorLabels: restored.editorLabels ?? [],
       controlGroups: restored.controlGroups ?? [],
+      controlContainers: restored.controlContainers ?? [],
     };
     if (restored.canvasWidth != null) update.canvasWidth = restored.canvasWidth;
     if (restored.canvasHeight != null) update.canvasHeight = restored.canvasHeight;
@@ -133,10 +140,10 @@ export const createHistorySlice: StateCreator<
   },
 
   redo: () => {
-    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups } = get();
+    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers } = get();
     if (future.length === 0) return;
 
-    const currentSnapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], canvasWidth, canvasHeight, keyboard });
+    const currentSnapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], canvasWidth, canvasHeight, keyboard });
     const next = future[future.length - 1];
     const restored = cloneSnapshot(next);
 
@@ -147,6 +154,7 @@ export const createHistorySlice: StateCreator<
       controls: restored.controls,
       editorLabels: restored.editorLabels ?? [],
       controlGroups: restored.controlGroups ?? [],
+      controlContainers: restored.controlContainers ?? [],
     };
     if (restored.canvasWidth != null) update.canvasWidth = restored.canvasWidth;
     if (restored.canvasHeight != null) update.canvasHeight = restored.canvasHeight;

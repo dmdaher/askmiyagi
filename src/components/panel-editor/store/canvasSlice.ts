@@ -25,6 +25,7 @@ export interface CanvasSlice {
   cleanupGap: number;  // target gap in px for Clean Up (0 = auto/average)
   panelScale: number;  // 0.5-2.0 — scales entire generated panel proportionally
   previewMode: boolean;  // clean panel view — hides edit chrome
+  showRulers: boolean;
 
   // Actions
   setZoom: (z: number) => void;
@@ -43,6 +44,7 @@ export interface CanvasSlice {
   setCleanupGap: (gap: number) => void;
   setPanelScale: (s: number) => void;
   setPreviewMode: (on: boolean) => void;
+  toggleRulers: () => void;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ export const createCanvasSlice: StateCreator<
   cleanupGap: 8,   // 8px default gap for Clean Up
   panelScale: 1.0, // 100% default panel scale
   previewMode: false,
+  showRulers: false,
 
   // Actions
   setZoom: (z) => set({ zoom: Math.max(0.1, Math.min(5, z)) }),
@@ -103,4 +106,5 @@ export const createCanvasSlice: StateCreator<
   setPanelScale: (s) => set({ panelScale: Math.max(0.5, Math.min(2, s)) }),
 
   setPreviewMode: (on) => set({ previewMode: on }),
+  toggleRulers: () => set((s) => ({ showRulers: !s.showRulers })),
 });

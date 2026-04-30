@@ -242,6 +242,31 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
 
   switch (control.type) {
     case 'button': {
+      // Dual-label buttons render as LED indicator regardless of type
+      if (control.ledVariant === 'dual-label') {
+        const ledColor = control.ledColor ?? '#22c55e';
+        const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
+        return (
+          <div className="flex flex-col rounded overflow-hidden"
+            style={{ width: Math.max(visW, 48), border: '1px solid #333' }}
+            data-control-id={control.id}>
+            <div className="flex items-center justify-center py-1 px-2"
+              style={{ backgroundColor: '#0a2e1a', borderBottom: '1px solid #333' }}>
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{ width: 6, height: 6, backgroundColor: ledColor, boxShadow: `0 0 4px ${ledColor}` }} />
+                <span className="text-[8px] font-medium text-green-400 uppercase">{parts[0] || 'MODE A'}</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-center py-1 px-2"
+              style={{ backgroundColor: '#1a1a2a' }}>
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{ width: 6, height: 6, backgroundColor: `${ledColor}33`, border: `1px solid ${ledColor}66` }} />
+                <span className="text-[8px] font-medium uppercase" style={{ color: `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
+              </div>
+            </div>
+          </div>
+        );
+      }
       if (control.shape === 'circle') {
         const diameter = Math.min(control.w, control.h);
         const { text, isIcon } = resolveDisplayContent(control);
@@ -264,8 +289,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             >
               {showInside && (
                 <span
-                  className="font-medium text-gray-300 uppercase text-center leading-tight px-1"
-                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8) }}
+                  className="font-medium uppercase text-center leading-tight px-1 w-full"
+                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8), color: control.labelColor ?? '#d1d5db', overflowWrap: 'break-word' }}
                 >
                   {text}
                 </span>
@@ -297,6 +322,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
             iconContent={iconContent}
+            hasLed={control.hasLed && control.ledStyle === 'integrated'}
             ledColor={control.ledColor ?? undefined}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
             labelFontSize={control.labelFontSize}
@@ -681,6 +707,22 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+
+      // Alt+Click: select container underneath this control
+      if (e.altKey) {
+        const store = useEditorStore.getState();
+        const containers = store.controlContainers ?? [];
+        const cx = control?.x ?? 0;
+        const cy = control?.y ?? 0;
+        const hit = containers.find(c =>
+          cx >= c.x && cx <= c.x + c.w && cy >= c.y && cy <= c.y + c.h
+        );
+        if (hit) {
+          setSelectedIds([hit.id]);
+          return;
+        }
+      }
+
       // Focus the parent section so it raises above other sections
       setFocusedSection(sectionId);
 

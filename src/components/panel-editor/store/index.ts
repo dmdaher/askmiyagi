@@ -22,6 +22,7 @@ export type {
   ManifestSlice,
   ControlDef,
   SectionDef,
+  ControlContainer,
   MasterManifestInput,
 } from './manifestSlice';
 export { CANVAS_BASE_W, CANVAS_BASE_H } from './manifestSlice';
