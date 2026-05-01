@@ -210,8 +210,12 @@ function renderControl(
               onClick={onClick}
             >
               {showInside && (
-                <span className="font-medium uppercase text-center leading-tight px-1 w-full"
-                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8), color: control.labelColor ?? '#d1d5db', overflowWrap: 'break-word' }}>
+                <span className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
+                  style={{
+                    fontSize: control.labelFontSize ?? (isIcon ? Math.max(Math.round(diameter * 0.35), 8) : 8),
+                    color: control.labelColor ?? '#d1d5db',
+                    overflowWrap: isIcon ? undefined : 'break-word',
+                  }}>
                   {displayText}
                 </span>
               )}
