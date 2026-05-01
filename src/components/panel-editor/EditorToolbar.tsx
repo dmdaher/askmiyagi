@@ -176,6 +176,8 @@ interface EditorToolbarProps {
   deviceId: string;
   previewMode: boolean;
   buildStatus: 'idle' | 'building' | 'approved';
+  saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
+  onSaveNow?: () => Promise<void>;
   onApproveAndBuild: () => void;
   onCleanUp: () => void;
   onTogglePreview: () => void;
@@ -189,6 +191,8 @@ export default function EditorToolbar({
   deviceId,
   previewMode,
   buildStatus,
+  saveStatus = 'idle',
+  onSaveNow,
   onApproveAndBuild,
   onCleanUp,
   onTogglePreview,
@@ -514,6 +518,26 @@ export default function EditorToolbar({
           </span>
         ) : isHosted ? (
           <div data-tutorial="submit" className="flex items-center gap-1.5">
+            {/* Save status + manual save */}
+            {saveStatus !== 'idle' && (
+              <span className={`text-[9px] px-1.5 py-0.5 rounded ${
+                saveStatus === 'saving' ? 'text-amber-400 bg-amber-900/30'
+                : saveStatus === 'saved' ? 'text-green-400 bg-green-900/30'
+                : 'text-red-400 bg-red-900/30'
+              }`}>
+                {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : 'Save failed'}
+              </span>
+            )}
+            {onSaveNow && (
+              <button
+                onClick={onSaveNow}
+                disabled={previewMode || saveStatus === 'saving'}
+                className="rounded border border-gray-600 bg-gray-800 px-2.5 py-1 text-[10px] font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors disabled:opacity-50"
+                title="Save now (flushes to cloud)"
+              >
+                Save
+              </button>
+            )}
             <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
             <HostedHistoryButton deviceId={deviceId} />
           </div>

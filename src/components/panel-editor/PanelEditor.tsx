@@ -25,7 +25,7 @@ interface PanelEditorProps {
 /** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
 function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { deviceId: string; onRestoreVersion?: () => void; adminNote?: string | null; isSandbox?: boolean }) {
   useEditorKeyboard();
-  useAutoSave(deviceId);
+  const { saveStatus, saveNow } = useAutoSave(deviceId);
 
   const previewMode = useEditorStore((s) => s.previewMode);
   const setPreviewMode = useEditorStore((s) => s.setPreviewMode);
@@ -138,6 +138,8 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
         deviceId={deviceId}
         previewMode={previewMode}
         buildStatus={buildStatus}
+        saveStatus={saveStatus}
+        onSaveNow={saveNow}
         onApproveAndBuild={handleApproveAndBuild}
         onCleanUp={handleCleanUp}
         onTogglePreview={() => {

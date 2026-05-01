@@ -1,28 +1,68 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditorStore } from '../store';
 import { isHosted } from '@/lib/env';
 
-const AUTO_SAVE_DEBOUNCE_MS = isHosted ? 2500 : 800;
+const AUTO_SAVE_DEBOUNCE_MS = isHosted ? 1500 : 800;
 const UNDO_PERSIST_DEBOUNCE_MS = 2000;
 const MAX_PERSISTED_UNDO = 50;
+
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+/** Build the save payload from current store state */
+function buildSavePayload() {
+  const { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
+  return { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard };
+}
+
+/** Get the save URL for this device */
+function getSaveUrl(deviceId: string) {
+  const useHostedApi = isHosted || deviceId.startsWith('sandbox-');
+  return `${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`;
+}
 
 /**
  * Auto-save hook: subscribes to Zustand store changes (sections/controls)
  * and debounces PUTs to the manifest-editor API endpoint.
  *
- * Also persists the undo stack to localStorage keyed by deviceId.
+ * Returns { saveStatus, saveNow } for UI display and manual save button.
  */
-export function useAutoSave(deviceId: string) {
+export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow: () => Promise<void> } {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+
+  /** Fire an immediate save (used by manual save button and flush) */
+  const saveNow = useCallback(async () => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    if (!useEditorStore.getState().hasUserEdited) return;
+
+    setSaveStatus('saving');
+    try {
+      const res = await fetch(getSaveUrl(deviceId), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildSavePayload()),
+      });
+      if (res.ok) {
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
+      } else {
+        setSaveStatus('error');
+        setTimeout(() => setSaveStatus('idle'), 4000);
+      }
+    } catch {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 4000);
+    }
+  }, [deviceId]);
 
   useEffect(() => {
-    // Restore undo history from localStorage on mount — but ONLY if the
-    // in-memory store has an empty undo stack. The Zustand store survives
-    // client-side route changes (tab switches), so the in-memory stack is
-    // more recent than localStorage (which has a 2s persistence debounce).
+    // Restore undo history from localStorage on mount
     const currentPast = useEditorStore.getState().past;
     if (currentPast.length === 0) {
       try {
@@ -34,17 +74,13 @@ export function useAutoSave(deviceId: string) {
           }
         }
       } catch {
-        // Ignore parse errors from corrupted localStorage
+        // Ignore parse errors
       }
     }
 
-    // Subscribe to store changes for auto-save (sections + controls).
-    // hasUserEdited guards against programmatic changes (loadFromManifest,
-    // restore) overwriting saved edits — those actions set hasUserEdited=false.
-    // User actions (pushSnapshot, direct UI handlers) set it to true.
+    // Subscribe to store changes for auto-save
     const unsubSave = useEditorStore.subscribe(
       (state, prevState) => {
-        // Only trigger if sections, controls, or canvas settings changed
         if (
           state.sections === prevState.sections &&
           state.controls === prevState.controls &&
@@ -60,10 +96,6 @@ export function useAutoSave(deviceId: string) {
           return;
         }
 
-        // Only save if the user has actually interacted (pointer/keyboard events).
-        // This prevents programmatic state changes (loadFromManifest, restore) from
-        // triggering auto-save and clobbering fresh pipeline data.
-        // Canvas settings (controlScale, zoom) are always user-initiated — bypass guard.
         const canvasChanged = state.controlScale !== prevState.controlScale ||
           state.zoom !== prevState.zoom ||
           state.cleanupGap !== prevState.cleanupGap ||
@@ -73,66 +105,80 @@ export function useAutoSave(deviceId: string) {
           return;
         }
 
-        // Stop auto-save after contractor submits for review
         if (isHosted && useEditorStore.getState().previewMode) {
           return;
         }
 
         // Debounce the save
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+        setSaveStatus('saving');
         saveTimerRef.current = setTimeout(() => {
-          // Double-check: previewMode may have been set while debounce was pending
           if (isHosted && useEditorStore.getState().previewMode) return;
 
-          const { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
-          const useHostedApi = isHosted || deviceId.startsWith('sandbox-');
-          fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`, {
+          fetch(getSaveUrl(deviceId), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard }),
+            body: JSON.stringify(buildSavePayload()),
+          }).then(() => {
+            setSaveStatus('saved');
+            setTimeout(() => setSaveStatus('idle'), 2000);
           }).catch(() => {
-            // Silent fail — auto-save is best-effort
+            setSaveStatus('error');
+            setTimeout(() => setSaveStatus('idle'), 4000);
           });
         }, AUTO_SAVE_DEBOUNCE_MS);
       },
     );
 
-    // Subscribe to store changes for undo persistence (past array)
+    // Subscribe to undo persistence
     const unsubUndo = useEditorStore.subscribe(
       (state, prevState) => {
         if (state.past === prevState.past) return;
-
         if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
         undoTimerRef.current = setTimeout(() => {
-          const { past } = useEditorStore.getState();
           try {
-            const toStore = past.slice(-MAX_PERSISTED_UNDO);
-            localStorage.setItem(
-              `editor-undo-${deviceId}`,
-              JSON.stringify(toStore),
-            );
+            const toStore = useEditorStore.getState().past.slice(-MAX_PERSISTED_UNDO);
+            localStorage.setItem(`editor-undo-${deviceId}`, JSON.stringify(toStore));
           } catch {
-            // localStorage quota exceeded — silently skip
+            // quota exceeded
           }
         }, UNDO_PERSIST_DEBOUNCE_MS);
       },
     );
 
+    // Flush pending save on page close (beforeunload)
+    const handleBeforeUnload = () => {
+      if (saveTimerRef.current && useEditorStore.getState().hasUserEdited) {
+        clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = null;
+        const body = JSON.stringify(buildSavePayload());
+        navigator.sendBeacon(getSaveUrl(deviceId), new Blob([body], { type: 'application/json' }));
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     return () => {
       unsubSave();
       unsubUndo();
-      // Cancel pending debounces
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // Flush pending save on unmount (route change within app)
+      if (saveTimerRef.current && useEditorStore.getState().hasUserEdited) {
+        clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = null;
+        // Use sendBeacon for reliability — fetch may not complete during unmount
+        const body = JSON.stringify(buildSavePayload());
+        navigator.sendBeacon(getSaveUrl(deviceId), new Blob([body], { type: 'application/json' }));
+      }
       if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
-      // Flush undo stack to localStorage immediately on unmount so it
-      // survives route changes even if the 2s debounce hadn't fired yet.
+      // Flush undo stack
       try {
-        const { past } = useEditorStore.getState();
-        const toStore = past.slice(-MAX_PERSISTED_UNDO);
+        const toStore = useEditorStore.getState().past.slice(-MAX_PERSISTED_UNDO);
         localStorage.setItem(`editor-undo-${deviceId}`, JSON.stringify(toStore));
       } catch {
-        // Best-effort
+        // best-effort
       }
     };
   }, [deviceId]);
+
+  return { saveStatus, saveNow };
 }
