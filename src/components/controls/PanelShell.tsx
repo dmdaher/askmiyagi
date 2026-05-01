@@ -17,6 +17,7 @@ interface PanelShellProps {
     leftPercent?: number;
     widthPercent?: number;
   } | null;
+  zones?: { zoneNumber: number; color: string; lowNote: number; highNote: number; label: string }[];
 }
 
 export default function PanelShell({
@@ -26,6 +27,7 @@ export default function PanelShell({
   height,
   children,
   keyboard,
+  zones,
 }: PanelShellProps) {
   return (
     <div className="w-full h-full overflow-x-auto">
@@ -89,7 +91,7 @@ export default function PanelShell({
             width: keyboard.widthPercent ? `${keyboard.widthPercent}%` : '100%',
             height: height * (1 - keyboard.panelHeightPercent / 100),
           }}>
-            <Keyboard keys={keyboard.keys} startNote={keyboard.startNote} />
+            <Keyboard keys={keyboard.keys} startNote={keyboard.startNote} zones={zones} />
           </div>
         )}
       </motion.div>

@@ -14,6 +14,7 @@ const PHASE_LABELS: Record<string, string> = {
   'phase-3-harmonic-polish': 'Polish',
   'phase-4-extraction': 'Extract',
   'phase-4-audit': 'Audit',
+  'phase-5-display-build': 'Displays',
   'phase-5-tutorial-build': 'Tutorials',
   'tutorial-pr': 'Tutorial PR',
 };

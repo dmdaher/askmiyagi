@@ -101,7 +101,9 @@ export interface PanelManifest {
 export interface PanelRendererProps {
   manifest: PanelManifest;
   panelState?: PanelState;
+  displayState?: any;
   highlightedControls?: string[];
+  zones?: { zoneNumber: number; color: string; lowNote: number; highNote: number; label: string }[];
   onButtonClick?: (id: string) => void;
 }
 
@@ -183,10 +185,17 @@ function renderControl(
               className="rounded-full flex items-center justify-center cursor-pointer"
               style={{
                 width: diameter, height: diameter,
-                backgroundColor: isIntegrated ? (ledOn ? `${intColor}40` : `${intColor}18`) : (active ? '#3a3a3a' : '#2a2a2a'),
-                border: isIntegrated ? `1px solid ${ledOn ? intColor : `${intColor}50`}` : `3px solid ${control.surfaceColor ?? '#444'}`,
-                boxShadow: isIntegrated
-                  ? (ledOn ? `0 0 10px ${intColor}80, inset 0 0 6px ${intColor}40` : `0 0 6px ${intColor}40, inset 0 0 3px ${intColor}20`)
+                backgroundColor: isIntegrated
+                  ? (ledOn === true ? undefined : (ledOn === false ? '#2a2a2a' : `${intColor}10`))
+                  : (active ? '#3a3a3a' : '#2a2a2a'),
+                background: isIntegrated && ledOn === true
+                  ? `radial-gradient(ellipse at 50% 40%, ${intColor}50 0%, ${intColor}25 50%, transparent 80%)`
+                  : undefined,
+                border: isIntegrated
+                  ? (ledOn === true ? `1px solid ${intColor}` : ledOn === false ? `3px solid ${control.surfaceColor ?? '#444'}` : `1px solid ${intColor}25`)
+                  : `3px solid ${control.surfaceColor ?? '#444'}`,
+                boxShadow: isIntegrated && ledOn === true
+                  ? `0 0 12px ${intColor}80, 0 0 4px ${intColor}60, inset 0 0 8px ${intColor}30`
                   : (control.surfaceColor
                     ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40`
                     : 'inset 0 2px 4px rgba(0,0,0,0.4)'),
@@ -400,7 +409,9 @@ function renderControl(
 export default function PanelRenderer({
   manifest,
   panelState = {},
+  displayState,
   highlightedControls = [],
+  zones,
   onButtonClick,
 }: PanelRendererProps) {
   const isHighlighted = (id: string) => highlightedControls.includes(id);
@@ -415,6 +426,7 @@ export default function PanelRenderer({
       width={manifest.panelWidth}
       height={manifest.panelHeight}
       keyboard={manifest.keyboard}
+      zones={zones}
     >
       {/* Section backgrounds */}
       {(manifest.editorSections ?? []).map((s) => {

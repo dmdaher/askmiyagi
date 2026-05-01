@@ -358,6 +358,9 @@ async function run() {
         case 'phase-4-audit':
           await doPhase4Audit(state);
           break;
+        case 'phase-5-display-build':
+          await doPhase5DisplayBuild(state);
+          break;
         case 'phase-5-tutorial-build':
           await doPhase5(state);
           break;
@@ -2150,6 +2153,43 @@ Include a summary of your findings in the checkpoint body.`,
     createEscalation(state, 'curriculum-review', `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'}. Review the tutorial plan.`);
     sendNotification('Miyagi Pipeline', `Curriculum review needed for ${state.deviceName}`);
   }
+}
+
+async function doPhase5DisplayBuild(state: PipelineState) {
+  startPhase(state, 'phase-5-display-build');
+  appendLog(deviceId, { level: 'info', message: 'Starting Phase 5-X: Display Builder (screen component generation)' });
+
+  if (!isBudgetOk(state)) return;
+
+  const displayResult = await invokeAgent({
+    prompt: `Generate display screen components for ${state.deviceName} (${deviceId}).
+
+Read the manual to identify all screen types this instrument has.
+Use the three-pass process: Style Probe → Atomic Components → Screen Assembly.
+
+Manual location: ${state.manualPaths.map(p => path.join(worktreeCwd, p)).join(', ')}
+Feature inventory: ${agentPath(deviceId, 'manual-extractor')}/
+
+Output to: src/components/devices/${deviceId}/display/
+Create: device-theme.json, atoms/, screens/, DisplayScreen.tsx dispatcher, screen-inventory.json.`,
+    deviceId,
+    cwd: worktreeCwd,
+    phase: 'phase-5-display-build',
+    agent: 'display-builder',
+    allowedTools: PIPELINE_TOOLS,
+    remainingBudgetUsd: getRemainingBudget(state),
+    onChildPid: (pid) => trackChildPid(state, pid),
+  });
+
+  if (displayResult.costEntry) {
+    accumulateCost(state, displayResult.costEntry);
+    recordCostEntry(deviceId, displayResult.costEntry);
+  }
+  updateBurnRate(state, deviceId);
+  updateSubscription(state, displayResult.rateLimitEvents);
+
+  completePhase(state, 'phase-5-display-build', null, true);
+  advancePhase(state, worktreeCwd);
 }
 
 async function doPhase5(state: PipelineState) {
