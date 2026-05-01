@@ -287,7 +287,7 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
               const res = await fetch(`/api/pipeline/${deviceId}/recover`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'reset-failed' }),
+                body: JSON.stringify({ action: 'reset-to-editor' }),
               });
               if (res.ok) {
                 setResult('✓ Reset to editor — refresh to see updated state');

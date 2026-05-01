@@ -100,6 +100,19 @@ export async function POST(
       return NextResponse.json({ status: 'paused', action: 'kill-restart', message: summary });
     }
 
+    case 'reset-to-editor': {
+      // Reset pipeline back to layout engine phase for editor access.
+      // Works from any status (paused, running, failed, completed).
+      state.currentPhase = 'phase-0-layout-engine';
+      state.status = 'paused';
+      state.runnerPid = null;
+      state.childPid = null;
+      state.activeEscalation = null;
+      appendLog(deviceId, { level: 'info', message: 'Reset to editor phase (layout engine). Ready to send to contractor.' });
+      writeState(deviceId, state);
+      return NextResponse.json({ status: 'paused', action: 'reset-to-editor', message: 'Reset to editor. You can now send to contractor.' });
+    }
+
     default:
       return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
   }
