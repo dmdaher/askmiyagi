@@ -1154,6 +1154,40 @@ function EmptyStatePanel() {
   );
 }
 
+// ─── Container Number Field (local state, commit on blur) ───────────────────
+
+function ContainerNumField({ label, value, onCommit }: { label: string; value: number; onCommit: (v: number) => void }) {
+  const [localVal, setLocalVal] = useState<string>(String(Math.round(value)));
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!focused) setLocalVal(String(Math.round(value)));
+  }, [value, focused]);
+
+  return (
+    <div className="space-y-0.5">
+      <label className="text-[9px] text-gray-600 uppercase">{label}</label>
+      <input
+        type="number"
+        value={localVal}
+        onFocus={() => setFocused(true)}
+        onBlur={() => {
+          setFocused(false);
+          const num = parseFloat(localVal);
+          if (!isNaN(num) && num !== value) onCommit(num);
+          else setLocalVal(String(Math.round(value)));
+        }}
+        onChange={(e) => setLocalVal(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+          if (e.key === 'Escape') { setLocalVal(String(Math.round(value))); (e.target as HTMLInputElement).blur(); }
+        }}
+        className="w-full h-6 rounded border border-gray-700 bg-gray-800 px-1 text-[10px] text-gray-200 text-center outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      />
+    </div>
+  );
+}
+
 // ─── Container Properties ───────────────────────────────────────────────────
 
 function ContainerProperties({ container }: { container: import('../store/manifestSlice').ControlContainer }) {
@@ -1222,15 +1256,12 @@ function ContainerProperties({ container }: { container: import('../store/manife
       <div className="h-px bg-gray-800" />
       <div className="grid grid-cols-4 gap-1">
         {(['x', 'y', 'w', 'h'] as const).map((field) => (
-          <div key={field} className="space-y-0.5">
-            <label className="text-[9px] text-gray-600 uppercase">{field}</label>
-            <input
-              type="number"
-              value={Math.round(container[field])}
-              onChange={(e) => { pushSnapshot(); updateContainer(container.id, { [field]: Number(e.target.value) }); }}
-              className="w-full h-6 rounded border border-gray-700 bg-gray-800 px-1 text-[10px] text-gray-200 text-center outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
-          </div>
+          <ContainerNumField
+            key={field}
+            label={field}
+            value={container[field]}
+            onCommit={(val) => { pushSnapshot(); updateContainer(container.id, { [field]: val }); }}
+          />
         ))}
       </div>
 

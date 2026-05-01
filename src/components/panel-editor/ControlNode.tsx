@@ -248,21 +248,15 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
         return (
           <div className="flex flex-col rounded overflow-hidden"
-            style={{ width: Math.max(visW, 48), border: '1px solid #333' }}
+            style={{ width: visW, height: visH, border: '1px solid #333' }}
             data-control-id={control.id}>
-            <div className="flex items-center justify-center py-1 px-2"
+            <div className="flex flex-1 items-center justify-center py-0.5 px-1"
               style={{ backgroundColor: '#0a2e1a', borderBottom: '1px solid #333' }}>
-              <div className="flex items-center gap-1.5">
-                <div className="rounded-full" style={{ width: 6, height: 6, backgroundColor: ledColor, boxShadow: `0 0 4px ${ledColor}` }} />
-                <span className="text-[8px] font-medium text-green-400 uppercase">{parts[0] || 'MODE A'}</span>
-              </div>
+              <span className="text-[7px] font-medium text-green-400 uppercase truncate">{parts[0] || 'MODE A'}</span>
             </div>
-            <div className="flex items-center justify-center py-1 px-2"
+            <div className="flex flex-1 items-center justify-center py-0.5 px-1"
               style={{ backgroundColor: '#1a1a2a' }}>
-              <div className="flex items-center gap-1.5">
-                <div className="rounded-full" style={{ width: 6, height: 6, backgroundColor: `${ledColor}33`, border: `1px solid ${ledColor}66` }} />
-                <span className="text-[8px] font-medium uppercase" style={{ color: `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
-              </div>
+              <span className="text-[7px] font-medium uppercase truncate" style={{ color: `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
             </div>
           </div>
         );
@@ -289,8 +283,12 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             >
               {showInside && (
                 <span
-                  className="font-medium uppercase text-center leading-tight px-1 w-full"
-                  style={{ fontSize: control.labelFontSize ?? (isIcon ? 14 : 8), color: control.labelColor ?? '#d1d5db', overflowWrap: 'break-word' }}
+                  className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
+                  style={{
+                    fontSize: control.labelFontSize ?? (isIcon ? Math.max(Math.round(diameter * 0.35), 8) : 8),
+                    color: control.labelColor ?? '#d1d5db',
+                    overflowWrap: isIcon ? undefined : 'break-word',
+                  }}
                 >
                   {text}
                 </span>
@@ -369,49 +367,16 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         return (
           <div
             className="flex flex-col rounded overflow-hidden"
-            style={{ width: Math.max(visW, 48), border: '1px solid #333' }}
+            style={{ width: visW, height: visH, border: '1px solid #333' }}
             data-control-id={control.id}
           >
-            {/* Top mode */}
-            <div
-              className="flex items-center justify-center py-1 px-2"
-              style={{
-                backgroundColor: '#0a2e1a',
-                borderBottom: '1px solid #333',
-              }}
-            >
-              <div className="flex items-center gap-1.5">
-                <div
-                  className="rounded-full"
-                  style={{
-                    width: 6, height: 6,
-                    backgroundColor: ledColor,
-                    boxShadow: `0 0 4px ${ledColor}`,
-                  }}
-                />
-                <span className="text-[8px] font-medium text-green-400 uppercase">
-                  {topLabel}
-                </span>
-              </div>
+            <div className="flex flex-1 items-center justify-center py-0.5 px-1"
+              style={{ backgroundColor: '#0a2e1a', borderBottom: '1px solid #333' }}>
+              <span className="text-[7px] font-medium text-green-400 uppercase truncate">{topLabel}</span>
             </div>
-            {/* Bottom mode (dimmed — shows the alternate color at low opacity) */}
-            <div
-              className="flex items-center justify-center py-1 px-2"
-              style={{ backgroundColor: '#1a1a2a' }}
-            >
-              <div className="flex items-center gap-1.5">
-                <div
-                  className="rounded-full"
-                  style={{
-                    width: 6, height: 6,
-                    backgroundColor: `${ledColor}33`,
-                    border: `1px solid ${ledColor}66`,
-                  }}
-                />
-                <span className="text-[8px] font-medium uppercase" style={{ color: `${ledColor}88` }}>
-                  {bottomLabel}
-                </span>
-              </div>
+            <div className="flex flex-1 items-center justify-center py-0.5 px-1"
+              style={{ backgroundColor: '#1a1a2a' }}>
+              <span className="text-[7px] font-medium uppercase truncate" style={{ color: `${ledColor}88` }}>{bottomLabel}</span>
             </div>
           </div>
         );
