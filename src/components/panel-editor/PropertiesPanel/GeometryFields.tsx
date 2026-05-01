@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 interface GeometryFieldsProps {
   x: number;
@@ -34,44 +34,25 @@ function NumField({
   onChange: (v: number) => void;
   title: string;
 }) {
-  const [localValue, setLocalValue] = useState<string>('');
-  const [isFocused, setIsFocused] = useState(false);
-
-  // Sync from props when not focused
-  useEffect(() => {
-    if (!isFocused) {
-      setLocalValue(mixed ? '' : String(Math.round(value)));
-    }
-  }, [value, mixed, isFocused]);
-
-  const commit = useCallback(() => {
-    const num = parseFloat(localValue);
-    if (!isNaN(num) && num !== value) {
-      onChange(num);
-    } else if (isNaN(num) || localValue === '') {
-      // Revert to current value
-      setLocalValue(mixed ? '' : String(Math.round(value)));
-    }
-  }, [localValue, value, mixed, onChange]);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const num = parseFloat(e.target.value);
+      if (!isNaN(num)) {
+        onChange(num);
+      }
+    },
+    [onChange],
+  );
 
   return (
     <div className="space-y-0.5" title={title}>
       <label className="text-[10px] text-gray-500">{label}</label>
       <input
         type="number"
-        value={localValue}
+        value={mixed ? '' : Math.round(value)}
         placeholder={mixed ? 'Mixed' : '0'}
         step={step}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => { setIsFocused(false); commit(); }}
-        onChange={(e) => setLocalValue(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') { (e.target as HTMLInputElement).blur(); }
-          if (e.key === 'Escape') {
-            setLocalValue(mixed ? '' : String(Math.round(value)));
-            (e.target as HTMLInputElement).blur();
-          }
-        }}
+        onChange={handleChange}
         className="h-7 w-full rounded border border-gray-700 bg-gray-900 px-2 text-xs text-gray-300 outline-none focus:border-blue-500 placeholder:text-gray-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
     </div>

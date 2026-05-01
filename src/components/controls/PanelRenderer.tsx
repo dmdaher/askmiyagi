@@ -147,29 +147,29 @@ function renderControl(
         const topActive = ledOn !== false;
         return (
           <div className="flex flex-col rounded overflow-hidden"
-            style={{ width: w, height: h, border: '1px solid #333' }}>
-            <div className="flex flex-1 items-center justify-center px-1"
+            style={{ width: Math.max(w, 48), border: '1px solid #333' }}>
+            <div className="flex items-center justify-center py-1 px-2"
               style={{ backgroundColor: topActive ? '#0a2e1a' : '#1a1a2a', borderBottom: '1px solid #333' }}>
-              <div className="flex items-center gap-1">
-                <div className="rounded-full flex-shrink-0" style={{
-                  width: 5, height: 5,
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{
+                  width: 6, height: 6,
                   backgroundColor: topActive ? ledColor : `${ledColor}33`,
                   boxShadow: topActive ? `0 0 4px ${ledColor}` : 'none',
                   border: topActive ? 'none' : `1px solid ${ledColor}66`,
                 }} />
-                <span className="text-[7px] font-medium uppercase truncate" style={{ color: topActive ? '#4ade80' : `${ledColor}88` }}>{parts[0] || 'MODE A'}</span>
+                <span className="text-[8px] font-medium uppercase" style={{ color: topActive ? '#4ade80' : `${ledColor}88` }}>{parts[0] || 'MODE A'}</span>
               </div>
             </div>
-            <div className="flex flex-1 items-center justify-center px-1"
+            <div className="flex items-center justify-center py-1 px-2"
               style={{ backgroundColor: !topActive ? '#0a2e1a' : '#1a1a2a' }}>
-              <div className="flex items-center gap-1">
-                <div className="rounded-full flex-shrink-0" style={{
-                  width: 5, height: 5,
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{
+                  width: 6, height: 6,
                   backgroundColor: !topActive ? ledColor : `${ledColor}33`,
                   boxShadow: !topActive ? `0 0 4px ${ledColor}` : 'none',
                   border: !topActive ? 'none' : `1px solid ${ledColor}66`,
                 }} />
-                <span className="text-[7px] font-medium uppercase truncate" style={{ color: !topActive ? '#4ade80' : `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
+                <span className="text-[8px] font-medium uppercase" style={{ color: !topActive ? '#4ade80' : `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
               </div>
             </div>
           </div>
@@ -284,31 +284,31 @@ function renderControl(
         const topActive = ledOn !== false;
         return (
           <div className="flex flex-col rounded overflow-hidden"
-            style={{ width: w, height: h, border: '1px solid #333' }}>
-            <div className="flex flex-1 items-center justify-center px-1"
+            style={{ width: Math.max(w, 48), border: '1px solid #333' }}>
+            <div className="flex items-center justify-center py-1 px-2"
               style={{ backgroundColor: topActive ? '#0a2e1a' : '#1a1a2a', borderBottom: '1px solid #333' }}>
-              <div className="flex items-center gap-1">
-                <div className="rounded-full flex-shrink-0" style={{
-                  width: 5, height: 5,
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{
+                  width: 6, height: 6,
                   backgroundColor: topActive ? ledColor : `${ledColor}33`,
                   boxShadow: topActive ? `0 0 4px ${ledColor}` : 'none',
                   border: topActive ? 'none' : `1px solid ${ledColor}66`,
                 }} />
-                <span className="text-[7px] font-medium uppercase truncate" style={{
+                <span className="text-[8px] font-medium uppercase" style={{
                   color: topActive ? '#4ade80' : `${ledColor}88`,
                 }}>{parts[0] || 'MODE A'}</span>
               </div>
             </div>
-            <div className="flex flex-1 items-center justify-center px-1"
+            <div className="flex items-center justify-center py-1 px-2"
               style={{ backgroundColor: !topActive ? '#0a2e1a' : '#1a1a2a' }}>
-              <div className="flex items-center gap-1">
-                <div className="rounded-full flex-shrink-0" style={{
-                  width: 5, height: 5,
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-full" style={{
+                  width: 6, height: 6,
                   backgroundColor: !topActive ? ledColor : `${ledColor}33`,
                   boxShadow: !topActive ? `0 0 4px ${ledColor}` : 'none',
                   border: !topActive ? 'none' : `1px solid ${ledColor}66`,
                 }} />
-                <span className="text-[7px] font-medium uppercase truncate" style={{
+                <span className="text-[8px] font-medium uppercase" style={{
                   color: !topActive ? '#4ade80' : `${ledColor}88`,
                 }}>
                   {parts[1] || 'MODE B'}
