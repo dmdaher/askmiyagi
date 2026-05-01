@@ -59,6 +59,10 @@ export async function PUT(
     );
   }
 
+  // Stamp the save timestamp so we can track when edits actually happened
+  body._updatedAt = new Date().toISOString();
+  body._source = 'hosted';
+
   // Write manifest to its own blob — completely independent of status
   await putDeviceManifest(deviceId, body);
 
