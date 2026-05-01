@@ -10,6 +10,7 @@ export type PipelinePhase =
   | 'phase-3-harmonic-polish'
   | 'phase-4-extraction'
   | 'phase-4-audit'
+  | 'phase-5-display-build'
   | 'phase-5-tutorial-build'
   | 'tutorial-pr'
   | 'completed'
