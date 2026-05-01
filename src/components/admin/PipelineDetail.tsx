@@ -280,6 +280,31 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
           {pulling ? 'Pulling...' : 'Pull & Build Tutorials'}
         </button>
 
+        <button
+          onClick={async () => {
+            if (!confirm('Reset pipeline back to editor phase? The pipeline will pause at the layout engine stage so you can send to contractor.')) return;
+            try {
+              const res = await fetch(`/api/pipeline/${deviceId}/recover`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'reset-failed' }),
+              });
+              if (res.ok) {
+                setResult('✓ Reset to editor — refresh to see updated state');
+                setTimeout(() => window.location.reload(), 1500);
+              } else {
+                const data = await res.json().catch(() => ({}));
+                setResult(`✗ Reset failed: ${data.error ?? res.statusText}`);
+              }
+            } catch (err) {
+              setResult(`✗ Reset failed: ${(err as Error).message}`);
+            }
+          }}
+          className="rounded border border-amber-600 bg-amber-700/30 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-700/50 transition-colors"
+        >
+          Reset to Editor
+        </button>
+
         {result && (
           <span className={`text-xs truncate flex-1 ${result.startsWith('✓') ? 'text-green-400' : 'text-red-400'}`}>
             {result}
