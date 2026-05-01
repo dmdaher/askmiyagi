@@ -5,6 +5,7 @@ import { useEditorStore } from './store';
 import type { SnapGrid } from './store';
 import VersionHistoryDropdown from './VersionHistoryDropdown';
 import { isHosted } from '@/lib/env';
+import { buildSavePayload } from './hooks/useAutoSave';
 
 const SNAP_OPTIONS: SnapGrid[] = [1, 2, 4, 8, 16, 32];
 
@@ -93,21 +94,24 @@ function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disab
     setSubmitting(true);
     try {
       // Flush current editor state to Blob BEFORE changing status.
-      // Prevents race where submit fires before the 2.5s auto-save debounce.
-      const state = useEditorStore.getState();
-      const { sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = state;
-      await fetch(`/api/hosted/panels/${deviceId}`, {
+      // Prevents race where submit fires before the auto-save debounce.
+      const flushRes = await fetch(`/api/hosted/panels/${deviceId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections, controls, editorLabels, controlGroups, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard }),
+        body: JSON.stringify(buildSavePayload()),
       });
+      if (flushRes.status === 409) {
+        alert('Another session has newer changes. Please reload the page.');
+        setSubmitting(false);
+        return;
+      }
 
-      const res = await fetch(`/api/hosted/panels/${deviceId}/status`, {
+      const statusRes = await fetch(`/api/hosted/panels/${deviceId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'submitted', contractorNote: note.trim() || undefined }),
       });
-      if (!res.ok) throw new Error('Submit failed');
+      if (!statusRes.ok) throw new Error('Submit failed');
       setSubmitted(true);
       setShowModal(false);
       // Auto-clear the submitted badge after 3 seconds so they can re-submit
@@ -176,7 +180,8 @@ interface EditorToolbarProps {
   deviceId: string;
   previewMode: boolean;
   buildStatus: 'idle' | 'building' | 'approved';
-  saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
+  saveStatus?: 'idle' | 'saving' | 'saved' | 'error' | 'conflict';
+  lastSavedAt?: Date | null;
   onSaveNow?: () => Promise<void>;
   onApproveAndBuild: () => void;
   onCleanUp: () => void;
@@ -187,11 +192,25 @@ interface EditorToolbarProps {
   isSandbox?: boolean;
 }
 
+/** Format a Date as relative time string */
+function formatRelativeTime(date: Date | null | undefined): string {
+  if (!date) return 'Not saved yet';
+  const seconds = Math.round((Date.now() - date.getTime()) / 1000);
+  if (seconds < 5) return 'Just now';
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
 export default function EditorToolbar({
   deviceId,
   previewMode,
   buildStatus,
   saveStatus = 'idle',
+  lastSavedAt,
   onSaveNow,
   onApproveAndBuild,
   onCleanUp,
@@ -242,6 +261,14 @@ export default function EditorToolbar({
   const setCanvasSize = useEditorStore((s) => s.setCanvasSize);
 
   const zoomPercent = Math.round(zoom * 100);
+
+  // Refresh relative time display every 30s
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!lastSavedAt) return;
+    const interval = setInterval(() => setTick((t) => t + 1), 30000);
+    return () => clearInterval(interval);
+  }, [lastSavedAt]);
 
   // Shared styles
   const toggleBtn = (active: boolean) =>
@@ -518,17 +545,34 @@ export default function EditorToolbar({
           </span>
         ) : isHosted ? (
           <div data-tutorial="submit" className="flex items-center gap-1.5">
-            {/* Save status + manual save */}
-            {saveStatus !== 'idle' && (
-              <span className={`text-[9px] px-1.5 py-0.5 rounded ${
-                saveStatus === 'saving' ? 'text-amber-400 bg-amber-900/30'
-                : saveStatus === 'saved' ? 'text-green-400 bg-green-900/30'
-                : 'text-red-400 bg-red-900/30'
-              }`}>
-                {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : 'Save failed'}
-              </span>
+            {/* Persistent "Last saved" timestamp */}
+            <span className={`text-[9px] whitespace-nowrap ${
+              saveStatus === 'conflict' ? 'text-red-400'
+              : !lastSavedAt ? 'text-red-400'
+              : (Date.now() - lastSavedAt.getTime()) < 60000 ? 'text-green-400/70'
+              : (Date.now() - lastSavedAt.getTime()) < 300000 ? 'text-gray-500'
+              : 'text-amber-400/70'
+            }`}>
+              {saveStatus === 'conflict'
+                ? 'Conflict — reload page'
+                : `Saved ${formatRelativeTime(lastSavedAt)}`}
+            </span>
+            {/* Transient save status */}
+            {saveStatus === 'saving' && (
+              <span className="text-[9px] px-1.5 py-0.5 rounded text-amber-400 bg-amber-900/30">Saving...</span>
             )}
-            {onSaveNow && (
+            {saveStatus === 'error' && (
+              <span className="text-[9px] px-1.5 py-0.5 rounded text-red-400 bg-red-900/30">Save failed</span>
+            )}
+            {saveStatus === 'conflict' && (
+              <button
+                onClick={() => window.location.reload()}
+                className="rounded border border-red-600 bg-red-900/30 px-2 py-0.5 text-[9px] text-red-300 hover:bg-red-900/50 transition-colors"
+              >
+                Reload
+              </button>
+            )}
+            {onSaveNow && saveStatus !== 'conflict' && (
               <button
                 onClick={onSaveNow}
                 disabled={previewMode || saveStatus === 'saving'}
@@ -538,7 +582,7 @@ export default function EditorToolbar({
                 Save
               </button>
             )}
-            <SubmitForReviewButton deviceId={deviceId} disabled={previewMode} />
+            <SubmitForReviewButton deviceId={deviceId} disabled={previewMode || saveStatus === 'conflict'} />
             <HostedHistoryButton deviceId={deviceId} />
           </div>
         ) : (
