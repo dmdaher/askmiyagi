@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDeviceStatus, getDeviceManifest, putDeviceManifest, putDeviceStatus } from '@/lib/hosted-storage';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/hosted/panels/{deviceId}
  * Returns manifest in flat format + status metadata from separate blob.
@@ -24,7 +26,7 @@ export async function GET(
     ...(manifest as Record<string, unknown>),
     _source: 'hosted',
     _status: status.status,
-    _updatedAt: status.updatedAt,
+    _updatedAt: (manifest as Record<string, unknown>)._updatedAt ?? status.updatedAt,
     _adminNote: status.adminNote ?? null,
     _contractorNote: status.contractorNote ?? null,
   });
@@ -59,9 +61,24 @@ export async function PUT(
     );
   }
 
+  // Conflict detection: reject if someone else saved after this client loaded.
+  // _loadedAt is the _updatedAt timestamp the client received on initial load.
+  if (body._loadedAt) {
+    const currentManifest = await getDeviceManifest(deviceId);
+    const serverUpdatedAt = (currentManifest as Record<string, unknown> | null)?._updatedAt as string | undefined;
+    if (serverUpdatedAt && new Date(serverUpdatedAt) > new Date(body._loadedAt)) {
+      return NextResponse.json(
+        { error: 'conflict', serverUpdatedAt },
+        { status: 409 },
+      );
+    }
+  }
+
   // Stamp the save timestamp so we can track when edits actually happened
   body._updatedAt = new Date().toISOString();
   body._source = 'hosted';
+  // Remove _loadedAt before persisting — it's a client-only field
+  delete body._loadedAt;
 
   // Write manifest to its own blob — completely independent of status
   await putDeviceManifest(deviceId, body);
@@ -75,5 +92,17 @@ export async function PUT(
     });
   }
 
-  return NextResponse.json({ ok: true, status: status.status === 'ready' ? 'in-progress' : status.status });
+  return NextResponse.json({ ok: true, savedAt: body._updatedAt, status: status.status === 'ready' ? 'in-progress' : status.status });
+}
+
+/**
+ * POST /api/hosted/panels/{deviceId}
+ * Identical to PUT — exists because navigator.sendBeacon() only supports POST.
+ * Used for flush-on-close and flush-on-unmount saves.
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ deviceId: string }> }
+) {
+  return PUT(request, { params });
 }

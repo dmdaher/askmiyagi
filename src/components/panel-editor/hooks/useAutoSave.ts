@@ -8,12 +8,12 @@ const AUTO_SAVE_DEBOUNCE_MS = isHosted ? 1500 : 800;
 const UNDO_PERSIST_DEBOUNCE_MS = 2000;
 const MAX_PERSISTED_UNDO = 50;
 
-export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'conflict';
 
 /** Build the save payload from current store state */
-function buildSavePayload() {
-  const { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
-  return { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard };
+export function buildSavePayload() {
+  const { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
+  return { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard };
 }
 
 /** Get the save URL for this device */
@@ -26,12 +26,27 @@ function getSaveUrl(deviceId: string) {
  * Auto-save hook: subscribes to Zustand store changes (sections/controls)
  * and debounces PUTs to the manifest-editor API endpoint.
  *
- * Returns { saveStatus, saveNow } for UI display and manual save button.
+ * Returns { saveStatus, saveNow, lastSavedAt } for UI display and manual save button.
  */
-export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow: () => Promise<void> } {
+export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow: () => Promise<void>; lastSavedAt: Date | null } {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(() => {
+    // Initialize from store's _loadedAt (server timestamp from initial load)
+    const loaded = useEditorStore.getState()._loadedAt;
+    return loaded ? new Date(loaded) : null;
+  });
+
+  /** Handle a successful save response — update _loadedAt for conflict detection */
+  const handleSaveSuccess = useCallback((savedAt?: string) => {
+    const now = savedAt ? new Date(savedAt) : new Date();
+    setLastSavedAt(now);
+    // Update _loadedAt so next save uses the new timestamp for conflict detection
+    useEditorStore.setState({ _loadedAt: now.toISOString() });
+    setSaveStatus('saved');
+    setTimeout(() => setSaveStatus('idle'), 2000);
+  }, []);
 
   /** Fire an immediate save (used by manual save button and flush) */
   const saveNow = useCallback(async () => {
@@ -49,8 +64,10 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
         body: JSON.stringify(buildSavePayload()),
       });
       if (res.ok) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
+        const data = await res.json().catch(() => ({}));
+        handleSaveSuccess(data.savedAt);
+      } else if (res.status === 409) {
+        setSaveStatus('conflict');
       } else {
         setSaveStatus('error');
         setTimeout(() => setSaveStatus('idle'), 4000);
@@ -59,7 +76,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 4000);
     }
-  }, [deviceId]);
+  }, [deviceId, handleSaveSuccess]);
 
   useEffect(() => {
     // Restore undo history from localStorage on mount
@@ -113,15 +130,23 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         setSaveStatus('saving');
         saveTimerRef.current = setTimeout(() => {
+          saveTimerRef.current = null;
           if (isHosted && useEditorStore.getState().previewMode) return;
 
           fetch(getSaveUrl(deviceId), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(buildSavePayload()),
-          }).then(() => {
-            setSaveStatus('saved');
-            setTimeout(() => setSaveStatus('idle'), 2000);
+          }).then(async (res) => {
+            if (res.ok) {
+              const data = await res.json().catch(() => ({}));
+              handleSaveSuccess(data.savedAt);
+            } else if (res.status === 409) {
+              setSaveStatus('conflict');
+            } else {
+              setSaveStatus('error');
+              setTimeout(() => setSaveStatus('idle'), 4000);
+            }
           }).catch(() => {
             setSaveStatus('error');
             setTimeout(() => setSaveStatus('idle'), 4000);
@@ -147,12 +172,15 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
     );
 
     // Flush pending save on page close (beforeunload)
-    const handleBeforeUnload = () => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (saveTimerRef.current && useEditorStore.getState().hasUserEdited) {
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = null;
         const body = JSON.stringify(buildSavePayload());
         navigator.sendBeacon(getSaveUrl(deviceId), new Blob([body], { type: 'application/json' }));
+        // Trigger native "Leave site?" dialog as extra protection
+        e.preventDefault();
+        e.returnValue = '';
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -180,5 +208,5 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
     };
   }, [deviceId]);
 
-  return { saveStatus, saveNow };
+  return { saveStatus, saveNow, lastSavedAt };
 }

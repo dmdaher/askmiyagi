@@ -13,7 +13,7 @@ import IssueReportModal from './IssueReportModal';
 import EditorTutorial from './EditorTutorial';
 import EditorHelpDrawer from './EditorHelpDrawer';
 import { useEditorKeyboard } from './hooks/useEditorKeyboard';
-import { useAutoSave } from './hooks/useAutoSave';
+import { useAutoSave, buildSavePayload } from './hooks/useAutoSave';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import { cleanupGeometry } from '@/lib/layout-inference';
 
@@ -25,7 +25,7 @@ interface PanelEditorProps {
 /** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
 function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { deviceId: string; onRestoreVersion?: () => void; adminNote?: string | null; isSandbox?: boolean }) {
   useEditorKeyboard();
-  const { saveStatus, saveNow } = useAutoSave(deviceId);
+  const { saveStatus, saveNow, lastSavedAt } = useAutoSave(deviceId);
 
   const previewMode = useEditorStore((s) => s.previewMode);
   const setPreviewMode = useEditorStore((s) => s.setPreviewMode);
@@ -88,20 +88,20 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
 
   // ── Approve & Build: take positions as-is, run codegen for polish ──────
   const handleApproveAndBuild = useCallback(async () => {
-    const state = useEditorStore.getState();
-    const { sections, controls, canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom } = state;
-    const cleanupGap = (state as any).cleanupGap as number | undefined;
-    const panelScale = (state as any).panelScale as number | undefined;
     setBuildStatus('building');
     setCodegenError(null);
 
     try {
       // Force-save current manifest (bypass debounce)
-      await fetch(`${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`, {
+      const saveUrl = `${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`;
+      const saveRes = await fetch(saveUrl, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections, controls, editorLabels: (state as any).editorLabels ?? [], controlGroups: (state as any).controlGroups ?? [], canvasWidth, canvasHeight, _manifestVersion, controlScale, zoom, cleanupGap, panelScale, keyboard: (state as any).keyboard }),
+        body: JSON.stringify(buildSavePayload()),
       });
+      if (saveRes.status === 409) {
+        throw new Error('Conflict: another session saved newer changes. Reload the page.');
+      }
 
       // Export manifest JSON — replaces codegen TSX generation.
       // Writes src/data/manifests/{deviceId}.json for production.
@@ -139,6 +139,7 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
         previewMode={previewMode}
         buildStatus={buildStatus}
         saveStatus={saveStatus}
+        lastSavedAt={lastSavedAt}
         onSaveNow={saveNow}
         onApproveAndBuild={handleApproveAndBuild}
         onCleanUp={handleCleanUp}
@@ -330,12 +331,17 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
               lockedIds: [],
               keyboard: data.keyboard ?? null,
               _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
+              _loadedAt: data._updatedAt ?? null,
               hasUserEdited: false,
               ...canvasUpdate,
             });
           } else {
             // First load — convert original pipeline manifest to editor format
             useEditorStore.getState().loadFromManifest(data as MasterManifestInput);
+            // Store server timestamp for conflict detection (the if-branch sets it in setState above)
+            if (data._updatedAt) {
+              useEditorStore.setState({ _loadedAt: data._updatedAt });
+            }
           }
           // Initialize labels from controls if not yet done (migration)
           useEditorStore.getState().initLabelsFromControls();

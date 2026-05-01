@@ -199,6 +199,8 @@ export interface ManifestSlice {
   lockedIds: string[];
   keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
   _manifestVersion: string | null;
+  // Timestamp from the server when this manifest was last saved. Used for conflict detection.
+  _loadedAt: string | null;
   // hasUserEdited is set ONLY by UI event handlers (pointer/keyboard),
   // never by store mutations. Prevents programmatic state changes from triggering auto-save.
   hasUserEdited: boolean;
@@ -453,6 +455,7 @@ export const createManifestSlice: StateCreator<
   lockedIds: [],
   keyboard: null,
   _manifestVersion: null,
+  _loadedAt: null,
   hasUserEdited: false,
   focusedSectionId: null,
   hoveredGroupId: null,
