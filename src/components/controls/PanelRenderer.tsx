@@ -101,7 +101,9 @@ export interface PanelManifest {
 export interface PanelRendererProps {
   manifest: PanelManifest;
   panelState?: PanelState;
+  displayState?: any;
   highlightedControls?: string[];
+  zones?: { zoneNumber: number; color: string; lowNote: number; highNote: number; label: string }[];
   onButtonClick?: (id: string) => void;
 }
 
@@ -407,7 +409,9 @@ function renderControl(
 export default function PanelRenderer({
   manifest,
   panelState = {},
+  displayState,
   highlightedControls = [],
+  zones,
   onButtonClick,
 }: PanelRendererProps) {
   const isHighlighted = (id: string) => highlightedControls.includes(id);
@@ -422,6 +426,7 @@ export default function PanelRenderer({
       width={manifest.panelWidth}
       height={manifest.panelHeight}
       keyboard={manifest.keyboard}
+      zones={zones}
     >
       {/* Section backgrounds */}
       {(manifest.editorSections ?? []).map((s) => {
