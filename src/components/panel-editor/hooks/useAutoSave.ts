@@ -35,11 +35,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
   // Used by beforeunload to warn the user. Covers: pending debounce, in-flight save, failed save.
   const hasUnsavedChanges = useRef(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
-  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(() => {
-    // Initialize from store's _loadedAt (server timestamp from initial load)
-    const loaded = useEditorStore.getState()._loadedAt;
-    return loaded ? new Date(loaded) : null;
-  });
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   /** Handle a successful save response — update _loadedAt for conflict detection */
   const handleSaveSuccess = useCallback((savedAt?: string) => {
@@ -100,6 +96,19 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       setTimeout(() => setSaveStatus('idle'), 4000);
     }
   }, [deviceId, handleSaveSuccess]);
+
+  // Pick up _loadedAt from store once manifest loads (store is empty at hook init time)
+  useEffect(() => {
+    const unsub = useEditorStore.subscribe((state, prev) => {
+      if (state._loadedAt && state._loadedAt !== prev._loadedAt && !lastSavedAt) {
+        setLastSavedAt(new Date(state._loadedAt));
+      }
+    });
+    // Also check immediately in case it's already set
+    const current = useEditorStore.getState()._loadedAt;
+    if (current && !lastSavedAt) setLastSavedAt(new Date(current));
+    return unsub;
+  }, []);
 
   useEffect(() => {
     // Restore undo history from localStorage on mount
