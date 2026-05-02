@@ -199,10 +199,15 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
 
     // Flush pending save on page close (beforeunload)
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      // Flush pending debounced save via sendBeacon
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-        saveTimerRef.current = null;
+      if (hasUnsavedChanges.current) {
+        // Always fire sendBeacon as safety net — covers:
+        // 1. Pending debounce timer (save hasn't fired yet)
+        // 2. In-flight fetch that browser might abort on close
+        // 3. Previously failed save (retry on close)
+        if (saveTimerRef.current) {
+          clearTimeout(saveTimerRef.current);
+          saveTimerRef.current = null;
+        }
         const payload = buildSavePayload();
         navigator.sendBeacon(getSaveUrl(deviceId), new Blob([JSON.stringify(payload)], { type: 'application/json' }));
         try {
@@ -210,9 +215,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
             data: payload, savedAt: Date.now(),
           }));
         } catch { /* best-effort */ }
-      }
-      // Warn user if there are ANY unsaved changes (pending, in-flight, or failed)
-      if (hasUnsavedChanges.current) {
+        // Show native "Leave site?" dialog
         e.preventDefault();
         e.returnValue = '';
       }
