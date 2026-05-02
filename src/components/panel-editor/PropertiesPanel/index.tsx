@@ -454,9 +454,9 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                   onClick={() => {
                     pushSnapshot();
                     updateControlProp(ids, 'icon', undefined);
-                    // Restore text label (icon → text)
+                    // Restore text label (icon → text), ensure visible
                     if (controlLabel) {
-                      updateLabel(controlLabel.id, { icon: undefined, text: control.label });
+                      updateLabel(controlLabel.id, { icon: undefined, text: control.label, hidden: false });
                     }
                   }}
                   className="text-[9px] text-gray-600 hover:text-red-400 transition-colors"

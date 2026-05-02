@@ -1004,12 +1004,21 @@ export const createManifestSlice: StateCreator<
         controls[id] = { ...ctrl, [field]: value };
       }
     }
-    // Sync labelFontSize → linked editorLabel.fontSize
+    // Sync control fields → linked editorLabel fields
     if (field === 'labelFontSize') {
       const idSet = new Set(ids);
       const updatedLabels = (get().editorLabels as EditorLabel[]).map((l) =>
         l.controlId && idSet.has(l.controlId)
           ? { ...l, fontSize: value as number }
+          : l,
+      );
+      set({ controls, editorLabels: updatedLabels });
+    } else if (field === 'label') {
+      // Sync label text to linked editorLabel so position changes show current text
+      const idSet = new Set(ids);
+      const updatedLabels = (get().editorLabels as EditorLabel[]).map((l) =>
+        l.controlId && idSet.has(l.controlId)
+          ? { ...l, text: value as string }
           : l,
       );
       set({ controls, editorLabels: updatedLabels });
@@ -1911,26 +1920,29 @@ export const createManifestSlice: StateCreator<
 
       for (const id of ids) {
         const ctrl = updatedControls[id];
-        if (!ctrl || !ctrl.label) continue;
+        if (!ctrl || (!ctrl.label && !ctrl.icon)) continue;
         const visW = ctrl.w * controlScale;
         const visH = ctrl.h * controlScale;
         const fontSize = ctrl.labelFontSize
           ?? (ctrl.sizeClass === 'xl' ? 11 : ctrl.sizeClass === 'lg' ? 10 : ctrl.sizeClass === 'sm' ? 7 : 8);
+        // Use label text for sizing, or a placeholder for icon-only controls
+        const labelForPosition = ctrl.label || (ctrl.icon ? '\u2B24' : '');
         const lp = computeLabelPosition(
           ctrl.x, ctrl.y, visW, visH,
-          position, ctrl.label, fontSize, ctrl.secondaryLabel,
+          position, labelForPosition, fontSize, ctrl.secondaryLabel,
         );
         if (!lp) continue;
 
         const existing = existingByCtrlId.get(id);
         if (existing) {
-          // If label was previously hidden, preserve its x/y (just unhide).
-          // If visible, recompute to the new position.
+          // Always sync text + icon from control. Unhide. Recompute position if wasn't hidden.
           updateMap.set(existing.id, existing.hidden
-            ? { ...existing, hidden: false }
+            ? { ...existing, hidden: false, text: ctrl.label, icon: ctrl.icon ?? existing.icon }
             : {
                 ...existing,
                 hidden: false,
+                text: ctrl.label,
+                icon: ctrl.icon ?? existing.icon,
                 x: lp.x,
                 y: lp.y,
                 w: lp.w,
@@ -1942,6 +1954,7 @@ export const createManifestSlice: StateCreator<
             id: `label-${id}`,
             controlId: id,
             text: ctrl.label,
+            icon: ctrl.icon ?? undefined,
             x: lp.x,
             y: lp.y,
             w: lp.w,
