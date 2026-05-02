@@ -16,6 +16,7 @@ export default function LabelLayer() {
   const showLabels = useEditorStore((s) => s.showLabels);
   const moveLabel = useEditorStore((s) => s.moveLabel);
   const updateLabel = useEditorStore((s) => s.updateLabel);
+  const snapGrid = useEditorStore((s) => s.snapGrid);
   const deleteLabel = useEditorStore((s) => s.deleteLabel);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const zoom = useEditorStore((s) => s.zoom);
@@ -90,12 +91,16 @@ export default function LabelLayer() {
 
     const handleMouseMove = (me: MouseEvent) => {
       if (!dragStart.current) return;
-      const dx = (me.clientX - dragStart.current.x) / zoom;
-      const dy = (me.clientY - dragStart.current.y) / zoom;
-      // Live preview — update position directly
+      const rawDx = (me.clientX - dragStart.current.x) / zoom;
+      const rawDy = (me.clientY - dragStart.current.y) / zoom;
+      // Snap to grid — same grid as controls
+      const snap = snapGrid ?? 1;
+      const dx = Math.round(rawDx / snap) * snap;
+      const dy = Math.round(rawDy / snap) * snap;
+      if (dx === 0 && dy === 0) return;
       moveLabel(label.id, dx, dy);
-      dragStart.current.x = me.clientX;
-      dragStart.current.y = me.clientY;
+      dragStart.current.x += dx * zoom;
+      dragStart.current.y += dy * zoom;
     };
 
     const handleMouseUp = () => {
