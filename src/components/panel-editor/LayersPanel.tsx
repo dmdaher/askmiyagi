@@ -384,8 +384,11 @@ export default function LayersPanel() {
   const sections = useEditorStore((s) => s.sections);
   const controlGroups = useEditorStore((s) => s.controlGroups) as ControlGroup[];
   const controlContainers = useEditorStore((s) => s.controlContainers);
+  const editorLabels = useEditorStore((s) => s.editorLabels);
   const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
+  const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
   const showLayers = useEditorStore((s) => s.showLayers);
   const toggleLayers = useEditorStore((s) => s.toggleLayers);
 
@@ -468,6 +471,33 @@ export default function LayersPanel() {
                 </svg>
                 <span className="flex-1 truncate">{c.label || truncate(c.id, 16)}</span>
                 <span className="flex-shrink-0 text-[8px] text-gray-600 uppercase">{c.style}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Labels */}
+      {editorLabels.length > 0 && (
+        <div className="border-t border-gray-800 px-1 py-1 space-y-0.5">
+          <div className="px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-gray-600">
+            Labels ({editorLabels.filter(l => !l.hidden).length})
+          </div>
+          {editorLabels.filter(l => !l.hidden).map((label) => {
+            const isSelected = selectedLabelId === label.id;
+            return (
+              <button
+                key={label.id}
+                onClick={(e) => { e.stopPropagation(); setSelectedLabel(label.id); }}
+                className={`flex w-full items-center gap-1 rounded px-2 py-1 text-left text-[10px] transition-colors ${
+                  isSelected
+                    ? 'bg-blue-500/20 text-blue-300'
+                    : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+                }`}
+              >
+                <span className="text-[9px] text-gray-600 flex-shrink-0">T</span>
+                <span className="flex-1 truncate">{label.text || '(empty)'}</span>
+                <span className="flex-shrink-0 text-[8px] text-gray-600">{label.fontSize}px</span>
               </button>
             );
           })}
