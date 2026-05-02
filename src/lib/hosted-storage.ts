@@ -98,6 +98,7 @@ export async function putDeviceStatus(deviceId: string, data: DeviceStatusData):
     contentType: 'application/json',
     addRandomSuffix: false,
     allowOverwrite: true,
+    cacheControlMaxAge: 0, // Disable CDN caching — status changes on submit/approve
   });
 }
 
@@ -124,6 +125,7 @@ export async function putDeviceManifest(deviceId: string, manifest: Record<strin
     contentType: 'application/json',
     addRandomSuffix: false,
     allowOverwrite: true,
+    cacheControlMaxAge: 0, // Disable CDN caching — manifest changes every 1.5s via auto-save
   });
 }
 
