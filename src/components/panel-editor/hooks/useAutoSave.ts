@@ -183,8 +183,16 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       if (saveTimerRef.current && useEditorStore.getState().hasUserEdited) {
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = null;
-        const body = JSON.stringify(buildSavePayload());
+        const payload = buildSavePayload();
+        const body = JSON.stringify(payload);
         navigator.sendBeacon(getSaveUrl(deviceId), new Blob([body], { type: 'application/json' }));
+        // Cache locally so reopening the page doesn't depend on CDN propagation
+        try {
+          sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({
+            data: payload,
+            savedAt: Date.now(),
+          }));
+        } catch { /* best-effort */ }
         // Trigger native "Leave site?" dialog as extra protection
         e.preventDefault();
         e.returnValue = '';
@@ -200,9 +208,16 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       if (saveTimerRef.current && useEditorStore.getState().hasUserEdited) {
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = null;
+        const payload = buildSavePayload();
         // Use sendBeacon for reliability — fetch may not complete during unmount
-        const body = JSON.stringify(buildSavePayload());
-        navigator.sendBeacon(getSaveUrl(deviceId), new Blob([body], { type: 'application/json' }));
+        navigator.sendBeacon(getSaveUrl(deviceId), new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+        // Cache locally so navigating back doesn't depend on CDN propagation
+        try {
+          sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({
+            data: payload,
+            savedAt: Date.now(),
+          }));
+        } catch { /* best-effort */ }
       }
       if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
       // Flush undo stack
