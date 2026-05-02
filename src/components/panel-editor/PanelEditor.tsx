@@ -271,7 +271,7 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
     async function fetchManifest() {
       try {
         const useHostedApi = isHosted || isSandbox;
-        const res = await fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`);
+        const res = await fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`, { cache: 'no-store' });
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           throw new Error(
