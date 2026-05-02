@@ -14,7 +14,7 @@ import TouchDisplay from './TouchDisplay';
 import JogWheelAssembly from './JogWheelAssembly';
 import DirectionSwitch from './DirectionSwitch';
 import JogDisplay from './JogDisplay';
-import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
 import { PanelState } from '@/types/panel';
 import type { GroupLabel } from '@/types/manifest';
 
@@ -219,7 +219,9 @@ function renderControl(
 
       const rawStyle = control.buttonStyle;
       const variant = (rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard')) as any;
-      const iconContent = (control.icon && control.labelDisplay === 'icon-only')
+      const svgContent = (control.icon && control.labelDisplay === 'icon-only')
+        ? HARDWARE_ICON_SVGS[control.icon] : undefined;
+      const iconContent = (!svgContent && control.icon && control.labelDisplay === 'icon-only')
         ? (HARDWARE_ICONS[control.icon] ?? control.icon) : undefined;
 
       return (
@@ -243,6 +245,7 @@ function renderControl(
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
             iconContent={iconContent}
+            svgIcon={svgContent}
             hasLed={control.hasLed && control.ledPosition === 'inside'}
             ledOn={ledOn}
             ledColor={control.ledColor ?? undefined}

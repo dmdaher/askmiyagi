@@ -17,6 +17,7 @@ import {
   DistributeVIcon,
 } from '../icons/alignment';
 import type { ControlGroup } from '../store/historySlice';
+import { ICON_CATEGORIES, HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -420,6 +421,68 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
               </button>
             </div>
           </div>
+          <div className="h-px bg-gray-800" />
+
+          {/* Icon + Label Display */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wide text-gray-500">Icon</label>
+            <div className="flex gap-1.5">
+              <select
+                value={control.icon ?? ''}
+                onChange={(e) => {
+                  pushSnapshot();
+                  const val = e.target.value || undefined;
+                  updateControlProp(ids, 'icon', val);
+                  if (val && (!control.labelDisplay || control.labelDisplay === 'on-button')) {
+                    updateControlProp(ids, 'labelDisplay', 'icon-only');
+                  }
+                  if (!val && control.labelDisplay === 'icon-only') {
+                    updateControlProp(ids, 'labelDisplay', 'on-button');
+                  }
+                }}
+                className="flex-1 h-7 rounded border border-gray-700 bg-gray-900 px-1.5 text-[10px] text-gray-300 outline-none focus:border-blue-500"
+              >
+                <option value="">None</option>
+                {ICON_CATEGORIES.map((cat) => (
+                  <optgroup key={cat.label} label={cat.label}>
+                    {cat.keys.map((k) => (
+                      <option key={k} value={k}>
+                        {HARDWARE_ICONS[k] ? `${HARDWARE_ICONS[k]} ` : ''}{k.replace(/-/g, ' ')}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              {control.icon && (
+                <div className="w-7 h-7 rounded border border-gray-700 bg-gray-900 flex items-center justify-center text-gray-300">
+                  {HARDWARE_ICON_SVGS[control.icon]
+                    ? <div className="w-4 h-4">{HARDWARE_ICON_SVGS[control.icon]}</div>
+                    : <span className="text-xs">{HARDWARE_ICONS[control.icon] ?? '?'}</span>}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {control.icon && (
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase tracking-wide text-gray-500">Label Display</label>
+              <select
+                value={control.labelDisplay ?? 'on-button'}
+                onChange={(e) => {
+                  pushSnapshot();
+                  updateControlProp(ids, 'labelDisplay', e.target.value);
+                }}
+                className="w-full h-7 rounded border border-gray-700 bg-gray-900 px-1.5 text-[10px] text-gray-300 outline-none focus:border-blue-500"
+              >
+                <option value="on-button">Text on button</option>
+                <option value="icon-only">Icon only</option>
+                <option value="above">Label above</option>
+                <option value="below">Label below</option>
+                <option value="hidden">Hidden</option>
+              </select>
+            </div>
+          )}
+
           <div className="h-px bg-gray-800" />
         </>
       )}

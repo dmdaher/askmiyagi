@@ -17,6 +17,7 @@ interface PanelButtonProps {
   labelPosition?: 'on' | 'above' | 'below';
   surfaceColor?: string;
   iconContent?: string;
+  svgIcon?: React.ReactNode;
   labelFontSize?: number;
   ledStyle?: 'integrated' | 'dot';
   labelAlign?: string;
@@ -100,6 +101,7 @@ export default function PanelButton({
   labelPosition = 'on',
   surfaceColor,
   iconContent,
+  svgIcon,
   labelFontSize,
   ledStyle,
   labelAlign,
@@ -248,7 +250,14 @@ export default function PanelButton({
         {...(highlighted ? highlightAnimation : {})}
         whileTap={{ scale: isTransport ? 0.92 : 0.95, y: 2 }}
       >
-        {iconContent ? (
+        {svgIcon ? (
+          <div
+            className="flex items-center justify-center text-gray-200 select-none"
+            style={{ width: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, height: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, color: labelColor }}
+          >
+            {svgIcon}
+          </div>
+        ) : iconContent ? (
           <span
             className="text-gray-200 leading-none text-center select-none"
             style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16), color: labelColor }}

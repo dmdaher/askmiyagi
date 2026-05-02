@@ -17,7 +17,7 @@ import TouchDisplay from '@/components/controls/TouchDisplay';
 import JogWheelAssembly from '@/components/controls/JogWheelAssembly';
 import DirectionSwitch from '@/components/controls/DirectionSwitch';
 import JogDisplay from '@/components/controls/JogDisplay';
-import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
 
 /** Render label text with \n as line breaks */
 function renderLabelText(text: string): React.ReactNode {
@@ -46,9 +46,11 @@ function mapButtonLabelPosition(
   return 'on';
 }
 
-/** Resolve the display text for a control — icon or label */
-function resolveDisplayContent(control: ControlDef): { text: string; isIcon: boolean } {
+/** Resolve the display text for a control — icon, SVG, or label */
+function resolveDisplayContent(control: ControlDef): { text: string; isIcon: boolean; svgIcon?: React.ReactNode } {
   if (control.icon && control.labelDisplay === 'icon-only') {
+    const svg = HARDWARE_ICON_SVGS[control.icon];
+    if (svg) return { text: '', isIcon: true, svgIcon: svg };
     const iconChar = HARDWARE_ICONS[control.icon] ?? control.icon;
     return { text: iconChar, isIcon: true };
   }
@@ -174,8 +176,11 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       const rawStyle = control.buttonStyle;
       const variant = rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard');
 
-      // Determine icon content
-      const iconContent = (control.icon && control.labelDisplay === 'icon-only')
+      // Determine icon content — SVG icons take priority over unicode
+      const svgContent = (control.icon && control.labelDisplay === 'icon-only')
+        ? HARDWARE_ICON_SVGS[control.icon]
+        : undefined;
+      const iconContent = (!svgContent && control.icon && control.labelDisplay === 'icon-only')
         ? (HARDWARE_ICONS[control.icon] ?? control.icon)
         : undefined;
 
@@ -191,6 +196,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
             iconContent={iconContent}
+            svgIcon={svgContent}
             hasLed={control.hasLed && control.ledStyle === 'integrated'}
             ledColor={control.ledColor ?? undefined}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
