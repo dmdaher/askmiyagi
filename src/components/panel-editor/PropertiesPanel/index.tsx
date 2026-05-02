@@ -272,9 +272,9 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
 
   const ids = useMemo(() => [control.id], [control.id]);
 
-  // Find the editorLabel linked to this control that has an icon
-  const iconLabel = useMemo(() =>
-    editorLabels.find(l => l.controlId === control.id && l.icon),
+  // Find ANY editorLabel linked to this control (text or icon — it's the same label)
+  const controlLabel = useMemo(() =>
+    editorLabels.find(l => l.controlId === control.id),
     [editorLabels, control.id]
   );
 
@@ -442,21 +442,22 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
           {/* Icon picker — creates/updates editorLabel with icon */}
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase tracking-wide text-gray-500">Icon</label>
-            {(control.icon || iconLabel) && (
+            {(control.icon || controlLabel?.icon) && (
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-6 h-6 rounded border border-blue-500 bg-blue-500/10 flex items-center justify-center text-blue-400">
-                  {HARDWARE_ICON_SVGS[control.icon ?? iconLabel?.icon ?? '']
-                    ? <div className="w-4 h-4">{HARDWARE_ICON_SVGS[control.icon ?? iconLabel?.icon ?? '']}</div>
-                    : <span className="text-xs">{HARDWARE_ICONS[control.icon ?? iconLabel?.icon ?? ''] ?? '?'}</span>}
+                  {HARDWARE_ICON_SVGS[control.icon ?? controlLabel?.icon ?? '']
+                    ? <div className="w-4 h-4">{HARDWARE_ICON_SVGS[control.icon ?? controlLabel?.icon ?? '']}</div>
+                    : <span className="text-xs">{HARDWARE_ICONS[control.icon ?? controlLabel?.icon ?? ''] ?? '?'}</span>}
                 </div>
-                <span className="text-[9px] text-gray-400 flex-1">{(control.icon ?? iconLabel?.icon ?? '').replace(/-/g, ' ')}</span>
+                <span className="text-[9px] text-gray-400 flex-1">{(control.icon ?? controlLabel?.icon ?? '').replace(/-/g, ' ')}</span>
                 <button
                   onClick={() => {
                     pushSnapshot();
                     updateControlProp(ids, 'icon', undefined);
-                    updateControlProp(ids, 'labelDisplay', 'on-button');
-                    // Remove the icon label
-                    if (iconLabel) deleteLabel(iconLabel.id);
+                    // Restore text label (icon → text)
+                    if (controlLabel) {
+                      updateLabel(controlLabel.id, { icon: undefined, text: control.label });
+                    }
                   }}
                   className="text-[9px] text-gray-600 hover:text-red-400 transition-colors"
                 >clear</button>
@@ -472,21 +473,19 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                       onClick={() => {
                         pushSnapshot();
                         updateControlProp(ids, 'icon', k);
-                        // Create or update editorLabel with this icon
-                        const visW = control.w * controlScale;
-                        const visH = control.h * controlScale;
-                        const iconSize = Math.round(Math.min(visW, visH) * 0.6);
-                        if (iconLabel) {
-                          // Update existing icon label
-                          updateLabel(iconLabel.id, { icon: k, text: '' });
+                        if (controlLabel) {
+                          // Same label — swap text for icon
+                          updateLabel(controlLabel.id, { icon: k, text: '' });
                         } else {
-                          // Create new icon label positioned to the right of the control
+                          // No label exists — create one with icon
+                          const visW = control.w * controlScale;
+                          const visH = control.h * controlScale;
+                          const iconSize = Math.round(Math.min(visW, visH) * 0.6);
                           const labelId = addStandaloneLabel(
                             control.x + control.w + 4,
                             control.y + (control.h - iconSize) / 2,
                             '',
                           );
-                          // Set icon + link to control
                           updateLabel(labelId, {
                             icon: k,
                             controlId: control.id,
@@ -495,7 +494,7 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                         }
                       }}
                       className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${
-                        (control.icon === k || iconLabel?.icon === k)
+                        (control.icon === k || controlLabel?.icon === k)
                           ? 'border-blue-500 bg-blue-500/10 text-blue-400'
                           : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-500 hover:text-gray-200'
                       }`}
@@ -511,8 +510,8 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
             ))}
           </div>
 
-          {(control.icon || iconLabel) && (
-            <p className="text-[9px] text-gray-600">Drag the icon label to position it around the control.</p>
+          {(control.icon || controlLabel?.icon) && (
+            <p className="text-[9px] text-gray-600">Drag the icon label to position it. Select from Layers panel (L) if hard to click.</p>
           )}
 
           <div className="h-px bg-gray-800" />
