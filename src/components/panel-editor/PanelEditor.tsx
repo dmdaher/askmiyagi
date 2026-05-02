@@ -271,14 +271,54 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
     async function fetchManifest() {
       try {
         const useHostedApi = isHosted || isSandbox;
-        const res = await fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`, { cache: 'no-store' });
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(
-            body.error ?? `Failed to load manifest (${res.status})`
-          );
+
+        // Check sessionStorage for a recent local save — bypasses CDN propagation delay.
+        // On refresh, the server might return stale data for a few seconds due to
+        // Blob CDN caching. If we saved recently, use the local copy instead.
+        let data: any = null;
+        let usedLocalCache = false;
+        try {
+          const cached = sessionStorage.getItem(`manifest-cache-${deviceId}`);
+          if (cached) {
+            const { data: cachedData, savedAt } = JSON.parse(cached);
+            if (Date.now() - savedAt < 60000) {
+              // Local save within last 60 seconds — use it directly
+              data = { ...cachedData, _source: 'hosted' };
+              usedLocalCache = true;
+            }
+            sessionStorage.removeItem(`manifest-cache-${deviceId}`);
+          }
+        } catch { /* sessionStorage not available */ }
+
+        const apiUrl = `${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`;
+
+        // Fall through to server fetch if no local cache
+        if (!data) {
+          const res = await fetch(apiUrl, { cache: 'no-store' });
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(
+              body.error ?? `Failed to load manifest (${res.status})`
+            );
+          }
+          data = await res.json();
         }
-        const data = await res.json();
+
+        // If we used local cache, verify the blob actually has the data.
+        // Fetch in background — if blob is stale (CDN lag), that's fine.
+        // If blob has NEWER data (another session saved), reload from server.
+        if (usedLocalCache && !cancelled) {
+          fetch(apiUrl, { cache: 'no-store' }).then(async (res) => {
+            if (!res.ok || cancelled) return;
+            const serverData = await res.json();
+            const serverTime = serverData._updatedAt ? new Date(serverData._updatedAt).getTime() : 0;
+            const localTime = data._updatedAt ? new Date(data._updatedAt).getTime() : 0;
+            if (serverTime > localTime) {
+              // Server has newer data — another session saved after us. Reload.
+              window.location.reload();
+            }
+          }).catch(() => { /* background check — non-critical */ });
+        }
         if (!cancelled) {
           // Accept both 'sections' (editor auto-save format) and 'editorSections' (production manifest format)
           const rawSections = data.sections ?? data.editorSections;
