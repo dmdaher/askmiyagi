@@ -17,6 +17,7 @@ interface PanelButtonProps {
   labelPosition?: 'on' | 'above' | 'below';
   surfaceColor?: string;
   iconContent?: string;
+  svgIcon?: React.ReactNode;
   labelFontSize?: number;
   ledStyle?: 'integrated' | 'dot';
   labelAlign?: string;
@@ -100,6 +101,7 @@ export default function PanelButton({
   labelPosition = 'on',
   surfaceColor,
   iconContent,
+  svgIcon,
   labelFontSize,
   ledStyle,
   labelAlign,
@@ -207,8 +209,8 @@ export default function PanelButton({
 
   return (
     <div className="flex flex-col items-center" data-control-id={id}>
-      {/* Label above button */}
-      {labelPosition === 'above' && (
+      {/* Label above button (text only — icons positioned outside by parent) */}
+      {labelPosition === 'above' && label && (
         <span
           className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
           style={textStyle}
@@ -248,27 +250,27 @@ export default function PanelButton({
         {...(highlighted ? highlightAnimation : {})}
         whileTap={{ scale: isTransport ? 0.92 : 0.95, y: 2 }}
       >
-        {iconContent ? (
-          <span
-            className="text-gray-200 leading-none text-center select-none"
-            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16), color: labelColor }}
-          >
+        {svgIcon ? (
+          <div className="flex items-center justify-center text-gray-200 select-none"
+            style={{ width: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, height: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, color: labelColor }}>
+            {svgIcon}
+          </div>
+        ) : iconContent ? (
+          <span className="text-gray-200 leading-none text-center select-none"
+            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16), color: labelColor }}>
             {iconContent}
           </span>
-        ) : (
-          labelPosition === 'on' && (
-            <span
-              className={`${textClass} font-medium leading-tight px-1 tracking-wide uppercase w-full${labelAlign && labelAlign !== 'center' ? ' overflow-hidden' : ''}`}
-              style={{ ...textStyle, color: labelColor ?? '#e5e7eb', textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center', overflowWrap: 'break-word' }}
-            >
-              {label}
-            </span>
-          )
-        )}
+        ) : labelPosition === 'on' ? (
+          <span
+            className={`${textClass} font-medium leading-tight px-1 tracking-wide uppercase w-full${labelAlign && labelAlign !== 'center' ? ' overflow-hidden' : ''}`}
+            style={{ ...textStyle, color: labelColor ?? '#e5e7eb', textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center', overflowWrap: 'break-word' }}>
+            {label}
+          </span>
+        ) : null}
       </motion.button>
 
-      {/* Label below button */}
-      {labelPosition === 'below' && (
+      {/* Label below button (text only — icons positioned outside by parent) */}
+      {labelPosition === 'below' && label && (
         <span
           className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
           style={textStyle}

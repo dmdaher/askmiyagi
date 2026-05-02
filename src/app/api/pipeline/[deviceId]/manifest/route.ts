@@ -70,7 +70,9 @@ export async function GET(
           }
         } catch { /* ignore parse errors */ }
       }
-      return NextResponse.json({ ...parsed, _source: 'editor' });
+      const resp = NextResponse.json({ ...parsed, _source: 'editor' });
+      resp.headers.set('Cache-Control', 'no-store');
+      return resp;
     } catch {
       // Fall through to original manifest
     }

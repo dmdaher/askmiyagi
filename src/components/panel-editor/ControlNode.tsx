@@ -17,7 +17,7 @@ import TouchDisplay from '@/components/controls/TouchDisplay';
 import JogWheelAssembly from '@/components/controls/JogWheelAssembly';
 import DirectionSwitch from '@/components/controls/DirectionSwitch';
 import JogDisplay from '@/components/controls/JogDisplay';
-import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
 
 /** Render label text with \n as line breaks */
 function renderLabelText(text: string): React.ReactNode {
@@ -46,9 +46,11 @@ function mapButtonLabelPosition(
   return 'on';
 }
 
-/** Resolve the display text for a control — icon or label */
-function resolveDisplayContent(control: ControlDef): { text: string; isIcon: boolean } {
+/** Resolve the display text for a control — icon, SVG, or label */
+function resolveDisplayContent(control: ControlDef): { text: string; isIcon: boolean; svgIcon?: React.ReactNode } {
   if (control.icon && control.labelDisplay === 'icon-only') {
+    const svg = HARDWARE_ICON_SVGS[control.icon];
+    if (svg) return { text: '', isIcon: true, svgIcon: svg };
     const iconChar = HARDWARE_ICONS[control.icon] ?? control.icon;
     return { text: iconChar, isIcon: true };
   }
@@ -174,23 +176,39 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       const rawStyle = control.buttonStyle;
       const variant = rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard');
 
-      // Determine icon content
-      const iconContent = (control.icon && control.labelDisplay === 'icon-only')
-        ? (HARDWARE_ICONS[control.icon] ?? control.icon)
+      // Determine icon content — icon is the label, follows labelDisplay position
+      const hasIcon = !!control.icon && !!control.labelDisplay && control.labelDisplay !== 'on-button';
+      const svgContent = hasIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
+      const iconContent = (hasIcon && !svgContent)
+        ? (HARDWARE_ICONS[control.icon!] ?? control.icon)
         : undefined;
+
+      // Icon position: on-button/icon-only → icon on button face. above/below → float outside.
+      const iconOnButton = hasIcon && control.labelDisplay !== 'above' && control.labelDisplay !== 'below';
+      const iconAbove = hasIcon && control.labelDisplay === 'above';
+      const iconBelow = hasIcon && control.labelDisplay === 'below';
+      const iconSize = Math.round(Math.min(visW, visH) * 0.5);
 
       const buttonEl = (
         <div className="relative">
           {renderButtonLed(control)}
+          {/* Icon above — floats independently, doesn't push button */}
+          {iconAbove && (
+            <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
+              style={{ bottom: '100%', marginBottom: 2, width: iconSize, height: iconSize }}>
+              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
+            </div>
+          )}
           <PanelButton
             id={control.id}
-            label={control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
+            label={control.labelPosition === 'on-button' ? control.label : ''}
             highlighted={isSelected}
             width={visW}
             height={visH}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            iconContent={iconContent}
+            iconContent={iconOnButton ? iconContent : undefined}
+            svgIcon={iconOnButton ? svgContent : undefined}
             hasLed={control.hasLed && control.ledStyle === 'integrated'}
             ledColor={control.ledColor ?? undefined}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
@@ -199,6 +217,13 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             labelAlign={control.labelAlign}
             labelColor={control.labelColor}
           />
+          {/* Icon below — floats independently, doesn't push button */}
+          {iconBelow && (
+            <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
+              style={{ top: '100%', marginTop: 2, width: iconSize, height: iconSize }}>
+              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
+            </div>
+          )}
         </div>
       );
       return buttonEl;

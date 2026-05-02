@@ -14,7 +14,7 @@ import TouchDisplay from './TouchDisplay';
 import JogWheelAssembly from './JogWheelAssembly';
 import DirectionSwitch from './DirectionSwitch';
 import JogDisplay from './JogDisplay';
-import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
 import { PanelState } from '@/types/panel';
 import type { GroupLabel } from '@/types/manifest';
 
@@ -219,8 +219,15 @@ function renderControl(
 
       const rawStyle = control.buttonStyle;
       const variant = (rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard')) as any;
-      const iconContent = (control.icon && control.labelDisplay === 'icon-only')
-        ? (HARDWARE_ICONS[control.icon] ?? control.icon) : undefined;
+      const hasIcon = !!control.icon && !!control.labelDisplay && control.labelDisplay !== 'on-button';
+      const svgContent = hasIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
+      const iconContent = (hasIcon && !svgContent)
+        ? (HARDWARE_ICONS[control.icon!] ?? control.icon) : undefined;
+
+      const iconOnButton = hasIcon && control.labelDisplay !== 'above' && control.labelDisplay !== 'below';
+      const iconAbove = hasIcon && control.labelDisplay === 'above';
+      const iconBelow = hasIcon && control.labelDisplay === 'below';
+      const iconSize = Math.round(Math.min(w, h) * 0.5);
 
       return (
         <div className="relative">
@@ -233,16 +240,24 @@ function renderControl(
               }} />
             </div>
           )}
+          {/* Icon above — floats independently */}
+          {iconAbove && (
+            <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
+              style={{ bottom: '100%', marginBottom: 2, width: iconSize, height: iconSize }}>
+              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
+            </div>
+          )}
           <PanelButton
             id={control.id}
-            label={control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
+            label={control.labelPosition === 'on-button' ? control.label : ''}
             highlighted={highlighted}
             active={active}
             width={w}
             height={h}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            iconContent={iconContent}
+            iconContent={iconOnButton ? iconContent : undefined}
+            svgIcon={iconOnButton ? svgContent : undefined}
             hasLed={control.hasLed && control.ledPosition === 'inside'}
             ledOn={ledOn}
             ledColor={control.ledColor ?? undefined}
@@ -252,6 +267,13 @@ function renderControl(
             labelColor={control.labelColor}
             onClick={onClick}
           />
+          {/* Icon below — floats independently */}
+          {iconBelow && (
+            <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
+              style={{ top: '100%', marginTop: 2, width: iconSize, height: iconSize }}>
+              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
+            </div>
+          )}
         </div>
       );
     }
