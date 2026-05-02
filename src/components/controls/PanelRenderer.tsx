@@ -219,10 +219,14 @@ function renderControl(
 
       const rawStyle = control.buttonStyle;
       const variant = (rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard')) as any;
-      const showIcon = control.icon && control.labelDisplay && control.labelDisplay !== 'on-button';
-      const svgContent = showIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
-      const iconContent = (showIcon && !svgContent)
+      const hasIcon = !!control.icon && !!control.labelDisplay && control.labelDisplay !== 'on-button';
+      const svgContent = hasIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
+      const iconContent = (hasIcon && !svgContent)
         ? (HARDWARE_ICONS[control.icon!] ?? control.icon) : undefined;
+
+      const iconPosition = hasIcon
+        ? (control.labelDisplay === 'above' ? 'above' : control.labelDisplay === 'below' ? 'below' : 'on')
+        : undefined;
 
       return (
         <div className="relative">
@@ -237,9 +241,7 @@ function renderControl(
           )}
           <PanelButton
             id={control.id}
-            label={showIcon && (control.labelDisplay === 'above' || control.labelDisplay === 'below')
-              ? control.label
-              : control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
+            label={control.labelPosition === 'on-button' ? control.label : ''}
             highlighted={highlighted}
             active={active}
             width={w}
@@ -255,9 +257,7 @@ function renderControl(
             ledStyle={control.ledStyle}
             labelAlign={control.labelAlign}
             labelColor={control.labelColor}
-            labelPosition={showIcon && (control.labelDisplay === 'above' || control.labelDisplay === 'below')
-              ? (control.labelDisplay as 'above' | 'below')
-              : undefined}
+            labelPosition={iconPosition}
             onClick={onClick}
           />
         </div>

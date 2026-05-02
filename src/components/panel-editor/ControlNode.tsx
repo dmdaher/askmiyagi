@@ -176,21 +176,25 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       const rawStyle = control.buttonStyle;
       const variant = rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard');
 
-      // Determine icon content — render icon on button when labelDisplay is not 'on-button'
-      const showIcon = control.icon && control.labelDisplay && control.labelDisplay !== 'on-button';
-      const svgContent = showIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
-      const iconContent = (showIcon && !svgContent)
+      // Determine icon content — icon is the label content, follows labelDisplay position
+      const hasIcon = !!control.icon && control.labelDisplay && control.labelDisplay !== 'on-button';
+      const svgContent = hasIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
+      const iconContent = (hasIcon && !svgContent)
         ? (HARDWARE_ICONS[control.icon!] ?? control.icon)
         : undefined;
+
+      // Icon follows labelDisplay position (on-button, above, below, hidden)
+      // When icon is above/below, button face is empty. When icon-only, icon is on button face.
+      const iconPosition = hasIcon
+        ? (control.labelDisplay === 'above' ? 'above' : control.labelDisplay === 'below' ? 'below' : 'on')
+        : mapButtonLabelPosition(control.labelPosition);
 
       const buttonEl = (
         <div className="relative">
           {renderButtonLed(control)}
           <PanelButton
             id={control.id}
-            label={showIcon && (control.labelDisplay === 'above' || control.labelDisplay === 'below')
-              ? control.label
-              : control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
+            label={control.labelPosition === 'on-button' ? control.label : ''}
             highlighted={isSelected}
             width={visW}
             height={visH}
@@ -200,9 +204,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             svgIcon={svgContent}
             hasLed={control.hasLed && control.ledStyle === 'integrated'}
             ledColor={control.ledColor ?? undefined}
-            labelPosition={showIcon && (control.labelDisplay === 'above' || control.labelDisplay === 'below')
-              ? (control.labelDisplay as 'above' | 'below')
-              : mapButtonLabelPosition(control.labelPosition)}
+            labelPosition={iconPosition}
             labelFontSize={control.labelFontSize}
             ledStyle={control.ledStyle}
             labelAlign={control.labelAlign}
