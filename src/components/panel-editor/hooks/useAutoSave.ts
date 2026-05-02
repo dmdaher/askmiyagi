@@ -61,7 +61,6 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
     }
-    if (!useEditorStore.getState().hasUserEdited) return;
 
     setSaveStatus('saving');
     try {
