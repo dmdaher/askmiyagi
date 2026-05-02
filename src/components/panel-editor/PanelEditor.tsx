@@ -374,7 +374,7 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
               lockedIds: [],
               keyboard: data.keyboard ?? null,
               _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
-              _loadedAt: data._updatedAt ?? null,
+              _loadedAt: data._updatedAt ?? data._loadedAt ?? null,
               hasUserEdited: false,
               ...canvasUpdate,
             });
