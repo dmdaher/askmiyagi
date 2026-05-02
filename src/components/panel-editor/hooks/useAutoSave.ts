@@ -44,9 +44,16 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
     setLastSavedAt(now);
     // Update _loadedAt so next save uses the new timestamp for conflict detection
     useEditorStore.setState({ _loadedAt: now.toISOString() });
+    // Cache saved state locally so refresh doesn't depend on CDN propagation
+    try {
+      sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({
+        data: buildSavePayload(),
+        savedAt: now.getTime(),
+      }));
+    } catch { /* quota exceeded — non-critical */ }
     setSaveStatus('saved');
     setTimeout(() => setSaveStatus('idle'), 2000);
-  }, []);
+  }, [deviceId]);
 
   /** Fire an immediate save (used by manual save button and flush) */
   const saveNow = useCallback(async () => {
