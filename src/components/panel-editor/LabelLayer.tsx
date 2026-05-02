@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditorStore } from './store';
 import type { EditorLabel } from './store';
-import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
 
 /**
  * Renders all editorLabels as a flat overlay on the editor canvas.
@@ -182,9 +182,13 @@ export default function LabelLayer() {
                 onMouseDown={(e) => handleMouseDown(e, label)}
                 onDoubleClick={() => handleDoubleClick(label)}
               >
-                {label.icon && HARDWARE_ICONS[label.icon] && (
+                {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
+                  <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
+                    {HARDWARE_ICON_SVGS[label.icon]}
+                  </span>
+                ) : label.icon && HARDWARE_ICONS[label.icon] ? (
                   <span style={{ marginRight: label.text ? 3 : 0 }}>{HARDWARE_ICONS[label.icon]}</span>
-                )}
+                ) : null}
                 {label.text ? label.text.split('\n').map((line, i) => (
                   <span key={i}>
                     {i > 0 && <br />}

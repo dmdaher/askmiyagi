@@ -1864,6 +1864,7 @@ export const createManifestSlice: StateCreator<
         id: `label-${ctrl.id}`,
         controlId: ctrl.id,
         text: ctrl.label,
+        icon: ctrl.icon ?? undefined,
         x: lp.x,
         y: lp.y,
         w: lp.w,

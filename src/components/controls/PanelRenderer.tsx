@@ -219,16 +219,7 @@ function renderControl(
 
       const rawStyle = control.buttonStyle;
       const variant = (rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard')) as any;
-      const hasIcon = !!control.icon && !!control.labelDisplay && control.labelDisplay !== 'on-button';
-      const svgContent = hasIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
-      const iconContent = (hasIcon && !svgContent)
-        ? (HARDWARE_ICONS[control.icon!] ?? control.icon) : undefined;
-
-      const iconOnButton = hasIcon && control.labelDisplay !== 'above' && control.labelDisplay !== 'below';
-      const iconAbove = hasIcon && control.labelDisplay === 'above';
-      const iconBelow = hasIcon && control.labelDisplay === 'below';
-      const iconSize = Math.round(Math.min(w, h) * 0.5);
-
+      // Icons are rendered by the editorLabels section below — not inline here.
       return (
         <div className="relative">
           {control.hasLed && control.ledPosition !== 'inside' && control.ledStyle !== 'integrated' && (
@@ -240,13 +231,6 @@ function renderControl(
               }} />
             </div>
           )}
-          {/* Icon above — floats independently */}
-          {iconAbove && (
-            <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
-              style={{ bottom: '100%', marginBottom: 2, width: iconSize, height: iconSize }}>
-              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
-            </div>
-          )}
           <PanelButton
             id={control.id}
             label={control.labelPosition === 'on-button' ? control.label : ''}
@@ -256,8 +240,6 @@ function renderControl(
             height={h}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            iconContent={iconOnButton ? iconContent : undefined}
-            svgIcon={iconOnButton ? svgContent : undefined}
             hasLed={control.hasLed && control.ledPosition === 'inside'}
             ledOn={ledOn}
             ledColor={control.ledColor ?? undefined}
@@ -267,13 +249,6 @@ function renderControl(
             labelColor={control.labelColor}
             onClick={onClick}
           />
-          {/* Icon below — floats independently */}
-          {iconBelow && (
-            <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
-              style={{ top: '100%', marginTop: 2, width: iconSize, height: iconSize }}>
-              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
-            </div>
-          )}
         </div>
       );
     }
@@ -584,9 +559,13 @@ export default function PanelRenderer({
             lineHeight: `${label.lineHeight ?? label.fontSize + 2}px`,
           }}>
           <span className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
-            {label.icon && HARDWARE_ICONS[label.icon] && (
+            {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
+              <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
+                {HARDWARE_ICON_SVGS[label.icon]}
+              </span>
+            ) : label.icon && HARDWARE_ICONS[label.icon] ? (
               <span style={{ marginRight: label.text ? 3 : 0 }}>{HARDWARE_ICONS[label.icon]}</span>
-            )}
+            ) : null}
             {label.text && renderLabelText(label.text)}
           </span>
         </div>
