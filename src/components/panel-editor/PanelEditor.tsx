@@ -304,20 +304,23 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
           data = await res.json();
         }
 
-        // If we used local cache, verify the blob actually has the data.
-        // Fetch in background — if blob is stale (CDN lag), that's fine.
-        // If blob has NEWER data (another session saved), reload from server.
+        // If we used local cache, verify in background that no OTHER session
+        // saved newer data while we were away. Compare _loadedAt (our last known
+        // server timestamp) against the server's current _updatedAt.
         if (usedLocalCache && !cancelled) {
-          fetch(apiUrl, { cache: 'no-store' }).then(async (res) => {
-            if (!res.ok || cancelled) return;
-            const serverData = await res.json();
-            const serverTime = serverData._updatedAt ? new Date(serverData._updatedAt).getTime() : 0;
-            const localTime = data._updatedAt ? new Date(data._updatedAt).getTime() : 0;
-            if (serverTime > localTime) {
-              // Server has newer data — another session saved after us. Reload.
-              window.location.reload();
-            }
-          }).catch(() => { /* background check — non-critical */ });
+          const ourLoadedAt = data._loadedAt;
+          if (ourLoadedAt) {
+            fetch(apiUrl, { cache: 'no-store' }).then(async (res) => {
+              if (!res.ok || cancelled) return;
+              const serverData = await res.json();
+              const serverTime = serverData._updatedAt ? new Date(serverData._updatedAt).getTime() : 0;
+              const ourTime = new Date(ourLoadedAt).getTime();
+              if (serverTime > ourTime) {
+                // Server has data saved AFTER our last successful save — another session.
+                window.location.reload();
+              }
+            }).catch(() => { /* background check — non-critical */ });
+          }
         }
         if (!cancelled) {
           // Accept both 'sections' (editor auto-save format) and 'editorSections' (production manifest format)
