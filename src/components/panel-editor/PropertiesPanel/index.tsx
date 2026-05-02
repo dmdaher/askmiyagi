@@ -423,44 +423,56 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
           </div>
           <div className="h-px bg-gray-800" />
 
-          {/* Icon + Label Display */}
+          {/* Icon picker — visual grid with SVG previews */}
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase tracking-wide text-gray-500">Icon</label>
-            <div className="flex gap-1.5">
-              <select
-                value={control.icon ?? ''}
-                onChange={(e) => {
-                  pushSnapshot();
-                  const val = e.target.value || undefined;
-                  updateControlProp(ids, 'icon', val);
-                  if (val && (!control.labelDisplay || control.labelDisplay === 'on-button')) {
-                    updateControlProp(ids, 'labelDisplay', 'icon-only');
-                  }
-                  if (!val && control.labelDisplay === 'icon-only') {
-                    updateControlProp(ids, 'labelDisplay', 'on-button');
-                  }
-                }}
-                className="flex-1 h-7 rounded border border-gray-700 bg-gray-900 px-1.5 text-[10px] text-gray-300 outline-none focus:border-blue-500"
-              >
-                <option value="">None</option>
-                {ICON_CATEGORIES.map((cat) => (
-                  <optgroup key={cat.label} label={cat.label}>
-                    {cat.keys.map((k) => (
-                      <option key={k} value={k}>
-                        {HARDWARE_ICONS[k] ? `${HARDWARE_ICONS[k]} ` : ''}{k.replace(/-/g, ' ')}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-              {control.icon && (
-                <div className="w-7 h-7 rounded border border-gray-700 bg-gray-900 flex items-center justify-center text-gray-300">
+            {control.icon && (
+              <div className="flex items-center gap-1.5 mb-1">
+                <div className="w-6 h-6 rounded border border-blue-500 bg-blue-500/10 flex items-center justify-center text-blue-400">
                   {HARDWARE_ICON_SVGS[control.icon]
                     ? <div className="w-4 h-4">{HARDWARE_ICON_SVGS[control.icon]}</div>
                     : <span className="text-xs">{HARDWARE_ICONS[control.icon] ?? '?'}</span>}
                 </div>
-              )}
-            </div>
+                <span className="text-[9px] text-gray-400 flex-1">{control.icon.replace(/-/g, ' ')}</span>
+                <button
+                  onClick={() => {
+                    pushSnapshot();
+                    updateControlProp(ids, 'icon', undefined);
+                    if (control.labelDisplay === 'icon-only') updateControlProp(ids, 'labelDisplay', 'on-button');
+                  }}
+                  className="text-[9px] text-gray-600 hover:text-red-400 transition-colors"
+                >clear</button>
+              </div>
+            )}
+            {ICON_CATEGORIES.map((cat) => (
+              <div key={cat.label}>
+                <p className="text-[8px] text-gray-600 uppercase tracking-wider mb-0.5">{cat.label}</p>
+                <div className="flex flex-wrap gap-1 mb-1.5">
+                  {cat.keys.map((k) => (
+                    <button
+                      key={k}
+                      onClick={() => {
+                        pushSnapshot();
+                        updateControlProp(ids, 'icon', k);
+                        if (!control.labelDisplay || control.labelDisplay === 'on-button') {
+                          updateControlProp(ids, 'labelDisplay', 'icon-only');
+                        }
+                      }}
+                      className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${
+                        control.icon === k
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                          : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                      }`}
+                      title={k.replace(/-/g, ' ')}
+                    >
+                      {HARDWARE_ICON_SVGS[k]
+                        ? <div className="w-3.5 h-3.5">{HARDWARE_ICON_SVGS[k]}</div>
+                        : <span className="text-[9px] leading-none">{HARDWARE_ICONS[k] ?? '?'}</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
 
           {control.icon && (

@@ -176,12 +176,11 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       const rawStyle = control.buttonStyle;
       const variant = rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard');
 
-      // Determine icon content — SVG icons take priority over unicode
-      const svgContent = (control.icon && control.labelDisplay === 'icon-only')
-        ? HARDWARE_ICON_SVGS[control.icon]
-        : undefined;
-      const iconContent = (!svgContent && control.icon && control.labelDisplay === 'icon-only')
-        ? (HARDWARE_ICONS[control.icon] ?? control.icon)
+      // Determine icon content — render icon on button when labelDisplay is not 'on-button'
+      const showIcon = control.icon && control.labelDisplay && control.labelDisplay !== 'on-button';
+      const svgContent = showIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
+      const iconContent = (showIcon && !svgContent)
+        ? (HARDWARE_ICONS[control.icon!] ?? control.icon)
         : undefined;
 
       const buttonEl = (
