@@ -544,12 +544,32 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
     (e: React.MouseEvent) => {
       e.stopPropagation();
 
-      // Alt+Click: select container underneath this control
+      // Option/Alt+Click: cycle through overlapping controls, then containers
       if (e.altKey) {
         const store = useEditorStore.getState();
-        const containers = store.controlContainers ?? [];
+        const allCtrls = store.controls;
         const cx = control?.x ?? 0;
         const cy = control?.y ?? 0;
+        const cw = control?.w ?? 0;
+        const ch = control?.h ?? 0;
+
+        // Find all controls whose bounding box overlaps with this control
+        const overlapping = Object.values(allCtrls).filter((c: any) => {
+          if (!c || c.id === controlId || c.nestedIn) return false;
+          return cx < c.x + c.w && cx + cw > c.x && cy < c.y + c.h && cy + ch > c.y;
+        });
+
+        if (overlapping.length > 0) {
+          // Sort by zOrder descending — cycle top-to-bottom, then wrap
+          const sorted = [control, ...overlapping].sort((a: any, b: any) => (b.zOrder ?? 0) - (a.zOrder ?? 0));
+          const currentIdx = sorted.findIndex((c: any) => c.id === controlId);
+          const nextIdx = (currentIdx + 1) % sorted.length;
+          setSelectedIds([sorted[nextIdx].id]);
+          return;
+        }
+
+        // No overlapping controls — fall back to container selection
+        const containers = store.controlContainers ?? [];
         const hit = containers.find(c =>
           cx >= c.x && cx <= c.x + c.w && cy >= c.y && cy <= c.y + c.h
         );
@@ -706,7 +726,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
             : 'none',
           outlineOffset: 1,
           borderRadius: 2,
-          zIndex: isSelected ? (control.zOrder ?? 0) + 55 : (control.zOrder ?? 0) + 5,
+          zIndex: (control.zOrder ?? 0) * 10 + (isSelected ? 8 : 0) + 5,
           boxShadow: isSelected
             ? isLocked ? '0 0 8px 2px rgba(234,179,8,0.2)' : '0 0 8px 2px rgba(59,130,246,0.3)'
             : 'none',
