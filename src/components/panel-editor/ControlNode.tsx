@@ -176,22 +176,29 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       const rawStyle = control.buttonStyle;
       const variant = rawStyle === 'raised' ? 'standard' : (rawStyle ?? 'standard');
 
-      // Determine icon content — icon is the label content, follows labelDisplay position
-      const hasIcon = !!control.icon && control.labelDisplay && control.labelDisplay !== 'on-button';
+      // Determine icon content — icon is the label, follows labelDisplay position
+      const hasIcon = !!control.icon && !!control.labelDisplay && control.labelDisplay !== 'on-button';
       const svgContent = hasIcon ? HARDWARE_ICON_SVGS[control.icon!] : undefined;
       const iconContent = (hasIcon && !svgContent)
         ? (HARDWARE_ICONS[control.icon!] ?? control.icon)
         : undefined;
 
-      // Icon follows labelDisplay position (on-button, above, below, hidden)
-      // When icon is above/below, button face is empty. When icon-only, icon is on button face.
-      const iconPosition = hasIcon
-        ? (control.labelDisplay === 'above' ? 'above' : control.labelDisplay === 'below' ? 'below' : 'on')
-        : mapButtonLabelPosition(control.labelPosition);
+      // Icon position: on-button/icon-only → icon on button face. above/below → float outside.
+      const iconOnButton = hasIcon && control.labelDisplay !== 'above' && control.labelDisplay !== 'below';
+      const iconAbove = hasIcon && control.labelDisplay === 'above';
+      const iconBelow = hasIcon && control.labelDisplay === 'below';
+      const iconSize = Math.round(Math.min(visW, visH) * 0.5);
 
       const buttonEl = (
         <div className="relative">
           {renderButtonLed(control)}
+          {/* Icon above — floats independently, doesn't push button */}
+          {iconAbove && (
+            <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
+              style={{ bottom: '100%', marginBottom: 2, width: iconSize, height: iconSize }}>
+              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
+            </div>
+          )}
           <PanelButton
             id={control.id}
             label={control.labelPosition === 'on-button' ? control.label : ''}
@@ -200,16 +207,23 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             height={visH}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            iconContent={iconContent}
-            svgIcon={svgContent}
+            iconContent={iconOnButton ? iconContent : undefined}
+            svgIcon={iconOnButton ? svgContent : undefined}
             hasLed={control.hasLed && control.ledStyle === 'integrated'}
             ledColor={control.ledColor ?? undefined}
-            labelPosition={iconPosition}
+            labelPosition={mapButtonLabelPosition(control.labelPosition)}
             labelFontSize={control.labelFontSize}
             ledStyle={control.ledStyle}
             labelAlign={control.labelAlign}
             labelColor={control.labelColor}
           />
+          {/* Icon below — floats independently, doesn't push button */}
+          {iconBelow && (
+            <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
+              style={{ top: '100%', marginTop: 2, width: iconSize, height: iconSize }}>
+              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
+            </div>
+          )}
         </div>
       );
       return buttonEl;

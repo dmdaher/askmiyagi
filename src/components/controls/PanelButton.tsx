@@ -209,24 +209,14 @@ export default function PanelButton({
 
   return (
     <div className="flex flex-col items-center" data-control-id={id}>
-      {/* Content above button — icon or text label */}
-      {labelPosition === 'above' && (
-        svgIcon ? (
-          <div className="flex items-center justify-center text-gray-300 mb-0.5"
-            style={{ width: isFluid ? Math.round(Math.min(width!, height!) * 0.5) : 16, height: isFluid ? Math.round(Math.min(width!, height!) * 0.5) : 16 }}>
-            {svgIcon}
-          </div>
-        ) : iconContent ? (
-          <span className="text-gray-300 leading-none text-center select-none mb-0.5"
-            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.35), 8) : 14 }}>
-            {iconContent}
-          </span>
-        ) : (
-          <span className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
-            style={textStyle}>
-            {label}
-          </span>
-        )
+      {/* Label above button (text only — icons positioned outside by parent) */}
+      {labelPosition === 'above' && label && (
+        <span
+          className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
+          style={textStyle}
+        >
+          {label}
+        </span>
       )}
 
       {/* LED dot indicator (dot style only — integrated LEDs glow via button face) */}
@@ -260,20 +250,17 @@ export default function PanelButton({
         {...(highlighted ? highlightAnimation : {})}
         whileTap={{ scale: isTransport ? 0.92 : 0.95, y: 2 }}
       >
-        {/* Button face content: icon on-button, or text, or empty (if icon is above/below) */}
-        {(svgIcon || iconContent) && labelPosition === 'on' ? (
-          svgIcon ? (
-            <div className="flex items-center justify-center text-gray-200 select-none"
-              style={{ width: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, height: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, color: labelColor }}>
-              {svgIcon}
-            </div>
-          ) : (
-            <span className="text-gray-200 leading-none text-center select-none"
-              style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16), color: labelColor }}>
-              {iconContent}
-            </span>
-          )
-        ) : !svgIcon && !iconContent && labelPosition === 'on' ? (
+        {svgIcon ? (
+          <div className="flex items-center justify-center text-gray-200 select-none"
+            style={{ width: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, height: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, color: labelColor }}>
+            {svgIcon}
+          </div>
+        ) : iconContent ? (
+          <span className="text-gray-200 leading-none text-center select-none"
+            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16), color: labelColor }}>
+            {iconContent}
+          </span>
+        ) : labelPosition === 'on' ? (
           <span
             className={`${textClass} font-medium leading-tight px-1 tracking-wide uppercase w-full${labelAlign && labelAlign !== 'center' ? ' overflow-hidden' : ''}`}
             style={{ ...textStyle, color: labelColor ?? '#e5e7eb', textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center', overflowWrap: 'break-word' }}>
@@ -282,24 +269,14 @@ export default function PanelButton({
         ) : null}
       </motion.button>
 
-      {/* Content below button — icon or text label */}
-      {labelPosition === 'below' && (
-        svgIcon ? (
-          <div className="flex items-center justify-center text-gray-300 mt-0.5"
-            style={{ width: isFluid ? Math.round(Math.min(width!, height!) * 0.5) : 16, height: isFluid ? Math.round(Math.min(width!, height!) * 0.5) : 16 }}>
-            {svgIcon}
-          </div>
-        ) : iconContent ? (
-          <span className="text-gray-300 leading-none text-center select-none mt-0.5"
-            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.35), 8) : 14 }}>
-            {iconContent}
-          </span>
-        ) : (
-          <span className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
-            style={textStyle}>
-            {label}
-          </span>
-        )
+      {/* Label below button (text only — icons positioned outside by parent) */}
+      {labelPosition === 'below' && label && (
+        <span
+          className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
+          style={textStyle}
+        >
+          {label}
+        </span>
       )}
     </div>
   );
