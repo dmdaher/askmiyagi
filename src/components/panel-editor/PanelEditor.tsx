@@ -133,7 +133,7 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
 
   return (
     <div className="flex flex-col h-full bg-[#0d0d1a]" data-tutorial="canvas">
-      <EditorTutorial deviceId={deviceId} />
+      {/* <EditorTutorial deviceId={deviceId} /> */}
       <EditorToolbar
         deviceId={deviceId}
         previewMode={previewMode}
