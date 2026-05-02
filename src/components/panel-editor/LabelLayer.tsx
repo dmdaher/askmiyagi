@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditorStore } from './store';
 import type { EditorLabel } from './store';
-import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
 
 /**
  * Renders all editorLabels as a flat overlay on the editor canvas.
@@ -16,6 +16,7 @@ export default function LabelLayer() {
   const showLabels = useEditorStore((s) => s.showLabels);
   const moveLabel = useEditorStore((s) => s.moveLabel);
   const updateLabel = useEditorStore((s) => s.updateLabel);
+  const snapGrid = useEditorStore((s) => s.snapGrid);
   const deleteLabel = useEditorStore((s) => s.deleteLabel);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const zoom = useEditorStore((s) => s.zoom);
@@ -90,12 +91,16 @@ export default function LabelLayer() {
 
     const handleMouseMove = (me: MouseEvent) => {
       if (!dragStart.current) return;
-      const dx = (me.clientX - dragStart.current.x) / zoom;
-      const dy = (me.clientY - dragStart.current.y) / zoom;
-      // Live preview — update position directly
+      const rawDx = (me.clientX - dragStart.current.x) / zoom;
+      const rawDy = (me.clientY - dragStart.current.y) / zoom;
+      // Snap to grid — same grid as controls
+      const snap = snapGrid ?? 1;
+      const dx = Math.round(rawDx / snap) * snap;
+      const dy = Math.round(rawDy / snap) * snap;
+      if (dx === 0 && dy === 0) return;
       moveLabel(label.id, dx, dy);
-      dragStart.current.x = me.clientX;
-      dragStart.current.y = me.clientY;
+      dragStart.current.x += dx * zoom;
+      dragStart.current.y += dy * zoom;
     };
 
     const handleMouseUp = () => {
@@ -171,15 +176,19 @@ export default function LabelLayer() {
               }}
             >
               <span
-                className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move"
+                className={`font-medium uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move ${label.icon ? 'text-gray-200' : 'text-gray-400'}`}
                 style={{ padding: '4px 6px', margin: '-4px -6px', display: 'inline-block', minWidth: 16, minHeight: label.fontSize + 4 }}
                 data-label-id={label.id}
                 onMouseDown={(e) => handleMouseDown(e, label)}
                 onDoubleClick={() => handleDoubleClick(label)}
               >
-                {label.icon && HARDWARE_ICONS[label.icon] && (
+                {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
+                  <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
+                    {HARDWARE_ICON_SVGS[label.icon]}
+                  </span>
+                ) : label.icon && HARDWARE_ICONS[label.icon] ? (
                   <span style={{ marginRight: label.text ? 3 : 0 }}>{HARDWARE_ICONS[label.icon]}</span>
-                )}
+                ) : null}
                 {label.text ? label.text.split('\n').map((line, i) => (
                   <span key={i}>
                     {i > 0 && <br />}

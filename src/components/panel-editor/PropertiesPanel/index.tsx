@@ -264,8 +264,19 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
   const resizeControl = useEditorStore((s) => s.resizeControl);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const setLabelPosition = useEditorStore((s) => s.setLabelPosition);
+  const editorLabels = useEditorStore((s) => s.editorLabels) as import('../store/historySlice').EditorLabel[];
+  const updateLabel = useEditorStore((s) => s.updateLabel);
+  const addStandaloneLabel = useEditorStore((s) => s.addStandaloneLabel);
+  const deleteLabel = useEditorStore((s) => s.deleteLabel);
+  const controlScale = useEditorStore((s) => s.controlScale);
 
   const ids = useMemo(() => [control.id], [control.id]);
+
+  // Find ANY editorLabel linked to this control (text or icon — it's the same label)
+  const controlLabel = useMemo(() =>
+    editorLabels.find(l => l.controlId === control.id),
+    [editorLabels, control.id]
+  );
 
   const handleTypeChange = useCallback(
     (type: string) => {
@@ -422,24 +433,31 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
             </div>
           </div>
           <div className="h-px bg-gray-800" />
+        </>
+      )}
 
-          {/* Icon picker — visual grid with SVG previews */}
+      {/* Icon picker — for buttons, LEDs, pads, indicators */}
+      {(control.type === 'button' || control.type === 'led' || control.type === 'indicator' || control.type === 'pad') && (
+        <>
+          {/* Icon picker — creates/updates editorLabel with icon */}
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase tracking-wide text-gray-500">Icon</label>
-            {control.icon && (
+            {(control.icon || controlLabel?.icon) && (
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-6 h-6 rounded border border-blue-500 bg-blue-500/10 flex items-center justify-center text-blue-400">
-                  {HARDWARE_ICON_SVGS[control.icon]
-                    ? <div className="w-4 h-4">{HARDWARE_ICON_SVGS[control.icon]}</div>
-                    : <span className="text-xs">{HARDWARE_ICONS[control.icon] ?? '?'}</span>}
+                  {HARDWARE_ICON_SVGS[control.icon ?? controlLabel?.icon ?? '']
+                    ? <div className="w-4 h-4">{HARDWARE_ICON_SVGS[control.icon ?? controlLabel?.icon ?? '']}</div>
+                    : <span className="text-xs">{HARDWARE_ICONS[control.icon ?? controlLabel?.icon ?? ''] ?? '?'}</span>}
                 </div>
-                <span className="text-[9px] text-gray-400 flex-1">{control.icon.replace(/-/g, ' ')}</span>
+                <span className="text-[9px] text-gray-400 flex-1">{(control.icon ?? controlLabel?.icon ?? '').replace(/-/g, ' ')}</span>
                 <button
                   onClick={() => {
                     pushSnapshot();
                     updateControlProp(ids, 'icon', undefined);
-                    updateControlProp(ids, 'labelDisplay', 'on-button');
-                    updateControlProp(ids, 'labelPosition', 'on-button');
+                    // Restore text label (icon → text), ensure visible
+                    if (controlLabel) {
+                      updateLabel(controlLabel.id, { icon: undefined, text: control.label, hidden: false });
+                    }
                   }}
                   className="text-[9px] text-gray-600 hover:text-red-400 transition-colors"
                 >clear</button>
@@ -455,12 +473,28 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                       onClick={() => {
                         pushSnapshot();
                         updateControlProp(ids, 'icon', k);
-                        if (!control.labelDisplay || control.labelDisplay === 'on-button') {
-                          updateControlProp(ids, 'labelDisplay', 'icon-only');
+                        if (controlLabel) {
+                          // Same label — add icon, keep existing text, ensure visible
+                          updateLabel(controlLabel.id, { icon: k, hidden: false });
+                        } else {
+                          // No label exists — create one with icon
+                          const visW = control.w * controlScale;
+                          const visH = control.h * controlScale;
+                          const iconSize = Math.round(Math.min(visW, visH) * 0.6);
+                          const labelId = addStandaloneLabel(
+                            control.x + control.w + 4,
+                            control.y + (control.h - iconSize) / 2,
+                            control.label,
+                          );
+                          updateLabel(labelId, {
+                            icon: k,
+                            controlId: control.id,
+                            fontSize: Math.max(iconSize, 8),
+                          });
                         }
                       }}
                       className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${
-                        control.icon === k
+                        (control.icon === k || controlLabel?.icon === k)
                           ? 'border-blue-500 bg-blue-500/10 text-blue-400'
                           : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-500 hover:text-gray-200'
                       }`}
@@ -476,35 +510,8 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
             ))}
           </div>
 
-          {control.icon && (
-            <div className="space-y-1.5">
-              <label className="text-[10px] uppercase tracking-wide text-gray-500">Label Display</label>
-              <select
-                value={control.labelDisplay ?? 'on-button'}
-                onChange={(e) => {
-                  pushSnapshot();
-                  const val = e.target.value;
-                  updateControlProp(ids, 'labelDisplay', val);
-                  // When icon is on button with above/below, PanelButton handles label position.
-                  // Set labelPosition='on-button' to prevent LabelLayer from creating a duplicate.
-                  // icon-only/hidden → hide the floating label. on-button → show text on button.
-                  if (val === 'above' || val === 'below') {
-                    updateControlProp(ids, 'labelPosition', 'on-button');
-                  } else if (val === 'icon-only' || val === 'hidden') {
-                    updateControlProp(ids, 'labelPosition', 'hidden');
-                  } else {
-                    updateControlProp(ids, 'labelPosition', 'on-button');
-                  }
-                }}
-                className="w-full h-7 rounded border border-gray-700 bg-gray-900 px-1.5 text-[10px] text-gray-300 outline-none focus:border-blue-500"
-              >
-                <option value="on-button">Text on button</option>
-                <option value="icon-only">Icon only</option>
-                <option value="above">Label above</option>
-                <option value="below">Label below</option>
-                <option value="hidden">Hidden</option>
-              </select>
-            </div>
+          {(control.icon || controlLabel?.icon) && (
+            <p className="text-[9px] text-gray-600">Drag the icon label to position it. Select from Layers panel (L) if hard to click.</p>
           )}
 
           <div className="h-px bg-gray-800" />
