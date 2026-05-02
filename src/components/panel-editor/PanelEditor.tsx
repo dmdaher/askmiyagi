@@ -271,14 +271,35 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
     async function fetchManifest() {
       try {
         const useHostedApi = isHosted || isSandbox;
-        const res = await fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`, { cache: 'no-store' });
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(
-            body.error ?? `Failed to load manifest (${res.status})`
-          );
+
+        // Check sessionStorage for a recent local save — bypasses CDN propagation delay.
+        // On refresh, the server might return stale data for a few seconds due to
+        // Blob CDN caching. If we saved recently, use the local copy instead.
+        let data: any = null;
+        try {
+          const cached = sessionStorage.getItem(`manifest-cache-${deviceId}`);
+          if (cached) {
+            const { data: cachedData, savedAt } = JSON.parse(cached);
+            if (Date.now() - savedAt < 60000) {
+              // Local save within last 60 seconds — use it directly
+              data = { ...cachedData, _source: 'hosted' };
+            }
+            // Clear the cache after using it so stale data doesn't persist
+            sessionStorage.removeItem(`manifest-cache-${deviceId}`);
+          }
+        } catch { /* sessionStorage not available */ }
+
+        // Fall through to server fetch if no local cache
+        if (!data) {
+          const res = await fetch(`${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`, { cache: 'no-store' });
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(
+              body.error ?? `Failed to load manifest (${res.status})`
+            );
+          }
+          data = await res.json();
         }
-        const data = await res.json();
         if (!cancelled) {
           // Accept both 'sections' (editor auto-save format) and 'editorSections' (production manifest format)
           const rawSections = data.sections ?? data.editorSections;
