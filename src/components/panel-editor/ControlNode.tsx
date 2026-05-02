@@ -188,7 +188,9 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           {renderButtonLed(control)}
           <PanelButton
             id={control.id}
-            label={control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
+            label={showIcon && (control.labelDisplay === 'above' || control.labelDisplay === 'below')
+              ? control.label
+              : control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
             highlighted={isSelected}
             width={visW}
             height={visH}
@@ -198,7 +200,9 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             svgIcon={svgContent}
             hasLed={control.hasLed && control.ledStyle === 'integrated'}
             ledColor={control.ledColor ?? undefined}
-            labelPosition={mapButtonLabelPosition(control.labelPosition)}
+            labelPosition={showIcon && (control.labelDisplay === 'above' || control.labelDisplay === 'below')
+              ? (control.labelDisplay as 'above' | 'below')
+              : mapButtonLabelPosition(control.labelPosition)}
             labelFontSize={control.labelFontSize}
             ledStyle={control.ledStyle}
             labelAlign={control.labelAlign}

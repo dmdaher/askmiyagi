@@ -485,15 +485,16 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                   pushSnapshot();
                   const val = e.target.value;
                   updateControlProp(ids, 'labelDisplay', val);
-                  // Sync labelPosition so LabelLayer renders the label in the right place
-                  const posMap: Record<string, string> = {
-                    'on-button': 'on-button',
-                    'icon-only': 'hidden',
-                    'above': 'above',
-                    'below': 'below',
-                    'hidden': 'hidden',
-                  };
-                  updateControlProp(ids, 'labelPosition', posMap[val] ?? 'on-button');
+                  // When icon is on button with above/below, PanelButton handles label position.
+                  // Set labelPosition='on-button' to prevent LabelLayer from creating a duplicate.
+                  // icon-only/hidden → hide the floating label. on-button → show text on button.
+                  if (val === 'above' || val === 'below') {
+                    updateControlProp(ids, 'labelPosition', 'on-button');
+                  } else if (val === 'icon-only' || val === 'hidden') {
+                    updateControlProp(ids, 'labelPosition', 'hidden');
+                  } else {
+                    updateControlProp(ids, 'labelPosition', 'on-button');
+                  }
                 }}
                 className="w-full h-7 rounded border border-gray-700 bg-gray-900 px-1.5 text-[10px] text-gray-300 outline-none focus:border-blue-500"
               >

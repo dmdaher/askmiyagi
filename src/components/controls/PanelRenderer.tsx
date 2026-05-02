@@ -237,7 +237,9 @@ function renderControl(
           )}
           <PanelButton
             id={control.id}
-            label={control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
+            label={showIcon && (control.labelDisplay === 'above' || control.labelDisplay === 'below')
+              ? control.label
+              : control.labelPosition === 'on-button' ? control.label : (iconContent ?? '')}
             highlighted={highlighted}
             active={active}
             width={w}
@@ -253,6 +255,9 @@ function renderControl(
             ledStyle={control.ledStyle}
             labelAlign={control.labelAlign}
             labelColor={control.labelColor}
+            labelPosition={showIcon && (control.labelDisplay === 'above' || control.labelDisplay === 'below')
+              ? (control.labelDisplay as 'above' | 'below')
+              : undefined}
             onClick={onClick}
           />
         </div>
