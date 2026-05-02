@@ -22,7 +22,7 @@ export async function GET(
     return NextResponse.json({ error: 'Device not found' }, { status: 404 });
   }
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     ...(manifest as Record<string, unknown>),
     _source: 'hosted',
     _status: status.status,
@@ -30,6 +30,8 @@ export async function GET(
     _adminNote: status.adminNote ?? null,
     _contractorNote: status.contractorNote ?? null,
   });
+  response.headers.set('Cache-Control', 'no-store');
+  return response;
 }
 
 /**
