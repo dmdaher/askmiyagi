@@ -312,15 +312,7 @@ export default function EditorHelpDrawer({ isOpen, onClose, onReplayTour }: Edit
               {activeTab === 'workflow' && <WorkflowTab />}
             </div>
 
-            {/* Footer: replay tour */}
-            <div className="border-t border-white/10 px-5 py-3 flex-shrink-0">
-              <button
-                onClick={onReplayTour}
-                className="w-full rounded-lg border border-white/10 py-2 text-xs font-medium text-white/50 hover:bg-white/5 hover:text-white/70 transition-colors"
-              >
-                Replay Guided Tour
-              </button>
-            </div>
+            {/* Replay tour button hidden — tutorial disabled */}
           </motion.div>
         </motion.div>
       )}
