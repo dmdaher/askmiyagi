@@ -183,10 +183,12 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         ? (HARDWARE_ICONS[control.icon!] ?? control.icon)
         : undefined;
 
-      // Icon position: on-button/icon-only → icon on button face. above/below → float outside.
-      const iconOnButton = hasIcon && control.labelDisplay !== 'above' && control.labelDisplay !== 'below';
+      // Icon position: on-button/icon-only → icon on button face. above/below/left/right → float outside.
+      const iconOnButton = hasIcon && !['above', 'below', 'left', 'right'].includes(control.labelDisplay!);
       const iconAbove = hasIcon && control.labelDisplay === 'above';
       const iconBelow = hasIcon && control.labelDisplay === 'below';
+      const iconLeft = hasIcon && control.labelDisplay === 'left';
+      const iconRight = hasIcon && control.labelDisplay === 'right';
       const iconSize = Math.round(Math.min(visW, visH) * 0.5);
 
       const buttonEl = (
@@ -221,6 +223,18 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           {iconBelow && (
             <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none text-gray-300"
               style={{ top: '100%', marginTop: 2, width: iconSize, height: iconSize }}>
+              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
+            </div>
+          )}
+          {iconLeft && (
+            <div className="absolute top-1/2 -translate-y-1/2 pointer-events-none text-gray-300"
+              style={{ right: '100%', marginRight: 3, width: iconSize, height: iconSize }}>
+              {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
+            </div>
+          )}
+          {iconRight && (
+            <div className="absolute top-1/2 -translate-y-1/2 pointer-events-none text-gray-300"
+              style={{ left: '100%', marginLeft: 3, width: iconSize, height: iconSize }}>
               {svgContent ?? <span className="block text-center" style={{ fontSize: iconSize * 0.8 }}>{iconContent}</span>}
             </div>
           )}
@@ -299,26 +313,57 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           </div>
         );
       }
-      // Default: simple dot indicator
+      // Default: simple dot indicator with optional icon
+      const ledIconSvg = (control.icon && control.labelDisplay && control.labelDisplay !== 'on-button')
+        ? HARDWARE_ICON_SVGS[control.icon] : undefined;
+      const ledIconText = (control.icon && !ledIconSvg && control.labelDisplay && control.labelDisplay !== 'on-button')
+        ? (HARDWARE_ICONS[control.icon] ?? control.icon) : undefined;
+      const ledIconEl = ledIconSvg
+        ? <div className="text-gray-300" style={{ width: Math.max(visW * 0.6, 12), height: Math.max(visH * 0.6, 12) }}>{ledIconSvg}</div>
+        : ledIconText
+          ? <span className="text-gray-300 text-center" style={{ fontSize: Math.max(visW * 0.5, 8) }}>{ledIconText}</span>
+          : null;
+      const showLedLabel = !control.icon || control.labelDisplay === 'on-button';
+      const iconPos = control.labelDisplay ?? 'right';
+
       return (
         <div
-          className="flex flex-col items-center justify-center gap-1 rounded"
-          style={{ backgroundColor: '#1a1a2a', padding: 4 }}
+          className="relative flex items-center justify-center rounded"
+          style={{ backgroundColor: '#1a1a2a', padding: 2, width: visW, height: visH }}
           data-control-id={control.id}
         >
+          {/* LED dot */}
           <div
-            className="rounded-full"
+            className="rounded-full flex-shrink-0"
             style={{
-              width: 20,
-              height: 20,
+              width: Math.min(visW, visH) * 0.5,
+              height: Math.min(visW, visH) * 0.5,
+              minWidth: 6, minHeight: 6,
               backgroundColor: ledColor,
-              border: `3px solid ${ledColor}44`,
-              boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.2)',
+              border: `2px solid ${ledColor}44`,
+              boxShadow: `0 0 4px ${ledColor}`,
             }}
           />
-          <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
-            {renderLabelText(control.label)}
-          </span>
+          {/* Icon positioned around LED dot */}
+          {ledIconEl && iconPos === 'right' && (
+            <div className="absolute pointer-events-none" style={{ left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: 3 }}>{ledIconEl}</div>
+          )}
+          {ledIconEl && iconPos === 'left' && (
+            <div className="absolute pointer-events-none" style={{ right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: 3 }}>{ledIconEl}</div>
+          )}
+          {ledIconEl && iconPos === 'above' && (
+            <div className="absolute pointer-events-none" style={{ bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 2 }}>{ledIconEl}</div>
+          )}
+          {ledIconEl && iconPos === 'below' && (
+            <div className="absolute pointer-events-none" style={{ top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 2 }}>{ledIconEl}</div>
+          )}
+          {/* Text label fallback (only when no icon set) */}
+          {showLedLabel && control.label && (
+            <span className="absolute pointer-events-none text-gray-400 uppercase text-center whitespace-nowrap"
+              style={{ fontSize: 6, top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 2 }}>
+              {control.label}
+            </span>
+          )}
         </div>
       );
     }

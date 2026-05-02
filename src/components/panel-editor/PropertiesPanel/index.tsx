@@ -422,7 +422,12 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
             </div>
           </div>
           <div className="h-px bg-gray-800" />
+        </>
+      )}
 
+      {/* Icon picker — for buttons, LEDs, pads, indicators */}
+      {(control.type === 'button' || control.type === 'led' || control.type === 'indicator' || control.type === 'pad') && (
+        <>
           {/* Icon picker — visual grid with SVG previews */}
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase tracking-wide text-gray-500">Icon</label>
@@ -488,7 +493,7 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                   // When icon is on button with above/below, PanelButton handles label position.
                   // Set labelPosition='on-button' to prevent LabelLayer from creating a duplicate.
                   // icon-only/hidden → hide the floating label. on-button → show text on button.
-                  if (val === 'above' || val === 'below') {
+                  if (val === 'above' || val === 'below' || val === 'left' || val === 'right') {
                     updateControlProp(ids, 'labelPosition', 'on-button');
                   } else if (val === 'icon-only' || val === 'hidden') {
                     updateControlProp(ids, 'labelPosition', 'hidden');
@@ -498,10 +503,12 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                 }}
                 className="w-full h-7 rounded border border-gray-700 bg-gray-900 px-1.5 text-[10px] text-gray-300 outline-none focus:border-blue-500"
               >
-                <option value="on-button">Text on button</option>
+                <option value="on-button">On control</option>
                 <option value="icon-only">Icon only</option>
-                <option value="above">Label above</option>
-                <option value="below">Label below</option>
+                <option value="above">Above</option>
+                <option value="below">Below</option>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
                 <option value="hidden">Hidden</option>
               </select>
             </div>
