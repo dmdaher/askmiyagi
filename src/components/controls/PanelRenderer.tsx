@@ -558,7 +558,7 @@ export default function PanelRenderer({
             fontSize: label.fontSize,
             lineHeight: `${label.lineHeight ?? label.fontSize + 2}px`,
           }}>
-          <span className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
+          <span className={`font-medium uppercase tracking-wider whitespace-nowrap ${label.icon ? 'text-gray-200' : 'text-gray-400'}`}>
             {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
               <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
                 {HARDWARE_ICON_SVGS[label.icon]}

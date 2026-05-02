@@ -176,7 +176,7 @@ export default function LabelLayer() {
               }}
             >
               <span
-                className="font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move"
+                className={`font-medium uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move ${label.icon ? 'text-gray-200' : 'text-gray-400'}`}
                 style={{ padding: '4px 6px', margin: '-4px -6px', display: 'inline-block', minWidth: 16, minHeight: label.fontSize + 4 }}
                 data-label-id={label.id}
                 onMouseDown={(e) => handleMouseDown(e, label)}

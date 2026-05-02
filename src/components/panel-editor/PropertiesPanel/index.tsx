@@ -474,8 +474,8 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                         pushSnapshot();
                         updateControlProp(ids, 'icon', k);
                         if (controlLabel) {
-                          // Same label — swap text for icon
-                          updateLabel(controlLabel.id, { icon: k, text: '' });
+                          // Same label — add icon, keep existing text, ensure visible
+                          updateLabel(controlLabel.id, { icon: k, hidden: false });
                         } else {
                           // No label exists — create one with icon
                           const visW = control.w * controlScale;
@@ -484,7 +484,7 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                           const labelId = addStandaloneLabel(
                             control.x + control.w + 4,
                             control.y + (control.h - iconSize) / 2,
-                            '',
+                            control.label,
                           );
                           updateLabel(labelId, {
                             icon: k,
