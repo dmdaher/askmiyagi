@@ -31,6 +31,9 @@ function getSaveUrl(deviceId: string) {
 export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow: () => Promise<void>; lastSavedAt: Date | null } {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Tracks whether there are changes that haven't been successfully saved to blob.
+  // Used by beforeunload to warn the user. Covers: pending debounce, in-flight save, failed save.
+  const hasUnsavedChanges = useRef(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(() => {
     // Initialize from store's _loadedAt (server timestamp from initial load)
@@ -42,6 +45,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
   const handleSaveSuccess = useCallback((savedAt?: string) => {
     const now = savedAt ? new Date(savedAt) : new Date();
     setLastSavedAt(now);
+    hasUnsavedChanges.current = false;
     // Update _loadedAt so next save uses the new timestamp for conflict detection
     useEditorStore.setState({ _loadedAt: now.toISOString() });
     // Cache saved state locally so refresh doesn't depend on CDN propagation
@@ -76,10 +80,22 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       } else if (res.status === 409) {
         setSaveStatus('conflict');
       } else {
+        // Save failed — cache locally as recovery safety net
+        try {
+          sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({
+            data: buildSavePayload(), savedAt: Date.now(),
+          }));
+        } catch { /* best-effort */ }
         setSaveStatus('error');
         setTimeout(() => setSaveStatus('idle'), 4000);
       }
     } catch {
+      // Network error — cache locally as recovery safety net
+      try {
+        sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({
+          data: buildSavePayload(), savedAt: Date.now(),
+        }));
+      } catch { /* best-effort */ }
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 4000);
     }
@@ -134,6 +150,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
         }
 
         // Debounce the save
+        hasUnsavedChanges.current = true;
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         setSaveStatus('saving');
         saveTimerRef.current = setTimeout(() => {
@@ -151,10 +168,12 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
             } else if (res.status === 409) {
               setSaveStatus('conflict');
             } else {
+              try { sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({ data: buildSavePayload(), savedAt: Date.now() })); } catch {}
               setSaveStatus('error');
               setTimeout(() => setSaveStatus('idle'), 4000);
             }
           }).catch(() => {
+            try { sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({ data: buildSavePayload(), savedAt: Date.now() })); } catch {}
             setSaveStatus('error');
             setTimeout(() => setSaveStatus('idle'), 4000);
           });
@@ -180,20 +199,20 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
 
     // Flush pending save on page close (beforeunload)
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (saveTimerRef.current && useEditorStore.getState().hasUserEdited) {
+      // Flush pending debounced save via sendBeacon
+      if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = null;
         const payload = buildSavePayload();
-        const body = JSON.stringify(payload);
-        navigator.sendBeacon(getSaveUrl(deviceId), new Blob([body], { type: 'application/json' }));
-        // Cache locally so reopening the page doesn't depend on CDN propagation
+        navigator.sendBeacon(getSaveUrl(deviceId), new Blob([JSON.stringify(payload)], { type: 'application/json' }));
         try {
           sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({
-            data: payload,
-            savedAt: Date.now(),
+            data: payload, savedAt: Date.now(),
           }));
         } catch { /* best-effort */ }
-        // Trigger native "Leave site?" dialog as extra protection
+      }
+      // Warn user if there are ANY unsaved changes (pending, in-flight, or failed)
+      if (hasUnsavedChanges.current) {
         e.preventDefault();
         e.returnValue = '';
       }
