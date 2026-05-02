@@ -438,7 +438,8 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                   onClick={() => {
                     pushSnapshot();
                     updateControlProp(ids, 'icon', undefined);
-                    if (control.labelDisplay === 'icon-only') updateControlProp(ids, 'labelDisplay', 'on-button');
+                    updateControlProp(ids, 'labelDisplay', 'on-button');
+                    updateControlProp(ids, 'labelPosition', 'on-button');
                   }}
                   className="text-[9px] text-gray-600 hover:text-red-400 transition-colors"
                 >clear</button>
@@ -482,7 +483,17 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                 value={control.labelDisplay ?? 'on-button'}
                 onChange={(e) => {
                   pushSnapshot();
-                  updateControlProp(ids, 'labelDisplay', e.target.value);
+                  const val = e.target.value;
+                  updateControlProp(ids, 'labelDisplay', val);
+                  // Sync labelPosition so LabelLayer renders the label in the right place
+                  const posMap: Record<string, string> = {
+                    'on-button': 'on-button',
+                    'icon-only': 'hidden',
+                    'above': 'above',
+                    'below': 'below',
+                    'hidden': 'hidden',
+                  };
+                  updateControlProp(ids, 'labelPosition', posMap[val] ?? 'on-button');
                 }}
                 className="w-full h-7 rounded border border-gray-700 bg-gray-900 px-1.5 text-[10px] text-gray-300 outline-none focus:border-blue-500"
               >
