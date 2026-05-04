@@ -16,9 +16,27 @@ function LabelRow({ label, indent = false }: { label: EditorLabel; indent?: bool
   const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
   const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
   const isSelected = selectedLabelId === label.id;
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Standalone labels: "Assign to nearest section"
+    // Linked labels: "Select linked control" (navigation shortcut)
+    window.dispatchEvent(new CustomEvent('editor-context-menu-label', {
+      detail: {
+        labelId: label.id,
+        controlId: label.controlId,  // null for standalone, control id for linked
+        hasSectionId: !!label.sectionId,
+        clientX: e.clientX,
+        clientY: e.clientY,
+      },
+    }));
+  };
+
   return (
     <button
       onClick={(e) => { e.stopPropagation(); setSelectedLabel(label.id); }}
+      onContextMenu={handleContextMenu}
       className={`flex w-full items-center gap-1 rounded ${indent ? 'pl-5 pr-2' : 'px-2'} py-1 text-left text-[10px] transition-colors ${
         isSelected
           ? 'bg-blue-500/20 text-blue-300'

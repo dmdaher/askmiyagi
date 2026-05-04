@@ -234,6 +234,7 @@ export default function ContractorSubmissions() {
   };
 
   const handleDismissIssue = async (deviceId: string, issueId: string) => {
+    if (!window.confirm('Dismiss this issue? It will be marked resolved without action and removed from the open issues list.')) return;
     try {
       const issues = deviceIssues[deviceId] ?? [];
       const updated = issues.map(i => i.id === issueId ? { ...i, status: 'resolved' as const, resolution: 'Dismissed by admin' } : i);

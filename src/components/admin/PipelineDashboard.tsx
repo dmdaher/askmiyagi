@@ -2,28 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { PipelinePhase, PipelineRunSummary, RunStatus } from '@/lib/pipeline/types';
+import { PIPELINE_PHASES, getPhaseIndex } from '@/lib/pipeline/phase-order';
 
 interface PipelineDashboardProps {
   runs: Record<string, PipelineRunSummary>;
   onSelectPipeline: (deviceId: string) => void;
 }
-
-const PIPELINE_PHASES: PipelinePhase[] = [
-  'pending',
-  'phase-preflight',
-  'phase-0-diagram-parser',
-  'phase-0-gatekeeper',
-  'phase-0-layout-engine',
-  'phase-1-section-loop',
-  'phase-2-global-assembly',
-  'phase-3-harmonic-polish',
-  'phase-4-extraction',
-  'phase-4-audit',
-  'phase-5-display-build',
-  'phase-5-tutorial-build',
-  'tutorial-pr',
-  'completed',
-];
 
 const STATUS_CONFIG: Record<RunStatus, { color: string; label: string; pulse: boolean }> = {
   running: { color: '#3B82F6', label: 'Running', pulse: true },
@@ -31,11 +15,6 @@ const STATUS_CONFIG: Record<RunStatus, { color: string; label: string; pulse: bo
   completed: { color: '#22C55E', label: 'Completed', pulse: false },
   failed: { color: '#EF4444', label: 'Failed', pulse: false },
 };
-
-function getPhaseIndex(phase: PipelinePhase): number {
-  const idx = PIPELINE_PHASES.indexOf(phase);
-  return idx === -1 ? 0 : idx;
-}
 
 function formatRelativeTime(dateString: string): string {
   const now = Date.now();

@@ -234,6 +234,13 @@ export interface ManifestSlice {
   updateLabel: (labelId: string, updates: Partial<EditorLabel>) => void;
   deleteLabel: (labelId: string) => void;
   addStandaloneLabel: (x: number, y: number, text?: string) => string;
+  /**
+   * For a standalone label (controlId === null), set sectionId by computing
+   * findNearestSection from the label's center. Returns true if a section
+   * was found, false if the label is a linked label OR sits outside every
+   * section. Caller is responsible for pushSnapshot before invoking.
+   */
+  assignLabelToNearestSection: (labelId: string) => boolean;
   initLabelsFromControls: () => void;
   setLabelPosition: (ids: string[], position: ControlDef['labelPosition']) => void;
   alignControls: (mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom') => void;
@@ -1383,6 +1390,24 @@ export const createManifestSlice: StateCreator<
         l.id === labelId ? { ...l, ...updates } : l
       ),
     }));
+  },
+
+  assignLabelToNearestSection: (labelId) => {
+    const label = (get().editorLabels as EditorLabel[]).find(l => l.id === labelId);
+    // Only standalone labels can be assigned this way. Linked labels derive
+    // section from their control and don't store sectionId.
+    if (!label || label.controlId) return false;
+    const sections = get().sections;
+    const cx = label.x + Math.round((label.w ?? 0) / 2);
+    const cy = label.y;
+    const newSectionId = findNearestSection(cx, cy, sections);
+    if (!newSectionId) return false;
+    set((s) => ({
+      editorLabels: (s.editorLabels as EditorLabel[]).map(l =>
+        l.id === labelId ? { ...l, sectionId: newSectionId } : l
+      ),
+    }));
+    return true;
   },
 
   deleteLabel: (labelId) => {
