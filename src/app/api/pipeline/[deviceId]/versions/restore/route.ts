@@ -74,7 +74,10 @@ export async function POST(
       restoredData.controls = Object.values(restoredData.controls);
     }
 
-    return NextResponse.json({ ...restoredData, _source: 'restore' });
+    // _source: 'editor' routes restored data through PanelEditor's working
+    // if-branch (direct setState), avoiding the else-branch that would re-run
+    // the layout engine on already-positioned data.
+    return NextResponse.json({ ...restoredData, _source: 'editor' });
   } catch {
     return NextResponse.json({ error: 'Restore failed' }, { status: 500 });
   }

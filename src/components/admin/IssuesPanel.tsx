@@ -93,6 +93,18 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
     setAuditRunning(null);
   };
 
+  const handleCancelAudit = async (issueId: string) => {
+    if (!window.confirm('Cancel this audit? It will stop the running Claude agent and you\'ll lose any progress so far.')) return;
+    try {
+      await fetch(`/api/pipeline/${deviceId}/audit-controls?issueId=${encodeURIComponent(issueId)}`, {
+        method: 'DELETE',
+      });
+    } catch { /* best effort — server-side state will reconcile */ }
+    setAuditRunning(null);
+    setAuditResult(prev => ({ ...prev, [issueId]: 'Audit cancelled' }));
+    fetchIssues();
+  };
+
   const handleDismiss = async (issueId: string) => {
     const updated = issues.map(i => i.id === issueId ? { ...i, status: 'resolved' as const, resolution: 'Dismissed' } : i);
     setIssues(updated);
@@ -170,7 +182,14 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
               {(auditRunning === issue.id || issue.status === 'investigating') && (
                 <div className="flex items-center gap-2 text-[11px] text-blue-400 mb-2">
                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
-                  Checking manual...
+                  <span>Checking manual...</span>
+                  <button
+                    onClick={() => handleCancelAudit(issue.id)}
+                    className="ml-auto rounded border border-red-500/40 bg-red-900/20 px-2 py-0.5 text-[10px] font-medium text-red-300 hover:bg-red-900/40 hover:text-red-200 transition-colors"
+                    title="Cancel this audit"
+                  >
+                    Cancel
+                  </button>
                 </div>
               )}
 
