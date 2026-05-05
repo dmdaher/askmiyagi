@@ -112,6 +112,20 @@ function GuideTab() {
         <p><strong className="text-white/80">Inline editing</strong> &mdash; Double-click any label to edit its text directly. Press Escape or click away to save.</p>
         <p><strong className="text-white/80">Standalone labels</strong> &mdash; Click <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">+L</kbd> in the toolbar to add a free-floating text label. Not linked to any control.</p>
         <p><strong className="text-white/80">Font size</strong> &mdash; Use the Sz dropdown in the toolbar to set font size for all labels, or set individually in the Properties panel.</p>
+        <p><strong className="text-white/80">Labels nest under their control in Layers panel</strong> &mdash; A control&rsquo;s caption, icon, and any other linked labels appear indented under the control row in the Layers panel. No more hunting in a separate block at the bottom.</p>
+        <p><strong className="text-white/80">Standalone labels nest under their section</strong> &mdash; Free-floating labels you place inside a section&rsquo;s area auto-assign to that section and appear nested under it in the Layers panel.</p>
+        <p><strong className="text-white/80">Unassigned Labels bucket</strong> &mdash; Labels not yet placed in any section appear in an &ldquo;Unassigned Labels&rdquo; block at the bottom of the Layers panel. Drag them onto a section&rsquo;s area to auto-assign.</p>
+        <p><strong className="text-white/80">Right-click standalone label</strong> &mdash; Works on the canvas label or the Layers panel row. Choose &ldquo;Assign to nearest section&rdquo; (or &ldquo;Re-assign to nearest section&rdquo; if already assigned) to organize without dragging.</p>
+        <p><strong className="text-white/80">Right-click linked label</strong> &mdash; Choose &ldquo;Select linked control&rdquo; as a navigation shortcut to jump to the control that owns the label.</p>
+        <p><strong className="text-white/80">Snap-to-grid for label drag</strong> &mdash; Labels snap to the same grid as controls when dragged. Toggle snap size in the toolbar.</p>
+        <p><strong className="text-white/80">Labels follow section moves</strong> &mdash; When you drag a section across the canvas, every label assigned to it (linked or standalone) moves with it. No more orphaned labels left behind.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Icons">
+        <p><strong className="text-white/80">Icons are labels</strong> &mdash; Add an icon to any button, LED, or pad through the Properties panel&rsquo;s icon picker. Icons appear as draggable labels with optional text &mdash; same system as text labels.</p>
+        <p><strong className="text-white/80">Icon picker</strong> &mdash; Open the Properties panel for a control, choose an icon from the visual grid (waveforms, DJ glyphs, transport, arrows, etc.). The icon attaches as a linked label.</p>
+        <p><strong className="text-white/80">Icon + text together</strong> &mdash; A linked label can show an icon, text, or both. Set both in the Properties panel and they render side-by-side on the same label.</p>
+        <p><strong className="text-white/80">Icons in Layers panel</strong> &mdash; Icon labels appear under their control just like text labels &mdash; click to select.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Grouping Controls">
@@ -210,6 +224,7 @@ function WorkflowTab() {
     { title: 'Fix layer ordering', desc: 'If a control appears behind another (e.g., a jog display behind its wheel), select it and press Cmd+] to bring it to front. Use right-click > Bring to Front/Send to Back for precise control.' },
     { title: 'Preview your work', desc: 'Click Preview in the toolbar to see the panel as the end user will see it. Check that labels are readable and nothing overlaps.' },
     { title: 'Submit for review', desc: 'Click Submit for Review. Add an optional note about any tricky areas. The editor locks while the admin reviews. You\'ll see feedback on the instrument list if changes are needed.' },
+    { title: 'Confirmation prompts protect your work', desc: 'Dismissing an issue asks for confirmation first — prevents accidental clicks losing the report. Same for any other destructive action.' },
   ];
 
   return (
