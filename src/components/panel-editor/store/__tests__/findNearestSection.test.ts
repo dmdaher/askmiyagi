@@ -67,6 +67,80 @@ describe('findNearestSection (via addStandaloneLabel)', () => {
   });
 });
 
+describe('moveSection drift fix — standalone labels follow their section', () => {
+  beforeEach(() => {
+    useEditorStore.setState({
+      sections: {
+        'sec-a': makeSection('sec-a', 100, 100, 200, 100),
+        'sec-b': makeSection('sec-b', 400, 100, 200, 100),
+      },
+      controls: {},
+      editorLabels: [],
+      controlGroups: [],
+      controlContainers: [],
+      selectedIds: [],
+      selectedLabelId: null,
+    });
+  });
+
+  it('drags a standalone label with sectionId when its section moves', () => {
+    // Add a standalone label inside sec-a's bbox
+    const labelId = useEditorStore.getState().addStandaloneLabel(150, 130, 'inside-A');
+    const before = useEditorStore.getState().editorLabels.find(l => l.id === labelId);
+    expect(before?.sectionId).toBe('sec-a');
+    const beforeX = before?.x;
+    const beforeY = before?.y;
+
+    // Move sec-a by (+50, +25)
+    useEditorStore.getState().moveSection('sec-a', 50, 25);
+
+    const after = useEditorStore.getState().editorLabels.find(l => l.id === labelId);
+    // Label should have moved by the same delta
+    expect(after?.x).toBe((beforeX ?? 0) + 50);
+    expect(after?.y).toBe((beforeY ?? 0) + 25);
+    // sectionId stays unchanged (we don't recompute on section move — the
+    // label is still in sec-a since both moved by same delta)
+    expect(after?.sectionId).toBe('sec-a');
+  });
+
+  it('does NOT move standalone labels assigned to a different section', () => {
+    const labelInA = useEditorStore.getState().addStandaloneLabel(150, 130, 'in-A');
+    const labelInB = useEditorStore.getState().addStandaloneLabel(450, 130, 'in-B');
+
+    const beforeB = useEditorStore.getState().editorLabels.find(l => l.id === labelInB);
+    const beforeBX = beforeB?.x;
+    const beforeBY = beforeB?.y;
+
+    // Move sec-a — only labels with sectionId='sec-a' should follow
+    useEditorStore.getState().moveSection('sec-a', 100, 0);
+
+    const afterA = useEditorStore.getState().editorLabels.find(l => l.id === labelInA);
+    const afterB = useEditorStore.getState().editorLabels.find(l => l.id === labelInB);
+
+    // labelInA moved
+    expect(afterA?.x).toBe(150 + 100);
+    // labelInB DID NOT move
+    expect(afterB?.x).toBe(beforeBX);
+    expect(afterB?.y).toBe(beforeBY);
+  });
+
+  it('does NOT move standalone labels with no sectionId (Unassigned bucket)', () => {
+    // Drop a label OUTSIDE all sections — sectionId should be undefined
+    const orphanId = useEditorStore.getState().addStandaloneLabel(900, 900, 'orphan');
+    const before = useEditorStore.getState().editorLabels.find(l => l.id === orphanId);
+    expect(before?.sectionId).toBeUndefined();
+    const beforeX = before?.x;
+    const beforeY = before?.y;
+
+    useEditorStore.getState().moveSection('sec-a', 100, 50);
+
+    const after = useEditorStore.getState().editorLabels.find(l => l.id === orphanId);
+    // Orphan stays put — its sectionId is undefined, doesn't match 'sec-a'
+    expect(after?.x).toBe(beforeX);
+    expect(after?.y).toBe(beforeY);
+  });
+});
+
 describe('moveLabel recomputes sectionId on drag', () => {
   beforeEach(() => {
     useEditorStore.setState({

@@ -44,6 +44,18 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
     return () => clearInterval(interval);
   }, [fetchIssues]);
 
+  // When an audit transitions to investigating, scroll its card into view so
+  // the "Checking manual..." spinner + Cancel button are visible without
+  // hunting on long issue lists.
+  useEffect(() => {
+    const investigating = issues.find(i => i.status === 'investigating');
+    if (!investigating) return;
+    const el = document.querySelector<HTMLDivElement>(
+      `[data-issue-id="${investigating.id}"]`
+    );
+    if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [issues, auditRunning]);
+
   const handleRunAudit = async (issue: DeviceIssue) => {
     setAuditRunning(issue.id);
     setAuditResult(prev => ({ ...prev, [issue.id]: '' }));
@@ -168,7 +180,11 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
       ) : (
         <div className="space-y-2">
           {openIssues.map((issue) => (
-            <div key={issue.id} className="rounded border border-red-800/30 bg-red-900/10 px-3 py-2">
+            <div
+              key={issue.id}
+              data-issue-id={issue.id}
+              className="rounded border border-red-800/30 bg-red-900/10 px-3 py-2"
+            >
               <div className="flex items-center gap-2 mb-1">
                 <span className="rounded bg-red-500/20 border border-red-500/30 px-1.5 py-0.5 text-[9px] font-medium text-red-400">
                   {issue.type.replace('-', ' ')}

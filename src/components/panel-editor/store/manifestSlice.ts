@@ -939,12 +939,18 @@ export const createManifestSlice: StateCreator<
       }
     }
 
-    // Move linked labels for any child control that was moved
-    const updatedLabels = (get().editorLabels as EditorLabel[]).map((l) =>
-      l.controlId && childSet.has(l.controlId)
+    // Move labels with this section. Two paths:
+    //   1. Linked labels: follow their control if the control is in this section
+    //   2. Standalone labels: follow the section if their sectionId matches
+    //      (closes Tier 2 drift bug — standalone labels with sectionId stayed
+    //      put when their section moved, leaving them visually orphaned)
+    const updatedLabels = (get().editorLabels as EditorLabel[]).map((l) => {
+      const followsControl = l.controlId && childSet.has(l.controlId);
+      const followsSection = !l.controlId && l.sectionId === id;
+      return (followsControl || followsSection)
         ? { ...l, x: Math.round(l.x + dx), y: Math.round(l.y + dy) }
-        : l
-    );
+        : l;
+    });
 
     set({
       sections: {
@@ -1417,7 +1423,9 @@ export const createManifestSlice: StateCreator<
   },
 
   addStandaloneLabel: (x, y, text = 'Label') => {
-    const id = `label-standalone-${Date.now()}`;
+    // Suffix with a random nonce so two rapid calls (e.g., in tests) don't
+    // collide on Date.now() and end up sharing an id.
+    const id = `label-standalone-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const sections = get().sections;
     const w = 60;
     // Use the label's center for section detection so a click near the edge
