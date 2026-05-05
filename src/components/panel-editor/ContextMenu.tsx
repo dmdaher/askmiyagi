@@ -8,6 +8,13 @@ interface MenuState {
   controlId: string;
   x: number;
   y: number;
+  // Optional flags for non-control targets that reuse the same menu state.
+  isContainer?: boolean;
+  isLabel?: boolean;
+  // For label menu only:
+  labelId?: string;
+  hasSectionId?: boolean;
+  linkedControlId?: string | null;  // null/undefined for standalone labels
 }
 
 /**
@@ -26,6 +33,26 @@ export default function ContextMenu() {
 
     window.addEventListener('editor-context-menu', handler);
     return () => window.removeEventListener('editor-context-menu', handler);
+  }, []);
+
+  // Listen for the label-targeted context menu event from LayersPanel's LabelRow.
+  // Standalone labels get "Assign to nearest section"; linked labels get
+  // "Select linked control" as a navigation shortcut.
+  useEffect(() => {
+    function handler(e: Event) {
+      const { labelId, controlId, hasSectionId, clientX, clientY } = (e as CustomEvent).detail;
+      setMenu({
+        controlId: '',
+        x: clientX,
+        y: clientY,
+        isLabel: true,
+        labelId,
+        hasSectionId,
+        linkedControlId: controlId ?? null,
+      });
+    }
+    window.addEventListener('editor-context-menu-label', handler);
+    return () => window.removeEventListener('editor-context-menu-label', handler);
   }, []);
 
   // Close on click outside or Escape
@@ -159,7 +186,51 @@ export default function ContextMenu() {
     setMenu(null);
   }, [menu]);
 
+  const handleAssignLabelToSection = useCallback(() => {
+    if (!menu || !menu.isLabel || !menu.labelId) return;
+    const store = useEditorStore.getState();
+    store.pushSnapshot();
+    store.assignLabelToNearestSection(menu.labelId);
+    setMenu(null);
+  }, [menu]);
+
+  const handleSelectLinkedControl = useCallback(() => {
+    if (!menu || !menu.isLabel || !menu.linkedControlId) return;
+    const store = useEditorStore.getState();
+    store.setSelectedIds([menu.linkedControlId]);
+    setMenu(null);
+  }, [menu]);
+
   if (!menu) return null;
+
+  // Label-target menu — handled separately from controls/containers.
+  if (menu.isLabel && menu.labelId) {
+    const menuTop = Math.min(menu.y, window.innerHeight - 120);
+    const menuLeft = Math.min(menu.x, window.innerWidth - 220);
+    const isStandalone = !menu.linkedControlId;
+    return createPortal(
+      <div className="fixed" style={{ left: menuLeft, top: Math.max(8, menuTop), zIndex: 9999 }}>
+        <div className="min-w-[200px] rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300">
+          {isStandalone ? (
+            <button
+              className="flex w-full items-center px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
+              onClick={handleAssignLabelToSection}
+            >
+              {menu.hasSectionId ? 'Re-assign to nearest section' : 'Assign to nearest section'}
+            </button>
+          ) : (
+            <button
+              className="flex w-full items-center px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
+              onClick={handleSelectLinkedControl}
+            >
+              Select linked control
+            </button>
+          )}
+        </div>
+      </div>,
+      document.body,
+    );
+  }
 
   const control = useEditorStore.getState().controls[menu.controlId];
   const isContainer = (menu as any).isContainer === true;
@@ -203,20 +274,27 @@ export default function ContextMenu() {
   const lockLabel = isLocked ? 'Unlock' : isResizeLocked ? 'Lock Fully' : 'Lock Size';
   const selectedCount = useEditorStore.getState().selectedIds.length;
 
-  // Clamp menu position so it doesn't overflow the viewport
-  const menuTop = Math.min(menu.y, window.innerHeight - 400);
+  // Clamp menu position so it doesn't overflow the viewport.
+  // Anchor near the click but ensure the entire menu fits — leave at least
+  // 8px from the viewport bottom and constrain max-h to remaining space.
+  const menuTopRaw = Math.min(menu.y, window.innerHeight - 200);
+  const menuTop = Math.max(8, menuTopRaw);
   const menuLeft = Math.min(menu.x, window.innerWidth - 200);
+  const availableHeight = Math.max(200, window.innerHeight - menuTop - 16);
 
   return createPortal(
     <div
       className="fixed"
       style={{
         left: menuLeft,
-        top: Math.max(8, menuTop),
+        top: menuTop,
         zIndex: 9999,
       }}
     >
-      <div className="min-w-[160px] max-h-[80vh] overflow-y-auto rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300">
+      <div
+        className="min-w-[160px] overflow-y-auto rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300"
+        style={{ maxHeight: `${availableHeight}px` }}
+      >
         {/* Duplicate */}
         <button
           className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"

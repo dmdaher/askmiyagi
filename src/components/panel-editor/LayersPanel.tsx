@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEditorStore } from './store';
-import type { ControlGroup } from './store/historySlice';
+import type { ControlGroup, EditorLabel } from './store/historySlice';
 
 /** Truncate a string to maxLen characters, adding ellipsis if needed */
 function truncate(str: string, maxLen: number): string {
@@ -10,9 +10,49 @@ function truncate(str: string, maxLen: number): string {
   return str.slice(0, maxLen - 1) + '\u2026';
 }
 
+// ─── Label row (used for linked labels under controls AND for standalone labels) ──
+
+function LabelRow({ label, indent = false }: { label: EditorLabel; indent?: boolean }) {
+  const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
+  const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
+  const isSelected = selectedLabelId === label.id;
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Standalone labels: "Assign to nearest section"
+    // Linked labels: "Select linked control" (navigation shortcut)
+    window.dispatchEvent(new CustomEvent('editor-context-menu-label', {
+      detail: {
+        labelId: label.id,
+        controlId: label.controlId,  // null for standalone, control id for linked
+        hasSectionId: !!label.sectionId,
+        clientX: e.clientX,
+        clientY: e.clientY,
+      },
+    }));
+  };
+
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); setSelectedLabel(label.id); }}
+      onContextMenu={handleContextMenu}
+      className={`flex w-full items-center gap-1 rounded ${indent ? 'pl-5 pr-2' : 'px-2'} py-1 text-left text-[10px] transition-colors ${
+        isSelected
+          ? 'bg-blue-500/20 text-blue-300'
+          : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+      }`}
+    >
+      <span className="text-[9px] text-gray-600 flex-shrink-0">T</span>
+      <span className="flex-1 truncate">{label.text || '(empty)'}</span>
+      <span className="flex-shrink-0 text-[8px] text-gray-600">{label.fontSize}px</span>
+    </button>
+  );
+}
+
 // ─── Control item (inside expanded section) ─────────────────────────────────
 
-function ControlItem({ controlId }: { controlId: string }) {
+function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; linkedLabels?: EditorLabel[] }) {
   const control = useEditorStore((s) => s.controls[controlId]);
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
@@ -45,32 +85,41 @@ function ControlItem({ controlId }: { controlId: string }) {
   const isResizeLocked = control.resizeLocked;
 
   return (
-    <button
-      ref={itemRef}
-      onClick={handleClick}
-      className={`flex w-full items-center gap-1 rounded px-2 py-1 text-left text-[10px] transition-colors ${
-        isSelected
-          ? 'bg-blue-600/30 text-white'
-          : isLocked
-            ? 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
-            : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
-      }`}
-    >
-      {(isLocked || isResizeLocked) && (
-        <svg className={`h-2.5 w-2.5 flex-shrink-0 ${isLocked ? 'text-yellow-500' : 'text-blue-500'}`} viewBox="0 0 16 16" fill="currentColor">
-          <path d="M3 9a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9z" />
-          {isLocked && <path d="M6 5a2 2 0 1 1 4 0v3H6V5z" />}
-        </svg>
+    <div>
+      <button
+        ref={itemRef}
+        onClick={handleClick}
+        className={`flex w-full items-center gap-1 rounded px-2 py-1 text-left text-[10px] transition-colors ${
+          isSelected
+            ? 'bg-blue-600/30 text-white'
+            : isLocked
+              ? 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
+              : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+        }`}
+      >
+        {(isLocked || isResizeLocked) && (
+          <svg className={`h-2.5 w-2.5 flex-shrink-0 ${isLocked ? 'text-yellow-500' : 'text-blue-500'}`} viewBox="0 0 16 16" fill="currentColor">
+            <path d="M3 9a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9z" />
+            {isLocked && <path d="M6 5a2 2 0 1 1 4 0v3H6V5z" />}
+          </svg>
+        )}
+        <span className="flex-1 truncate">{truncate(control.label || control.id, isLocked || isResizeLocked ? 18 : 22)}</span>
+        <span className="flex-shrink-0 text-[8px] text-gray-600 uppercase">{control.type}</span>
+      </button>
+      {linkedLabels.length > 0 && (
+        <div className="ml-2 border-l border-gray-800/60 pl-1">
+          {linkedLabels.map((label) => (
+            <LabelRow key={label.id} label={label} indent />
+          ))}
+        </div>
       )}
-      <span className="flex-1 truncate">{truncate(control.label || control.id, isLocked || isResizeLocked ? 18 : 22)}</span>
-      <span className="flex-shrink-0 text-[8px] text-gray-600 uppercase">{control.type}</span>
-    </button>
+    </div>
   );
 }
 
 // ─── Group item (collapsible, violet accent) ────────────────────────────────
 
-function GroupItem({ group, sectionChildIds }: { group: ControlGroup; sectionChildIds: string[] }) {
+function GroupItem({ group, sectionChildIds, labelsByControlId }: { group: ControlGroup; sectionChildIds: string[]; labelsByControlId: Map<string, EditorLabel[]> }) {
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const setHoveredGroup = useEditorStore((s) => s.setHoveredGroup);
@@ -189,7 +238,7 @@ function GroupItem({ group, sectionChildIds }: { group: ControlGroup; sectionChi
       {expanded && (
         <div className="ml-3 border-l border-violet-500/20 pl-0.5 py-0.5">
           {memberIds.map((id) => (
-            <ControlItem key={id} controlId={id} />
+            <ControlItem key={id} controlId={id} linkedLabels={labelsByControlId.get(id) ?? []} />
           ))}
         </div>
       )}
@@ -199,7 +248,15 @@ function GroupItem({ group, sectionChildIds }: { group: ControlGroup; sectionChi
 
 // ─── Section item (with collapsible control list) ────────────────────────────
 
-function SectionItem({ sectionId }: { sectionId: string }) {
+function SectionItem({
+  sectionId,
+  labelsByControlId,
+  sectionStandaloneLabels = [],
+}: {
+  sectionId: string;
+  labelsByControlId: Map<string, EditorLabel[]>;
+  sectionStandaloneLabels?: EditorLabel[];
+}) {
   const section = useEditorStore((s) => s.sections[sectionId]);
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const focusedSectionId = useEditorStore((s) => s.focusedSectionId);
@@ -364,10 +421,13 @@ function SectionItem({ sectionId }: { sectionId: string }) {
             return (
               <>
                 {sectionGroups.map((g) => (
-                  <GroupItem key={g.id} group={g} sectionChildIds={childIds} />
+                  <GroupItem key={g.id} group={g} sectionChildIds={childIds} labelsByControlId={labelsByControlId} />
                 ))}
                 {ungroupedIds.map((id) => (
-                  <ControlItem key={id} controlId={id} />
+                  <ControlItem key={id} controlId={id} linkedLabels={labelsByControlId.get(id) ?? []} />
+                ))}
+                {sectionStandaloneLabels.map((label) => (
+                  <LabelRow key={label.id} label={label} />
                 ))}
               </>
             );
@@ -398,6 +458,40 @@ export default function LayersPanel() {
       .sort((a, b) => a.y - b.y || a.x - b.x)
       .map((s) => s.id);
   }, [sections]);
+
+  // Indexed lookup of linked labels by their control id (O(1) per control,
+  // O(n) total per editorLabels change). Linked labels nest under their
+  // control; standalone labels (controlId === null) drop to the bottom block.
+  const labelsByControlId = useMemo(() => {
+    const map = new Map<string, EditorLabel[]>();
+    for (const label of editorLabels) {
+      if (label.controlId && !label.hidden) {
+        const arr = map.get(label.controlId);
+        if (arr) arr.push(label);
+        else map.set(label.controlId, [label]);
+      }
+    }
+    return map;
+  }, [editorLabels]);
+
+  // Standalone labels with an explicit sectionId nest under that section
+  // in the tree. Standalone labels without a sectionId go to the
+  // "Unassigned Labels" block at panel bottom.
+  const standaloneLabelsBySectionId = useMemo(() => {
+    const map = new Map<string, EditorLabel[]>();
+    for (const label of editorLabels) {
+      if (label.controlId == null && label.sectionId && !label.hidden) {
+        const arr = map.get(label.sectionId);
+        if (arr) arr.push(label);
+        else map.set(label.sectionId, [label]);
+      }
+    }
+    return map;
+  }, [editorLabels]);
+  const unassignedStandaloneLabels = useMemo(
+    () => editorLabels.filter((l) => l.controlId == null && !l.sectionId && !l.hidden),
+    [editorLabels],
+  );
 
   if (!showLayers) {
     return (
@@ -443,7 +537,12 @@ export default function LayersPanel() {
           </div>
         ) : (
           sortedSectionIds.map((id) => (
-            <SectionItem key={id} sectionId={id} />
+            <SectionItem
+              key={id}
+              sectionId={id}
+              labelsByControlId={labelsByControlId}
+              sectionStandaloneLabels={standaloneLabelsBySectionId.get(id) ?? []}
+            />
           ))
         )}
       </div>
@@ -477,13 +576,16 @@ export default function LayersPanel() {
         </div>
       )}
 
-      {/* Labels */}
-      {editorLabels.length > 0 && (
+      {/* Unassigned Labels — standalone labels (no controlId) that haven't
+          been placed in any section yet. Standalone labels with a sectionId
+          nest under their section above. Linked labels nest under their
+          control. This block is hidden when count is 0. */}
+      {unassignedStandaloneLabels.length > 0 && (
         <div className="border-t border-gray-800 px-1 py-1 space-y-0.5">
           <div className="px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-gray-600">
-            Labels ({editorLabels.filter(l => !l.hidden).length})
+            Unassigned Labels ({unassignedStandaloneLabels.length})
           </div>
-          {editorLabels.filter(l => !l.hidden).map((label) => {
+          {unassignedStandaloneLabels.map((label) => {
             const isSelected = selectedLabelId === label.id;
             return (
               <button

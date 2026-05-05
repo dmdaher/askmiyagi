@@ -181,6 +181,21 @@ export default function LabelLayer() {
                 data-label-id={label.id}
                 onMouseDown={(e) => handleMouseDown(e, label)}
                 onDoubleClick={() => handleDoubleClick(label)}
+                onContextMenu={(e) => {
+                  // Right-click on a canvas label opens the same label menu
+                  // as right-click in the Layers panel sidebar tree.
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.dispatchEvent(new CustomEvent('editor-context-menu-label', {
+                    detail: {
+                      labelId: label.id,
+                      controlId: label.controlId,
+                      hasSectionId: !!label.sectionId,
+                      clientX: e.clientX,
+                      clientY: e.clientY,
+                    },
+                  }));
+                }}
               >
                 {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
                   <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>

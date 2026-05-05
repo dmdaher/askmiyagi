@@ -8,6 +8,7 @@ import PipelineDashboard from '@/components/admin/PipelineDashboard';
 import UploadZone from '@/components/admin/UploadZone';
 import ContractorSubmissions from '@/components/admin/ContractorSubmissions';
 import type { PipelineRunSummary, RunStatus } from '@/lib/pipeline/types';
+import { isEditorReady } from '@/lib/pipeline/phase-order';
 
 type SortOption = 'status' | 'manufacturer' | 'cost' | 'recent';
 
@@ -65,11 +66,10 @@ export default function AdminPage() {
       entries = entries.filter(([, r]) => r.manufacturer === filterManufacturer);
     }
 
-    // Filter: ready for editor (paused at layout-engine)
+    // Filter: ready for editor — any pipeline at or past layout-engine
+    // has a usable manifest-editor.json (regardless of status).
     if (filterEditorReady) {
-      entries = entries.filter(([, r]) =>
-        r.status === 'paused' && r.currentPhase === 'phase-0-layout-engine'
-      );
+      entries = entries.filter(([, r]) => isEditorReady(r.currentPhase));
     }
 
     // Sort
@@ -92,9 +92,7 @@ export default function AdminPage() {
   }, [runs, sortBy, filterManufacturer, filterEditorReady]);
 
   const hasRuns = Object.keys(runs).length > 0;
-  const editorReadyCount = Object.values(runs).filter(r =>
-    r.status === 'paused' && r.currentPhase === 'phase-0-layout-engine'
-  ).length;
+  const editorReadyCount = Object.values(runs).filter(r => isEditorReady(r.currentPhase)).length;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">

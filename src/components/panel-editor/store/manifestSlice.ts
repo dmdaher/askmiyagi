@@ -234,6 +234,13 @@ export interface ManifestSlice {
   updateLabel: (labelId: string, updates: Partial<EditorLabel>) => void;
   deleteLabel: (labelId: string) => void;
   addStandaloneLabel: (x: number, y: number, text?: string) => string;
+  /**
+   * For a standalone label (controlId === null), set sectionId by computing
+   * findNearestSection from the label's center. Returns true if a section
+   * was found, false if the label is a linked label OR sits outside every
+   * section. Caller is responsible for pushSnapshot before invoking.
+   */
+  assignLabelToNearestSection: (labelId: string) => boolean;
   initLabelsFromControls: () => void;
   setLabelPosition: (ids: string[], position: ControlDef['labelPosition']) => void;
   alignControls: (mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom') => void;
@@ -283,6 +290,28 @@ function defaultSize(type: string, sizeClass?: SizeClass): { w: number; h: numbe
 }
 
 let addCounter = 0;
+
+/**
+ * Find the section whose bounding box contains the given canvas point.
+ * Returns the section id, or undefined if the point falls outside every section.
+ *
+ * Used to assign a sectionId to standalone labels at creation and after drag.
+ * For overlapping sections (rare), returns the first match (insertion order).
+ */
+function findNearestSection(
+  x: number,
+  y: number,
+  sections: Record<string, SectionDef>,
+): string | undefined {
+  for (const id in sections) {
+    const s = sections[id];
+    if (!s) continue;
+    if (x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h) {
+      return id;
+    }
+  }
+  return undefined;
+}
 
 /**
  * Re-center and align labels linked to the given controls.
@@ -857,6 +886,12 @@ export const createManifestSlice: StateCreator<
       selectedIds: [],
       lockedIds: [],
       keyboard: manifestAny.keyboard ?? null,
+      // Defensive restore of editor-only extras when present in payload
+      // (e.g., when a saved/restored editor state lands on this code path).
+      // For raw gatekeeper manifests these are absent → defaults to []/etc.
+      controlGroups: (manifestAny as any).controlGroups ?? [],
+      controlContainers: (manifestAny as any).controlContainers ?? [],
+      editorLabels: (manifestAny as any).editorLabels ?? [],
       _manifestVersion: computeManifestVersion(manifest),
       hasUserEdited: false,
       focusedSectionId: null,
@@ -904,12 +939,18 @@ export const createManifestSlice: StateCreator<
       }
     }
 
-    // Move linked labels for any child control that was moved
-    const updatedLabels = (get().editorLabels as EditorLabel[]).map((l) =>
-      l.controlId && childSet.has(l.controlId)
+    // Move labels with this section. Two paths:
+    //   1. Linked labels: follow their control if the control is in this section
+    //   2. Standalone labels: follow the section if their sectionId matches
+    //      (closes Tier 2 drift bug — standalone labels with sectionId stayed
+    //      put when their section moved, leaving them visually orphaned)
+    const updatedLabels = (get().editorLabels as EditorLabel[]).map((l) => {
+      const followsControl = l.controlId && childSet.has(l.controlId);
+      const followsSection = !l.controlId && l.sectionId === id;
+      return (followsControl || followsSection)
         ? { ...l, x: Math.round(l.x + dx), y: Math.round(l.y + dy) }
-        : l
-    );
+        : l;
+    });
 
     set({
       sections: {
@@ -1328,10 +1369,24 @@ export const createManifestSlice: StateCreator<
   moveLabel: (labelId, dx, dy) => {
     // Round to integers — invariant: label positions are always integer.
     // This lets us detect non-integer positions as "broken data" for auto-repair.
+    // For standalone labels, recompute sectionId from new position so the
+    // Layers-panel tree reflects the drag (cross-boundary moves reassign).
+    const sections = get().sections;
     set((s) => ({
-      editorLabels: (s.editorLabels as EditorLabel[]).map(l =>
-        l.id === labelId ? { ...l, x: Math.round(l.x + dx), y: Math.round(l.y + dy) } : l
-      ),
+      editorLabels: (s.editorLabels as EditorLabel[]).map(l => {
+        if (l.id !== labelId) return l;
+        const nx = Math.round(l.x + dx);
+        const ny = Math.round(l.y + dy);
+        // Linked labels keep their (unused) sectionId untouched —
+        // they derive section from their control, not from this field.
+        if (l.controlId) return { ...l, x: nx, y: ny };
+        // Standalone labels: recompute sectionId from new center.
+        // Use w/2 if width is set, otherwise treat (x, y) as the anchor.
+        const cx = nx + Math.round((l.w ?? 0) / 2);
+        const cy = ny;
+        const newSectionId = findNearestSection(cx, cy, sections);
+        return { ...l, x: nx, y: ny, sectionId: newSectionId };
+      }),
     }));
   },
 
@@ -1343,6 +1398,24 @@ export const createManifestSlice: StateCreator<
     }));
   },
 
+  assignLabelToNearestSection: (labelId) => {
+    const label = (get().editorLabels as EditorLabel[]).find(l => l.id === labelId);
+    // Only standalone labels can be assigned this way. Linked labels derive
+    // section from their control and don't store sectionId.
+    if (!label || label.controlId) return false;
+    const sections = get().sections;
+    const cx = label.x + Math.round((label.w ?? 0) / 2);
+    const cy = label.y;
+    const newSectionId = findNearestSection(cx, cy, sections);
+    if (!newSectionId) return false;
+    set((s) => ({
+      editorLabels: (s.editorLabels as EditorLabel[]).map(l =>
+        l.id === labelId ? { ...l, sectionId: newSectionId } : l
+      ),
+    }));
+    return true;
+  },
+
   deleteLabel: (labelId) => {
     set((s) => ({
       editorLabels: (s.editorLabels as EditorLabel[]).filter(l => l.id !== labelId),
@@ -1350,14 +1423,22 @@ export const createManifestSlice: StateCreator<
   },
 
   addStandaloneLabel: (x, y, text = 'Label') => {
-    const id = `label-standalone-${Date.now()}`;
+    // Suffix with a random nonce so two rapid calls (e.g., in tests) don't
+    // collide on Date.now() and end up sharing an id.
+    const id = `label-standalone-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const sections = get().sections;
+    const w = 60;
+    // Use the label's center for section detection so a click near the edge
+    // of a section's bounding box still resolves to that section.
+    const sectionId = findNearestSection(Math.round(x) + Math.round(w / 2), Math.round(y), sections);
     const newLabel: EditorLabel = {
       id,
       controlId: null,
+      sectionId,  // undefined if the click landed outside every section
       text,
       x: Math.round(x),
       y: Math.round(y),
-      w: 60,
+      w,
       fontSize: 8,
       align: 'center',
     };

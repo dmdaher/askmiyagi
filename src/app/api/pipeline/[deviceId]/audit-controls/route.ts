@@ -4,6 +4,7 @@ import path from 'path';
 import { readState } from '@/lib/pipeline/state-machine';
 import { invokeAgent } from '@/lib/pipeline/runner';
 import { getDeviceIssues, putDeviceIssues } from '@/lib/hosted-storage';
+import { trackAudit, untrackAudit, killAudit } from '@/lib/pipeline/audit-tracker';
 
 // Allow up to 5 minutes for the audit agent to run
 export const maxDuration = 300;
@@ -111,7 +112,14 @@ Rules:
       cwd: process.cwd(),
       allowedTools: ['Read', 'Glob', 'Grep'],
       maxBudgetPerInvocation: 2,
+      onChildPid: (pid) => {
+        // Register the running audit so DELETE can kill it on user-initiated cancel.
+        if (issueId) trackAudit(deviceId, issueId, pid);
+      },
     });
+
+    // Audit completed — clear the tracker so a stale entry doesn't linger.
+    if (issueId) untrackAudit(deviceId, issueId);
 
     // Parse findings from agent output — look for JSON array in code block
     let findings: Array<{ id: string; label: string; type: string; manualPage?: string; section?: string }> = [];
@@ -146,11 +154,18 @@ Rules:
       agentOutput: result.output.substring(0, 2000), // Truncated for debugging
     });
   } catch (err) {
-    // On failure, reset issue status back to open
+    // Clear the tracker on failure or cancellation — the subprocess is gone.
+    if (issueId) untrackAudit(deviceId, issueId);
+    // On failure, reset issue status back to open (DELETE handler does its
+    // own status update for cancellation, but this also handles cancel-via-kill
+    // race where the subprocess died from SIGTERM before DELETE wrote status).
     if (issueId) {
       try {
         const issues = await getDeviceIssues(deviceId);
-        const updated = issues.map(i => i.id === issueId ? { ...i, status: 'open' as const } : i);
+        const updated = issues.map(i => i.id === issueId && i.status === 'investigating'
+          ? { ...i, status: 'open' as const }
+          : i,
+        );
         await putDeviceIssues(deviceId, updated);
       } catch { /* best effort */ }
     }
@@ -159,4 +174,41 @@ Rules:
       { status: 500 },
     );
   }
+}
+
+/**
+ * DELETE /api/pipeline/{deviceId}/audit-controls?issueId=X
+ *
+ * Cancel a running audit. Kills the spawned `claude` CLI subprocess and
+ * resets the issue's status from 'investigating' back to 'open'.
+ *
+ * Safe to call when no audit is running — returns ok:true, killed:false.
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ deviceId: string }> }
+) {
+  const { deviceId } = await params;
+  const url = new URL(request.url);
+  const issueId = url.searchParams.get('issueId');
+  if (!issueId) {
+    return NextResponse.json({ error: 'issueId query parameter is required' }, { status: 400 });
+  }
+
+  const killed = killAudit(deviceId, issueId);
+
+  // Reset issue status from 'investigating' → 'open' if currently investigating.
+  // Done unconditionally (whether or not we found a tracked PID) because the
+  // POST handler may have moved status to 'investigating' on a different
+  // server process or before the tracker was registered.
+  try {
+    const issues = await getDeviceIssues(deviceId);
+    const updated = issues.map(i => i.id === issueId && i.status === 'investigating'
+      ? { ...i, status: 'open' as const, resolution: 'Audit cancelled by user' }
+      : i,
+    );
+    await putDeviceIssues(deviceId, updated);
+  } catch { /* best effort */ }
+
+  return NextResponse.json({ ok: true, killed });
 }

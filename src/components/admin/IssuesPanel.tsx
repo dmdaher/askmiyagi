@@ -44,6 +44,18 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
     return () => clearInterval(interval);
   }, [fetchIssues]);
 
+  // When an audit transitions to investigating, scroll its card into view so
+  // the "Checking manual..." spinner + Cancel button are visible without
+  // hunting on long issue lists.
+  useEffect(() => {
+    const investigating = issues.find(i => i.status === 'investigating');
+    if (!investigating) return;
+    const el = document.querySelector<HTMLDivElement>(
+      `[data-issue-id="${investigating.id}"]`
+    );
+    if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [issues, auditRunning]);
+
   const handleRunAudit = async (issue: DeviceIssue) => {
     setAuditRunning(issue.id);
     setAuditResult(prev => ({ ...prev, [issue.id]: '' }));
@@ -93,7 +105,20 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
     setAuditRunning(null);
   };
 
+  const handleCancelAudit = async (issueId: string) => {
+    if (!window.confirm('Cancel this audit? It will stop the running Claude agent and you\'ll lose any progress so far.')) return;
+    try {
+      await fetch(`/api/pipeline/${deviceId}/audit-controls?issueId=${encodeURIComponent(issueId)}`, {
+        method: 'DELETE',
+      });
+    } catch { /* best effort — server-side state will reconcile */ }
+    setAuditRunning(null);
+    setAuditResult(prev => ({ ...prev, [issueId]: 'Audit cancelled' }));
+    fetchIssues();
+  };
+
   const handleDismiss = async (issueId: string) => {
+    if (!window.confirm('Dismiss this issue? It will be marked resolved without action and removed from the open issues list.')) return;
     const updated = issues.map(i => i.id === issueId ? { ...i, status: 'resolved' as const, resolution: 'Dismissed' } : i);
     setIssues(updated);
     try {
@@ -155,7 +180,11 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
       ) : (
         <div className="space-y-2">
           {openIssues.map((issue) => (
-            <div key={issue.id} className="rounded border border-red-800/30 bg-red-900/10 px-3 py-2">
+            <div
+              key={issue.id}
+              data-issue-id={issue.id}
+              className="rounded border border-red-800/30 bg-red-900/10 px-3 py-2"
+            >
               <div className="flex items-center gap-2 mb-1">
                 <span className="rounded bg-red-500/20 border border-red-500/30 px-1.5 py-0.5 text-[9px] font-medium text-red-400">
                   {issue.type.replace('-', ' ')}
@@ -170,7 +199,14 @@ export default function IssuesPanel({ deviceId }: IssuesPanelProps) {
               {(auditRunning === issue.id || issue.status === 'investigating') && (
                 <div className="flex items-center gap-2 text-[11px] text-blue-400 mb-2">
                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
-                  Checking manual...
+                  <span>Checking manual...</span>
+                  <button
+                    onClick={() => handleCancelAudit(issue.id)}
+                    className="ml-auto rounded border border-red-500/40 bg-red-900/20 px-2 py-0.5 text-[10px] font-medium text-red-300 hover:bg-red-900/40 hover:text-red-200 transition-colors"
+                    title="Cancel this audit"
+                  >
+                    Cancel
+                  </button>
                 </div>
               )}
 

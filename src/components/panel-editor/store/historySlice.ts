@@ -7,6 +7,17 @@ import type { ControlDef, SectionDef, ControlContainer } from './manifestSlice';
 export interface EditorLabel {
   id: string;
   controlId: string | null;  // linked control, or null for standalone
+  /**
+   * For STANDALONE labels (controlId === null), the section that owns this
+   * label in the Layers panel tree. Set on creation via findNearestSection,
+   * recomputed on drag, cleared by section-delete cascade. Optional — old
+   * data and labels dropped outside any section render in the "Unassigned"
+   * bottom block.
+   *
+   * For LINKED labels (controlId !== null), this field is unused — section
+   * is derived dynamically from the linked control's sectionId.
+   */
+  sectionId?: string;
   text: string;
   icon?: string;  // optional icon key from HARDWARE_ICONS (rendered before text)
   x: number;
