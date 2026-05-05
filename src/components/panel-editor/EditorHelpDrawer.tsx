@@ -57,6 +57,13 @@ function GuideTab() {
         <p><strong className="text-white/80">Double-click a label</strong> &mdash; Edit the label text inline. Press Escape or click away to save.</p>
       </CollapsibleSection>
 
+      <CollapsibleSection title="Canvas Size vs Scale (important!)">
+        <p>The toolbar has two side-by-side clusters that look similar but do different things. Pick the right one based on what you want:</p>
+        <p><strong className="text-white/80">Canvas (W × H inputs)</strong> &mdash; Resizes the canvas only. Controls keep their position. Type a bigger W → empty space appears on the right. Type a smaller W → controls past the edge stay where they are (still selectable from the Layers panel; drag back into bounds anytime). <em>Use this when you want more room to add controls, or to trim unused space.</em></p>
+        <p><strong className="text-white/80">Scale (− / + / ⤢ Scale…)</strong> &mdash; Multiplies positions and sizes of every control, section, and label by the same factor. <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">−</kbd> scales to 80%, <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">+</kbd> to 125%. Click <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">⤢ Scale…</kbd> to pick any percentage or target dimensions in a modal. <em>Use this when the whole panel needs to be bigger or smaller (e.g., adapting one design to a different aspect ratio).</em></p>
+        <p><strong className="text-white/80">Quick rule:</strong> If you want to <em>add empty space</em>, use Canvas. If you want everything to <em>grow or shrink together</em>, use Scale. Cmd+Z reverts either.</p>
+      </CollapsibleSection>
+
       <CollapsibleSection title="Toolbar">
         <p><strong className="text-white/80">Undo / Redo</strong> &mdash; Every action is reversible. Use Cmd+Z / Cmd+Shift+Z or the toolbar buttons.</p>
         <p><strong className="text-white/80">Snap Grid</strong> &mdash; Controls the pixel grid that controls snap to when dragged. Smaller values (1-2px) for precision, larger (8-16px) for fast rough positioning.</p>
