@@ -230,6 +230,7 @@ export interface ManifestSlice {
   setAllLabelFontSize: (size: number | undefined) => void;
   resetAllSizes: () => void;
   scaleCanvas: (factor: number) => void;
+  setCanvasSize: (w: number, h: number) => void;
   moveLabel: (labelId: string, dx: number, dy: number) => void;
   updateLabel: (labelId: string, updates: Partial<EditorLabel>) => void;
   deleteLabel: (labelId: string) => void;
@@ -1363,6 +1364,22 @@ export const createManifestSlice: StateCreator<
         canvasWidth: Math.round(s.canvasWidth * factor),
         canvasHeight: Math.round(s.canvasHeight * factor),
       };
+    });
+  },
+
+  /**
+   * Resize the canvas without scaling its contents. Sections, controls, and
+   * labels keep their absolute positions. Empty space appears at the right /
+   * bottom when growing; controls past the new edge stay in state and remain
+   * selectable from the Layers panel sidebar (PanCanvas allows overflow).
+   *
+   * Distinct from scaleCanvas (which multiplies all positions by a factor).
+   * Caller is responsible for pushSnapshot before invoking.
+   */
+  setCanvasSize: (w, h) => {
+    set({
+      canvasWidth: Math.round(w),
+      canvasHeight: Math.round(h),
     });
   },
 

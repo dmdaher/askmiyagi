@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useEditorStore } from './store';
 import type { SnapGrid } from './store';
 import VersionHistoryDropdown from './VersionHistoryDropdown';
+import ScaleContentsModal from './ScaleContentsModal';
 import { isHosted } from '@/lib/env';
 import { buildSavePayload } from './hooks/useAutoSave';
 
@@ -264,6 +265,7 @@ export default function EditorToolbar({
 
   // Refresh relative time display every 30s
   const [, setTick] = useState(0);
+  const [showScaleModal, setShowScaleModal] = useState(false);
   useEffect(() => {
     if (!lastSavedAt) return;
     const interval = setInterval(() => setTick((t) => t + 1), 30000);
@@ -282,6 +284,8 @@ export default function EditorToolbar({
   const divider = <div className="h-5 w-px bg-gray-800 flex-shrink-0" />;
 
   return (
+    <>
+    <ScaleContentsModal open={showScaleModal} onClose={() => setShowScaleModal(false)} />
     <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2">
 
       {/* ── LEFT: Device + View ────────────────────────────────── */}
@@ -486,24 +490,36 @@ export default function EditorToolbar({
 
       {divider}
 
-      {/* Canvas Scale + Export/Submit */}
+      {/* Two distinct clusters:
+          1. "Scale" cluster — proportional scaling (-/+ shortcuts + ⤢ modal)
+          2. "Canvas" cluster — W/H inputs that resize without scaling contents */}
       <div className="flex items-center gap-1 flex-shrink-0">
+        {/* Scale cluster — proportional */}
+        <span className="text-[9px] text-gray-500">Scale:</span>
         <button
           onClick={() => { pushSnapshot(); scaleCanvas(0.8); }}
           disabled={previewMode}
           className="flex h-6 w-6 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30"
-          title="Scale canvas down 80%"
-        >-</button>
-        <span className="text-[9px] text-gray-500">Canvas</span>
+          title="Scale all contents down to 80%"
+        >−</button>
         <button
           onClick={() => { pushSnapshot(); scaleCanvas(1.25); }}
           disabled={previewMode}
           className="flex h-6 w-6 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30"
-          title="Scale canvas up 125%"
+          title="Scale all contents up to 125%"
         >+</button>
+        <button
+          onClick={() => setShowScaleModal(true)}
+          disabled={previewMode}
+          className="flex h-6 items-center px-2 rounded text-[9px] text-gray-300 hover:bg-gray-800 hover:text-gray-100 disabled:opacity-30 border border-gray-700"
+          title="Scale all contents proportionally to a custom percentage or size"
+        >⤢ Scale…</button>
 
-        {/* Canvas W/H inputs — available to contractor too */}
-        <div className="flex items-center gap-0.5 ml-1">
+        <span className="mx-1 h-4 w-px bg-gray-800" />
+
+        {/* Canvas cluster — resize-only (no scaling of contents) */}
+        <span className="text-[9px] text-gray-500">Canvas:</span>
+        <div className="flex items-center gap-0.5">
           <input
             type="number"
             defaultValue={canvasWidth}
@@ -512,13 +528,14 @@ export default function EditorToolbar({
               const val = parseInt(e.target.value, 10);
               if (!isNaN(val) && val !== canvasWidth && val >= 400) {
                 pushSnapshot();
-                scaleCanvas(val / canvasWidth);
+                setCanvasSize(val, canvasHeight);
               }
             }}
             onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
             disabled={previewMode}
             className="w-12 h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 text-center outline-none focus:border-blue-500 disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            title="Canvas width (px)"
+            title="Canvas width in pixels — resizes the canvas only. Controls keep their position. Min 400."
+            placeholder="W"
           />
           <span className="text-[9px] text-gray-600">×</span>
           <input
@@ -529,13 +546,14 @@ export default function EditorToolbar({
               const val = parseInt(e.target.value, 10);
               if (!isNaN(val) && val !== canvasHeight && val >= 300) {
                 pushSnapshot();
-                scaleCanvas(val / canvasHeight);
+                setCanvasSize(canvasWidth, val);
               }
             }}
             onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
             disabled={previewMode}
             className="w-12 h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 text-center outline-none focus:border-blue-500 disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            title="Canvas height (px)"
+            title="Canvas height in pixels — resizes the canvas only. Controls keep their position. Min 300."
+            placeholder="H"
           />
         </div>
 
@@ -608,5 +626,6 @@ export default function EditorToolbar({
         )}
       </div>
     </div>
+    </>
   );
 }
