@@ -10,6 +10,24 @@ function truncate(str: string, maxLen: number): string {
   return str.slice(0, maxLen - 1) + '\u2026';
 }
 
+/**
+ * Scroll the canvas viewport so a control's DOM element is centered.
+ * Works for any control \u2014 even those outside `canvasWidth \u00d7 canvasHeight`,
+ * because the editor's outer container is `overflow-auto` and the control
+ * renders at its absolute x/y regardless of canvas bounds.
+ *
+ * Bug-1 origin (2026-05-06): contractor couldn't find an octave-LED at
+ * stale Y position outside canvas bounds without resorting to canvas
+ * scaling. This helper makes click-from-Layers-panel a one-step action.
+ */
+function scrollToControlInCanvas(controlId: string): void {
+  if (typeof document === 'undefined') return;
+  const el = document.querySelector(`[data-control-id="${controlId}"]`);
+  if (el && 'scrollIntoView' in el) {
+    el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+  }
+}
+
 // ─── Label row (used for linked labels under controls AND for standalone labels) ──
 
 function LabelRow({ label, indent = false }: { label: EditorLabel; indent?: boolean }) {
@@ -57,6 +75,8 @@ function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; link
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const toggleSelected = useEditorStore((s) => s.toggleSelected);
+  const canvasWidth = useEditorStore((s) => s.canvasWidth);
+  const canvasHeight = useEditorStore((s) => s.canvasHeight);
 
   const isSelected = selectedIds.includes(controlId);
   const itemRef = useRef<HTMLButtonElement>(null);
@@ -74,6 +94,10 @@ function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; link
         toggleSelected(controlId);
       } else {
         setSelectedIds([controlId]);
+        // Bug-1 follow-up: click-to-find on canvas. Centers the control in
+        // viewport, even for controls outside canvas bounds (renders in the
+        // grey area beyond canvas edge — visible via overflow-auto scroll).
+        scrollToControlInCanvas(controlId);
       }
     },
     [controlId, toggleSelected, setSelectedIds],
@@ -83,6 +107,11 @@ function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; link
 
   const isLocked = control.locked;
   const isResizeLocked = control.resizeLocked;
+  const isOutOfBounds =
+    control.x < 0 ||
+    control.y < 0 ||
+    control.x + control.w > canvasWidth ||
+    control.y + control.h > canvasHeight;
 
   return (
     <div>
@@ -101,6 +130,17 @@ function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; link
           <svg className={`h-2.5 w-2.5 flex-shrink-0 ${isLocked ? 'text-yellow-500' : 'text-blue-500'}`} viewBox="0 0 16 16" fill="currentColor">
             <path d="M3 9a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9z" />
             {isLocked && <path d="M6 5a2 2 0 1 1 4 0v3H6V5z" />}
+          </svg>
+        )}
+        {isOutOfBounds && (
+          <svg
+            className="h-2.5 w-2.5 flex-shrink-0 text-red-500"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            aria-label="Outside canvas bounds"
+          >
+            <title>Outside canvas bounds — click to find on canvas</title>
+            <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm0 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4.5zm0 7.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
           </svg>
         )}
         <span className="flex-1 truncate">{truncate(control.label || control.id, isLocked || isResizeLocked ? 18 : 22)}</span>
@@ -530,7 +570,7 @@ export default function LayersPanel() {
       </div>
 
       {/* Section list */}
-      <div className="flex-1 overflow-y-auto px-1 py-1 space-y-0.5">
+      <div className="flex-1 overflow-y-auto px-1 py-1 space-y-0.5" data-testid="layers-section-list">
         {sortedSectionIds.length === 0 ? (
           <div className="px-2 py-4 text-center text-[11px] text-gray-600">
             No sections loaded
@@ -585,6 +625,7 @@ export default function LayersPanel() {
         <div
           className="border-t border-gray-800 px-1 py-1 space-y-0.5 overflow-y-auto"
           style={{ maxHeight: '33vh' }}
+          data-testid="layers-unassigned-labels"
         >
           <div className="px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-gray-600 sticky top-0 bg-[#0d0d1a]">
             Unassigned Labels ({unassignedStandaloneLabels.length})
