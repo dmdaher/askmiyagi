@@ -298,6 +298,9 @@ function SectionItem({
   sectionStandaloneLabels?: EditorLabel[];
 }) {
   const section = useEditorStore((s) => s.sections[sectionId]);
+  const controls = useEditorStore((s) => s.controls);
+  const canvasWidth = useEditorStore((s) => s.canvasWidth);
+  const canvasHeight = useEditorStore((s) => s.canvasHeight);
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const focusedSectionId = useEditorStore((s) => s.focusedSectionId);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
@@ -308,6 +311,13 @@ function SectionItem({
   const isSelected = selectedIds.includes(sectionId);
   // Also highlight section if any of its children are selected
   const hasSelectedChild = section?.childIds.some((id) => selectedIds.includes(id)) ?? false;
+  // A6.1 follow-up: bubble out-of-bounds badge up to the section header so
+  // the contractor sees something is wrong without needing to expand.
+  const hasOutOfBoundsChild = section?.childIds.some((id) => {
+    const c = controls[id];
+    if (!c) return false;
+    return c.x < 0 || c.y < 0 || c.x + c.w > canvasWidth || c.y + c.h > canvasHeight;
+  }) ?? false;
   const itemRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -387,6 +397,17 @@ function SectionItem({
                 : isSelected ? 'text-white' : 'text-gray-300'
               }`}
             >
+              {hasOutOfBoundsChild && (
+                <svg
+                  className="h-2.5 w-2.5 flex-shrink-0 text-red-500"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  aria-label="Section contains out-of-bounds control"
+                >
+                  <title>Section contains out-of-bounds control(s) — expand to find</title>
+                  <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm0 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4.5zm0 7.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                </svg>
+              )}
               <span className="flex-1 truncate">{truncate(displayName, 18)}</span>
               {mode === 'hidden' && (
                 <span className="flex-shrink-0 text-[8px] text-amber-500/60">hidden</span>
