@@ -576,13 +576,17 @@ export default function LayersPanel() {
         </div>
       )}
 
-      {/* Unassigned Labels — standalone labels (no controlId) that haven't
-          been placed in any section yet. Standalone labels with a sectionId
-          nest under their section above. Linked labels nest under their
-          control. This block is hidden when count is 0. */}
+      {/* Unassigned Labels — standalone labels (no controlId, no sectionId).
+          Capped at 33vh with internal scroll so the section list above
+          (flex-1) stays visible even when there are many unassigned labels.
+          Without this cap, large editor-labels collections could squeeze
+          the section list to 0px. Block hidden when count is 0. */}
       {unassignedStandaloneLabels.length > 0 && (
-        <div className="border-t border-gray-800 px-1 py-1 space-y-0.5">
-          <div className="px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-gray-600">
+        <div
+          className="border-t border-gray-800 px-1 py-1 space-y-0.5 overflow-y-auto"
+          style={{ maxHeight: '33vh' }}
+        >
+          <div className="px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-gray-600 sticky top-0 bg-[#0d0d1a]">
             Unassigned Labels ({unassignedStandaloneLabels.length})
           </div>
           {unassignedStandaloneLabels.map((label) => {

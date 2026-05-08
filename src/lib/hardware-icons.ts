@@ -42,6 +42,7 @@ export const HARDWARE_ICON_SVGS: Record<string, React.ReactNode> = {
   'square-wave': svgIcon('M2 16 L2 8 L8 8 L8 16 L14 16 L14 8 L20 8 L20 16 L22 16'),
   'triangle-wave': svgIcon('M2 16 L6 8 L12 16 L18 8 L22 16'),
   'sawtooth-wave': svgIcon('M2 16 L10 8 L10 16 L18 8 L18 16 L22 12'),
+  'sawtooth-cycle': svgIcon('M2 18 L12 6 L22 18'),
   'pulse-wave': svgIcon('M2 16 L2 8 L5 8 L5 16 L14 16 L14 8 L17 8 L17 16 L22 16'),
   'sample-hold': svgIcon('M2 14 L6 14 L6 9 L10 9 L10 16 L14 16 L14 11 L18 11 L18 14 L22 14'),
   'sample-glide': svgIcon('M2 14 L6 14 L8 9 L10 9 L12 16 L14 16 L16 11 L18 11 L20 14 L22 14'),
@@ -90,7 +91,7 @@ export function hasIconSvg(key: string): boolean {
 
 /** Get all icon keys organized by category for picker UI */
 export const ICON_CATEGORIES = [
-  { label: 'Waveforms', keys: ['sine-wave', 'square-wave', 'triangle-wave', 'sawtooth-wave', 'pulse-wave', 'sample-hold', 'sample-glide', 'noise'] },
+  { label: 'Waveforms', keys: ['sine-wave', 'square-wave', 'triangle-wave', 'sawtooth-wave', 'sawtooth-cycle', 'pulse-wave', 'sample-hold', 'sample-glide', 'noise'] },
   { label: 'DJ', keys: ['cue', 'vinyl-mode', 'loop-in', 'loop-out', 'beat-sync', 'slip', 'quantize'] },
   { label: 'Transport', keys: ['play', 'pause', 'play-pause', 'stop', 'record', 'fast-forward', 'rewind', 'skip-forward', 'skip-backward', 'eject'] },
   { label: 'Arrows', keys: ['arrow-up', 'arrow-down', 'arrow-left', 'arrow-right', 'triangle-up', 'triangle-down', 'triangle-left', 'triangle-right'] },
