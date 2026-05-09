@@ -4,6 +4,7 @@ import { Tutorial } from '@/types/tutorial';
 
 // All valid control IDs for the DeepMind 12 panel
 // Source: docs/plans/2026-03-15-deepmind-12-tutorials.md — Complete Control ID List
+// Updated 2026-05-09: K4 LED migration split clusters into individual LEDs
 const validControlIds = [
   // PERF section
   'perf-volume',
@@ -12,7 +13,12 @@ const validControlIds = [
   'perf-oct-up',
   'perf-pitch',
   'perf-mod',
-  'octave-leds',
+  // OCTAVE indicators (split from octave-leds — K4)
+  'octave-minus-2',
+  'octave-minus-1',
+  'octave-zero',
+  'octave-plus-1',
+  'octave-plus-2',
   // ARP section
   'arp-rate',
   'arp-gate-time',
@@ -29,13 +35,25 @@ const validControlIds = [
   'lfo2-rate',
   'lfo2-delay',
   'lfo2-edit',
-  // LFO waveforms (shared)
-  'lfo-wave-sine',
-  'lfo-wave-triangle',
-  'lfo-wave-sawtooth',
-  'lfo-wave-square',
-  'lfo-wave-sah',
-  'lfo-wave-random',
+  // LFO 1 waveform indicators (split from lfo1-waveform-leds — K4)
+  'lfo1-sine',
+  'lfo1-triangle',
+  'lfo1-square',
+  'lfo1-ramp-up',
+  'lfo1-ramp-down',
+  'lfo1-sample-hold',
+  'lfo1-sample-glide',
+  // LFO 2 waveform indicators (split from lfo2-waveform-leds — K4)
+  'lfo2-sine',
+  'lfo2-triangle',
+  'lfo2-square',
+  'lfo2-ramp-up',
+  'lfo2-ramp-down',
+  'lfo2-sample-hold',
+  'lfo2-sample-glide',
+  // VOICES indicators (split from voices-leds — K4)
+  'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6',
+  'voice-7', 'voice-8', 'voice-9', 'voice-10', 'voice-11', 'voice-12',
   // OSC section
   'osc-pitch-mod',
   'osc-pwm',

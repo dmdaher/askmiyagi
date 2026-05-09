@@ -53,10 +53,10 @@ export const lfoBasics: Tutorial = {
         'The six LED buttons in the centre column (Sine, Triangle, Square, Ramp Up, Ramp Down, Smp&Hold, Smp&Glide) are shared between LFO 1 and LFO 2. The illuminated LED always shows the waveform of whichever LFO was last edited. Press each button in turn and listen: Sine gives smooth vibrato; Triangle is similar with slightly sharper peaks; Square produces abrupt pitch jumps; Ramp Up sweeps slowly up then snaps down; Ramp Down is the reverse; Smp&Hold creates random stepped steps; Smp&Glide slides between random values.',
       details:
         'The default LFO waveform is Triangle. The waveform LED will glow at full brightness to indicate the selected shape, and at half brightness to show other available shapes. Because the column is shared, pressing a waveform button assigns it to the most recently touched LFO (LFO 1 or LFO 2). To be certain you are assigning a waveform to LFO 1, first move the LFO 1 RATE fader (to make LFO 1 the active context), then press the desired waveform button. The SHAPE parameter in the LFO EDIT menu mirrors this selection.',
-      highlightControls: ['lfo-wave-sine', 'lfo-wave-triangle', 'lfo-wave-sawtooth', 'lfo-wave-square', 'lfo-wave-sah', 'lfo-wave-random'],
+      highlightControls: ['lfo1-sine', 'lfo1-triangle', 'lfo1-square', 'lfo1-ramp-up', 'lfo1-ramp-down', 'lfo1-sample-hold', 'lfo1-sample-glide'],
       panelStateChanges: {
         'lfo1-delay': { active: false },
-        'lfo-wave-triangle': { active: true },
+        'lfo1-triangle': { active: true },
       },
       displayState: {
         screenType: 'home',
@@ -73,7 +73,7 @@ export const lfoBasics: Tutorial = {
         'This hold-and-move shortcut is documented in the LFO EDIT section (§8.2.4). The shortcut assigns the waveform to the LFO whose EDIT button is held. After releasing the EDIT button, the waveform LED column will show the selected shape for that LFO. The same shortcut applies to LFO 2: hold LFO 2 EDIT and move LFO 2 RATE.',
       highlightControls: ['lfo1-edit', 'lfo1-rate'],
       panelStateChanges: {
-        'lfo-wave-triangle': { active: false },
+        'lfo1-triangle': { active: false },
         'lfo1-edit': { active: true },
         'lfo1-rate': { active: true },
       },

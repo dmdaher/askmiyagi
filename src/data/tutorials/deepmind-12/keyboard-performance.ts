@@ -64,7 +64,7 @@ export const keyboardPerformance: Tutorial = {
         'Press OCT DOWN (-) to shift the keyboard one octave lower. Press OCT UP (+) to shift one octave higher. The five OCTAVE LEDs above the buttons show your current position: center LED (lit green) = no shift.',
       details:
         'The five OCTAVE LEDs represent positions -2, -1, 0, +1, +2. Each press of OCT DOWN or OCT UP moves one step. The center LED glows green at octave 0 (no shift). The other LEDs glow orange to indicate the current shifted position. Octave shifting lets you play bass lines or high leads without leaving the keyboard range.',
-      highlightControls: ['perf-oct-down', 'perf-oct-up', 'octave-leds'],
+      highlightControls: ['perf-oct-down', 'perf-oct-up', 'octave-minus-2', 'octave-minus-1', 'octave-zero', 'octave-plus-1', 'octave-plus-2'],
       panelStateChanges: {
         'perf-oct-down': { active: true },
       },
@@ -82,7 +82,7 @@ export const keyboardPerformance: Tutorial = {
         'Press both OCT DOWN and OCT UP buttons at the same time to reset to octave 0. Try playing with the keyboard shifted to -2, -1, 0, +1, and +2 to hear how the same keys produce different octave ranges.',
       details:
         'With a -2 shift, the 49 keys span C0-C4 (very low). With a +2 shift, they span C4-C8 (very high). This makes the DeepMind 12 versatile for both bass/pad programs and lead/high-frequency sounds without needing a larger keyboard.',
-      highlightControls: ['perf-oct-down', 'perf-oct-up', 'octave-leds'],
+      highlightControls: ['perf-oct-down', 'perf-oct-up', 'octave-minus-2', 'octave-minus-1', 'octave-zero', 'octave-plus-1', 'octave-plus-2'],
       panelStateChanges: {
         'perf-oct-down': { active: false },
       },
