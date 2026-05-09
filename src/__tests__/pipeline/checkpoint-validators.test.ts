@@ -8,6 +8,7 @@ import {
   validatePassCurriculum,
   validatePassBatches,
   validateIndependentChecklist,
+  validateLedGroupSplitting,
 } from '../../lib/pipeline/checkpoint-validators';
 
 describe('checkpoint-validators', () => {
@@ -348,6 +349,157 @@ More items.`;
       const result = validateIndependentChecklist(content);
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => e.includes('chapter'))).toBe(true);
+    });
+  });
+
+  // ── K4 Layer 2: LED-group splitting ─────────────────────────────────────
+  describe('validateLedGroupSplitting', () => {
+    /**
+     * Build a blueprint with a single section containing the given controls.
+     * Each control object can be a regular {id, centroid?} or a led-group with
+     * {id, type:'led-group', count, waveforms?}.
+     */
+    function makeBlueprint(sectionId: string, controls: Record<string, unknown>[]): string {
+      return JSON.stringify({ sections: [{ sectionId, controls }] });
+    }
+
+    function makeManifest(controls: Array<{ id: string; type: string; sectionId: string }>): string {
+      return JSON.stringify({ controls });
+    }
+
+    it('passes when no led-group clusters exist', () => {
+      const blueprint = makeBlueprint('lfo1', [
+        { id: 'lfo1-rate', centroid: { x: 100, y: 100 } },
+      ]);
+      const manifest = makeManifest([
+        { id: 'lfo1-rate', type: 'slider', sectionId: 'lfo1' },
+      ]);
+      const result = validateLedGroupSplitting(manifest, blueprint);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('passes when led-group has count of 1 (no split required)', () => {
+      const blueprint = makeBlueprint('lfo1', [
+        { id: 'lfo1-some-led', type: 'led-group', count: 1 },
+      ]);
+      const manifest = makeManifest([
+        { id: 'lfo1-some-led', type: 'led', sectionId: 'lfo1' },
+      ]);
+      expect(validateLedGroupSplitting(manifest, blueprint).valid).toBe(true);
+    });
+
+    it('FAILS when led-group with count=7 is merged into 1 control', () => {
+      const blueprint = makeBlueprint('lfo1', [
+        { id: 'lfo1-waveform-leds', type: 'led-group', count: 7 },
+      ]);
+      const manifest = makeManifest([
+        { id: 'lfo1-waveform-leds', type: 'led', sectionId: 'lfo1' },
+      ]);
+      const result = validateLedGroupSplitting(manifest, blueprint);
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain('section "lfo1"');
+      expect(result.errors[0]).toContain('expected 7');
+      expect(result.errors[0]).toContain('manifest has 1');
+      expect(result.errors[0]).toContain('lfo1-waveform-leds');
+    });
+
+    it('passes when led-group with count=7 is properly split', () => {
+      const blueprint = makeBlueprint('lfo1', [
+        { id: 'lfo1-waveform-leds', type: 'led-group', count: 7 },
+      ]);
+      const splitNames = ['sine', 'triangle', 'square', 'ramp-up', 'ramp-down', 'sample-hold', 'sample-glide'];
+      const manifest = makeManifest(
+        splitNames.map((name) => ({ id: `lfo1-${name}`, type: 'led', sectionId: 'lfo1' }))
+      );
+      expect(validateLedGroupSplitting(manifest, blueprint).valid).toBe(true);
+    });
+
+    it('FAILS when section has TWO led-group clusters and only one is split', () => {
+      const blueprint = makeBlueprint('performance', [
+        { id: 'voices-leds', type: 'led-group', count: 12 },
+        { id: 'octave-leds', type: 'led-group', count: 5 },
+      ]);
+      // Only voices was split; octave still merged → total LEDs in manifest = 12
+      const manifest = makeManifest([
+        ...Array.from({ length: 12 }, (_, i) => ({ id: `voice-${i + 1}`, type: 'led', sectionId: 'performance' })),
+        { id: 'octave-leds', type: 'led', sectionId: 'performance' }, // not split
+      ]);
+      const result = validateLedGroupSplitting(manifest, blueprint);
+      // Total expected: 12 + 5 = 17; actual LEDs in section: 12 + 1 = 13
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain('expected 17');
+      expect(result.errors[0]).toContain('manifest has 13');
+      // Both cluster IDs should be named in the error
+      expect(result.errors[0]).toContain('voices-leds');
+      expect(result.errors[0]).toContain('octave-leds');
+    });
+
+    it('passes when both clusters in a section are properly split', () => {
+      const blueprint = makeBlueprint('performance', [
+        { id: 'voices-leds', type: 'led-group', count: 12 },
+        { id: 'octave-leds', type: 'led-group', count: 5 },
+      ]);
+      const manifest = makeManifest([
+        ...Array.from({ length: 12 }, (_, i) => ({ id: `voice-${i + 1}`, type: 'led', sectionId: 'performance' })),
+        ...['minus-2', 'minus-1', 'zero', 'plus-1', 'plus-2'].map((label) => ({
+          id: `octave-${label}`,
+          type: 'led',
+          sectionId: 'performance',
+        })),
+      ]);
+      expect(validateLedGroupSplitting(manifest, blueprint).valid).toBe(true);
+    });
+
+    it('reports errors per under-split section, not per cluster', () => {
+      const blueprint = JSON.stringify({
+        sections: [
+          { sectionId: 'lfo1', controls: [{ id: 'lfo1-waveform-leds', type: 'led-group', count: 7 }] },
+          { sectionId: 'lfo2', controls: [{ id: 'lfo2-waveform-leds', type: 'led-group', count: 7 }] },
+        ],
+      });
+      // Both merged
+      const manifest = makeManifest([
+        { id: 'lfo1-waveform-leds', type: 'led', sectionId: 'lfo1' },
+        { id: 'lfo2-waveform-leds', type: 'led', sectionId: 'lfo2' },
+      ]);
+      const result = validateLedGroupSplitting(manifest, blueprint);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toHaveLength(2);
+      expect(result.errors[0]).toContain('lfo1');
+      expect(result.errors[1]).toContain('lfo2');
+    });
+
+    it('handles malformed JSON gracefully', () => {
+      const result = validateLedGroupSplitting('not json', '{}');
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain('Manifest JSON parse failed');
+    });
+
+    it('handles malformed blueprint JSON gracefully', () => {
+      const result = validateLedGroupSplitting('{}', 'not json');
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain('Blueprint JSON parse failed');
+    });
+
+    it('passes on empty manifest + empty blueprint', () => {
+      const result = validateLedGroupSplitting('{"controls":[]}', '{"sections":[]}');
+      expect(result.valid).toBe(true);
+    });
+
+    it('counts only same-section LEDs (not LEDs in unrelated sections)', () => {
+      const blueprint = makeBlueprint('lfo1', [
+        { id: 'lfo1-waveform-leds', type: 'led-group', count: 7 },
+      ]);
+      // 7 LEDs total but in DIFFERENT sections — should still fail
+      const manifest = makeManifest([
+        { id: 'lfo1-sine', type: 'led', sectionId: 'wrong-section' },
+        ...Array.from({ length: 6 }, (_, i) => ({ id: `other-led-${i}`, type: 'led', sectionId: 'somewhere-else' })),
+      ]);
+      const result = validateLedGroupSplitting(manifest, blueprint);
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain('expected 7');
+      expect(result.errors[0]).toContain('manifest has 0'); // none in section "lfo1"
     });
   });
 });

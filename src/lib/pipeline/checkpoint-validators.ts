@@ -462,6 +462,85 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
 }
 
 /**
+ * LED-Group Split Validation (post-gatekeeper, deterministic).
+ *
+ * The diagram parser emits cluster controls as `type: "led-group"` with
+ * `count: N` (where N > 1) and a names array (waveforms / voiceNumbers /
+ * octaveLabels). The gatekeeper's L1 rule says: when count > 1, MUST split
+ * into N individual `type: "led"` controls.
+ *
+ * This validator catches gatekeeper drift: if the parser reported count=7
+ * but the manifest has only 1 LED control in that section, the gatekeeper
+ * merged when it shouldn't have. Pure deterministic count check — no LLM.
+ *
+ * Behavior:
+ *   - Aggregates expected LED counts per section across all led-group clusters
+ *   - Compares against actual manifest LED count per section
+ *   - Returns one error per under-split section, naming the offending cluster(s)
+ *
+ * Origin: K4 Layer 2 (LED indicators systemic fix, 2026-05-09).
+ */
+export function validateLedGroupSplitting(
+  manifestJson: string,
+  blueprintJson: string
+): ValidationResult {
+  const errors: string[] = [];
+
+  let manifest: { controls?: Array<Record<string, unknown>> };
+  let blueprint: Blueprint;
+  try {
+    manifest = JSON.parse(manifestJson);
+  } catch (e) {
+    return { valid: false, errors: [`Manifest JSON parse failed: ${(e as Error).message}`] };
+  }
+  try {
+    blueprint = normalizeBlueprint(JSON.parse(blueprintJson));
+  } catch (e) {
+    return { valid: false, errors: [`Blueprint JSON parse failed: ${(e as Error).message}`] };
+  }
+
+  const manifestControls = (manifest.controls ?? []) as Array<{
+    id?: string;
+    type?: string;
+    sectionId?: string;
+  }>;
+
+  // Aggregate expected LED counts per section across all led-group clusters.
+  const expectedPerSection = new Map<string, { totalCount: number; clusters: string[] }>();
+  for (const section of blueprint.sections) {
+    for (const control of section.controls as Array<BlueprintControl & { type?: string; count?: number }>) {
+      if (control.type !== 'led-group') continue;
+      const count = control.count;
+      if (typeof count !== 'number' || count <= 1) continue;
+      const acc = expectedPerSection.get(section.sectionId) ?? { totalCount: 0, clusters: [] };
+      acc.totalCount += count;
+      acc.clusters.push(String(control.id));
+      expectedPerSection.set(section.sectionId, acc);
+    }
+  }
+
+  // For each section that should have split LEDs, count actual LED controls.
+  for (const [sectionId, expected] of expectedPerSection) {
+    const actualLeds = manifestControls.filter(
+      (c) => c.type === 'led' && c.sectionId === sectionId
+    );
+    if (actualLeds.length < expected.totalCount) {
+      const clusterList = expected.clusters.join(', ');
+      const plural = expected.clusters.length > 1 ? 'clusters' : 'cluster';
+      errors.push(
+        `LED-group splitting failed in section "${sectionId}": expected ${expected.totalCount} ` +
+        `split LED controls (from ${plural} ${clusterList}), but manifest has ${actualLeds.length}. ` +
+        `Per the indicator-splitting rule, when the diagram parser reports type:"led-group" with ` +
+        `count > 1, the gatekeeper MUST emit one type:"led" control per LED — geometric evidence ` +
+        `from the parser overrides textual phrasing in the manual.`
+      );
+    }
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
  * Archetype-Geometry Validation: verify the chosen archetype makes sense
  * for the centroid distribution. Catches wrong archetypes like using
  * cluster-above-anchor for a side-by-side layout.

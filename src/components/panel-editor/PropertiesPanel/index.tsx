@@ -518,6 +518,81 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         </>
       )}
 
+      {/* LED state + color — for type='led' / 'indicator' controls (split LEDs etc.) */}
+      {(control.type === 'led' || control.type === 'indicator') && (
+        <>
+          {/* Default state: on/off — controls how the LED renders at rest */}
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase tracking-wide text-gray-500">Default state</label>
+            <div className="flex gap-1">
+              {([['off', 'Off (dim)'], ['on', 'On (lit)']] as const).map(([mode, lbl]) => {
+                const isActive = mode === 'on' ? control.ledOn === true : control.ledOn !== true;
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledOn', mode === 'on'); }}
+                    className={`flex-1 rounded border py-1 text-[10px] transition-colors ${
+                      isActive ? 'border-blue-500 bg-blue-500/10 text-blue-400' : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                    }`}
+                  >
+                    {lbl}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[9px] text-gray-600 leading-tight">
+              In a group, only the active LED is typically &ldquo;On.&rdquo; Tutorial steps can override this for any step.
+            </p>
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase tracking-wide text-gray-500">LED Color</label>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {[
+                ['#22c55e', 'Green'],
+                ['#f59e0b', 'Amber'],
+                ['#d4a574', 'Tan'],
+                ['#fbbf24', 'Yellow'],
+                ['#ef4444', 'Red'],
+                ['#3b82f6', 'Blue'],
+                ['#ec4899', 'Pink'],
+                ['#a78bfa', 'Purple'],
+                ['#ffffff', 'White'],
+              ].map(([color, name]) => (
+                <button
+                  key={color}
+                  onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledColor', color); }}
+                  className={`w-5 h-5 rounded-full border transition-colors ${
+                    (control.ledColor ?? '#22c55e') === color ? 'border-blue-500 ring-1 ring-blue-500/30' : 'border-gray-600 hover:border-gray-400'
+                  }`}
+                  style={{ backgroundColor: color }}
+                  title={name}
+                />
+              ))}
+              <input
+                type="text"
+                value={control.ledColor ?? ''}
+                placeholder="#hex"
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (/^#[0-9a-fA-F]{0,6}$/.test(v) || v === '') {
+                    pushSnapshot();
+                    updateControlProp(ids, 'ledColor', v || undefined);
+                  }
+                }}
+                onBlur={(e) => {
+                  const v = e.target.value;
+                  if (v && !/^#[0-9a-fA-F]{6}$/.test(v)) {
+                    updateControlProp(ids, 'ledColor', undefined);
+                  }
+                }}
+                className="w-16 h-5 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 outline-none focus:border-blue-500 font-mono"
+              />
+            </div>
+          </div>
+          <div className="h-px bg-gray-800" />
+        </>
+      )}
+
       {/* LED — unified selector for all buttons/pads */}
       {(control.type === 'button' || control.type === 'pad') && (
         <>
