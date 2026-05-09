@@ -38,8 +38,10 @@ export default function ContainerNode({ container }: ContainerNodeProps) {
   const moveContainer = useEditorStore((s) => s.moveContainer);
   const resizeContainer = useEditorStore((s) => s.resizeContainer);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
+  const recentlyCreatedContainerId = useEditorStore((s) => s.recentlyCreatedContainerId);
 
   const isSelected = selectedIds.includes(container.id);
+  const isJustCreated = recentlyCreatedContainerId === container.id;
   const dragStartRef = useRef({ x: 0, y: 0 });
 
   const handleDragStart = useCallback(
@@ -119,13 +121,24 @@ export default function ContainerNode({ container }: ContainerNodeProps) {
       style={{
         ...style,
         borderRadius: container.borderRadius ?? 4,
-        zIndex: 3,
-        outline: isSelected ? '2px solid rgba(107,114,128,0.6)' : 'none',
+        zIndex: isJustCreated ? 30 : 3, // briefly raise above controls during flash
+        outline: isJustCreated
+          ? '3px solid rgba(34, 197, 94, 0.95)'           // bright green during flash
+          : isSelected
+            ? '2px solid rgba(107,114,128,0.6)'
+            : 'none',
         outlineOffset: 1,
+        boxShadow: isJustCreated
+          ? '0 0 24px 6px rgba(34, 197, 94, 0.6), 0 0 48px 12px rgba(34, 197, 94, 0.25)'
+          : (style as React.CSSProperties).boxShadow,
+        animation: isJustCreated ? 'container-flash 2.4s ease-out forwards' : undefined,
         cursor: 'move',
         pointerEvents: 'auto',
       }}
     >
+      {/* Marker for click-to-find from Layers panel (queried via
+          [data-container-id="..."] + scrollIntoView). Invisible. */}
+      <div data-container-id={container.id} className="absolute inset-0 pointer-events-none" />
       {/* Optional label */}
       {container.label && (
         <div

@@ -172,8 +172,34 @@ export default function ContextMenu() {
     // Convert screen coords to canvas coords
     const x = (menu.x - panX) / zoom;
     const y = (menu.y - panY) / zoom;
+    const w = 120;
+    const h = 80;
+
+    // Clamp so the new container doesn't land behind the keyboard.
+    // Keyboard top sits at (panelHeightPercent / 100) * canvasHeight.
+    // We need cBottom (= y + h) ≤ keyboardTop − margin.
+    const kb = store.keyboard;
+    const safeBottomLimit = kb
+      ? (kb.panelHeightPercent / 100) * store.canvasHeight - 16
+      : store.canvasHeight - 16;
+    const safeRightLimit = store.canvasWidth - 16;
+    const clampedY = Math.min(Math.max(8, y), Math.max(8, safeBottomLimit - h));
+    const clampedX = Math.min(Math.max(8, x), Math.max(8, safeRightLimit - w));
+
     store.pushSnapshot();
-    store.addContainer(Math.round(x), Math.round(y), 120, 80);
+    const newId = store.addContainer(Math.round(clampedX), Math.round(clampedY), w, h);
+    // Flash + scroll-to so the contractor sees where the new container landed.
+    store.flashContainerCreated(newId);
+    store.setSelectedIds([newId]);
+    if (typeof document !== 'undefined') {
+      // Tiny delay so the DOM element exists before we try to scroll to it.
+      setTimeout(() => {
+        const el = document.querySelector(`[data-container-id="${newId}"]`);
+        if (el && 'scrollIntoView' in el) {
+          el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+        }
+      }, 50);
+    }
     setMenu(null);
   }, [menu]);
 

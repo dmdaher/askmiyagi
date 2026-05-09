@@ -619,7 +619,17 @@ export default function LayersPanel() {
             return (
               <button
                 key={c.id}
-                onClick={(e) => { e.stopPropagation(); setSelectedIds([c.id]); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedIds([c.id]);
+                  // Click-to-find on canvas (parallel to ControlItem behavior).
+                  if (typeof document !== 'undefined') {
+                    const el = document.querySelector(`[data-container-id="${c.id}"]`);
+                    if (el && 'scrollIntoView' in el) {
+                      el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+                    }
+                  }
+                }}
                 className={`flex w-full items-center gap-1 rounded px-2 py-1 text-left text-[10px] transition-colors ${
                   isSelected
                     ? 'bg-gray-600/30 text-white'
