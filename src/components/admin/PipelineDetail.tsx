@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { PipelineState, LogEntry, Escalation } from '@/lib/pipeline/types';
+import { formatTimeAgo, isRecent } from '@/lib/format-time-ago';
 import PhaseTimeline from './PhaseTimeline';
 import EscalationBanner from './EscalationBanner';
 import LogStream from './LogStream';
@@ -221,6 +222,27 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
   const [result, setResult] = useState<string | null>(null);
   const [showSendModal, setShowSendModal] = useState(false);
   const [sendNote, setSendNote] = useState('');
+  // A4-P1: contractor's last save time, fetched on demand to surface
+  // overwrite warnings on Send-to-Contractor and Pull-from-Hosted.
+  const [contractorLastSavedAt, setContractorLastSavedAt] = useState<string | null>(null);
+
+  // Refresh the contractor's last-saved timestamp on mount and whenever the
+  // Send modal opens (so a stale value doesn't sneak past the warning).
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchLastSaved() {
+      try {
+        const res = await fetch(`/api/hosted/panels/${deviceId}`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setContractorLastSavedAt(data?._updatedAt ?? null);
+      } catch {
+        /* network failure → no warning shown; fail-safe */
+      }
+    }
+    fetchLastSaved();
+    return () => { cancelled = true; };
+  }, [deviceId, showSendModal]);
 
   const handleSendToContractor = useCallback(async () => {
     setSending(true);
@@ -244,6 +266,16 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
   }, [deviceId, sendNote]);
 
   const handlePullAndBuild = useCallback(async () => {
+    // A4-P1: confirm before overwriting local manifest with contractor's
+    // hosted version. Show contractor's last save time so admin can decide.
+    const lastSavedMsg = contractorLastSavedAt
+      ? `Contractor last saved: ${formatTimeAgo(contractorLastSavedAt)} (${new Date(contractorLastSavedAt).toLocaleString()})`
+      : 'Contractor save time: unknown';
+    const ok = confirm(
+      `Pull contractor's manifest and build tutorials?\n\n${lastSavedMsg}\n\nThis will OVERWRITE your local manifest-editor.json. A timestamped backup will be created automatically.`
+    );
+    if (!ok) return;
+
     setPulling(true);
     setResult(null);
     try {
@@ -254,7 +286,7 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
       setResult(`✗ ${(err as Error).message}`);
     }
     setPulling(false);
-  }, [deviceId]);
+  }, [deviceId, contractorLastSavedAt]);
 
   return (
     <>
@@ -320,6 +352,15 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
             <p className="text-xs text-gray-500 mb-4">
               Add a note for the contractor (optional) — describe what's ready, what to focus on, or any context they need.
             </p>
+            {/* A4-P1: warn if contractor saved recently — sending will reset
+                them to your local manifest (their version is auto-backed-up). */}
+            {isRecent(contractorLastSavedAt, 24) && (
+              <div className="mb-4 rounded-lg border border-amber-700/60 bg-amber-900/20 px-3 py-2 text-xs text-amber-300">
+                ⚠ Contractor last saved <strong>{formatTimeAgo(contractorLastSavedAt)}</strong>
+                <span className="text-amber-400/70"> ({new Date(contractorLastSavedAt!).toLocaleString()})</span>.
+                Sending will back up their version on the server but reset them to your local manifest. Continue only if intended.
+              </div>
+            )}
             <textarea
               value={sendNote}
               onChange={(e) => setSendNote(e.target.value)}

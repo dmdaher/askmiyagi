@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { formatTimeAgo } from '@/lib/format-time-ago';
 
 interface StatusEvent {
   type: string;
@@ -143,8 +144,14 @@ export default function ContractorSubmissions() {
     setActing(null);
   };
 
-  const handleReview = async (deviceId: string) => {
-    if (!confirm('This will pull the contractor\'s latest version from Blob. Any local edits you made will be overwritten. Continue?')) return;
+  const handleReview = async (deviceId: string, contractorUpdatedAt?: string) => {
+    // A4-P1: enrich confirm with contractor's last activity timestamp
+    const timestampLine = contractorUpdatedAt
+      ? `Contractor's hosted version: ${formatTimeAgo(contractorUpdatedAt)} (${new Date(contractorUpdatedAt).toLocaleString()})`
+      : 'Contractor activity time: unknown';
+    if (!confirm(
+      `Pull contractor's latest manifest from Blob and open editor?\n\n${timestampLine}\n\nThis will OVERWRITE your local manifest-editor.json (a timestamped backup is saved automatically). Continue?`
+    )) return;
     setActing(deviceId);
     try {
       await fetch(`/api/pipeline/${deviceId}/pull-from-hosted`, { method: 'POST' });
@@ -372,7 +379,7 @@ export default function ContractorSubmissions() {
 
                   {/* Pull & Review — pulls contractor's latest from Blob then opens editor */}
                   <button
-                    onClick={() => handleReview(d.deviceId)}
+                    onClick={() => handleReview(d.deviceId, d.updatedAt)}
                     disabled={acting === d.deviceId}
                     className={`rounded px-3 py-1.5 text-[10px] font-medium transition-colors disabled:opacity-50 ${
                       isSubmitted

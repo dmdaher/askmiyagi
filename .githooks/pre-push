@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Source-of-truth pre-push hook (committed to repo).
+# Install into .git/hooks/ via: bash scripts/install-git-hooks.sh
+#
+# Catches local git corruption (e.g., iCloud/Finder-duplicated refs) before
+# they cause silent fetch failures. Origin: Bug-6 (2026-05-06).
+
+set -e
+
+echo "Running git health check before push..."
+npm run --silent check-git-health

@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check-git-health": "tsx scripts/check-git-health.ts",
+    "install-hooks": "bash scripts/install-git-hooks.sh",
+    "regression:layers": "tsx e2e/regression-layers-panel-many-labels.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

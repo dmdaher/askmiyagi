@@ -41,7 +41,7 @@ export interface ManifestSnapshot {
   controlContainers?: ControlContainer[];
   canvasWidth?: number;
   canvasHeight?: number;
-  keyboard?: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
+  keyboard?: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number; aspectLockMode?: 'auto' | 'manual' } | null;
 }
 
 const MAX_HISTORY = 100;
@@ -99,7 +99,7 @@ interface ManifestFields {
   hasUserEdited: boolean;
   canvasWidth: number;
   canvasHeight: number;
-  keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number } | null;
+  keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number; aspectLockMode?: 'auto' | 'manual' } | null;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────

@@ -29,9 +29,16 @@ export const HARDWARE_ICONS: Record<string, string> = {
 
 // SVG icon components for shapes that can't be represented with unicode.
 // All use 24x24 viewBox, stroke=currentColor, no fill, strokeWidth=2.
+//
+// pointerEvents: 'all' overrides the SVG default `visiblePainted` so clicks
+// register anywhere in the icon's bounding rect — not just on the painted
+// stroke. Without this, sparse icons (e.g., sawtooth-cycle = 3 line segments
+// with a large empty triangular interior) were not draggable in the editor:
+// clicks in the empty interior fell THROUGH the SVG and missed the parent
+// drag-handle span. Bug-7 (2026-05-08).
 const svgIcon = (d: string) => React.createElement('svg', {
   viewBox: '0 0 24 24', width: '100%', height: '100%',
-  style: { display: 'block' },
+  style: { display: 'block', pointerEvents: 'all' },
 }, React.createElement('path', {
   d, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round',
 }));

@@ -107,7 +107,17 @@ export default function Keyboard({ keys, startNote, zones = [], highlightedKeys 
           const precWhiteIdx = findPrecedingWhiteKeyIndex(note.midiNote, whiteKeyIndexMap, allNotes);
           if (precWhiteIdx === undefined) return null;
 
-          const leftPercent = ((precWhiteIdx + 0.55) / totalWhiteKeys) * 100;
+          // Black keys sit centered on the gap between white keys. Offset 1.0
+          // puts the black-key center exactly at the right edge of the
+          // preceding white key (= left edge of the next white key = the gap).
+          //
+          // The previous uniform offset (0.55) put black keys on top of the
+          // preceding white key instead of in the gap. Synth keyboards like
+          // the DeepMind 12 use centered black keys (no piano-style lean).
+          //
+          // Proportional units → scales correctly to any key count (25, 49,
+          // 61, 88-key, etc).
+          const leftPercent = ((precWhiteIdx + 1.0) / totalWhiteKeys) * 100;
           const widthPercent = (0.65 / totalWhiteKeys) * 100;
 
           const zone = getZoneForNote(note.midiNote);

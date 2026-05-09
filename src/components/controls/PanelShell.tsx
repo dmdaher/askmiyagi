@@ -16,6 +16,7 @@ interface PanelShellProps {
     panelHeightPercent: number;
     leftPercent?: number;
     widthPercent?: number;
+    aspectLockMode?: 'auto' | 'manual';
   } | null;
   zones?: { zoneNumber: number; color: string; lowNote: number; highNote: number; label: string }[];
 }
@@ -81,7 +82,9 @@ export default function PanelShell({
           </span>
         </div>
 
-        {/* Panel content — full space, keyboard absolutely positioned at bottom */}
+        {/* Panel content — full space, keyboard absolutely positioned at bottom.
+            Uses stored manifest fields directly (panelHeightPercent, leftPercent,
+            widthPercent) per the editor's free-form model. */}
         {children}
         {keyboard && (
           <div style={{

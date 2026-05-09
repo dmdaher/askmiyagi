@@ -15,6 +15,13 @@ export const useEditorStore = create<EditorStore>()((...a) => ({
   ...createHistorySlice(...a),
 }));
 
+// Expose store on window in dev/test only — used by Playwright regression
+// scripts (e.g., e2e/regression-layers-panel-many-labels.ts) to inject
+// fixtures and inspect state. Stripped from production builds.
+if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+  (window as unknown as { useEditorStore: typeof useEditorStore }).useEditorStore = useEditorStore;
+}
+
 // ─── Re-exports ─────────────────────────────────────────────────────────────
 
 export type { CanvasSlice, SnapGrid } from './canvasSlice';
