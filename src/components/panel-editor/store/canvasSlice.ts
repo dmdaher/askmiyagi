@@ -25,6 +25,14 @@ export interface CanvasSlice {
   cleanupGap: number;  // target gap in px for Clean Up (0 = auto/average)
   panelScale: number;  // 0.5-2.0 — scales entire generated panel proportionally
   previewMode: boolean;  // clean panel view — hides edit chrome
+
+  /**
+   * Transient: ID of the most recently created container.
+   * ContainerNode reads this to render a brief "flash" animation on creation
+   * so the contractor can see where the new container landed. Cleared after
+   * ~2.5 seconds via setTimeout in `flashContainerCreated`.
+   */
+  recentlyCreatedContainerId: string | null;
   showRulers: boolean;
   guides: { id: string; orientation: 'horizontal' | 'vertical'; position: number }[];
 
@@ -45,6 +53,9 @@ export interface CanvasSlice {
   setCleanupGap: (gap: number) => void;
   setPanelScale: (s: number) => void;
   setPreviewMode: (on: boolean) => void;
+
+  /** Mark a container as just-created → triggers flash animation. */
+  flashContainerCreated: (containerId: string) => void;
   toggleRulers: () => void;
   addGuide: (orientation: 'horizontal' | 'vertical', position: number) => void;
   moveGuide: (id: string, position: number) => void;
@@ -59,7 +70,7 @@ export const createCanvasSlice: StateCreator<
   [],
   [],
   CanvasSlice
-> = (set) => ({
+> = (set, get) => ({
   // Default state
   zoom: 1,
   panX: 0,
@@ -80,6 +91,7 @@ export const createCanvasSlice: StateCreator<
   cleanupGap: 8,   // 8px default gap for Clean Up
   panelScale: 1.0, // 100% default panel scale
   previewMode: false,
+  recentlyCreatedContainerId: null,
   showRulers: false,
   guides: [],
 
@@ -112,6 +124,16 @@ export const createCanvasSlice: StateCreator<
   setPanelScale: (s) => set({ panelScale: Math.max(0.5, Math.min(2, s)) }),
 
   setPreviewMode: (on) => set({ previewMode: on }),
+
+  flashContainerCreated: (containerId) => {
+    set({ recentlyCreatedContainerId: containerId });
+    // Clear after the flash animation finishes (matches CSS duration in ContainerNode).
+    setTimeout(() => {
+      if (get().recentlyCreatedContainerId === containerId) {
+        set({ recentlyCreatedContainerId: null });
+      }
+    }, 2500);
+  },
   toggleRulers: () => set((s) => ({ showRulers: !s.showRulers })),
   addGuide: (orientation, position) => set((s) => ({
     guides: [...s.guides, { id: `guide-${Date.now()}`, orientation, position }],
