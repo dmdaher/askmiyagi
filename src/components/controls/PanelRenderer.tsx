@@ -145,18 +145,30 @@ function renderControl(
       // Dual-label buttons render as LED indicator regardless of type
       if (control.ledVariant === 'dual-label') {
         const ledColor = control.ledColor ?? '#22c55e';
-        const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
+        // Prefer the dedicated secondaryLabel field when defined (so contractor's
+        // Properties-panel edits to "Secondary Label" actually take effect).
+        // Fall back to splitting control.label on / or \n for backward compat
+        // with older manifests that encoded both halves in a single field.
+        let topText: string, bottomText: string;
+        if (control.secondaryLabel !== undefined) {
+          topText = control.label;
+          bottomText = control.secondaryLabel;
+        } else {
+          const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
+          topText = parts[0] || 'MODE A';
+          bottomText = parts[1] || 'MODE B';
+        }
         const topActive = ledOn !== false;
         return (
           <div className="flex flex-col rounded overflow-hidden"
             style={{ width: w, height: h, border: '1px solid #333' }}>
             <div className="flex flex-1 items-center justify-center py-0.5 px-1"
               style={{ backgroundColor: topActive ? '#0a2e1a' : '#1a1a2a', borderBottom: '1px solid #333' }}>
-              <span className="text-[7px] font-medium uppercase truncate" style={{ color: topActive ? '#4ade80' : `${ledColor}88` }}>{parts[0] || 'MODE A'}</span>
+              <span className="text-[7px] font-medium uppercase truncate" style={{ color: topActive ? '#4ade80' : `${ledColor}88` }}>{topText}</span>
             </div>
             <div className="flex flex-1 items-center justify-center py-0.5 px-1"
               style={{ backgroundColor: !topActive ? '#0a2e1a' : '#1a1a2a' }}>
-              <span className="text-[7px] font-medium uppercase truncate" style={{ color: !topActive ? '#4ade80' : `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
+              <span className="text-[7px] font-medium uppercase truncate" style={{ color: !topActive ? '#4ade80' : `${ledColor}88` }}>{bottomText}</span>
             </div>
           </div>
         );
