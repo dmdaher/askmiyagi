@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import Keyboard from './Keyboard';
-import { computeKeyboardLayout } from '@/lib/keyboard-layout';
 
 interface PanelShellProps {
   manufacturer: string;
@@ -17,6 +16,7 @@ interface PanelShellProps {
     panelHeightPercent: number;
     leftPercent?: number;
     widthPercent?: number;
+    aspectLockMode?: 'auto' | 'manual';
   } | null;
   zones?: { zoneNumber: number; color: string; lowNote: number; highNote: number; label: string }[];
 }
@@ -83,32 +83,20 @@ export default function PanelShell({
         </div>
 
         {/* Panel content — full space, keyboard absolutely positioned at bottom.
-            K1.5 (2026-05-08): keyboard height is computed via the same
-            `computeKeyboardLayout` function used in the editor, so editor
-            preview and production render are guaranteed to match. The
-            stored `panelHeightPercent` field is now a cached output the
-            editor writes back; we recompute here for safety. */}
+            Uses stored manifest fields directly (panelHeightPercent, leftPercent,
+            widthPercent) per the editor's free-form model. */}
         {children}
-        {keyboard && (() => {
-          const layout = computeKeyboardLayout({
-            canvasWidth: width,
-            canvasHeight: height,
-            widthPercent: keyboard.widthPercent ?? 100,
-            keys: keyboard.keys,
-            startNote: keyboard.startNote,
-          });
-          return (
-            <div style={{
-              position: 'absolute',
-              bottom: 0,
-              left: keyboard.leftPercent ? `${keyboard.leftPercent}%` : 0,
-              width: layout.keyboardWidth,
-              height: layout.keyboardHeight,
-            }}>
-              <Keyboard keys={keyboard.keys} startNote={keyboard.startNote} zones={zones} />
-            </div>
-          );
-        })()}
+        {keyboard && (
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: keyboard.leftPercent ? `${keyboard.leftPercent}%` : 0,
+            width: keyboard.widthPercent ? `${keyboard.widthPercent}%` : '100%',
+            height: height * (1 - keyboard.panelHeightPercent / 100),
+          }}>
+            <Keyboard keys={keyboard.keys} startNote={keyboard.startNote} zones={zones} />
+          </div>
+        )}
       </motion.div>
     </div>
   );

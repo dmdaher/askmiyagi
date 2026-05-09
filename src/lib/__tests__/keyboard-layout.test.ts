@@ -1,10 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   computeKeyboardLayout,
-  computeAutoFitTarget,
   computeTotalWhiteKeys,
   KEY_ASPECT,
-  MIN_CONTROLS_PX,
 } from '../keyboard-layout';
 
 describe('computeTotalWhiteKeys', () => {
@@ -42,7 +40,7 @@ describe('computeKeyboardLayout', () => {
   it('clamps and reports unlocked when canvas is too short', () => {
     // 2680 wide × 699 tall — actual deepmind-12 today.
     // Desired keyboard height = 2680/29 × 6.6 = 610 px
-    // Canvas-height cap (65%) = 699 × 0.65 = 454.4 px → clamped here
+    // Canvas-height cap (45%) = 699 × 0.45 = 314.6 px → clamped here
     const layout = computeKeyboardLayout({
       canvasWidth: 2680,
       canvasHeight: 699,
@@ -51,8 +49,8 @@ describe('computeKeyboardLayout', () => {
       startNote: 'C2',
     });
     expect(layout.isAspectLocked).toBe(false);
-    // Keyboard height clamped to 65% of canvas height
-    expect(layout.keyboardHeight).toBeCloseTo(699 * 0.65, 1);
+    // Keyboard height clamped to 45% of canvas height
+    expect(layout.keyboardHeight).toBeCloseTo(699 * 0.45, 1);
     // Desired should be larger than clamp (proves clamp engaged)
     expect(layout.desiredHeight).toBeGreaterThan(layout.keyboardHeight);
   });
@@ -124,58 +122,5 @@ describe('computeKeyboardLayout', () => {
   });
 });
 
-describe('computeAutoFitTarget', () => {
-  it('preserves canvas width and grows height to fit desired keyboard', () => {
-    const target = computeAutoFitTarget({
-      canvasWidth: 2680,
-      canvasHeight: 699,
-      desiredHeight: 707,
-      controlsAreaHeight: 200,
-    });
-    expect(target.newCanvasWidth).toBe(2680);
-    // 707 + 200 = 907 (controls-preserve path)
-    // 707 / 0.65 = 1087.7 (ratio-preserve path)
-    // max = 1087.7 → rounds to 1088
-    expect(target.newCanvasHeight).toBe(1088);
-  });
-
-  it('uses MIN_CONTROLS_PX floor when current controls area is too small', () => {
-    const target = computeAutoFitTarget({
-      canvasWidth: 1000,
-      canvasHeight: 100,
-      desiredHeight: 500,
-      controlsAreaHeight: 5, // tiny
-    });
-    // controls-preserve: 500 + max(5, 30) = 530
-    // ratio-preserve:   500 / 0.65 = 769.2
-    // max = 769.2 → 769
-    expect(target.newCanvasHeight).toBe(769);
-  });
-
-  it('the resulting canvasHeight makes computeKeyboardLayout aspect-locked', () => {
-    // After Auto-fit, recomputing layout with the new canvas should produce
-    // isAspectLocked === true. This is the round-trip invariant.
-    const initial = computeKeyboardLayout({
-      canvasWidth: 2680,
-      canvasHeight: 400, // way too short
-      widthPercent: 100,
-      keys: 49,
-      startNote: 'C2',
-    });
-    expect(initial.isAspectLocked).toBe(false);
-    const target = computeAutoFitTarget({
-      canvasWidth: 2680,
-      canvasHeight: 400,
-      desiredHeight: initial.desiredHeight,
-      controlsAreaHeight: initial.controlsAreaHeight,
-    });
-    const recomputed = computeKeyboardLayout({
-      canvasWidth: target.newCanvasWidth,
-      canvasHeight: target.newCanvasHeight,
-      widthPercent: 100,
-      keys: 49,
-      startNote: 'C2',
-    });
-    expect(recomputed.isAspectLocked).toBe(true);
-  });
-});
+// computeAutoFitTarget tests removed alongside the function (2026-05-08).
+// Editor reverted to free-form keyboard sizing; auto-fit is gone.

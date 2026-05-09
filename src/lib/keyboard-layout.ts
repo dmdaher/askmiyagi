@@ -22,10 +22,11 @@ export const MIN_CONTROLS_PX = 30;
 /**
  * Keyboard never exceeds this fraction of canvas height. Even when the
  * aspect-correct keyboard would fit inside `canvasHeight - MIN_CONTROLS_PX`,
- * we still cap it here so controls always get a reasonable share of the
- * canvas. 0.65 gives synths room for ~8 control rows above the keyboard.
+ * we still cap it here so controls always get the majority share of the
+ * canvas. 0.45 mirrors typical synth proportions (real DeepMind 12 keyboard
+ * is ~38% of total instrument height).
  */
-export const MAX_KEYBOARD_HEIGHT_RATIO = 0.65;
+export const MAX_KEYBOARD_HEIGHT_RATIO = 0.45;
 
 /** Tolerance for "is the keyboard at its desired height" — matches 0.5 px. */
 const ASPECT_LOCK_TOLERANCE_PX = 0.5;
@@ -120,30 +121,7 @@ export function computeKeyboardLayout(input: KeyboardLayoutInputs): KeyboardLayo
   };
 }
 
-/**
- * Compute the canvas dimensions that would let the keyboard render at correct
- * aspect WITHOUT changing canvas width or shrinking the controls area.
- */
-export interface AutoFitTargetInputs {
-  canvasWidth: number;
-  canvasHeight: number;
-  desiredHeight: number;
-  controlsAreaHeight: number;
-}
-
-export function computeAutoFitTarget(input: AutoFitTargetInputs): {
-  newCanvasWidth: number;
-  newCanvasHeight: number;
-} {
-  const safeControls = Math.max(input.controlsAreaHeight, MIN_CONTROLS_PX);
-  // Two constraints — pick the LARGER (most generous) so neither clamp
-  // re-engages after the resize:
-  //   1. keyboard + current controls   (preserves user's controls room)
-  //   2. desiredHeight / MAX_KEYBOARD_HEIGHT_RATIO   (so 65% cap doesn't clamp)
-  const heightForControls = input.desiredHeight + safeControls;
-  const heightForRatio = input.desiredHeight / MAX_KEYBOARD_HEIGHT_RATIO;
-  return {
-    newCanvasWidth: input.canvasWidth,
-    newCanvasHeight: Math.round(Math.max(heightForControls, heightForRatio)),
-  };
-}
+// Note: computeAutoFitTarget existed in K1.5/K1.6 but was removed when the
+// keyboard reverted to free-form (2026-05-08). The "Auto-fit Canvas" button
+// caused control overlap and was too rigid. If revisited, restore from git
+// history at commit 5dcf17c.
