@@ -110,6 +110,7 @@ export interface ControlDef {
   // LED Properties (enriched fields)
   hasLed?: boolean;
   ledColor?: string | null;
+  ledOn?: boolean;       // default state: true = lit at rest, false/undefined = off (dim)
   ledBehavior?: LEDBehavior;
   ledPosition?: LEDPosition;
   ledVariant?: LEDVariant;

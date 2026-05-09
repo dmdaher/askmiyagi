@@ -297,21 +297,34 @@ export default function KeyboardSection() {
 
         {/* Aspect-ratio chip — center of keyboard, sized to be readable.
             Updates live as the contractor drags edges. Amber when off-target,
-            grey when close to the 6.6:1 real-synth standard. */}
+            grey when close to the 6.6:1 real-synth standard.
+            CLICKABLE when the warning banner has been dismissed but issues
+            remain — clicking re-opens the banner. */}
         <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[56]"
+          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[56] ${
+            anyIssue && bannerDismissed ? 'pointer-events-auto' : 'pointer-events-none'
+          }`}
           data-testid="keyboard-aspect-indicator"
         >
-          <div
-            className={`rounded-full border px-3 py-1 font-mono text-[12px] backdrop-blur-sm shadow-lg ${
+          <button
+            type="button"
+            onClick={(e) => {
+              if (!anyIssue || !bannerDismissed) return;
+              e.stopPropagation();
+              setBannerDismissed(false);
+            }}
+            disabled={!anyIssue || !bannerDismissed}
+            className={`rounded-full border px-3 py-1 font-mono text-[12px] backdrop-blur-sm shadow-lg transition-colors ${
               aspectIsOff
                 ? 'bg-amber-950/80 border-amber-600/70 text-amber-200'
                 : 'bg-black/40 border-white/15 text-gray-300'
-            }`}
+            } ${anyIssue && bannerDismissed ? 'cursor-pointer hover:brightness-125 ring-1 ring-amber-500/40' : 'cursor-default'}`}
             title={
-              aspectIsOff
-                ? `Keys are ${isStubby ? 'stubby' : 'long'} — real synth keys are ~${KEY_ASPECT}:1.`
-                : `Close to real synth keys (${KEY_ASPECT}:1)`
+              anyIssue && bannerDismissed
+                ? `Click to re-open keyboard layout warning`
+                : aspectIsOff
+                  ? `Keys are ${isStubby ? 'stubby' : 'long'} — real synth keys are ~${KEY_ASPECT}:1.`
+                  : `Close to real synth keys (${KEY_ASPECT}:1)`
             }
           >
             {actualAspect > 0 ? (
@@ -321,11 +334,12 @@ export default function KeyboardSection() {
                 <span className="opacity-50 mx-1.5">/</span>
                 <span className="opacity-80">{KEY_ASPECT}:1 target</span>
                 {aspectIsOff && <span className="ml-1.5">⚠</span>}
+                {anyIssue && bannerDismissed && <span className="ml-1.5 text-amber-300/80">(click to expand)</span>}
               </>
             ) : (
               <span className="opacity-70">no aspect data</span>
             )}
-          </div>
+          </button>
         </div>
 
         {/* Resize handle visual indicators (subtle, fade in on hover) */}

@@ -87,7 +87,7 @@ const CLUSTERS: ClusterMapping[] = [
 
 const FLAG_FOR_REVIEW = 'env-curve-leds';
 
-const LED_SIZE = 10; // px square — typical small indicator dot
+const LED_SIZE = 24; // px square — bigger than visually ideal but Rnd's 10×10 corner resize handles eat most of the click area otherwise
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 

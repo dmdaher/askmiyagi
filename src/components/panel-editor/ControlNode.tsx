@@ -273,21 +273,29 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         );
       }
       // Default: simple dot indicator. Icons are rendered by LabelLayer.
+      // No dark housing — the LED is a transparent-bg dot with a glow when on.
+      //
+      // Active/inactive state mirrors PanelRenderer (production):
+      //   ledOn === true  → full color + glow (lit)
+      //   ledOn === false → dim grey, no glow (off)
+      //   ledOn undefined → treat as off (most synth LEDs default off)
+      const ledIsOn = control.ledOn === true;
+      const dotColor = ledIsOn ? ledColor : '#333';
       return (
         <div
-          className="flex items-center justify-center rounded"
-          style={{ backgroundColor: '#1a1a2a', padding: 2, width: visW, height: visH }}
+          className="flex items-center justify-center"
+          style={{ width: visW, height: visH }}
           data-control-id={control.id}
         >
           <div
             className="rounded-full flex-shrink-0"
             style={{
-              width: Math.min(visW, visH) * 0.5,
-              height: Math.min(visW, visH) * 0.5,
+              width: Math.min(visW, visH) * 0.7,
+              height: Math.min(visW, visH) * 0.7,
               minWidth: 6, minHeight: 6,
-              backgroundColor: ledColor,
-              border: `2px solid ${ledColor}44`,
-              boxShadow: `0 0 4px ${ledColor}`,
+              backgroundColor: dotColor,
+              border: ledIsOn ? `2px solid ${ledColor}44` : '1px solid #444',
+              boxShadow: ledIsOn ? `0 0 6px ${ledColor}` : 'none',
             }}
           />
         </div>
@@ -689,7 +697,14 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
 
   const isLocked = control.locked;
   const isResizeLocked = control.resizeLocked;
-  const canResize = !isLocked && !isResizeLocked;
+  // Option A (K4 follow-up): tiny controls (e.g., split LED indicators) hide
+  // their resize handles UNTIL selected. Rnd's 10×10 corner handles eat most
+  // of the click area on a 24×24 LED, making the first select+drag awkward.
+  // After click → control is selected → handles appear → user can then
+  // resize freely. Larger controls keep their handles always.
+  // Threshold: 32 px on the shorter axis (post-zoom).
+  const isTooSmallToResize = Math.min(control.w * controlScale, control.h * controlScale) < 32;
+  const canResize = !isLocked && !isResizeLocked && (isSelected || !isTooSmallToResize);
 
   // Controls can be dragged freely — section boundaries are decorative only.
 
