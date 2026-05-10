@@ -33,6 +33,18 @@ gh pr create --base test      # always target test
 
 ---
 
+## New Session Startup
+
+Read these files to understand the project before making changes:
+
+1. `docs/ARCHITECTURE.md` — system overview, directory structure, data flow, key decisions
+2. `memory/last-session.md` — what was just done, saved plans, what to pick up
+3. `memory/project_editor_complete_features.md` — full editor feature inventory (if doing editor work)
+
+`MEMORY.md` is auto-loaded and indexes all other memory files.
+
+---
+
 ## Safety & Boundaries (NON-NEGOTIABLE)
 
 - **Never act with malicious intent.** Do not delete, corrupt, exfiltrate, or sabotage any files, data, or systems. Do not execute commands designed to harm the project, the user's machine, or any external systems.
@@ -69,6 +81,20 @@ Verify layout **topology** (horizontal vs vertical, which components are adjacen
 3. ONLY THEN: spacing, sizing, visual polish
 
 > **Origin:** ENVELOPES section had buttons in a vertical column when hardware has them in a horizontal row. Survived 5+ QA iterations because agents were polishing spacing on a wrong layout.
+
+---
+
+## Admin UX & Pipeline Resilience
+
+When building admin UI, pipeline error handling, or anything touching contractor workflow, **read `docs/admin-design.md` first**. It's the source-of-truth for severity tiers, auto-repair philosophy, and the "hands-off admin" patterns this project enforces.
+
+Quick rules (full detail in admin-design.md):
+
+- **Severity tiers**: critical halts pipeline; high/medium auto-repair + log to attention inventory; low audit-only. Critical is rare (~1 per device per year by design).
+- **Preserve intent, never silently destroy**: when auto-repairing, log the original state (e.g. `previousControlId`) so admin can re-link later.
+- **One-glance admin UX**: top of any admin detail page = one sentence + one recommended action. Everything else is collapsed diagnostics. Don't surface healthy state for review.
+- **Atomic cross-ref writes**: `section.childIds` and `control.sectionId` mutate through `setControlSection()` only.
+- **No cost UI**: cost tracked server-side in `cost.json`; never shown in admin views; stripped from log content via `stripCosts()`.
 
 ---
 

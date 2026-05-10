@@ -7,10 +7,11 @@ import { usePipelineStore } from '@/store/pipelineStore';
 import PipelineDashboard from '@/components/admin/PipelineDashboard';
 import UploadZone from '@/components/admin/UploadZone';
 import ContractorSubmissions from '@/components/admin/ContractorSubmissions';
+import AttentionInventory from '@/components/admin/AttentionInventory';
 import type { PipelineRunSummary, RunStatus } from '@/lib/pipeline/types';
 import { isEditorReady } from '@/lib/pipeline/phase-order';
 
-type SortOption = 'status' | 'manufacturer' | 'cost' | 'recent';
+type SortOption = 'attention' | 'status' | 'manufacturer' | 'recent';
 
 const STATUS_ORDER: Record<RunStatus, number> = {
   running: 0,
@@ -18,6 +19,29 @@ const STATUS_ORDER: Record<RunStatus, number> = {
   failed: 2,
   completed: 3,
 };
+
+/**
+ * Hands-off ordering: anything needing admin action floats to the top,
+ * then in-progress builds, then idle/completed. Default sort.
+ *
+ * Priority (lower = higher up):
+ *   0 — failed (genuine fault, needs eyes)
+ *   1 — paused with active escalation (action required)
+ *   2 — paused without escalation (awaiting resume)
+ *   3 — running
+ *   4 — completed (terminal good state)
+ */
+function attentionPriority(r: PipelineRunSummary): number {
+  if (r.status === 'failed') return 0;
+  if (r.status === 'paused' && r.activeEscalation) return 1;
+  if (r.status === 'paused') return 2;
+  if (r.status === 'running') return 3;
+  return 4;
+}
+
+function needsAttention(r: PipelineRunSummary): boolean {
+  return attentionPriority(r) <= 1;
+}
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -47,7 +71,7 @@ export default function AdminPage() {
     [fetchRuns, router],
   );
 
-  const [sortBy, setSortBy] = useState<SortOption>('status');
+  const [sortBy, setSortBy] = useState<SortOption>('attention');
   const [filterManufacturer, setFilterManufacturer] = useState<string>('all');
   const [filterEditorReady, setFilterEditorReady] = useState(false);
 
@@ -75,6 +99,11 @@ export default function AdminPage() {
     // Sort
     entries.sort(([, a], [, b]) => {
       switch (sortBy) {
+        case 'attention':
+          // Primary: priority bucket. Secondary: most recently updated first
+          // (so within "needs attention", newest sits above stale).
+          return attentionPriority(a) - attentionPriority(b)
+            || new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
         case 'status':
           return (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9);
         case 'manufacturer':
@@ -91,6 +120,7 @@ export default function AdminPage() {
 
   const hasRuns = Object.keys(runs).length > 0;
   const editorReadyCount = Object.values(runs).filter(r => isEditorReady(r.currentPhase)).length;
+  const attentionCount = Object.values(runs).filter(needsAttention).length;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
@@ -109,6 +139,48 @@ export default function AdminPage() {
         </p>
       </motion.div>
 
+      {/* Attention summary — the one-glance "do I need to look at anything?"
+          banner. Shows a single sentence telling admin whether action is
+          needed across all their pipelines. Hidden when no devices. */}
+      {hasRuns && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.05 }}
+          className="mb-6 rounded-xl px-4 py-3 flex items-center gap-3"
+          style={{
+            backgroundColor: attentionCount > 0 ? 'rgba(239, 68, 68, 0.08)' : 'rgba(34, 197, 94, 0.08)',
+            border: `1px solid ${attentionCount > 0 ? '#ef4444' : '#22c55e'}`,
+          }}
+        >
+          <div
+            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold"
+            style={{
+              backgroundColor: attentionCount > 0 ? 'rgba(239, 68, 68, 0.18)' : 'rgba(34, 197, 94, 0.18)',
+              color: attentionCount > 0 ? '#f87171' : '#4ade80',
+            }}
+          >
+            {attentionCount > 0 ? '!' : '✓'}
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+              {attentionCount > 0
+                ? `${attentionCount} pipeline${attentionCount === 1 ? '' : 's'} need your attention`
+                : 'All pipelines healthy'}
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
+              {attentionCount > 0
+                ? 'Sorted to the top below. Click into one to see the recommended action.'
+                : "No action required. Cards below show running and completed builds."}
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Attention inventory — persistent backlog of auto-repaired issues
+          and admin-review flags across all pipelines. Survives publish. */}
+      <AttentionInventory />
+
       {/* Contractor submissions — above pipeline grid, always visible */}
       <ContractorSubmissions />
 
@@ -121,6 +193,7 @@ export default function AdminPage() {
             onChange={(e) => setSortBy(e.target.value as SortOption)}
             className="h-8 rounded-lg border border-gray-700 bg-[var(--card-bg)] px-3 text-xs text-gray-300 outline-none"
           >
+            <option value="attention">Sort: Needs attention</option>
             <option value="status">Sort: Status</option>
             <option value="manufacturer">Sort: Manufacturer</option>
             <option value="recent">Sort: Recent</option>
