@@ -391,6 +391,54 @@ More items.`;
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => e.includes('chapter'))).toBe(true);
     });
+
+    it('accepts numbered-heading format (the auditor\'s real output style)', () => {
+      // Matches the format produced by the coverage-auditor on DeepMind-12:
+      // "## 1. OVERVIEW & FRONT PANEL CONTROLS" + "### 1.1 Introduction"
+      const content = `# DeepMind 12 — Independent Coverage Checklist
+
+## 1. OVERVIEW & FRONT PANEL CONTROLS
+### 1.1 Introduction & Features
+- Feature: VCO architecture (p. 3)
+
+## 2. OSCILLATORS
+### 2.1 OSC 1 Controls
+- OSC 1 Pitch fader (p. 52)
+
+## 3. FILTER
+### 3.1 LPF Controls
+- Cutoff (p. 80)`;
+
+      const result = validateIndependentChecklist(content);
+      expect(result.valid).toBe(true);
+    });
+
+    it('accepts 3+ H2 headings without numbering or explicit markers', () => {
+      const content = `# Checklist
+
+## OSC
+- Sawtooth (p.54)
+
+## LFO
+- Rate (p.70)
+
+## ENV
+- Attack (p.90)`;
+
+      const result = validateIndependentChecklist(content);
+      expect(result.valid).toBe(true);
+    });
+
+    it('still rejects content with only one H2 heading and no markers', () => {
+      const content = `# Checklist
+
+## Everything
+- Feature 1 (p.10)
+- Feature 2 (p.20)`;
+
+      const result = validateIndependentChecklist(content);
+      expect(result.valid).toBe(false);
+    });
   });
 
   // ── K4 Layer 2: LED-group splitting ─────────────────────────────────────

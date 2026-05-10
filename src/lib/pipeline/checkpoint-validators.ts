@@ -474,8 +474,18 @@ export function validatePassBatches(content: string): ValidationResult {
 export function validateIndependentChecklist(content: string): ValidationResult {
   const errors: string[] = [];
 
-  // Must have chapter-level structure
-  if (!/chapter|section\s+\d/i.test(content)) {
+  // Must have section-level structure. Accept any of:
+  //   - the literal word "chapter" or "section <N>" (e.g. "## Section 3:")
+  //   - numbered markdown headings like "## 1. OVERVIEW" or "### 1.1 Intro"
+  //   - 3+ markdown H2 headings (any titles — enough structure to count as
+  //     a section-by-section breakdown)
+  // The third rule lets well-structured outputs pass even when the auditor
+  // uses bare topic names like "## OSC" / "## LFO" without numbering.
+  const hasExplicitMarker = /chapter|section\s+\d/i.test(content);
+  const numberedHeadingCount = (content.match(/^#{2,3}\s+\d+(\.\d+)?[.\s]/gm) ?? []).length;
+  const totalH2Count = (content.match(/^##\s+/gm) ?? []).length;
+
+  if (!hasExplicitMarker && numberedHeadingCount < 2 && totalH2Count < 3) {
     errors.push('Missing chapter or section-level summary');
   }
 
