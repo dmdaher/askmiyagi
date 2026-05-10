@@ -1,6 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import type { DisplayState } from '@/types/display';
+import DisplayContent from './DisplayContent';
 
 interface TouchDisplayProps {
   id: string;
@@ -11,6 +13,13 @@ interface TouchDisplayProps {
   highlighted?: boolean;
   width?: number;
   height?: number;
+  /**
+   * Tutorial-driven display state. When present, replaces the mock waveform
+   * with rendered content (title, status, menu items, etc.) via DisplayContent.
+   * When undefined, falls back to showMockContent behavior — preserves existing
+   * editor preview / non-tutorial behavior unchanged.
+   */
+  displayState?: DisplayState;
 }
 
 const highlightAnimation = {
@@ -37,7 +46,11 @@ export default function TouchDisplay({
   highlighted = false,
   width = variant === 'main' ? 200 : 120,
   height = variant === 'main' ? 130 : 80,
+  displayState,
 }: TouchDisplayProps) {
+  // Tutorial-driven content takes precedence over mock when displayState is
+  // present. When absent, fall through to the existing mock-or-blank behavior.
+  const showTutorialContent = displayState !== undefined;
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
       <motion.div
@@ -63,7 +76,17 @@ export default function TouchDisplay({
             overflow: 'hidden',
           }}
         >
-          {showMockContent && (
+          {showTutorialContent && (
+            // Pass INNER screen dimensions (excluding bezel) so DisplayContent's
+            // proportional font sizing matches the actual visible area.
+            <DisplayContent
+              displayState={displayState!}
+              width={Math.max(8, width - bezelWidth * 2)}
+              height={Math.max(8, height - bezelWidth * 2)}
+            />
+          )}
+
+          {showMockContent && !showTutorialContent && (
             <svg
               width="100%"
               height="100%"
