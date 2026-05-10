@@ -17,6 +17,11 @@ export async function GET() {
   for (const deviceId of deviceIds) {
     const state = readState(deviceId);
     if (!state) continue;
+    // Look up the active escalation's type so the dashboard can distinguish
+    // planned hand-offs from genuine problems without another fetch.
+    const activeEsc = state.activeEscalation
+      ? state.escalations.find((e) => e.id === state.activeEscalation)
+      : null;
     summaries.push({
       deviceId: state.deviceId,
       deviceName: state.deviceName,
@@ -31,6 +36,7 @@ export async function GET() {
       createdAt: state.createdAt,
       updatedAt: state.updatedAt,
       activeEscalation: state.activeEscalation,
+      activeEscalationType: activeEsc?.type ?? null,
     });
   }
 

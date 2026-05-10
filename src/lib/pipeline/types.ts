@@ -201,4 +201,9 @@ export interface PipelineRunSummary {
   createdAt: string;
   updatedAt: string;
   activeEscalation: string | null;
+  /** Type of the active escalation, if any. Lets the dashboard distinguish
+   *  planned hand-offs (editor-ready, template-review, curriculum-review)
+   *  from genuine problems (agent-failure, two-strike-halt, etc.) without
+   *  fetching the full state. */
+  activeEscalationType: EscalationType | null;
 }

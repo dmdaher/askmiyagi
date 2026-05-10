@@ -20,27 +20,47 @@ const STATUS_ORDER: Record<RunStatus, number> = {
   completed: 3,
 };
 
+/** Escalation types that are PLANNED hand-offs (admin gates the next step
+ *  by choice — not a problem). These do NOT count as "needs attention". */
+const HANDOFF_ESCALATIONS = new Set([
+  'editor-ready',
+  'template-review',
+  'curriculum-review',
+]);
+
 /**
- * Hands-off ordering: anything needing admin action floats to the top,
- * then in-progress builds, then idle/completed. Default sort.
+ * Hands-off ordering: anything requiring admin action floats to the top,
+ * then planned hand-offs, then in-progress builds, then idle.
  *
  * Priority (lower = higher up):
  *   0 — failed (genuine fault, needs eyes)
- *   1 — paused with active escalation (action required)
- *   2 — paused without escalation (awaiting resume)
- *   3 — running
- *   4 — completed (terminal good state)
+ *   1 — paused with PROBLEM escalation (action required)
+ *   2 — paused waiting on HAND-OFF (review/approve, planned gate)
+ *   3 — paused without escalation (awaiting resume)
+ *   4 — running
+ *   5 — completed (terminal good state)
  */
 function attentionPriority(r: PipelineRunSummary): number {
   if (r.status === 'failed') return 0;
-  if (r.status === 'paused' && r.activeEscalation) return 1;
-  if (r.status === 'paused') return 2;
-  if (r.status === 'running') return 3;
-  return 4;
+  if (r.status === 'paused' && r.activeEscalation) {
+    return isHandoff(r) ? 2 : 1;
+  }
+  if (r.status === 'paused') return 3;
+  if (r.status === 'running') return 4;
+  return 5;
 }
 
+/** True when the pipeline is paused on a planned hand-off (admin decides
+ *  when to proceed) — NOT a problem state. */
+function isHandoff(r: PipelineRunSummary): boolean {
+  return r.activeEscalationType != null && HANDOFF_ESCALATIONS.has(r.activeEscalationType);
+}
+
+/** True ONLY for genuine problems — not for planned hand-offs. */
 function needsAttention(r: PipelineRunSummary): boolean {
-  return attentionPriority(r) <= 1;
+  if (r.status === 'failed') return true;
+  if (r.status === 'paused' && r.activeEscalation && !isHandoff(r)) return true;
+  return false;
 }
 
 const POLL_INTERVAL_MS = 30_000;
@@ -121,6 +141,7 @@ export default function AdminPage() {
   const hasRuns = Object.keys(runs).length > 0;
   const editorReadyCount = Object.values(runs).filter(r => isEditorReady(r.currentPhase)).length;
   const attentionCount = Object.values(runs).filter(needsAttention).length;
+  const handoffCount = Object.values(runs).filter(isHandoff).length;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
@@ -139,39 +160,88 @@ export default function AdminPage() {
         </p>
       </motion.div>
 
-      {/* Attention summary — the one-glance "do I need to look at anything?"
-          banner. Shows a single sentence telling admin whether action is
-          needed across all their pipelines. Hidden when no devices. */}
-      {hasRuns && (
+      {/* Status banners — separate signal for genuine problems vs planned
+          hand-offs. Both can show simultaneously. Healthy state shows
+          neither (cards below speak for themselves). */}
+      {hasRuns && attentionCount > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.05 }}
-          className="mb-6 rounded-xl px-4 py-3 flex items-center gap-3"
+          className="mb-3 rounded-xl px-4 py-3 flex items-center gap-3"
           style={{
-            backgroundColor: attentionCount > 0 ? 'rgba(239, 68, 68, 0.08)' : 'rgba(34, 197, 94, 0.08)',
-            border: `1px solid ${attentionCount > 0 ? '#ef4444' : '#22c55e'}`,
+            backgroundColor: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid #ef4444',
           }}
         >
           <div
             className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold"
-            style={{
-              backgroundColor: attentionCount > 0 ? 'rgba(239, 68, 68, 0.18)' : 'rgba(34, 197, 94, 0.18)',
-              color: attentionCount > 0 ? '#f87171' : '#4ade80',
-            }}
+            style={{ backgroundColor: 'rgba(239, 68, 68, 0.18)', color: '#f87171' }}
           >
-            {attentionCount > 0 ? '!' : '✓'}
+            !
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
-              {attentionCount > 0
-                ? `${attentionCount} pipeline${attentionCount === 1 ? '' : 's'} need your attention`
-                : 'All pipelines healthy'}
+              {attentionCount} pipeline{attentionCount === 1 ? '' : 's'} need your attention
             </p>
             <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
-              {attentionCount > 0
-                ? 'Sorted to the top below. Click into one to see the recommended action.'
-                : "No action required. Cards below show running and completed builds."}
+              Failed or halted with an issue. Sorted to the top below. Click into one to see the recommended action.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {hasRuns && handoffCount > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.08 }}
+          className="mb-3 rounded-xl px-4 py-3 flex items-center gap-3"
+          style={{
+            backgroundColor: 'rgba(59, 130, 246, 0.08)',
+            border: '1px solid #3b82f6',
+          }}
+        >
+          <div
+            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold"
+            style={{ backgroundColor: 'rgba(59, 130, 246, 0.18)', color: '#60a5fa' }}
+          >
+            ◇
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+              {handoffCount} ready for review or hand-off
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
+              Planned gates: send to contractor, approve templates, or approve curriculum. Decide when convenient.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {hasRuns && attentionCount === 0 && handoffCount === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.05 }}
+          className="mb-3 rounded-xl px-4 py-3 flex items-center gap-3"
+          style={{
+            backgroundColor: 'rgba(34, 197, 94, 0.08)',
+            border: '1px solid #22c55e',
+          }}
+        >
+          <div
+            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold"
+            style={{ backgroundColor: 'rgba(34, 197, 94, 0.18)', color: '#4ade80' }}
+          >
+            ✓
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+              All pipelines healthy
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
+              No action required. Cards below show running and completed builds.
             </p>
           </div>
         </motion.div>

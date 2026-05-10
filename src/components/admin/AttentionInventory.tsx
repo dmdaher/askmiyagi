@@ -47,6 +47,11 @@ export default function AttentionInventory() {
   const [data, setData] = useState<AttentionResponse | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [showReviewed, setShowReviewed] = useState(false);
+  // Default: hide medium/low (cosmetic stuff like dissolved containers).
+  // Admin only wants to see things that could affect tutorials — missing
+  // controls, unlinked labels. Medium items stay in the audit log but
+  // don't compete for admin attention.
+  const [showLowPriority, setShowLowPriority] = useState(false);
   const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
 
   const fetchItems = useCallback(async () => {
@@ -84,9 +89,15 @@ export default function AttentionInventory() {
 
   if (!data) return null;
 
-  const visibleItems = showReviewed ? data.items : data.items.filter((i) => !i.reviewed);
+  // Default filter: only HIGH + CRITICAL (things that could affect tutorials).
+  // Medium = cosmetic cleanup (dissolved containers, etc.), low = format warnings.
+  // Toggle reveals everything for power users.
+  const tutorialAffecting = (i: AttentionItem) => i.severity === 'critical' || i.severity === 'high';
+  const severityFiltered = showLowPriority ? data.items : data.items.filter(tutorialAffecting);
+  const visibleItems = showReviewed ? severityFiltered : severityFiltered.filter((i) => !i.reviewed);
+
   const unreviewedHigh = data.counts.high + data.counts.critical;
-  const unreviewedMedium = data.counts.medium;
+  const hiddenLowPriority = data.items.filter((i) => !tutorialAffecting(i) && !i.reviewed).length;
 
   // Empty state — only show when no items at all (not just no unreviewed)
   if (data.total === 0) {
@@ -123,7 +134,9 @@ export default function AttentionInventory() {
       className="mb-6 rounded-xl overflow-hidden"
       style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
     >
-      {/* Header */}
+      {/* Header — count reflects ONLY tutorial-affecting items (high+critical)
+          by default. Low-priority cosmetic items don't compete for the
+          eyebrow-raise. */}
       <button
         onClick={() => setExpanded((v) => !v)}
         className="w-full px-4 py-3 flex items-center gap-3 transition-colors hover:bg-white/[0.02]"
@@ -132,20 +145,20 @@ export default function AttentionInventory() {
           <div
             className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold"
             style={{
-              backgroundColor: unreviewedHigh > 0 ? 'rgba(245, 158, 11, 0.18)' : 'rgba(59, 130, 246, 0.18)',
-              color: unreviewedHigh > 0 ? '#fbbf24' : '#60a5fa',
+              backgroundColor: unreviewedHigh > 0 ? 'rgba(245, 158, 11, 0.18)' : 'rgba(34, 197, 94, 0.18)',
+              color: unreviewedHigh > 0 ? '#fbbf24' : '#4ade80',
             }}
           >
-            {data.unreviewed}
+            {unreviewedHigh > 0 ? unreviewedHigh : '✓'}
           </div>
           <div className="text-left">
             <p className="text-sm font-semibold" style={{ color: 'var(--foreground, #e0e0e0)' }}>
               Attention inventory
             </p>
             <p className="text-[11px] mt-0.5" style={{ color: '#9ca3af' }}>
-              {data.unreviewed} unreviewed
-              {unreviewedHigh > 0 && <> · <span style={{ color: '#fbbf24' }}>{unreviewedHigh} high+</span></>}
-              {unreviewedMedium > 0 && <> · <span style={{ color: '#60a5fa' }}>{unreviewedMedium} medium</span></>}
+              {unreviewedHigh > 0
+                ? <>{unreviewedHigh} item{unreviewedHigh === 1 ? '' : 's'} that may affect tutorials — review when convenient</>
+                : <>No tutorial-affecting items{hiddenLowPriority > 0 ? <> · {hiddenLowPriority} cosmetic items hidden</> : ''}</>}
             </p>
           </div>
         </div>
@@ -163,7 +176,20 @@ export default function AttentionInventory() {
           >
             <div className="px-4 pb-4" style={{ borderTop: '1px solid var(--card-border, #2a2a3a)' }}>
               {/* Filter strip */}
-              <div className="flex items-center gap-2 py-2.5 text-[11px]">
+              <div className="flex items-center gap-3 py-2.5 text-[11px] flex-wrap">
+                <label className="flex items-center gap-1.5 cursor-pointer" style={{ color: '#9ca3af' }}>
+                  <input
+                    type="checkbox"
+                    checked={showLowPriority}
+                    onChange={(e) => setShowLowPriority(e.target.checked)}
+                    className="h-3 w-3 accent-blue-500"
+                  />
+                  Show cosmetic items
+                  {hiddenLowPriority > 0 && !showLowPriority && (
+                    <span style={{ color: '#6b7280' }}> ({hiddenLowPriority} hidden)</span>
+                  )}
+                </label>
+                <span style={{ color: '#6b7280' }}>·</span>
                 <label className="flex items-center gap-1.5 cursor-pointer" style={{ color: '#9ca3af' }}>
                   <input
                     type="checkbox"
