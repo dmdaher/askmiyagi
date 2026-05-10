@@ -4,6 +4,29 @@ import { StateCreator } from 'zustand';
 
 export type SnapGrid = 1 | 2 | 4 | 8 | 16 | 32;
 
+/**
+ * Pre-scale layout snapshot — the "original" positions captured the first
+ * time scaleFromBase runs in a session. All subsequent scale ops compute
+ * positions as base × cumulativeFactor with a SINGLE round per coordinate,
+ * never compounding rounding errors across cycles.
+ *
+ * Cleared automatically by any non-scale layout edit (drag, resize, add,
+ * delete, canvas resize). Next scaleFromBase captures fresh.
+ *
+ * Lives entirely in canvasSlice (transient editor state). Never written to
+ * the manifest, never sent to the contractor's Blob, never reaches the
+ * pipeline or production renderer. Reload → null.
+ */
+export interface ScaleBase {
+  controls: Record<string, { x: number; y: number; w: number; h: number; labelFontSize?: number }>;
+  sections: Record<string, { x: number; y: number; w: number; h: number }>;
+  labels: Array<{ id: string; x: number; y: number; w?: number; fontSize: number }>;
+  containers: Array<{ id: string; x: number; y: number; w: number; h: number; borderRadius?: number }>;
+  guides: Array<{ id: string; position: number }>;
+  canvasWidth: number;
+  canvasHeight: number;
+}
+
 export interface CanvasSlice {
   // State
   zoom: number;
@@ -36,6 +59,15 @@ export interface CanvasSlice {
   showRulers: boolean;
   guides: { id: string; orientation: 'horizontal' | 'vertical'; position: number }[];
 
+  /**
+   * Layout-base memory for drift-free scaling. Set on first scaleFromBase
+   * call in a session. Cleared by any position-mutating action via
+   * `clearScaleBase`. See ScaleBase typedef for invariants.
+   */
+  scaleBase: ScaleBase | null;
+  /** 1.0 = at base layout. 2.0 = scaled to 2× base. Tracks the factor of the current rendered state relative to scaleBase. */
+  scaleCumulativeFactor: number;
+
   // Actions
   setZoom: (z: number) => void;
   setPan: (x: number, y: number) => void;
@@ -56,6 +88,18 @@ export interface CanvasSlice {
 
   /** Mark a container as just-created → triggers flash animation. */
   flashContainerCreated: (containerId: string) => void;
+
+  /** Set the scale base snapshot directly (called by scaleFromBase). */
+  setScaleBase: (base: ScaleBase | null) => void;
+  /** Set the cumulative factor (called by scaleFromBase). */
+  setScaleCumulativeFactor: (factor: number) => void;
+  /**
+   * Clear the scale base. Called by every position-mutating action so the
+   * next scale captures a fresh base from the user's current layout.
+   * No-op when base is already null (cheap to call unconditionally).
+   */
+  clearScaleBase: () => void;
+
   toggleRulers: () => void;
   addGuide: (orientation: 'horizontal' | 'vertical', position: number) => void;
   moveGuide: (id: string, position: number) => void;
@@ -94,6 +138,8 @@ export const createCanvasSlice: StateCreator<
   recentlyCreatedContainerId: null,
   showRulers: false,
   guides: [],
+  scaleBase: null,
+  scaleCumulativeFactor: 1.0,
 
   // Actions
   setZoom: (z) => set({ zoom: Math.max(0.1, Math.min(5, z)) }),
@@ -134,6 +180,15 @@ export const createCanvasSlice: StateCreator<
       }
     }, 2500);
   },
+
+  setScaleBase: (base) => set({ scaleBase: base }),
+  setScaleCumulativeFactor: (factor) => set({ scaleCumulativeFactor: factor }),
+  clearScaleBase: () => {
+    if (get().scaleBase !== null) {
+      set({ scaleBase: null, scaleCumulativeFactor: 1.0 });
+    }
+  },
+
   toggleRulers: () => set((s) => ({ showRulers: !s.showRulers })),
   addGuide: (orientation, position) => set((s) => ({
     guides: [...s.guides, { id: `guide-${Date.now()}`, orientation, position }],

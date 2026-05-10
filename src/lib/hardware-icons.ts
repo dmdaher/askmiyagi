@@ -55,6 +55,12 @@ export const HARDWARE_ICON_SVGS: Record<string, React.ReactNode> = {
   'sample-glide': svgIcon('M2 14 L6 14 L8 9 L10 9 L12 16 L14 16 L16 11 L18 11 L20 14 L22 14'),
   'noise': svgIcon('M2 12 L4 9 L5 15 L7 7 L8 14 L10 10 L11 16 L13 8 L14 13 L16 11 L17 15 L19 9 L20 14 L22 12'),
 
+  // ── Envelope / LFO curve shapes (synths: DeepMind-12 envelope curve LEDs) ──
+  // Converted from source SVGs (100-unit space → 24-unit viewBox, factor ×0.24).
+  'curve-exp': svgIcon('M4.3 17.3 C9.1 16.8 13.4 13.7 14.6 8.4 C14.9 7.2 14.9 6 15.4 5.3 C18.2 5.3 20.4 6.2 21.1 9.4 C21.6 11.5 21.1 14.6 21.1 17.3'),
+  'curve-lin': svgIcon('M4.8 18.2 L12 4.3 L19.2 18.2'),
+  'curve-log': svgIcon('M4.3 15.8 C8.2 15.4 10.6 13 11.8 8.9 C12.2 7.4 12.2 5.8 12.7 5 C16.6 5 19.4 6.7 20.2 10.1 C20.6 12.2 20.2 15.1 20.2 17.3'),
+
   // ── DJ symbols (CDJ-3000, DDJ-FLX4, XDJ, DJS-1000) ──
   'cue': React.createElement('svg', {
     viewBox: '0 0 24 24', width: '100%', height: '100%', style: { display: 'block' },
@@ -99,6 +105,7 @@ export function hasIconSvg(key: string): boolean {
 /** Get all icon keys organized by category for picker UI */
 export const ICON_CATEGORIES = [
   { label: 'Waveforms', keys: ['sine-wave', 'square-wave', 'triangle-wave', 'sawtooth-wave', 'sawtooth-cycle', 'pulse-wave', 'sample-hold', 'sample-glide', 'noise'] },
+  { label: 'Curves', keys: ['curve-exp', 'curve-lin', 'curve-log'] },
   { label: 'DJ', keys: ['cue', 'vinyl-mode', 'loop-in', 'loop-out', 'beat-sync', 'slip', 'quantize'] },
   { label: 'Transport', keys: ['play', 'pause', 'play-pause', 'stop', 'record', 'fast-forward', 'rewind', 'skip-forward', 'skip-backward', 'eject'] },
   { label: 'Arrows', keys: ['arrow-up', 'arrow-down', 'arrow-left', 'arrow-right', 'triangle-up', 'triangle-down', 'triangle-left', 'triangle-right'] },

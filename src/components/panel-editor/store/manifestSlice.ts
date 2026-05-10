@@ -231,6 +231,18 @@ export interface ManifestSlice {
   setAllLabelFontSize: (size: number | undefined) => void;
   resetAllSizes: () => void;
   scaleCanvas: (factor: number) => void;
+  /**
+   * Drift-free scaling. `absoluteFactor` is relative to the captured base
+   * layout (1.0 = at base, 0.5 = half base, 2.0 = double base). On first
+   * call, captures current state as base. All entity positions/sizes are
+   * computed via `base × absoluteFactor` with a single round per coord —
+   * never compounding rounding errors across cycles.
+   *
+   * Scope: controls, sections, editorLabels, controlContainers, guides,
+   * canvasWidth/canvasHeight. Keyboard auto-follows via percent-based
+   * fields. Group labels and alignment anchors have no positional fields.
+   */
+  scaleFromBase: (absoluteFactor: number) => void;
   setCanvasSize: (w: number, h: number) => void;
   moveLabel: (labelId: string, dx: number, dy: number) => void;
   updateLabel: (labelId: string, updates: Partial<EditorLabel>) => void;
@@ -453,11 +465,20 @@ function clusterByAxis(
 
 // ─── Combined state shape for cross-slice access ──────────────────────────
 // The manifest slice needs to write canvasWidth/canvasHeight from the canvas
-// slice when deviceDimensions are present.
+// slice when deviceDimensions are present, and access scale-base helpers
+// for drift-free scaling.
+
+import type { ScaleBase } from './canvasSlice';
 
 interface CanvasFields {
   canvasWidth: number;
   canvasHeight: number;
+  guides: { id: string; orientation: 'horizontal' | 'vertical'; position: number }[];
+  scaleBase: ScaleBase | null;
+  scaleCumulativeFactor: number;
+  setScaleBase: (base: ScaleBase | null) => void;
+  setScaleCumulativeFactor: (factor: number) => void;
+  clearScaleBase: () => void;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────
@@ -495,6 +516,7 @@ export const createManifestSlice: StateCreator<
   // ── Actions ─────────────────────────────────────────────────────────────
 
   loadFromManifest: (manifest) => {
+    get().clearScaleBase();
     const sections: Record<string, SectionDef> = {};
     const controls: Record<string, ControlDef> = {};
 
@@ -902,6 +924,7 @@ export const createManifestSlice: StateCreator<
   },
 
   moveControl: (id, dx, dy) => {
+    get().clearScaleBase();
     const ctrl = get().controls[id];
     if (!ctrl || ctrl.locked) return;
     set((s) => ({
@@ -917,6 +940,7 @@ export const createManifestSlice: StateCreator<
   },
 
   resizeControl: (id, w, h) => {
+    get().clearScaleBase();
     const ctrl = get().controls[id];
     if (!ctrl || ctrl.locked || ctrl.resizeLocked) return;
     set((s) => ({
@@ -928,6 +952,7 @@ export const createManifestSlice: StateCreator<
   },
 
   moveSection: (id, dx, dy) => {
+    get().clearScaleBase();
     const section = get().sections[id];
     if (!section) return;
     const controls = { ...get().controls };
@@ -965,6 +990,7 @@ export const createManifestSlice: StateCreator<
   },
 
   resizeSection: (id, w, h) => {
+    get().clearScaleBase();
     const section = get().sections[id];
     if (!section) return;
     set((s) => ({
@@ -976,6 +1002,7 @@ export const createManifestSlice: StateCreator<
   },
 
   setSectionPosition: (id, x, y) => {
+    get().clearScaleBase();
     const section = get().sections[id];
     if (!section) return;
     set((s) => ({
@@ -998,6 +1025,7 @@ export const createManifestSlice: StateCreator<
   },
 
   updateSection: (id, updates) => {
+    get().clearScaleBase();
     const section = get().sections[id];
     if (!section) return;
     // Sync hidden boolean with frameMode for backwards compatibility
@@ -1013,6 +1041,7 @@ export const createManifestSlice: StateCreator<
   },
 
   moveSelectedControls: (dx, dy) => {
+    get().clearScaleBase();
     const { selectedIds, lockedIds, controls } = get();
     const lockedSet = new Set(lockedIds);
     const updated = { ...controls };
@@ -1040,6 +1069,7 @@ export const createManifestSlice: StateCreator<
   },
 
   updateControlProp: (ids, field, value) => {
+    get().clearScaleBase();
     const controls = { ...get().controls };
     for (const id of ids) {
       const ctrl = controls[id];
@@ -1071,6 +1101,7 @@ export const createManifestSlice: StateCreator<
   },
 
   duplicateSelected: () => {
+    get().clearScaleBase();
     const { selectedIds, controls, sections } = get();
     if (selectedIds.length === 0) return;
 
@@ -1112,6 +1143,7 @@ export const createManifestSlice: StateCreator<
   },
 
   deleteSelected: () => {
+    get().clearScaleBase();
     const { selectedIds, controls, sections } = get();
     if (selectedIds.length === 0) return;
 
@@ -1230,6 +1262,7 @@ export const createManifestSlice: StateCreator<
   setFocusedSection: (id) => set({ focusedSectionId: id }),
 
   addControl: (sectionId, type, label) => {
+    get().clearScaleBase();
     const section = get().sections[sectionId];
     if (!section) return;
 
@@ -1263,6 +1296,7 @@ export const createManifestSlice: StateCreator<
   },
 
   setAllLabelFontSize: (size) => {
+    get().clearScaleBase();
     set((s) => {
       // Update control.labelFontSize (metadata used by computeLabelPosition)
       const updatedControls: Record<string, ControlDef> = {};
@@ -1296,6 +1330,7 @@ export const createManifestSlice: StateCreator<
   },
 
   resetAllSizes: () => {
+    get().clearScaleBase();
     set((s) => {
       const updated: Record<string, ControlDef> = {};
       for (const [id, ctrl] of Object.entries(s.controls)) {
@@ -1308,64 +1343,156 @@ export const createManifestSlice: StateCreator<
     });
   },
 
-  scaleCanvas: (factor) => {
-    set((s) => {
-      // Scale all control positions and sizes
-      const updatedControls: Record<string, ControlDef> = {};
-      for (const [id, ctrl] of Object.entries(s.controls)) {
-        updatedControls[id] = {
-          ...ctrl,
-          x: Math.round(ctrl.x * factor),
-          y: Math.round(ctrl.y * factor),
-          w: Math.round(ctrl.w * factor),
-          h: Math.round(ctrl.h * factor),
-          labelFontSize: ctrl.labelFontSize ? Math.max(Math.round(ctrl.labelFontSize * factor), 4) : ctrl.labelFontSize,
-        };
+  /**
+   * Backward-compat shim: relative scale (multiplies CURRENT layout by
+   * factor). Used by the toolbar's ⤢ shrink/grow buttons. Internally
+   * delegates to scaleFromBase by combining with the current cumulative
+   * factor — so all scaling routes through the drift-free path.
+   *
+   * Example: at 1.5× base, scaleCanvas(0.8) → scaleFromBase(1.2).
+   */
+  scaleCanvas: (relativeFactor) => {
+    if (relativeFactor === 1 || relativeFactor <= 0) return;
+    const s = get();
+    const newAbsolute = s.scaleCumulativeFactor * relativeFactor;
+    s.scaleFromBase(newAbsolute);
+  },
+
+  /**
+   * Drift-free absolute scaling — single source of truth for all scaling.
+   *
+   * Captures the current layout as `scaleBase` on first call. All subsequent
+   * scale operations compute positions as `base × absoluteFactor` with one
+   * round per coordinate, so cumulative rounding error never compounds:
+   * scaleFromBase(0.5) then scaleFromBase(1.0) returns to EXACT original.
+   *
+   * Any non-scale layout edit (drag, resize, add, delete, canvas resize)
+   * clears scaleBase via clearScaleBase, so the next scale captures fresh.
+   */
+  scaleFromBase: (absoluteFactor) => {
+    if (absoluteFactor <= 0) return;
+
+    const state = get();
+
+    // Step 1: ensure base is captured. First scale call snapshots current state.
+    let base: ScaleBase | null = state.scaleBase;
+    if (!base) {
+      const ctrls: ScaleBase['controls'] = {};
+      for (const [id, c] of Object.entries(state.controls)) {
+        ctrls[id] = { x: c.x, y: c.y, w: c.w, h: c.h, labelFontSize: c.labelFontSize };
       }
-
-      // Scale all section positions and sizes
-      const updatedSections: Record<string, SectionDef> = {};
-      for (const [id, sec] of Object.entries(s.sections)) {
-        updatedSections[id] = {
-          ...sec,
-          x: Math.round(sec.x * factor),
-          y: Math.round(sec.y * factor),
-          w: Math.round(sec.w * factor),
-          h: Math.round(sec.h * factor),
-        };
+      const secs: ScaleBase['sections'] = {};
+      for (const [id, sec] of Object.entries(state.sections)) {
+        secs[id] = { x: sec.x, y: sec.y, w: sec.w, h: sec.h };
       }
+      base = {
+        controls: ctrls,
+        sections: secs,
+        labels: (state.editorLabels as EditorLabel[]).map((l) => ({
+          id: l.id, x: l.x, y: l.y, w: l.w, fontSize: l.fontSize,
+        })),
+        containers: state.controlContainers.map((c) => ({
+          id: c.id, x: c.x, y: c.y, w: c.w, h: c.h, borderRadius: c.borderRadius,
+        })),
+        guides: state.guides.map((g) => ({ id: g.id, position: g.position })),
+        canvasWidth: state.canvasWidth,
+        canvasHeight: state.canvasHeight,
+      };
+      state.setScaleBase(base);
+    }
 
-      // Scale all label positions, widths, and font sizes.
-      // Linked labels compute position from their already-rounded control
-      // to prevent drift between label and control after repeated resizes.
-      const updatedLabels = (s.editorLabels as EditorLabel[]).map(l => {
-        const base = {
-          ...l,
-          x: Math.round(l.x * factor),
-          y: Math.round(l.y * factor),
-          w: l.w != null ? Math.round(l.w * factor) : l.w,
-          fontSize: Math.max(Math.round(l.fontSize * factor), 4),
-        };
+    // Step 2: compute new state from base × absoluteFactor.
+    // ONE round per coord. Linked label drift solved automatically — both
+    // label and its linked control scale from their respective base values.
+    const f = absoluteFactor;
 
-        // For linked labels, recompute from the rounded control position
-        const oldCtrl = l.controlId ? s.controls[l.controlId] : undefined;
-        const newCtrl = l.controlId ? updatedControls[l.controlId] : undefined;
-        if (oldCtrl && newCtrl) {
-          base.x = Math.round(newCtrl.x + (l.x - oldCtrl.x) * factor);
-          base.y = Math.round(newCtrl.y + (l.y - oldCtrl.y) * factor);
-        }
+    const updatedControls: Record<string, ControlDef> = {};
+    for (const [id, ctrl] of Object.entries(state.controls)) {
+      const baseCtrl = base.controls[id];
+      if (!baseCtrl) {
+        // Control added after base capture (shouldn't happen — adds clear base — but defensive)
+        updatedControls[id] = ctrl;
+        continue;
+      }
+      updatedControls[id] = {
+        ...ctrl,
+        x: Math.round(baseCtrl.x * f),
+        y: Math.round(baseCtrl.y * f),
+        w: Math.max(8, Math.round(baseCtrl.w * f)),
+        h: Math.max(8, Math.round(baseCtrl.h * f)),
+        labelFontSize: baseCtrl.labelFontSize != null
+          ? Math.max(4, Math.round(baseCtrl.labelFontSize * f))
+          : ctrl.labelFontSize,
+      };
+    }
 
-        return base;
-      });
+    const updatedSections: Record<string, SectionDef> = {};
+    for (const [id, sec] of Object.entries(state.sections)) {
+      const baseSec = base.sections[id];
+      if (!baseSec) {
+        updatedSections[id] = sec;
+        continue;
+      }
+      updatedSections[id] = {
+        ...sec,
+        x: Math.round(baseSec.x * f),
+        y: Math.round(baseSec.y * f),
+        w: Math.max(8, Math.round(baseSec.w * f)),
+        h: Math.max(8, Math.round(baseSec.h * f)),
+      };
+    }
 
+    const baseLabelsById = new Map(base.labels.map((l) => [l.id, l]));
+    const updatedLabels: EditorLabel[] = (state.editorLabels as EditorLabel[]).map((l) => {
+      const baseLabel = baseLabelsById.get(l.id);
+      if (!baseLabel) return l;
       return {
-        controls: updatedControls,
-        sections: updatedSections,
-        editorLabels: updatedLabels,
-        canvasWidth: Math.round(s.canvasWidth * factor),
-        canvasHeight: Math.round(s.canvasHeight * factor),
+        ...l,
+        x: Math.round(baseLabel.x * f),
+        y: Math.round(baseLabel.y * f),
+        w: baseLabel.w != null ? Math.max(8, Math.round(baseLabel.w * f)) : l.w,
+        fontSize: Math.max(4, Math.round(baseLabel.fontSize * f)),
       };
     });
+
+    const baseContainersById = new Map(base.containers.map((c) => [c.id, c]));
+    const updatedContainers: ControlContainer[] = state.controlContainers.map((c) => {
+      const baseC = baseContainersById.get(c.id);
+      if (!baseC) return c;
+      return {
+        ...c,
+        x: Math.round(baseC.x * f),
+        y: Math.round(baseC.y * f),
+        w: Math.max(8, Math.round(baseC.w * f)),
+        h: Math.max(8, Math.round(baseC.h * f)),
+        borderRadius: baseC.borderRadius != null
+          ? Math.max(0, Math.round(baseC.borderRadius * f))
+          : c.borderRadius,
+      };
+    });
+
+    const baseGuidesById = new Map(base.guides.map((g) => [g.id, g]));
+    const updatedGuides = state.guides.map((g) => {
+      const baseG = baseGuidesById.get(g.id);
+      if (!baseG) return g;
+      return { ...g, position: Math.round(baseG.position * f) };
+    });
+
+    // Step 3: apply atomically. (set works on combined slice state — guides
+    // and canvas dims live in canvasSlice but are accessible via combined set.)
+    set({
+      controls: updatedControls,
+      sections: updatedSections,
+      editorLabels: updatedLabels,
+      controlContainers: updatedContainers,
+      guides: updatedGuides,
+      canvasWidth: Math.max(400, Math.round(base.canvasWidth * f)),
+      canvasHeight: Math.max(300, Math.round(base.canvasHeight * f)),
+    });
+
+    // Step 4: track cumulative factor (for the modal's "currently at N%" UI
+    // and for relative-shrink toolbar buttons).
+    state.setScaleCumulativeFactor(f);
   },
 
   /**
@@ -1378,6 +1505,7 @@ export const createManifestSlice: StateCreator<
    * Caller is responsible for pushSnapshot before invoking.
    */
   setCanvasSize: (w, h) => {
+    get().clearScaleBase();
     set({
       canvasWidth: Math.round(w),
       canvasHeight: Math.round(h),
@@ -1385,6 +1513,7 @@ export const createManifestSlice: StateCreator<
   },
 
   moveLabel: (labelId, dx, dy) => {
+    get().clearScaleBase();
     // Round to integers — invariant: label positions are always integer.
     // This lets us detect non-integer positions as "broken data" for auto-repair.
     // For standalone labels, recompute sectionId from new position so the
@@ -1409,6 +1538,7 @@ export const createManifestSlice: StateCreator<
   },
 
   updateLabel: (labelId, updates) => {
+    get().clearScaleBase();
     set((s) => ({
       editorLabels: (s.editorLabels as EditorLabel[]).map(l =>
         l.id === labelId ? { ...l, ...updates } : l
@@ -1417,6 +1547,7 @@ export const createManifestSlice: StateCreator<
   },
 
   assignLabelToNearestSection: (labelId) => {
+    get().clearScaleBase();
     const label = (get().editorLabels as EditorLabel[]).find(l => l.id === labelId);
     // Only standalone labels can be assigned this way. Linked labels derive
     // section from their control and don't store sectionId.
@@ -1435,12 +1566,14 @@ export const createManifestSlice: StateCreator<
   },
 
   deleteLabel: (labelId) => {
+    get().clearScaleBase();
     set((s) => ({
       editorLabels: (s.editorLabels as EditorLabel[]).filter(l => l.id !== labelId),
     }));
   },
 
   addStandaloneLabel: (x, y, text = 'Label') => {
+    get().clearScaleBase();
     // Suffix with a random nonce so two rapid calls (e.g., in tests) don't
     // collide on Date.now() and end up sharing an id.
     const id = `label-standalone-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -1469,6 +1602,7 @@ export const createManifestSlice: StateCreator<
   },
 
   alignControls: (mode) => {
+    get().clearScaleBase();
     const { selectedIds, lockedIds, controls } = get();
     const lockedSet = new Set(lockedIds);
     const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
@@ -1534,6 +1668,7 @@ export const createManifestSlice: StateCreator<
   },
 
   distributeControls: (axis) => {
+    get().clearScaleBase();
     const { selectedIds, lockedIds, controls } = get();
     const lockedSet = new Set(lockedIds);
     const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
@@ -1592,6 +1727,7 @@ export const createManifestSlice: StateCreator<
   },
 
   distributeWithGap: (axis, gap) => {
+    get().clearScaleBase();
     const { selectedIds, lockedIds, controls } = get();
     const lockedSet = new Set(lockedIds);
     const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
@@ -1627,6 +1763,7 @@ export const createManifestSlice: StateCreator<
   },
 
   alignColumns: () => {
+    get().clearScaleBase();
     const { selectedIds, lockedIds, controls } = get();
     const lockedSet = new Set(lockedIds);
     const movable = selectedIds
@@ -1667,6 +1804,7 @@ export const createManifestSlice: StateCreator<
   },
 
   alignRows: () => {
+    get().clearScaleBase();
     const { selectedIds, lockedIds, controls } = get();
     const lockedSet = new Set(lockedIds);
     const movable = selectedIds
@@ -1706,6 +1844,7 @@ export const createManifestSlice: StateCreator<
   },
 
   normalizeLabelSpacing: () => {
+    get().clearScaleBase();
     const { selectedIds, controls, editorLabels } = get();
     const labels = editorLabels as EditorLabel[];
     const controlScale = (get() as any).controlScale ?? 1;
@@ -1884,6 +2023,7 @@ export const createManifestSlice: StateCreator<
   // ── Container CRUD ──────────────────────────────────────────────────────
 
   addContainer: (x, y, w, h, controlIds = []) => {
+    get().clearScaleBase();
     const id = `container-${Date.now()}`;
     const container: ControlContainer = {
       id, controlIds, style: 'recessed',
@@ -1894,6 +2034,7 @@ export const createManifestSlice: StateCreator<
   },
 
   updateContainer: (id, updates) => {
+    get().clearScaleBase();
     set({
       controlContainers: get().controlContainers.map(c =>
         c.id === id ? { ...c, ...updates } : c
@@ -1902,10 +2043,12 @@ export const createManifestSlice: StateCreator<
   },
 
   deleteContainer: (id) => {
+    get().clearScaleBase();
     set({ controlContainers: get().controlContainers.filter(c => c.id !== id) });
   },
 
   moveContainer: (id, dx, dy) => {
+    get().clearScaleBase();
     set({
       controlContainers: get().controlContainers.map(c =>
         c.id === id ? { ...c, x: c.x + dx, y: c.y + dy } : c
@@ -1914,6 +2057,7 @@ export const createManifestSlice: StateCreator<
   },
 
   resizeContainer: (id, w, h) => {
+    get().clearScaleBase();
     set({
       controlContainers: get().controlContainers.map(c =>
         c.id === id ? { ...c, w: Math.max(20, w), h: Math.max(20, h) } : c
@@ -1922,6 +2066,7 @@ export const createManifestSlice: StateCreator<
   },
 
   initLabelsFromControls: () => {
+    get().clearScaleBase();
     const { controls, editorLabels } = get();
     const controlScale = (get() as any).controlScale ?? 1;
 
@@ -1987,6 +2132,7 @@ export const createManifestSlice: StateCreator<
   },
 
   setLabelPosition: (ids, position) => {
+    get().clearScaleBase();
     const { controls, editorLabels } = get();
     const controlScale = (get() as any).controlScale ?? 1;
     const idSet = new Set(ids);
