@@ -19,10 +19,6 @@ const PHASE_LABELS: Record<string, string> = {
   'tutorial-pr': 'Tutorial PR',
 };
 
-function formatTokens(n: number): string {
-  return (n ?? 0).toLocaleString('en-US');
-}
-
 function formatCost(n: number): string {
   return `$${(n ?? 0).toFixed(4)}`;
 }
@@ -220,12 +216,8 @@ export default function CostBreakdown({
   const safePhases = phases ?? [];
   const activePhaseCosts = safePhases.filter((p) => p.status !== 'skipped' && (p.costUsd ?? 0) > 0);
 
-  const totalTokensIn = safePhases.reduce((sum, p) => sum + (p.tokens?.input ?? 0), 0);
-  const totalTokensOut = safePhases.reduce((sum, p) => sum + (p.tokens?.output ?? 0), 0);
-  const totalCacheTokens = safePhases.reduce(
-    (sum, p) => sum + (p.tokens?.cacheCreation ?? 0) + (p.tokens?.cacheRead ?? 0),
-    0
-  );
+  // Token totals removed from the UI 2026-05-10 per admin-readability redesign.
+  // Cost remains the single signal that matters for admin oversight.
   const totalCost = safePhases.reduce((sum, p) => sum + (p.costUsd ?? 0), 0);
   const maxCost = Math.max(...activePhaseCosts.map((p) => p.costUsd ?? 0), 0.0001);
 
@@ -260,7 +252,7 @@ export default function CostBreakdown({
         <table className="w-full text-left">
           <thead>
             <tr style={{ borderBottom: '1px solid var(--card-border, #2a2a3a)' }}>
-              {['Phase', 'Tokens In', 'Tokens Out', 'Cache', 'Cost', ...(showActualCostColumn ? ['Actual'] : []), 'Duration'].map((h) => (
+              {['Phase', 'Cost', ...(showActualCostColumn ? ['Actual'] : []), 'Duration'].map((h) => (
                 <th key={h} className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider" style={{ color: '#6b7280' }}>
                   {h}
                 </th>
@@ -271,27 +263,11 @@ export default function CostBreakdown({
             {safePhases
               .filter((p) => PHASE_LABELS[p.phase])
               .map((phase) => {
-                const cacheTokens = (phase.tokens?.cacheCreation ?? 0) + (phase.tokens?.cacheRead ?? 0);
                 return (
                   <tr key={phase.phase} style={{ borderBottom: '1px solid var(--card-border, #2a2a3a)' }}>
                     <td className="px-3 py-1.5">
                       <span className="text-xs" style={{ color: 'var(--foreground, #e0e0e0)' }}>
                         {PHASE_LABELS[phase.phase]}
-                      </span>
-                    </td>
-                    <td className="px-3 py-1.5">
-                      <span className="text-xs font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                        {formatTokens(phase.tokens?.input ?? 0)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-1.5">
-                      <span className="text-xs font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                        {formatTokens(phase.tokens?.output ?? 0)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-1.5">
-                      <span className="text-xs font-mono" style={{ color: cacheTokens > 0 ? '#22C55E' : '#6b7280' }}>
-                        {formatTokens(cacheTokens)}
                       </span>
                     </td>
                     <td className="px-3 py-1.5">
@@ -319,21 +295,6 @@ export default function CostBreakdown({
             <tr style={{ backgroundColor: 'var(--surface, #1a1a2a)' }}>
               <td className="px-3 py-2">
                 <span className="text-xs font-bold" style={{ color: 'var(--foreground, #e0e0e0)' }}>Total</span>
-              </td>
-              <td className="px-3 py-2">
-                <span className="text-xs font-mono font-bold" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                  {formatTokens(totalTokensIn)}
-                </span>
-              </td>
-              <td className="px-3 py-2">
-                <span className="text-xs font-mono font-bold" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                  {formatTokens(totalTokensOut)}
-                </span>
-              </td>
-              <td className="px-3 py-2">
-                <span className="text-xs font-mono font-bold" style={{ color: totalCacheTokens > 0 ? '#22C55E' : '#6b7280' }}>
-                  {formatTokens(totalCacheTokens)}
-                </span>
               </td>
               <td className="px-3 py-2">
                 <span className="text-xs font-mono font-bold" style={{ color: 'var(--accent, #00aaff)' }}>
@@ -382,7 +343,7 @@ export default function CostBreakdown({
               <table className="w-full text-left">
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--card-border, #2a2a3a)' }}>
-                    {['Section', 'Tokens In', 'Tokens Out', 'Cache', 'Cost'].map((h) => (
+                    {['Section', 'Cost'].map((h) => (
                       <th key={h} className="px-2 py-1 text-[10px] font-medium uppercase tracking-wider" style={{ color: '#6b7280' }}>
                         {h}
                       </th>
@@ -390,36 +351,18 @@ export default function CostBreakdown({
                   </tr>
                 </thead>
                 <tbody>
-                  {sections.map((s) => {
-                    const sectionCache = (s.tokens?.cacheCreation ?? 0) + (s.tokens?.cacheRead ?? 0);
-                    return (
-                      <tr key={s.id} style={{ borderBottom: '1px solid var(--card-border, #2a2a3a)' }}>
-                        <td className="px-2 py-1">
-                          <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>{s.id}</span>
-                        </td>
-                        <td className="px-2 py-1">
-                          <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                            {formatTokens(s.tokens?.input ?? 0)}
-                          </span>
-                        </td>
-                        <td className="px-2 py-1">
-                          <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                            {formatTokens(s.tokens?.output ?? 0)}
-                          </span>
-                        </td>
-                        <td className="px-2 py-1">
-                          <span className="text-[11px] font-mono" style={{ color: sectionCache > 0 ? '#22C55E' : '#6b7280' }}>
-                            {formatTokens(sectionCache)}
-                          </span>
-                        </td>
-                        <td className="px-2 py-1">
-                          <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                            {formatCost(s.costUsd ?? 0)}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {sections.map((s) => (
+                    <tr key={s.id} style={{ borderBottom: '1px solid var(--card-border, #2a2a3a)' }}>
+                      <td className="px-2 py-1">
+                        <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>{s.id}</span>
+                      </td>
+                      <td className="px-2 py-1">
+                        <span className="text-[11px] font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
+                          {formatCost(s.costUsd ?? 0)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
