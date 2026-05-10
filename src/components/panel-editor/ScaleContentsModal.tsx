@@ -4,9 +4,13 @@
  * Scale Contents modal — opened from EditorToolbar's ⤢ Scale button.
  *
  * Distinct from the W/H Canvas inputs (which only resize the canvas).
- * This modal multiplies positions and sizes of every control, section, and
- * label by a factor. The current `-` and `+` toolbar buttons are quick
- * shortcuts (×0.8 / ×1.25); this modal lets the user pick an arbitrary %.
+ * This modal scales positions and sizes of every control, section, label,
+ * container, and guide RELATIVE TO THE ORIGINAL LAYOUT (Layout-Base
+ * Memory). 100% always returns to exact original — repeated 70%/150%/50%
+ * cycles never accumulate rounding drift.
+ *
+ * The toolbar's `-` (×0.8) and `+` (×1.25) shortcuts route through the
+ * same drift-free path internally.
  *
  * Linked input behavior:
  *   - Typing in the % field updates W and H below
@@ -40,22 +44,30 @@ export default function ScaleContentsModal({ open, onClose }: Props) {
   const sections = useEditorStore((s) => s.sections);
   const editorLabels = useEditorStore((s) => s.editorLabels) as EditorLabel[];
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
-  const scaleCanvas = useEditorStore((s) => s.scaleCanvas);
+  const scaleFromBase = useEditorStore((s) => s.scaleFromBase);
+  const scaleCumulativeFactor = useEditorStore((s) => s.scaleCumulativeFactor);
+
+  // Current state expressed as % of original layout. When no scale base is
+  // captured (cumulativeFactor === 1.0), we're already at 100% of "current"
+  // which is also the future base. The number we display is the absolute
+  // factor: 1.5 → 150%.
+  const currentPercent = Math.round(scaleCumulativeFactor * 100);
 
   // All three inputs are strings during editing so the user can clear and
   // retype. They commit to numbers only on Apply.
-  const [percentStr, setPercentStr] = useState('100');
+  const [percentStr, setPercentStr] = useState(String(currentPercent));
   const [widthStr, setWidthStr] = useState(String(canvasWidth));
   const [heightStr, setHeightStr] = useState(String(canvasHeight));
 
-  // Reset fields when modal opens (or canvas dimensions change between opens)
+  // Reset fields when modal opens (or canvas dimensions change between opens).
+  // Initial value reflects current scale (e.g. "150" if at 150% of original).
   useEffect(() => {
     if (open) {
-      setPercentStr('100');
+      setPercentStr(String(currentPercent));
       setWidthStr(String(canvasWidth));
       setHeightStr(String(canvasHeight));
     }
-  }, [open, canvasWidth, canvasHeight]);
+  }, [open, canvasWidth, canvasHeight, currentPercent]);
 
   // Trap Cmd+Z / Ctrl+Z while modal is open so undo doesn't fire unexpectedly.
   // Esc closes the modal.
@@ -114,24 +126,41 @@ export default function ScaleContentsModal({ open, onClose }: Props) {
   }, [canvasWidth, canvasHeight]);
 
   // ── Validation + apply ────────────────────────────────────────────────────
+  //
+  // Semantics: `pct` is the target % OF ORIGINAL LAYOUT, not relative to
+  // current. Typing 100 always returns to exact original (drift-free).
+  // No-op when typed value matches current cumulative factor.
 
   const pct = parseFloat(percentStr);
-  const factor = pct / 100;
-  const validFactor = !isNaN(factor) && factor > 0 && pct >= MIN_PERCENT && pct <= MAX_PERCENT && factor !== 1;
+  const targetFactor = pct / 100;
+  const validInput = !isNaN(targetFactor) && targetFactor > 0 && pct >= MIN_PERCENT && pct <= MAX_PERCENT;
+  const isNoOp = validInput && Math.abs(targetFactor - scaleCumulativeFactor) < 0.0001;
+  const validFactor = validInput && !isNoOp;
+
   const validationMsg = useMemo(() => {
     if (isNaN(pct) || pct <= 0) return 'Enter a positive number';
     if (pct < MIN_PERCENT) return `Minimum ${MIN_PERCENT}%`;
     if (pct > MAX_PERCENT) return `Maximum ${MAX_PERCENT}%`;
-    if (factor === 1) return 'No change — adjust % to scale';
+    if (isNoOp) return `Already at ${currentPercent}% — adjust to scale`;
     return null;
-  }, [pct, factor]);
+  }, [pct, isNoOp, currentPercent]);
 
   const handleApply = useCallback(() => {
     if (!validFactor) return;
     pushSnapshot();
-    scaleCanvas(factor);
+    scaleFromBase(targetFactor);
     onClose();
-  }, [validFactor, factor, pushSnapshot, scaleCanvas, onClose]);
+  }, [validFactor, targetFactor, pushSnapshot, scaleFromBase, onClose]);
+
+  const handleReset = useCallback(() => {
+    if (Math.abs(scaleCumulativeFactor - 1.0) < 0.0001) {
+      onClose();
+      return;
+    }
+    pushSnapshot();
+    scaleFromBase(1.0);
+    onClose();
+  }, [scaleCumulativeFactor, pushSnapshot, scaleFromBase, onClose]);
 
   if (!open) return null;
 
@@ -145,14 +174,17 @@ export default function ScaleContentsModal({ open, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-base font-semibold text-gray-200 mb-1">Scale Contents</h3>
-        <p className="text-xs text-gray-500 mb-4">
-          Multiplies positions and sizes of all controls, sections, and labels by the same factor.
-          To resize the canvas without scaling, use the W/H inputs in the toolbar.
+        <p className="text-xs text-gray-500 mb-2">
+          Scales every control, section, label, container, and guide relative to the original layout.
+          100% always returns to exact original — repeated cycles never accumulate drift.
+        </p>
+        <p className="text-[11px] text-gray-400 mb-4">
+          Currently at <strong className="text-gray-200">{currentPercent}%</strong> of original.
         </p>
 
         {/* Percent input */}
         <div className="mb-3">
-          <label className="block text-[11px] font-medium text-gray-400 mb-1">Scale by</label>
+          <label className="block text-[11px] font-medium text-gray-400 mb-1">Scale to (% of original)</label>
           <div className="flex items-center gap-2">
             <input
               type="number"
@@ -214,20 +246,30 @@ export default function ScaleContentsModal({ open, onClose }: Props) {
         )}
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-between gap-2">
           <button
-            onClick={onClose}
-            className="rounded px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+            onClick={handleReset}
+            disabled={Math.abs(scaleCumulativeFactor - 1.0) < 0.0001}
+            className="rounded border border-gray-700 px-3 py-2 text-xs text-gray-300 hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Restore exact original layout"
           >
-            Cancel
+            Reset to original
           </button>
-          <button
-            onClick={handleApply}
-            disabled={!validFactor}
-            className="rounded bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Scale
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="rounded px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleApply}
+              disabled={!validFactor}
+              className="rounded bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Scale
+            </button>
+          </div>
         </div>
       </div>
     </div>,
