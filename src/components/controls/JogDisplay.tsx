@@ -1,6 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import type { DisplayState } from '@/types/display';
+import DisplayContent from './DisplayContent';
 
 interface JogDisplayProps {
   id: string;
@@ -8,6 +10,13 @@ interface JogDisplayProps {
   size?: number;
   highlighted?: boolean;
   showMockContent?: boolean;
+  /**
+   * Tutorial-driven display state. When present, replaces the mock album-art
+   * + time content with rendered tutorial content (status, menu, etc.) via
+   * DisplayContent. When undefined, falls back to showMockContent behavior —
+   * preserves existing CDJ-3000 jog wheel preview unchanged.
+   */
+  displayState?: DisplayState;
 }
 
 const highlightAnimation = {
@@ -31,7 +40,9 @@ export default function JogDisplay({
   size = 80,
   highlighted = false,
   showMockContent = false,
+  displayState,
 }: JogDisplayProps) {
+  const showTutorialContent = displayState !== undefined;
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
       <motion.div
@@ -46,7 +57,12 @@ export default function JogDisplay({
         }}
         {...(highlighted ? highlightAnimation : {})}
       >
-        {showMockContent && (
+        {showTutorialContent && (
+          // Pass inner display dimensions (size minus border) for proportional font sizing.
+          <DisplayContent displayState={displayState!} width={Math.max(8, size - 6)} height={Math.max(8, size - 6)} />
+        )}
+
+        {showMockContent && !showTutorialContent && (
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {/* Album art placeholder circle */}
             <div

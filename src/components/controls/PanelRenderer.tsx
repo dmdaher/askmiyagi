@@ -101,7 +101,7 @@ export interface PanelManifest {
 export interface PanelRendererProps {
   manifest: PanelManifest;
   panelState?: PanelState;
-  displayState?: any;
+  displayState?: import('@/types/display').DisplayState;
   highlightedControls?: string[];
   zones?: { zoneNumber: number; color: string; lowNote: number; highNote: number; label: string }[];
   onButtonClick?: (id: string) => void;
@@ -139,6 +139,7 @@ function renderControl(
   active: boolean,
   ledOn: boolean,
   onClick?: () => void,
+  displayState?: import('@/types/display').DisplayState,
 ): React.ReactNode {
   switch (control.type) {
     case 'button': {
@@ -310,6 +311,7 @@ function renderControl(
               width: Math.max(w - 8, 16), height: 6,
               backgroundColor: ledOn ? ledColor : '#333',
               boxShadow: ledOn ? `0 0 6px ${ledColor}` : 'none',
+              transition: 'background-color 200ms, box-shadow 200ms',
             }} />
             <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
               {renderLabelText(control.label)}
@@ -327,6 +329,7 @@ function renderControl(
             boxShadow: ledOn
               ? 'inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.2)'
               : 'inset 0 1px 3px rgba(0,0,0,0.5)',
+            transition: 'background-color 200ms, border-color 200ms, box-shadow 200ms',
           }} />
           <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
             {renderLabelText(control.label)}
@@ -403,10 +406,12 @@ function renderControl(
         || control.nestedIn != null;
       if (isJog) {
         return <JogDisplay id={control.id} size={Math.min(w, h)}
-          highlighted={highlighted} showMockContent />;
+          highlighted={highlighted} showMockContent displayState={displayState} />;
       }
+      // displayState (when set by tutorial step) takes precedence over mock content.
+      // When undefined, TouchDisplay falls back to showMockContent for editor preview.
       return <TouchDisplay id={control.id} highlighted={highlighted}
-        width={w} height={h} showMockContent />;
+        width={w} height={h} showMockContent displayState={displayState} />;
     }
     default:
       return <div className="text-xs text-red-400">Unknown: {control.type}</div>;
@@ -521,6 +526,9 @@ export default function PanelRenderer({
           state.active ?? false,
           state.ledOn ?? false,
           onButtonClick ? () => onButtonClick(ctrl.id) : undefined,
+          // Pass tutorial-driven displayState through to screen/display controls.
+          // Only meaningful for screen/display types; ignored by other controls.
+          displayState,
         );
         const rotation = ctrl.rotation;
         return (

@@ -246,7 +246,10 @@ export default function PanelButton({
           'transition-colors duration-100',
           active ? variantStyle.active : variantStyle.base,
         ].join(' ')}
-        style={fluidButtonStyle}
+        // z-index lifts the highlighted button above container/section frames so
+        // the cyan glow box-shadow renders unclipped during tutorial steps.
+        // Same applies during ledOn transitions to keep the integrated glow visible.
+        style={{ ...fluidButtonStyle, position: 'relative', zIndex: highlighted ? 1000 : (ledOn ? 10 : undefined) }}
         {...(highlighted ? highlightAnimation : {})}
         whileTap={{ scale: isTransport ? 0.92 : 0.95, y: 2 }}
       >
