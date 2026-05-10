@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDeviceStatus, getDeviceManifest } from '@/lib/hosted-storage';
+import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import fs from 'fs';
 import path from 'path';
 
@@ -38,7 +39,25 @@ export async function POST(
       const backupPath = path.join(pipelineDir, `manifest-editor-backup-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
       fs.copyFileSync(editorPath, backupPath);
     }
-    fs.writeFileSync(editorPath, JSON.stringify(manifest, null, 2));
+
+    // Re-stamp _manifestVersion to match the local pipeline manifest BEFORE
+    // writing. The pulled file IS the new editor baseline relative to local
+    // state; without this, the GET handler's staleness check (manifest/route.ts)
+    // would auto-rename the contractor's freshly-pulled file to `.stale`
+    // whenever the local pipeline has drifted (gatekeeper rerun, manual edit)
+    // since the contractor was sent the file. That rename is silently
+    // destructive and was the cause of "pulled file looks like it never started"
+    // bug. If manifest.json is missing, we leave the contractor's stored
+    // version intact — staleness check is a no-op without it.
+    const mainPath = path.join(pipelineDir, 'manifest.json');
+    const writeData: Record<string, unknown> = { ...manifest };
+    if (fs.existsSync(mainPath)) {
+      try {
+        const mainData = JSON.parse(fs.readFileSync(mainPath, 'utf-8'));
+        writeData._manifestVersion = computeManifestVersion(mainData);
+      } catch { /* keep contractor's _manifestVersion if main read fails */ }
+    }
+    fs.writeFileSync(editorPath, JSON.stringify(writeData, null, 2));
 
     // Run export-manifest to write production JSON
     let exported = false;
