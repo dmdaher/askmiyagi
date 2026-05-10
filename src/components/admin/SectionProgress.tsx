@@ -37,7 +37,7 @@ export default function SectionProgress({ sections, currentSection }: SectionPro
         <table className="w-full text-left">
           <thead>
             <tr style={{ borderBottom: '1px solid var(--card-border, #2a2a3a)' }}>
-              {['Section', 'SI', 'PQ', 'Critic', 'Att.', 'Cost', 'Status'].map((h) => (
+              {['Section', 'SI', 'PQ', 'Critic', 'Att.', 'Status'].map((h) => (
                 <th key={h} className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider" style={{ color: '#6b7280' }}>
                   {h}
                 </th>
@@ -68,11 +68,6 @@ export default function SectionProgress({ sections, currentSection }: SectionPro
                   <td className="px-3 py-1.5">
                     <span className="text-xs font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
                       {section.attempts}
-                    </span>
-                  </td>
-                  <td className="px-3 py-1.5">
-                    <span className="text-xs font-mono" style={{ color: 'var(--foreground, #e0e0e0)' }}>
-                      ${(section.costUsd ?? 0).toFixed(4)}
                     </span>
                   </td>
                   <td className="px-3 py-1.5">

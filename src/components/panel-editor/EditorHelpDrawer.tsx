@@ -53,7 +53,7 @@ function GuideTab() {
         <p><strong className="text-white/80">Move controls</strong> &mdash; Click and drag any control to reposition it. Controls snap to your grid setting.</p>
         <p><strong className="text-white/80">Resize</strong> &mdash; Drag the corner or edge handles that appear when a control is selected.</p>
         <p><strong className="text-white/80">Select multiple</strong> &mdash; Click and drag on empty canvas space to draw a selection box around multiple controls. Hold Shift to add to selection, Cmd/Ctrl to toggle.</p>
-        <p><strong className="text-white/80">Right-click menu</strong> &mdash; Right-click any control for quick access to align, distribute, group, duplicate, delete, and lock/unlock.</p>
+        <p><strong className="text-white/80">Right-click menu</strong> &mdash; Right-click any control for quick access to align, distribute, group, delete, and lock/unlock.</p>
         <p><strong className="text-white/80">Double-click a label</strong> &mdash; Edit the label text inline. Press Escape or click away to save.</p>
       </CollapsibleSection>
 

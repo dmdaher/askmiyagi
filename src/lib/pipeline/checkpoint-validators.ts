@@ -45,10 +45,19 @@ export function validateSieveBucket(content: string, pageRange: [number, number]
     errors.push('No table structure found (expected pipe-delimited or CSV rows)');
   }
 
-  // Check that referenced pages are within the expected range
-  const pageRefs = content.match(/\bp(?:age)?[.\s]*(\d+)/gi) ?? [];
-  for (const ref of pageRefs) {
-    const pageNum = parseInt(ref.replace(/\D/g, ''), 10);
+  // Check that EXTRACTED-FROM page references are within the expected range.
+  // We only check column 1 of pipe-delimited table rows — that's the "page this
+  // row was extracted from." Description columns can legitimately reference
+  // OTHER pages as cross-references (e.g., "see POLY menu, page 2") without
+  // being a validation failure. The old content-wide regex flagged those
+  // cross-refs as false positives. (Fixed 2026-05-10.)
+  //
+  // Accepts column-1 formats: `| 15 |`, `| p.1 |`, `| p1 |`, `| page 5 |`.
+  // Rejects header rows (`| Page |`) and separator rows (`| --- |`) — both
+  // non-numeric.
+  const rowPageMatches = [...content.matchAll(/^\s*\|\s*(?:p(?:age)?[.\s]*)?(\d+)\s*\|/gim)];
+  for (const m of rowPageMatches) {
+    const pageNum = parseInt(m[1], 10);
     if (!isNaN(pageNum) && (pageNum < pageRange[0] || pageNum > pageRange[1])) {
       errors.push(`Page reference ${pageNum} outside expected range ${pageRange[0]}-${pageRange[1]}`);
       break; // One violation is enough
@@ -112,6 +121,281 @@ export function validateSieveAnchored(content: string): ValidationResult {
   }
 
   return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Validate the post-editor manifest — runs after contractor approval, before
+ * the rest of the pipeline (extraction, audit, tutorial-build). This is a
+ * pure-logic check (no LLM) on the structural integrity of the manifest's
+ * control IDs and references. Tutorials reference control IDs; if IDs are
+ * missing, duplicated, or orphaned, every downstream agent and every generated
+ * tutorial silently inherits the bug.
+ *
+ * Halts the pipeline on ERRORS. Logs WARNINGS but advances.
+ *
+ * Checks (origin 2026-05-10):
+ *   E1. Every control has a non-empty string `id`
+ *   E2. All control IDs are unique
+ *   E3. Every section has a non-empty string `id`
+ *   E4. All section IDs are unique
+ *   E5. Every section.childIds[] reference points to an existing control
+ *   E6. Every editorLabel with a non-null `controlId` points to an existing control
+ *   E7. Every editorLabel with a `sectionId` set points to an existing section
+ *   E8. Every controlContainer's controlIds[] entries point to existing controls
+ *   E9. Every groupLabel's controlIds[] entries point to existing controls
+ *   E10. Manifest has at least one control and one section
+ *   W1. Each id is kebab-case: ^[a-z][a-z0-9-]*[a-z0-9]$ (or single lowercase letter)
+ *   W2. Every control has a non-empty `label` (else hard to debug)
+ */
+export interface PostEditorFinding {
+  severity: 'error' | 'warning';
+  code: string;
+  message: string;
+  controlId?: string;
+  sectionId?: string;
+}
+
+export interface PostEditorValidationResult extends ValidationResult {
+  findings: PostEditorFinding[];
+  errorCount: number;
+  warningCount: number;
+}
+
+interface PostEditorControl {
+  id?: string;
+  label?: string;
+  sectionId?: string;
+}
+interface PostEditorSection {
+  id?: string;
+  childIds?: string[];
+}
+
+interface PostEditorManifest {
+  controls?: Record<string, PostEditorControl> | PostEditorControl[];
+  sections?: Record<string, PostEditorSection> | PostEditorSection[];
+  editorLabels?: Array<{ id?: string; controlId?: string | null; sectionId?: string }>;
+  controlContainers?: Array<{ id?: string; controlIds?: string[] }>;
+  groupLabels?: Array<{ id?: string; controlIds?: string[] }>;
+}
+
+// Permissive identifier check: must start with letter, contain only letters,
+// digits, underscore, or hyphen. Matches observed production conventions
+// across instruments: kebab-case (deepmind-12, fantom-06: `arp-chord`,
+// `wheel-1`), screaming snake (cdj-3000: `BEAT_JUMP_BACK`), and mixed.
+// Tutorials reference IDs as case-sensitive string keys — any of these work.
+const VALID_ID_RE = /^[A-Za-z][A-Za-z0-9_-]*$/;
+
+function toArray<T extends { id?: string }>(
+  source: Record<string, T> | T[] | undefined,
+): T[] {
+  if (!source) return [];
+  if (Array.isArray(source)) return source;
+  return Object.values(source);
+}
+
+export function validatePostEditorManifest(manifestJson: string): PostEditorValidationResult {
+  const findings: PostEditorFinding[] = [];
+  const errors: string[] = [];
+
+  let manifest: PostEditorManifest;
+  try {
+    manifest = JSON.parse(manifestJson);
+  } catch {
+    return {
+      valid: false,
+      errors: ['Manifest is not valid JSON'],
+      findings: [{ severity: 'error', code: 'INVALID_JSON', message: 'Manifest is not valid JSON' }],
+      errorCount: 1,
+      warningCount: 0,
+    };
+  }
+
+  const controls = toArray(manifest.controls);
+  const sections = toArray(manifest.sections);
+  const labels = manifest.editorLabels ?? [];
+  const containers = manifest.controlContainers ?? [];
+  const groupLabels = manifest.groupLabels ?? [];
+
+  // E10: manifest non-empty
+  if (controls.length === 0) {
+    findings.push({ severity: 'error', code: 'NO_CONTROLS', message: 'Manifest has no controls' });
+  }
+  if (sections.length === 0) {
+    findings.push({ severity: 'error', code: 'NO_SECTIONS', message: 'Manifest has no sections' });
+  }
+
+  // E1, E2: control IDs present + unique
+  const controlIdCounts = new Map<string, number>();
+  controls.forEach((c, idx) => {
+    if (typeof c.id !== 'string' || c.id.trim() === '') {
+      findings.push({
+        severity: 'error',
+        code: 'CONTROL_MISSING_ID',
+        message: `Control at index ${idx} has no id`,
+      });
+      return;
+    }
+    controlIdCounts.set(c.id, (controlIdCounts.get(c.id) ?? 0) + 1);
+  });
+  for (const [id, count] of controlIdCounts) {
+    if (count > 1) {
+      findings.push({
+        severity: 'error',
+        code: 'CONTROL_ID_DUPLICATE',
+        message: `Control id "${id}" appears ${count} times — IDs must be unique`,
+        controlId: id,
+      });
+    }
+  }
+  const validControlIds = new Set(controlIdCounts.keys());
+
+  // E3, E4: section IDs present + unique
+  const sectionIdCounts = new Map<string, number>();
+  sections.forEach((s, idx) => {
+    if (typeof s.id !== 'string' || s.id.trim() === '') {
+      findings.push({
+        severity: 'error',
+        code: 'SECTION_MISSING_ID',
+        message: `Section at index ${idx} has no id`,
+      });
+      return;
+    }
+    sectionIdCounts.set(s.id, (sectionIdCounts.get(s.id) ?? 0) + 1);
+  });
+  for (const [id, count] of sectionIdCounts) {
+    if (count > 1) {
+      findings.push({
+        severity: 'error',
+        code: 'SECTION_ID_DUPLICATE',
+        message: `Section id "${id}" appears ${count} times — IDs must be unique`,
+        sectionId: id,
+      });
+    }
+  }
+  const validSectionIds = new Set(sectionIdCounts.keys());
+
+  // E5: section.childIds[] reference existing controls
+  for (const section of sections) {
+    if (!section.id || !section.childIds) continue;
+    for (const childId of section.childIds) {
+      if (!validControlIds.has(childId)) {
+        findings.push({
+          severity: 'error',
+          code: 'SECTION_CHILD_ORPHAN',
+          message: `Section "${section.id}" childIds references "${childId}" which doesn't exist in controls`,
+          sectionId: section.id,
+          controlId: childId,
+        });
+      }
+    }
+  }
+
+  // E6: linked labels (controlId != null) reference existing controls
+  // E7: standalone labels with sectionId reference existing sections
+  for (const label of labels) {
+    if (label.controlId && !validControlIds.has(label.controlId)) {
+      findings.push({
+        severity: 'error',
+        code: 'LABEL_ORPHAN_CONTROL',
+        message: `Label "${label.id ?? '?'}" links to controlId "${label.controlId}" which doesn't exist`,
+        controlId: label.controlId,
+      });
+    }
+    if (!label.controlId && label.sectionId && !validSectionIds.has(label.sectionId)) {
+      findings.push({
+        severity: 'warning',
+        code: 'LABEL_ORPHAN_SECTION',
+        message: `Standalone label "${label.id ?? '?'}" has sectionId "${label.sectionId}" which doesn't exist`,
+        sectionId: label.sectionId,
+      });
+    }
+  }
+
+  // E8: container.controlIds[] reference existing controls
+  for (const container of containers) {
+    if (!container.controlIds) continue;
+    for (const cid of container.controlIds) {
+      if (!validControlIds.has(cid)) {
+        findings.push({
+          severity: 'error',
+          code: 'CONTAINER_ORPHAN',
+          message: `Container "${container.id ?? '?'}" references controlId "${cid}" which doesn't exist`,
+          controlId: cid,
+        });
+      }
+    }
+  }
+
+  // E9: groupLabel.controlIds[] reference existing controls
+  for (const gl of groupLabels) {
+    if (!gl.controlIds) continue;
+    for (const cid of gl.controlIds) {
+      if (!validControlIds.has(cid)) {
+        findings.push({
+          severity: 'error',
+          code: 'GROUPLABEL_ORPHAN',
+          message: `Group label "${gl.id ?? '?'}" references controlId "${cid}" which doesn't exist`,
+          controlId: cid,
+        });
+      }
+    }
+  }
+
+  // E11: control.sectionId references existing section
+  // (E5 covers section.childIds → controls; this is the reverse direction)
+  for (const c of controls) {
+    if (c.id && c.sectionId && !validSectionIds.has(c.sectionId)) {
+      findings.push({
+        severity: 'error',
+        code: 'CONTROL_ORPHAN_SECTION',
+        message: `Control "${c.id}" sectionId "${c.sectionId}" doesn't exist`,
+        controlId: c.id,
+        sectionId: c.sectionId,
+      });
+    }
+  }
+
+  // W1: valid identifier (warning) — must start with a letter and contain
+  // only letters, digits, underscore, or hyphen. Permissive enough to accept
+  // kebab-case, snake_case, and SCREAMING_SNAKE_CASE.
+  for (const c of controls) {
+    if (c.id && !VALID_ID_RE.test(c.id)) {
+      findings.push({
+        severity: 'warning',
+        code: 'CONTROL_ID_INVALID_FORMAT',
+        message: `Control id "${c.id}" has invalid format — must start with letter, contain only letters/digits/underscore/hyphen`,
+        controlId: c.id,
+      });
+    }
+  }
+
+  // W2: empty label (warning)
+  for (const c of controls) {
+    if (c.id && (typeof c.label !== 'string' || c.label.trim() === '')) {
+      findings.push({
+        severity: 'warning',
+        code: 'CONTROL_EMPTY_LABEL',
+        message: `Control "${c.id}" has no label — hard to debug visually`,
+        controlId: c.id,
+      });
+    }
+  }
+
+  for (const f of findings) {
+    if (f.severity === 'error') errors.push(`[${f.code}] ${f.message}`);
+  }
+
+  const errorCount = findings.filter((f) => f.severity === 'error').length;
+  const warningCount = findings.filter((f) => f.severity === 'warning').length;
+
+  return {
+    valid: errorCount === 0,
+    errors,
+    findings,
+    errorCount,
+    warningCount,
+  };
 }
 
 /**
@@ -190,8 +474,18 @@ export function validatePassBatches(content: string): ValidationResult {
 export function validateIndependentChecklist(content: string): ValidationResult {
   const errors: string[] = [];
 
-  // Must have chapter-level structure
-  if (!/chapter|section\s+\d/i.test(content)) {
+  // Must have section-level structure. Accept any of:
+  //   - the literal word "chapter" or "section <N>" (e.g. "## Section 3:")
+  //   - numbered markdown headings like "## 1. OVERVIEW" or "### 1.1 Intro"
+  //   - 3+ markdown H2 headings (any titles — enough structure to count as
+  //     a section-by-section breakdown)
+  // The third rule lets well-structured outputs pass even when the auditor
+  // uses bare topic names like "## OSC" / "## LFO" without numbering.
+  const hasExplicitMarker = /chapter|section\s+\d/i.test(content);
+  const numberedHeadingCount = (content.match(/^#{2,3}\s+\d+(\.\d+)?[.\s]/gm) ?? []).length;
+  const totalH2Count = (content.match(/^##\s+/gm) ?? []).length;
+
+  if (!hasExplicitMarker && numberedHeadingCount < 2 && totalH2Count < 3) {
     errors.push('Missing chapter or section-level summary');
   }
 

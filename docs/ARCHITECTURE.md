@@ -1,6 +1,6 @@
 # AskMiyagi — Architecture Reference
 
-> **Purpose:** This document is the single source of truth for understanding the AskMiyagi codebase. Read this FIRST before making any changes. Updated 2026-04-28.
+> **Purpose:** This document is the single source of truth for understanding the AskMiyagi codebase. Read this FIRST before making any changes. Updated 2026-05-03.
 
 ---
 
@@ -343,16 +343,16 @@ Simple cookie-based auth via `src/proxy.ts` (Next.js middleware):
 3. **phase-0-diagram-parser** — Vision agent extracts geometry from photos
 4. **phase-0-gatekeeper** — Judge reconciles text + geometry → Master Manifest
 5. **phase-0-layout-engine** — Deterministic script: manifest → template specs
-6. **phase-1-section-loop** — Build + validate each section (SI + PQ + Critic)
-7. **phase-2-global-assembly** — Full panel topology validation
-8. **phase-3-harmonic-polish** — Density + aesthetics QA
-9. **phase-4-extraction** — Extract controls from built panel
-10. **phase-4-audit** — Audit against manifest
-11. **phase-5-tutorial-build** — Generate tutorial .ts files
-12. **tutorial-pr** — Create PR with tutorials
-13. **completed**
+6. **phase-4-extraction** — Manual extractor: Sieve protocol → tutorial curriculum
+7. **phase-4-audit** — Coverage auditor: independent verification of curriculum
+8. **phase-5-display-build** — Display builder: per-instrument screen components
+9. **phase-5-tutorial-build** — Tutorial builder + reviewer: generate tutorial .ts files
+10. **tutorial-pr** — Push branch + create GitHub PR with tutorials
+11. **completed**
 
 Pipeline pauses at layout engine for contractor editing. Resumes after admin approval.
+
+**Archived phases (2026-05-10):** `phase-1-section-loop`, `phase-2-global-assembly`, and `phase-3-harmonic-polish` are no longer part of the active pipeline. They performed QA work (Structural Inspector, Panel Questioner, Critic) on the auto-generated layout — but with the contractor editor, the contractor IS the quality gate. The state-machine's `PHASE_ORDER` skips them; their agent SOUL files in `.claude/agents/` and the runner functions are preserved for future re-enablement.
 
 ---
 
@@ -364,7 +364,14 @@ Pipeline pauses at layout engine for contractor editing. Resumes after admin app
 | Separate Blob storage (status.json + manifest.json) | Eliminates race condition between auto-save and admin actions |
 | PanelRenderer replaces codegen | No TSX generation, panels render from committed JSON |
 | Controls in absolute canvas coordinates | Section boundaries are decorative, not DOM parents |
-| CSS z-index layering: sections(1-100) < containers(2-4) < controls(5-155) < labels(150) | Predictable stacking without z-fighting |
+| CSS z-index: `zOrder * 10 + (isSelected ? 8 : 0) + 5` | Selected controls stay within z-order tier, never jump above higher layers |
+| Icons = editorLabels | Icons use the same label system as text — draggable, snappable, in Layers panel. One system for all annotations |
+| sessionStorage cache for saves | Bridges Blob CDN propagation delay (3-7s). Client stores last save, loads from it on refresh |
+| Optimistic locking (`_loadedAt` vs `_updatedAt`) | Prevents stale sessions from overwriting newer data. Server returns 409 on conflict |
+| sendBeacon POST handler | `navigator.sendBeacon()` only supports POST. Separate POST export delegates to PUT handler |
+| Blob `cacheControlMaxAge: 0` | Disables CDN caching on manifest+status blobs. Default 1-year cache caused stale reads |
+| Keyboard keys/startNote read-only | Tutorials reference keys by absolute MIDI numbers. Changing startNote breaks zone alignment |
+| Gatekeeper indicator splitting | SOUL rule: split collective LED descriptions into individual controls using diagram parser count |
 | Cumulative tutorial state | No state deltas to track — just accumulate all changes up to current step |
 | Pipeline worktree isolation | Each device gets own git worktree — no cross-contamination |
 | Gatekeeper = judge only | Never writes templates/code, only validates and produces manifest JSON |

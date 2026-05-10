@@ -167,17 +167,8 @@ export default function UploadZone({ onCreated }: UploadZoneProps) {
           className="w-full rounded-lg border border-[var(--card-border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--foreground)] placeholder-gray-500 outline-none focus:border-[var(--accent)]"
         />
 
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-gray-500">Budget cap: $</label>
-          <input
-            type="number"
-            min={1}
-            max={500}
-            value={budgetCapUsd}
-            onChange={(e) => setBudgetCapUsd(Number(e.target.value))}
-            className="w-20 rounded-lg border border-[var(--card-border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
-          />
-        </div>
+        {/* Budget cap input removed per admin UI cleanup — backend still
+            accepts a default value. Re-add input later if needed. */}
 
         {error && (
           <p className="text-xs text-red-400">{error}</p>

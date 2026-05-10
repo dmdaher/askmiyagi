@@ -79,8 +79,6 @@ export default function AdminPage() {
           return (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9);
         case 'manufacturer':
           return (a.manufacturer || '').localeCompare(b.manufacturer || '') || a.deviceName.localeCompare(b.deviceName);
-        case 'cost':
-          return ((b.totalActualCostUsd || b.totalCostUsd) ?? 0) - ((a.totalActualCostUsd || a.totalCostUsd) ?? 0);
         case 'recent':
           return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
         default:
@@ -125,7 +123,6 @@ export default function AdminPage() {
           >
             <option value="status">Sort: Status</option>
             <option value="manufacturer">Sort: Manufacturer</option>
-            <option value="cost">Sort: Cost</option>
             <option value="recent">Sort: Recent</option>
           </select>
 

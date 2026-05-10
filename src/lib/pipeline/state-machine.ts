@@ -132,6 +132,11 @@ const PHASE_ORDER: PipelinePhase[] = [
   'phase-0-gatekeeper',
   'phase-0-layout-engine',
   // Editor pause happens here (escalation gate in doPhase0LayoutEngine)
+  // After editor resolves, structural validation runs against the contractor-
+  // approved manifest. Halts pipeline if control IDs/sections/labels have
+  // integrity issues (orphans, duplicates, missing refs) before agents waste
+  // tokens downstream.
+  'phase-0-post-editor-check',
   // Phases 1-3 skipped — contractor in the editor IS the quality gate.
   // SI, PQ, Critic handlers remain in runner code for future re-enablement.
   // 'phase-1-section-loop',

@@ -5,6 +5,7 @@ export type PipelinePhase =
   | 'phase-0-control-extractor'
   | 'phase-0-gatekeeper'
   | 'phase-0-layout-engine'
+  | 'phase-0-post-editor-check'  // pure-logic structural integrity validation of contractor-approved manifest
   | 'panel-pr'  // legacy phase (replaced by PanelRenderer); kept so older state files type-check
   | 'phase-1-section-loop'
   | 'phase-2-global-assembly'
@@ -89,7 +90,8 @@ export type EscalationType =
   | 'two-strike-halt'
   | 'physical-impossibility'
   | 'template-review'
-  | 'editor-ready';
+  | 'editor-ready'
+  | 'control-id-validation-failed';
 
 export interface Escalation {
   id: string;

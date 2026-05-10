@@ -8,6 +8,7 @@ const PHASE_LABELS: Record<string, string> = {
   'phase-0-diagram-parser': 'Parser',
   'phase-0-gatekeeper': 'Gatekeeper',
   'phase-0-layout-engine': 'Layout',
+  'phase-0-post-editor-check': 'ID Check',
   'phase-1-section-loop': 'Sections',
   'phase-2-global-assembly': 'Assembly',
   'phase-3-harmonic-polish': 'Polish',
@@ -55,16 +56,20 @@ const AGENT_COLORS: Record<string, string> = {
   'tutorial-reviewer': '#ec4899',
 };
 
+// Active phases shown in the progress bar. Phases 1-3 (Sections / Assembly /
+// Polish) are archived (contractor editor IS the quality gate) — their labels
+// and agent metadata above are retained so any historical PhaseResult records
+// loaded from legacy state files still resolve to friendly names, they just
+// don't appear in the active progress bar.
 const DISPLAY_PHASES: PipelinePhase[] = [
   'phase-preflight',
   'phase-0-diagram-parser',
   'phase-0-gatekeeper',
   'phase-0-layout-engine',
-  'phase-1-section-loop',
-  'phase-2-global-assembly',
-  'phase-3-harmonic-polish',
+  'phase-0-post-editor-check',
   'phase-4-extraction',
   'phase-4-audit',
+  'phase-5-display-build',
   'phase-5-tutorial-build',
   'tutorial-pr',
 ];
