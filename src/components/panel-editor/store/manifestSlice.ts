@@ -276,6 +276,25 @@ export interface ManifestSlice {
   deleteContainer: (id: string) => void;
   moveContainer: (id: string, dx: number, dy: number) => void;
   resizeContainer: (id: string, w: number, h: number) => void;
+
+  /**
+   * Atomically reassign a control to a different section (or to no section).
+   * Updates `controls[id].sectionId`, removes id from old `section.childIds`,
+   * adds id to new `section.childIds` — all in one store mutation.
+   *
+   * This is the CANONICAL way to mutate the section ↔ control link. Any
+   * future code that needs to change a control's sectionId must use this
+   * action; touching one side without the other risks mutual disagreement
+   * (the post-editor validator catches dangling pointers but not mutual
+   * disagreement when both targets exist but disagree).
+   *
+   * `newSectionId === null` or '' detaches the control from any section.
+   * No-ops if controlId doesn't exist. No-ops if newSectionId is non-empty
+   * but doesn't exist (caller should validate; we don't write inconsistent
+   * state). Idempotent: calling with the current sectionId leaves state
+   * byte-identical.
+   */
+  setControlSection: (controlId: string, newSectionId: string | null) => void;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -1184,6 +1203,14 @@ export const createManifestSlice: StateCreator<
       .map(g => ({ ...g, controlIds: g.controlIds.filter(id => !deleteSet.has(id)) }))
       .filter(g => g.controlIds.length >= 2);
 
+    // Clean up containers — remove deleted IDs and dissolve empty containers.
+    // Without this, a deleted control's id stays in controlContainers.controlIds
+    // forever (caught by post-editor validator as CONTAINER_ORPHAN, but better
+    // to prevent at source).
+    const updatedContainers = get().controlContainers
+      .map(c => ({ ...c, controlIds: c.controlIds.filter(id => !deleteSet.has(id)) }))
+      .filter(c => c.controlIds.length >= 1);
+
     set({
       controls: updatedControls,
       sections: updatedSections,
@@ -1191,6 +1218,7 @@ export const createManifestSlice: StateCreator<
       lockedIds,
       editorLabels: updatedLabels,
       controlGroups: updatedGroups,
+      controlContainers: updatedContainers,
     });
   },
 
@@ -2062,6 +2090,46 @@ export const createManifestSlice: StateCreator<
       controlContainers: get().controlContainers.map(c =>
         c.id === id ? { ...c, w: Math.max(20, w), h: Math.max(20, h) } : c
       ),
+    });
+  },
+
+  setControlSection: (controlId, newSectionId) => {
+    const state = get();
+    const ctrl = state.controls[controlId];
+    if (!ctrl) return;
+
+    // Normalize: treat null and '' as "no section"
+    const target = newSectionId && newSectionId !== '' ? newSectionId : '';
+    const current = ctrl.sectionId ?? '';
+
+    // Validate target exists if non-empty — refuse to write dangling refs
+    if (target !== '' && !state.sections[target]) return;
+
+    // Idempotent: nothing to do if already there
+    if (current === target) return;
+
+    const updatedSections = { ...state.sections };
+
+    // Remove from old section
+    if (current && updatedSections[current]) {
+      updatedSections[current] = {
+        ...updatedSections[current],
+        childIds: updatedSections[current].childIds.filter(id => id !== controlId),
+      };
+    }
+
+    // Add to new section (filter-then-append guarantees no duplicates)
+    if (target && updatedSections[target]) {
+      const childIds = updatedSections[target].childIds.filter(id => id !== controlId);
+      updatedSections[target] = {
+        ...updatedSections[target],
+        childIds: [...childIds, controlId],
+      };
+    }
+
+    set({
+      controls: { ...state.controls, [controlId]: { ...ctrl, sectionId: target } },
+      sections: updatedSections,
     });
   },
 
