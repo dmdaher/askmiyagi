@@ -60,7 +60,8 @@ function GuideTab() {
       <CollapsibleSection title="Canvas Size vs Scale (important!)">
         <p>The toolbar has two side-by-side clusters that look similar but do different things. Pick the right one based on what you want:</p>
         <p><strong className="text-white/80">Canvas (W × H inputs)</strong> &mdash; Resizes the canvas only. Controls keep their position. Type a bigger W → empty space appears on the right. Type a smaller W → controls past the edge stay where they are (still selectable from the Layers panel; drag back into bounds anytime). <em>Use this when you want more room to add controls, or to trim unused space.</em></p>
-        <p><strong className="text-white/80">Scale (− / + / ⤢ Scale…)</strong> &mdash; Multiplies positions and sizes of every control, section, and label by the same factor. <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">−</kbd> scales to 80%, <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">+</kbd> to 125%. Click <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">⤢ Scale…</kbd> to pick any percentage or target dimensions in a modal. <em>Use this when the whole panel needs to be bigger or smaller (e.g., adapting one design to a different aspect ratio).</em></p>
+        <p><strong className="text-white/80">Scale (− / + / ⤢ Scale…)</strong> &mdash; Scales every control, section, label, container, ruler guide, and the canvas itself relative to the original layout. <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">−</kbd> shrinks to 80%, <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">+</kbd> grows to 125%. Click <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">⤢ Scale…</kbd> to pick any target percentage in a modal. <em>Use this when the whole panel needs to be bigger or smaller (e.g., adapting to a different aspect ratio).</em></p>
+        <p><strong className="text-white/80">Drift-free (NEW)</strong> &mdash; The Scale modal shows &ldquo;Currently at <em>N%</em> of original&rdquo;. Repeated scaling at messy percentages (70%, 145%, 50%, etc.) used to leave controls and labels slowly drifting out of alignment. Now: 100% always returns to the EXACT original layout. The new <strong className="text-white/80">Reset to original</strong> button snaps everything back to base in one click.</p>
         <p><strong className="text-white/80">Quick rule:</strong> If you want to <em>add empty space</em>, use Canvas. If you want everything to <em>grow or shrink together</em>, use Scale. Cmd+Z reverts either.</p>
       </CollapsibleSection>
 
@@ -84,17 +85,21 @@ function GuideTab() {
       </CollapsibleSection>
 
       <CollapsibleSection title="Layers Panel">
-        <p>Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">L</kbd> to open. Shows all sections and their controls in a tree view.</p>
+        <p>Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">L</kbd> to open. Shows all sections, controls, containers, and labels in a tree view.</p>
         <p><strong className="text-white/80">Sections</strong> &mdash; Logical groups like &ldquo;MIXER&rdquo;, &ldquo;TRANSPORT&rdquo;, &ldquo;EFFECTS&rdquo;. Click the arrow to expand and see child controls.</p>
-        <p><strong className="text-white/80">Click a control</strong> &mdash; Selects it on the canvas and scrolls to it. Shift-click to add to selection.</p>
+        <p><strong className="text-white/80">Click-to-find (NEW)</strong> &mdash; Click any control, container, or section row → the canvas auto-pans to bring it into view AND selects it. Works for items outside the current viewport too &mdash; even controls placed past the canvas edge.</p>
+        <p><strong className="text-white/80">Out-of-bounds badge (NEW)</strong> &mdash; A small red dot appears next to any control or section whose bounds extend outside the canvas (negative coordinates or past the right/bottom edge). Click the row to pan to it &mdash; great for finding stray controls placed in the grey area. Hover the badge for the tooltip &ldquo;Outside canvas bounds&rdquo;.</p>
+        <p><strong className="text-white/80">Shift+click to add to selection</strong> &mdash; Multi-select rows in the tree the same way you do on the canvas.</p>
         <p><strong className="text-white/80">Groups</strong> &mdash; Shown with a violet dashed border. Expand to see members. Selecting a group member auto-expands its group.</p>
+        <p><strong className="text-white/80">Linked + standalone labels</strong> &mdash; Linked labels (icons + captions) appear nested under their control. Standalone labels with a section appear nested under the section. Labels with no section appear in the &ldquo;Unassigned Labels&rdquo; block at the bottom (capped at ~33% of panel height so the section list always stays visible).</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Properties Panel">
         <p>Appears on the right when you select a control. Shows and lets you edit all properties.</p>
         <p><strong className="text-white/80">Type</strong> &mdash; Change what kind of control this is (button, knob, slider, pad, etc.).</p>
         <p><strong className="text-white/80">Shape</strong> &mdash; For buttons only: rectangle or circle.</p>
-        <p><strong className="text-white/80">LED</strong> &mdash; All buttons and pads have a 3-option LED selector: <em>None</em> (no LED), <em>Dot</em> (separate LED dot above the button), <em>Glow</em> (button face illuminates in LED color, like PLAY/CUE on a CDJ). When Dot or Glow is selected, a LED Color picker appears with 6 presets (green, amber, blue, red, pink, white).</p>
+        <p><strong className="text-white/80">LED</strong> &mdash; All buttons and pads have a 3-option LED selector: <em>None</em> (no LED), <em>Dot</em> (separate LED dot above the button), <em>Glow</em> (button face illuminates in LED color, like PLAY/CUE on a CDJ). When Dot or Glow is selected, a LED Color picker appears with 9 presets (white, gray, amber, cyan, green, red, blue, pink, custom hex).</p>
+        <p><strong className="text-white/80">LED default state (NEW)</strong> &mdash; For LED and indicator controls, the Properties panel has an Off / On toggle that sets how the LED appears at rest. <em>Off</em> renders dim/inactive; <em>On</em> renders fully lit in the chosen LED color. Use this to mark which LEDs are normally illuminated on the hardware (e.g., POWER LED = On).</p>
         <p><strong className="text-white/80">LED Variant (led/indicator type only)</strong> &mdash; When a control&rsquo;s type is set to &ldquo;led&rdquo; or &ldquo;indicator&rdquo;, a variant selector appears: <em>Dot</em> (single LED circle), <em>Dual</em> (two-row indicator like VINYL/CDJ with separate top and bottom labels).</p>
         <p><strong className="text-white/80">Dual Label</strong> &mdash; When a control has the Dual LED variant, two separate text inputs appear for the top and bottom rows (e.g., &ldquo;VINYL&rdquo; on top, &ldquo;CDJ&rdquo; on bottom).</p>
         <p><strong className="text-white/80">Sections</strong> &mdash; Click a section in the Layers panel to edit it. Frame mode controls visibility: <em>Full</em> (visible border + header), <em>Title Only</em> (floating title, no border), <em>Hidden</em> (invisible). Cycle with the eye icon in the Layers panel.</p>
@@ -111,6 +116,7 @@ function GuideTab() {
         <p><strong className="text-white/80">Gap</strong> &mdash; Set an exact pixel distance between selected controls. Type a number, hit enter. Supports negative values for overlapping.</p>
         <p><strong className="text-white/80">Align Columns / Align Rows</strong> &mdash; Advanced: when you have 2+ rows of controls, Align Columns snaps them to the topmost row&rsquo;s column positions. Align Rows does the same vertically. Great for making a grid perfectly even.</p>
         <p><strong className="text-white/80">Normalize Label Spacing</strong> &mdash; Select 2+ controls with labels. Snaps all labels to the tightest distance from their controls, grouped by position (above/below) and line count.</p>
+        <p><strong className="text-white/80">Floating-label Properties (NEW)</strong> &mdash; Click any free-floating (standalone) label and the Properties panel shows: text textarea, full categorized icon picker, font size slider, alignment toggle (left / center / right), editable X / Y / W numeric inputs, and an Auto-width checkbox. Resize floating labels by typing a width. Previously these inputs were missing &mdash; on devices without a keyboard, the panel didn&rsquo;t even open for floating labels.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Labels">
@@ -118,6 +124,7 @@ function GuideTab() {
         <p><strong className="text-white/80">Center on control</strong> &mdash; Select a label, press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">C</kbd> to center it horizontally on its control. Figma-style center alignment.</p>
         <p><strong className="text-white/80">Inline editing</strong> &mdash; Double-click any label to edit its text directly. Press Escape or click away to save.</p>
         <p><strong className="text-white/80">Standalone labels</strong> &mdash; Click <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">+L</kbd> in the toolbar to add a free-floating text label. Not linked to any control.</p>
+        <p><strong className="text-white/80">Floating label Properties (NEW)</strong> &mdash; Click any floating (standalone) label and the Properties panel now shows everything you need to edit it: text, full categorized icon picker, font size, alignment toggle (left / center / right), editable X / Y / W numeric inputs, and an &ldquo;Auto width&rdquo; checkbox that toggles between explicit width and sizing-to-text. Resize a label by typing a new W value or by toggling Auto off and entering an exact pixel width.</p>
         <p><strong className="text-white/80">Font size</strong> &mdash; Use the Sz dropdown in the toolbar to set font size for all labels, or set individually in the Properties panel.</p>
         <p><strong className="text-white/80">Labels nest under their control in Layers panel</strong> &mdash; A control&rsquo;s caption, icon, and any other linked labels appear indented under the control row in the Layers panel. No more hunting in a separate block at the bottom.</p>
         <p><strong className="text-white/80">Standalone labels nest under their section</strong> &mdash; Free-floating labels you place inside a section&rsquo;s area auto-assign to that section and appear nested under it in the Layers panel.</p>
@@ -130,7 +137,8 @@ function GuideTab() {
 
       <CollapsibleSection title="Icons">
         <p><strong className="text-white/80">Icons are labels</strong> &mdash; Add an icon to any button, LED, or pad through the Properties panel&rsquo;s icon picker. Icons appear as draggable labels with optional text &mdash; same system as text labels.</p>
-        <p><strong className="text-white/80">Icon picker</strong> &mdash; Open the Properties panel for a control, choose an icon from the visual grid (waveforms, DJ glyphs, transport, arrows, etc.). The icon attaches as a linked label.</p>
+        <p><strong className="text-white/80">Icon picker</strong> &mdash; Open the Properties panel for a control (or floating label), choose an icon from the visual grid. Categories: <em>Waveforms</em> (sine, square, triangle, sawtooth, sawtooth-cycle, pulse, sample-hold, sample-glide, noise), <em>Curves</em> (exp / lin / log envelope curves &mdash; NEW), <em>DJ</em> (cue, vinyl-mode, loop-in / loop-out, beat-sync, slip, quantize), <em>Transport</em> (play, pause, stop, record, FF/RW, eject), <em>Arrows</em>, <em>Other</em> (plus, minus, search-skip, loop-redo, sync-lock, settings-gear).</p>
+        <p><strong className="text-white/80">Curves category (NEW)</strong> &mdash; Three envelope-curve shapes for synth panels: <em>curve-exp</em> (rounded bell, exponential), <em>curve-lin</em> (sharp triangle peak, linear), <em>curve-log</em> (asymmetric bell, logarithmic). Use these for envelope curve LEDs and similar.</p>
         <p><strong className="text-white/80">Icon + text together</strong> &mdash; A linked label can show an icon, text, or both. Set both in the Properties panel and they render side-by-side on the same label.</p>
         <p><strong className="text-white/80">Icons in Layers panel</strong> &mdash; Icon labels appear under their control just like text labels &mdash; click to select.</p>
       </CollapsibleSection>
@@ -152,14 +160,36 @@ function GuideTab() {
         <p><strong className="text-white/80">Guide lines</strong> &mdash; Click and drag from the ruler onto the canvas to create a red reference line. Guide lines snap to the grid interval. Use them to check if controls across different sections are aligned. Drag a guide to reposition it. To delete: drag it back onto the ruler, or right-click it.</p>
       </CollapsibleSection>
 
+      <CollapsibleSection title="Keyboard (synth panels)">
+        <p>For instruments that have a piano keyboard (DeepMind-12, Fantom-08, etc.), the keyboard renders as a separate band at the bottom of the canvas with its own behavior.</p>
+        <p><strong className="text-white/80">Aspect-locked keys</strong> &mdash; White keys auto-resize to keep the correct piano-key proportions (~6.6× longer than wide). Adjust the keyboard width and the height follows automatically. No more stubby keys.</p>
+        <p><strong className="text-white/80">Free-form positioning</strong> &mdash; Drag the keyboard horizontally and resize its width via side handles. Vertical position auto-anchors to the canvas bottom; vertical drag is intentionally locked (keys don&rsquo;t float in the middle).</p>
+        <p><strong className="text-white/80">Smart layout banner</strong> &mdash; If the canvas is too short for proper key proportions, a warning banner appears above the keyboard showing &ldquo;Keyboard cropped&rdquo; with current vs. target dimensions. The banner also flags any controls overlapping the keyboard (with X+Y rectangle intersection &mdash; not just &ldquo;below the top edge&rdquo;). Move overlapping controls above the keyboard or click the banner&rsquo;s buttons:</p>
+        <p>&bull; <strong className="text-white/80">Auto-fit Canvas</strong> &mdash; grows the canvas height just enough to give the keyboard correct proportions while preserving your current controls area</p>
+        <p>&bull; <strong className="text-white/80">Dismiss</strong> &mdash; hides the banner for the session. The aspect chip becomes clickable to bring it back if needed.</p>
+        <p><strong className="text-white/80">Black-key positioning</strong> &mdash; Black keys auto-position with correct gap-aligned offsets (centered between white keys, matching real piano geometry).</p>
+        <p><strong className="text-white/80">Properties</strong> &mdash; If the device has a keyboard, the Properties panel shows keyboard offset / width / panel-height inputs even when nothing is selected, so you can tune the keyboard layout independently of any control selection.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Save & Reliability">
+        <p>The editor auto-saves your work every 1.5 seconds while you&rsquo;re editing, plus there are several safeguards to prevent data loss:</p>
+        <p><strong className="text-white/80">&ldquo;Last saved&rdquo; indicator</strong> &mdash; The toolbar always shows when your last save completed (e.g., &ldquo;Saved 5 seconds ago&rdquo;) with a color state: green = saved, amber = saving, red = save failed. Watch this if you&rsquo;re unsure whether changes have been persisted.</p>
+        <p><strong className="text-white/80">&ldquo;Leave site?&rdquo; warning</strong> &mdash; If you have unsaved changes and try to close the tab, refresh, or navigate away, the browser will prompt to confirm. Prevents accidental loss of recent edits.</p>
+        <p><strong className="text-white/80">Conflict detection</strong> &mdash; If admin sends you an updated manifest while you&rsquo;re editing, the next save will detect the conflict and warn you instead of overwriting their changes silently.</p>
+        <p><strong className="text-white/80">Confirmation prompts on destructive actions</strong> &mdash; Dismissing an issue, deleting a section, and similar irreversible actions ask &ldquo;Are you sure?&rdquo; first.</p>
+        <p><strong className="text-white/80">Submit for Review</strong> &mdash; Always saves before submitting. The submit button works reliably even from a clean state (no need to type something first).</p>
+      </CollapsibleSection>
+
       <CollapsibleSection title="Containers">
         <p>Visual boxes that group related controls, like the recessed rectangles on real hardware that hold button clusters (e.g., BEAT SYNC / MASTER / KEY SYNC on CDJ-3000).</p>
         <p><strong className="text-white/80">Creating from controls</strong> &mdash; Select 2+ controls, right-click &rarr; &ldquo;Wrap in Container&rdquo;. A box appears wrapping the selected controls.</p>
-        <p><strong className="text-white/80">Creating empty</strong> &mdash; Right-click on empty canvas &rarr; &ldquo;Add Container&rdquo;. A default-sized box appears at the click position. Resize and position it manually.</p>
+        <p><strong className="text-white/80">Creating empty</strong> &mdash; Right-click on empty canvas &rarr; &ldquo;Add Container&rdquo;. A default-sized box appears at the click position. The new container <strong className="text-white/80">flashes bright green for ~2.5 seconds</strong> so you can see exactly where it landed, and the canvas auto-scrolls to bring it into view. Spawn position is also clamped above the keyboard so it never lands hidden behind it. (NEW)</p>
         <p><strong className="text-white/80">Container styles</strong> &mdash; Four presets in the Properties panel: <em>Recessed</em> (dark inset, most common on DJ hardware), <em>Raised</em> (slight elevation), <em>Outlined</em> (thin border only), <em>Filled</em> (flat colored background).</p>
         <p><strong className="text-white/80">Editing</strong> &mdash; Click a container to select it. If controls are covering the container, hold <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Alt</kbd> and click any control inside &mdash; this selects the container underneath. Properties panel shows style selector, optional label, and border radius. Drag to reposition, drag corners to resize.</p>
+        <p><strong className="text-white/80">Click-to-find from Layers panel (NEW)</strong> &mdash; Containers appear in the Layers panel like sections. Click a container row → canvas auto-scrolls to bring it into view AND it gets selected. Same as click-to-find for controls.</p>
         <p><strong className="text-white/80">Deleting</strong> &mdash; Right-click the container &rarr; &ldquo;Delete Container&rdquo;, or use the Delete button in the Properties panel. Deleting a container does NOT delete the controls inside.</p>
         <p><strong className="text-white/80">Containers vs Groups</strong> &mdash; Groups (<kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+G</kbd>) make controls move together. Containers add a visual box. They are independent &mdash; you can have a group without a container, a container without a group, or both.</p>
+        <p><strong className="text-white/80">Containers scale with everything</strong> &mdash; When you scale the panel, containers grow/shrink proportionally with the controls inside (NEW &mdash; previously containers stayed at original size while controls scaled).</p>
       </CollapsibleSection>
     </div>
   );
@@ -232,6 +262,8 @@ function WorkflowTab() {
     { title: 'Preview your work', desc: 'Click Preview in the toolbar to see the panel as the end user will see it. Check that labels are readable and nothing overlaps.' },
     { title: 'Submit for review', desc: 'Click Submit for Review. Add an optional note about any tricky areas. The editor locks while the admin reviews. You\'ll see feedback on the instrument list if changes are needed.' },
     { title: 'Confirmation prompts protect your work', desc: 'Dismissing an issue asks for confirmation first — prevents accidental clicks losing the report. Same for any other destructive action.' },
+    { title: 'Watch the "Saved" indicator', desc: 'The toolbar shows when your last auto-save completed (e.g., "Saved 5 seconds ago"). Color state: green = saved, amber = saving, red = save failed. If you close the tab with unsaved changes, the browser warns you.' },
+    { title: 'Use Scale or Reset confidently', desc: 'The Scale modal now shows "Currently at N% of original". Type any percentage and it scales from the original — repeated cycles never accumulate drift. Click "Reset to original" to snap back to base. Containers, ruler guides, and the canvas all scale together with the controls.' },
   ];
 
   return (
