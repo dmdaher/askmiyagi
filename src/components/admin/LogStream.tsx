@@ -26,7 +26,20 @@ const LEVEL_COLORS: Record<string, string> = {
 
 const ALL_AGENTS = ['all', ...Object.keys(AGENT_COLORS)] as const;
 
+// Strip cost figures (e.g. "$0.1234", "(cost: $1.23 actual: $0.50)") from
+// log content per admin UI hands-off cleanup. The runner still records costs
+// in cost.json — we just hide them from the live log feed.
+function stripCosts(s: string): string {
+  return s
+    // Remove parenthetical groups containing $: "(cost: $1.23)", "(actual: $0.50)"
+    .replace(/\s*\([^)]*\$[0-9][^)]*\)/g, '')
+    // Remove free-standing "$N.NN" amounts (optionally followed by /min, /agent)
+    .replace(/\s*\$[0-9]+(?:\.[0-9]+)?(?:\s*\/[a-zA-Z]+)?/g, '')
+    .trim();
+}
+
 function formatMessage(message: string): React.ReactNode {
+  message = stripCosts(message);
   // Tool calls
   if (message.startsWith('[tool] ')) {
     const tool = message.slice(7);

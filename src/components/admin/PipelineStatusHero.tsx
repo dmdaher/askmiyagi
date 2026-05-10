@@ -690,20 +690,13 @@ export default function PipelineStatusHero({
         )}
       </AnimatePresence>
 
-      {/* Phase / cost rail — subtle context */}
+      {/* Phase / status rail — subtle context */}
       <div
         className="mt-3 pt-3 flex items-center gap-4 text-[11px]"
         style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: '#6b7280' }}
       >
         <span>
           Phase: <span style={{ color: 'var(--foreground, #e0e0e0)' }}>{PHASE_LABELS[pipeline.currentPhase as string] ?? pipeline.currentPhase}</span>
-        </span>
-        <span>•</span>
-        <span>
-          Cost: <span style={{ color: 'var(--foreground, #e0e0e0)' }}>${(pipeline.totalCostUsd ?? 0).toFixed(2)}</span>
-          {pipeline.budgetCapUsd > 0 && (
-            <span style={{ color: '#6b7280' }}> / ${pipeline.budgetCapUsd.toFixed(0)}</span>
-          )}
         </span>
         <span>•</span>
         <span>

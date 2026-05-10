@@ -8,7 +8,6 @@ import PhaseTimeline from './PhaseTimeline';
 import LogStream from './LogStream';
 import AgentScoreCard from './AgentScoreCard';
 import BatchProgress from './BatchProgress';
-import CostBreakdown from './CostBreakdown';
 import DiagnosticsPanel from './DiagnosticsPanel';
 import ManifestViewer from './ManifestViewer';
 import PanelLayoutEditor from './PanelLayoutEditor';
@@ -59,8 +58,8 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
   // Tab default depends on context
   const [activeTab, setActiveTab] = useState<DetailTab>(isTemplateReview ? 'layout' : 'logs');
 
-  // Collapsible "advanced" sections — closed by default for hands-off mode
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  // Collapsible "advanced" sections — open by default (admin preference)
+  const [showAdvanced, setShowAdvanced] = useState(true);
 
   const gatekeeperPassed = (pipeline.phases ?? []).some(
     (p) => p.phase === 'phase-0-gatekeeper' && p.status === 'passed'
@@ -153,7 +152,7 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
         <PanelLayoutEditor deviceId={pipeline.deviceId} />
       )}
 
-      {/* ADVANCED — collapsed by default. Cost, agent scores, diagnostics. */}
+      {/* ADVANCED — collapsed by default. Agent scores + diagnostics. */}
       <div
         className="rounded-lg"
         style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
@@ -163,7 +162,7 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
           className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-medium uppercase tracking-wide transition-colors hover:bg-white/[0.02]"
           style={{ color: '#6b7280' }}
         >
-          <span>Advanced — Diagnostics, Agent Scores, Cost</span>
+          <span>Advanced — Diagnostics & Agent Scores</span>
           <span className="text-base leading-none">{showAdvanced ? '−' : '+'}</span>
         </button>
 
@@ -191,16 +190,6 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
 
             {/* Diagnostics */}
             <DiagnosticsPanel deviceId={pipeline.deviceId} />
-
-            {/* Cost breakdown (already cleaned of token columns) */}
-            <CostBreakdown
-              phases={pipeline.phases}
-              sections={(pipeline.sections ?? []).length > 0 ? pipeline.sections : undefined}
-              totalActualCostUsd={pipeline.totalActualCostUsd}
-              budgetCapUsd={pipeline.budgetCapUsd}
-              subscription={pipeline.subscription}
-              burnRate={pipeline.burnRate}
-            />
           </div>
         )}
       </div>
