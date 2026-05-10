@@ -3,11 +3,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { PipelineState, LogEntry, Escalation } from '@/lib/pipeline/types';
 import { formatTimeAgo, isRecent } from '@/lib/format-time-ago';
+import PipelineStatusHero from './PipelineStatusHero';
 import PhaseTimeline from './PhaseTimeline';
-import EscalationBanner from './EscalationBanner';
 import LogStream from './LogStream';
 import AgentScoreCard from './AgentScoreCard';
-import SectionProgress from './SectionProgress';
 import BatchProgress from './BatchProgress';
 import CostBreakdown from './CostBreakdown';
 import DiagnosticsPanel from './DiagnosticsPanel';
@@ -15,10 +14,7 @@ import ManifestViewer from './ManifestViewer';
 import PanelLayoutEditor from './PanelLayoutEditor';
 import IssuesPanel from './IssuesPanel';
 
-// SI/PQ/Critic agents are archived from the active pipeline (contractor editor
-// IS the quality gate). Phases 1-3 are excluded from this map so the agent
-// scores panel doesn't show perpetually-pending entries. Agent SOUL files are
-// preserved in .claude/agents/ for re-enablement; see phase-order.ts.
+// Active pipeline agents (SI/PQ/Critic archived — see phase-order.ts).
 const AGENT_PHASE_MAP: Record<string, string> = {
   'phase-0-diagram-parser': 'diagram-parser',
   'phase-0-gatekeeper': 'gatekeeper',
@@ -41,7 +37,7 @@ const ALL_AGENTS = [
 type DetailTab = 'logs' | 'manifest' | 'layout';
 
 const TABS: { id: DetailTab; label: string }[] = [
-  { id: 'logs', label: 'Logs' },
+  { id: 'logs', label: 'Activity' },
   { id: 'manifest', label: 'Manifest' },
   { id: 'layout', label: 'Layout' },
 ];
@@ -57,25 +53,20 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
     ? (pipeline.escalations ?? []).find((e) => e.id === pipeline.activeEscalation) ?? undefined
     : undefined;
 
-  // Phase 1 (Section Loop) is archived — no active pipeline can be in this phase.
-  // Keeping the constant `false` for now since downstream code reads it; could
-  // be removed entirely in a follow-up cleanup if no other code depends on it.
-  const isPhase1 = false;
   const isPhase5 = pipeline.currentPhase === 'phase-5-tutorial-build';
   const isTemplateReview = activeEscalation?.type === 'template-review';
 
-  // Default to layout tab when at template review, otherwise logs
+  // Tab default depends on context
   const [activeTab, setActiveTab] = useState<DetailTab>(isTemplateReview ? 'layout' : 'logs');
 
-  // Check if layout engine has passed (manifest/templates available)
-  const layoutEnginePassed = (pipeline.phases ?? []).some(
-    (p) => p.phase === 'phase-0-layout-engine' && p.status === 'passed'
-  );
+  // Collapsible "advanced" sections — closed by default for hands-off mode
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
   const gatekeeperPassed = (pipeline.phases ?? []).some(
     (p) => p.phase === 'phase-0-gatekeeper' && p.status === 'passed'
   );
 
-  // Extract agent scores and statuses from pipeline phases
+  // Agent scores — used in advanced panel
   const agentData = ALL_AGENTS.map((agent) => {
     const phaseKey = Object.entries(AGENT_PHASE_MAP).find(([, a]) => a === agent)?.[0];
     const phaseResult = phaseKey ? (pipeline.phases ?? []).find((p) => p.phase === phaseKey) : undefined;
@@ -93,29 +84,28 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
     };
   });
 
-  // Determine current section for Phase 1
-  const currentSection = isPhase1
-    ? (pipeline.sections ?? []).find((s) => !s.vaulted && s.attempts > 0)?.id
-      ?? (pipeline.sections ?? []).find((s) => !s.vaulted)?.id
-    : undefined;
+  // Contractor handoff actions hoisted out so the Hero can trigger them
+  const contractorActions = useContractorActions(pipeline.deviceId);
 
   return (
     <div className="space-y-4">
-      {/* Phase Timeline — full width */}
+      {/* HERO — the "what's happening / what to do" banner. Always at top. */}
+      <PipelineStatusHero
+        pipeline={pipeline}
+        activeEscalation={activeEscalation}
+        onResolve={onResolve}
+        onSendToContractor={contractorActions.openSendModal}
+        onPullAndBuild={contractorActions.pullAndBuild}
+        onResetToEditor={contractorActions.resetToEditor}
+      />
+
+      {/* Phase timeline — visual progress; small and quiet. */}
       <PhaseTimeline phases={pipeline.phases} currentPhase={pipeline.currentPhase} />
 
-      {/* Contractor handoff buttons */}
-      <ContractorActions deviceId={pipeline.deviceId} pipelineStatus={pipeline.status} />
+      {/* Issues from contractor — only renders if there are any. */}
+      <IssuesPanel deviceId={pipeline.deviceId} />
 
-      {/* Escalation Banner */}
-      {activeEscalation && (
-        <EscalationBanner
-          escalation={activeEscalation}
-          onResolve={(resolution) => onResolve(activeEscalation.id, resolution)}
-        />
-      )}
-
-      {/* Tab bar */}
+      {/* Activity / Manifest / Layout tabs. Activity is the day-to-day view. */}
       <div className="flex gap-1 rounded-lg p-1" style={{ backgroundColor: 'var(--card-bg, #141420)' }}>
         {TABS.map((tab) => {
           const isDisabled =
@@ -143,54 +133,15 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
         })}
       </div>
 
-      {/* Tab content */}
       {activeTab === 'logs' && (
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          {/* Left column — LogStream (~60%) */}
-          <div className="lg:col-span-3">
-            <LogStream logs={logs} />
-          </div>
-
-          {/* Right column — Agent scores + context panel (~40%) */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Agent score cards grid */}
-            <div
-              className="rounded-lg p-3"
-              style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
-            >
-              <h3
-                className="text-xs font-semibold uppercase tracking-wide mb-2"
-                style={{ color: 'var(--foreground, #e0e0e0)' }}
-              >
-                Agent Scores
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                {agentData.map((a) => (
-                  <AgentScoreCard
-                    key={a.agentName}
-                    agentName={a.agentName}
-                    score={a.score}
-                    status={a.status}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Issues — always visible */}
-            <IssuesPanel deviceId={pipeline.deviceId} />
-
-            {/* Diagnostics — always visible */}
-            <DiagnosticsPanel deviceId={pipeline.deviceId} />
-
-            {/* Context panel: SectionProgress or BatchProgress */}
-            {isPhase1 && (pipeline.sections ?? []).length > 0 && (
-              <SectionProgress sections={pipeline.sections} currentSection={currentSection} />
-            )}
-
-            {isPhase5 && (pipeline.tutorialBatches ?? []).length > 0 && (
+        <div data-section="logs">
+          <LogStream logs={logs} />
+          {/* Batch progress only when actually building tutorials */}
+          {isPhase5 && (pipeline.tutorialBatches ?? []).length > 0 && (
+            <div className="mt-4">
               <BatchProgress batches={pipeline.tutorialBatches} />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -202,33 +153,76 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
         <PanelLayoutEditor deviceId={pipeline.deviceId} />
       )}
 
-      {/* Cost Breakdown — full width, always visible */}
-      <CostBreakdown
-        phases={pipeline.phases}
-        sections={isPhase1 || (pipeline.sections ?? []).length > 0 ? pipeline.sections : undefined}
-        totalActualCostUsd={pipeline.totalActualCostUsd}
-        budgetCapUsd={pipeline.budgetCapUsd}
-        subscription={pipeline.subscription}
-        burnRate={pipeline.burnRate}
-      />
+      {/* ADVANCED — collapsed by default. Cost, agent scores, diagnostics. */}
+      <div
+        className="rounded-lg"
+        style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
+      >
+        <button
+          onClick={() => setShowAdvanced((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-medium uppercase tracking-wide transition-colors hover:bg-white/[0.02]"
+          style={{ color: '#6b7280' }}
+        >
+          <span>Advanced — Diagnostics, Agent Scores, Cost</span>
+          <span className="text-base leading-none">{showAdvanced ? '−' : '+'}</span>
+        </button>
+
+        {showAdvanced && (
+          <div className="px-4 pb-4 space-y-4" style={{ borderTop: '1px solid var(--card-border, #2a2a3a)' }}>
+            {/* Agent scores */}
+            <div className="pt-3">
+              <h3
+                className="text-xs font-semibold uppercase tracking-wide mb-2"
+                style={{ color: '#9ca3af' }}
+              >
+                Agent Scores
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                {agentData.map((a) => (
+                  <AgentScoreCard
+                    key={a.agentName}
+                    agentName={a.agentName}
+                    score={a.score}
+                    status={a.status}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Diagnostics */}
+            <DiagnosticsPanel deviceId={pipeline.deviceId} />
+
+            {/* Cost breakdown (already cleaned of token columns) */}
+            <CostBreakdown
+              phases={pipeline.phases}
+              sections={(pipeline.sections ?? []).length > 0 ? pipeline.sections : undefined}
+              totalActualCostUsd={pipeline.totalActualCostUsd}
+              budgetCapUsd={pipeline.budgetCapUsd}
+              subscription={pipeline.subscription}
+              burnRate={pipeline.burnRate}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Contractor send modal (rendered out-of-flow via the hook) */}
+      {contractorActions.modal}
     </div>
   );
 }
 
-// ─── Contractor Handoff Buttons ─────────────────────────────────────────────
+// ─── Contractor Actions Hook ────────────────────────────────────────────────
+// Extracted so the Hero can trigger send/pull/reset without re-rendering the
+// entire detail page. The modal element is returned to be rendered inline.
 
-function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pipelineStatus: string }) {
+function useContractorActions(deviceId: string) {
   const [sending, setSending] = useState(false);
   const [pulling, setPulling] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [showSendModal, setShowSendModal] = useState(false);
   const [sendNote, setSendNote] = useState('');
-  // A4-P1: contractor's last save time, fetched on demand to surface
-  // overwrite warnings on Send-to-Contractor and Pull-from-Hosted.
   const [contractorLastSavedAt, setContractorLastSavedAt] = useState<string | null>(null);
 
-  // Refresh the contractor's last-saved timestamp on mount and whenever the
-  // Send modal opens (so a stale value doesn't sneak past the warning).
   useEffect(() => {
     let cancelled = false;
     async function fetchLastSaved() {
@@ -238,7 +232,7 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
         const data = await res.json();
         if (!cancelled) setContractorLastSavedAt(data?._updatedAt ?? null);
       } catch {
-        /* network failure → no warning shown; fail-safe */
+        /* fail-safe — no warning shown */
       }
     }
     fetchLastSaved();
@@ -256,7 +250,6 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
-
       setResult(`✓ ${data.output}`);
       setShowSendModal(false);
       setSendNote('');
@@ -266,9 +259,7 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
     setSending(false);
   }, [deviceId, sendNote]);
 
-  const handlePullAndBuild = useCallback(async () => {
-    // A4-P1: confirm before overwriting local manifest with contractor's
-    // hosted version. Show contractor's last save time so admin can decide.
+  const pullAndBuild = useCallback(async () => {
     const lastSavedMsg = contractorLastSavedAt
       ? `Contractor last saved: ${formatTimeAgo(contractorLastSavedAt)} (${new Date(contractorLastSavedAt).toLocaleString()})`
       : 'Contractor save time: unknown';
@@ -289,63 +280,45 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
     setPulling(false);
   }, [deviceId, contractorLastSavedAt]);
 
-  return (
+  const resetToEditor = useCallback(async () => {
+    if (!confirm('Reset pipeline back to editor phase? The pipeline will pause at the layout engine stage so you can send to contractor.')) return;
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/recover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset-to-editor' }),
+      });
+      if (res.ok) {
+        setResult('✓ Reset to editor — refresh to see updated state');
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setResult(`✗ Reset failed: ${data.error ?? res.statusText}`);
+      }
+    } catch (err) {
+      setResult(`✗ Reset failed: ${(err as Error).message}`);
+    }
+  }, [deviceId]);
+
+  const modal = (
     <>
-      <div
-        className="flex items-center gap-3 rounded-lg p-3"
-        style={{ backgroundColor: 'var(--card-bg, #141420)', border: '1px solid var(--card-border, #2a2a3a)' }}
-      >
-        <span className="text-xs text-gray-500 mr-1">Contractor:</span>
-
-        <button
-          onClick={() => { setShowSendModal(true); setSendNote(''); }}
-          disabled={sending}
-          className="rounded border border-blue-600 bg-blue-700/30 px-3 py-1.5 text-xs font-medium text-blue-300 hover:bg-blue-700/50 transition-colors disabled:opacity-50"
-        >
-          {sending ? 'Sending...' : 'Send to Contractor'}
-        </button>
-
-        <button
-          onClick={handlePullAndBuild}
-          disabled={pulling}
-          className="rounded border border-green-600 bg-green-700/30 px-3 py-1.5 text-xs font-medium text-green-300 hover:bg-green-700/50 transition-colors disabled:opacity-50"
-        >
-          {pulling ? 'Pulling...' : 'Pull & Build Tutorials'}
-        </button>
-
-        <button
-          onClick={async () => {
-            if (!confirm('Reset pipeline back to editor phase? The pipeline will pause at the layout engine stage so you can send to contractor.')) return;
-            try {
-              const res = await fetch(`/api/pipeline/${deviceId}/recover`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'reset-to-editor' }),
-              });
-              if (res.ok) {
-                setResult('✓ Reset to editor — refresh to see updated state');
-                setTimeout(() => window.location.reload(), 1500);
-              } else {
-                const data = await res.json().catch(() => ({}));
-                setResult(`✗ Reset failed: ${data.error ?? res.statusText}`);
-              }
-            } catch (err) {
-              setResult(`✗ Reset failed: ${(err as Error).message}`);
-            }
+      {/* Result toast (small, ephemeral) */}
+      {result && (
+        <div
+          className="fixed bottom-4 right-4 z-[9998] px-4 py-2 rounded-lg text-xs shadow-lg"
+          style={{
+            backgroundColor: result.startsWith('✓') ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+            border: `1px solid ${result.startsWith('✓') ? '#22c55e' : '#ef4444'}`,
+            color: result.startsWith('✓') ? '#4ade80' : '#f87171',
+            maxWidth: '420px',
           }}
-          className="rounded border border-amber-600 bg-amber-700/30 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-700/50 transition-colors"
         >
-          Reset to Editor
-        </button>
+          <button onClick={() => setResult(null)} className="float-right ml-3 opacity-60 hover:opacity-100">×</button>
+          {result}
+        </div>
+      )}
 
-        {result && (
-          <span className={`text-xs truncate flex-1 ${result.startsWith('✓') ? 'text-green-400' : 'text-red-400'}`}>
-            {result}
-          </span>
-        )}
-      </div>
-
-      {/* Send to Contractor modal */}
+      {/* Send modal */}
       {showSendModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60" onClick={() => setShowSendModal(false)}>
           <div className="w-full max-w-lg rounded-xl border border-gray-700 bg-[#111122] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
@@ -353,8 +326,6 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
             <p className="text-xs text-gray-500 mb-4">
               Add a note for the contractor (optional) — describe what's ready, what to focus on, or any context they need.
             </p>
-            {/* A4-P1: warn if contractor saved recently — sending will reset
-                them to your local manifest (their version is auto-backed-up). */}
             {isRecent(contractorLastSavedAt, 24) && (
               <div className="mb-4 rounded-lg border border-amber-700/60 bg-amber-900/20 px-3 py-2 text-xs text-amber-300">
                 ⚠ Contractor last saved <strong>{formatTimeAgo(contractorLastSavedAt)}</strong>
@@ -365,7 +336,7 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
             <textarea
               value={sendNote}
               onChange={(e) => setSendNote(e.target.value)}
-              placeholder={"Example:\n- Controls are positioned from the pipeline\n- Focus on aligning the zone buttons row\n- Keyboard width might need adjusting\n- Common section labels need cleanup"}
+              placeholder={"Example:\n- Controls are positioned from the pipeline\n- Focus on aligning the zone buttons row\n- Keyboard width might need adjusting"}
               rows={6}
               autoFocus
               className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-200 outline-none focus:border-blue-500 placeholder:text-gray-600 resize-none"
@@ -390,4 +361,13 @@ function ContractorActions({ deviceId, pipelineStatus }: { deviceId: string; pip
       )}
     </>
   );
+
+  return {
+    openSendModal: () => { setShowSendModal(true); setSendNote(''); },
+    pullAndBuild,
+    resetToEditor,
+    sending,
+    pulling,
+    modal,
+  };
 }
