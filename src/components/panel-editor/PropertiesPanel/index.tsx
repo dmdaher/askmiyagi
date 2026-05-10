@@ -1471,6 +1471,43 @@ function LabelProperties({ label }: { label: any }) {
     updateLabel(label.id, { fontSize: val });
   }, [label.id, updateLabel, pushSnapshot]);
 
+  const handleAlignChange = useCallback((align: 'left' | 'center' | 'right') => {
+    if (label.align === align) return;
+    pushSnapshot();
+    updateLabel(label.id, { align });
+  }, [label.id, label.align, updateLabel, pushSnapshot]);
+
+  const handleX = useCallback((v: number) => {
+    pushSnapshot();
+    updateLabel(label.id, { x: Math.round(v) });
+  }, [label.id, updateLabel, pushSnapshot]);
+
+  const handleY = useCallback((v: number) => {
+    pushSnapshot();
+    updateLabel(label.id, { y: Math.round(v) });
+  }, [label.id, updateLabel, pushSnapshot]);
+
+  const handleW = useCallback((v: number) => {
+    pushSnapshot();
+    updateLabel(label.id, { w: Math.max(8, Math.round(v)) });
+  }, [label.id, updateLabel, pushSnapshot]);
+
+  const handleAutoWidthToggle = useCallback(() => {
+    pushSnapshot();
+    if (label.w == null) {
+      // Currently auto → switch to explicit width (default to a sensible value)
+      updateLabel(label.id, { w: 60 });
+    } else {
+      // Currently explicit → switch to auto (sizes to text)
+      updateLabel(label.id, { w: undefined });
+    }
+  }, [label.id, label.w, updateLabel, pushSnapshot]);
+
+  const handleIconPick = useCallback((iconKey: string | undefined) => {
+    pushSnapshot();
+    updateLabel(label.id, { icon: iconKey });
+  }, [label.id, updateLabel, pushSnapshot]);
+
   const handleToggleHidden = useCallback(() => {
     pushSnapshot();
     updateLabel(label.id, { hidden: !label.hidden });
@@ -1487,6 +1524,8 @@ function LabelProperties({ label }: { label: any }) {
     setSelectedLabel(null);
     setSelectedIds([label.controlId]);
   }, [label.controlId, setSelectedLabel, setSelectedIds]);
+
+  const isAutoWidth = label.w == null;
 
   return (
     <div className="flex flex-col gap-3">
@@ -1509,33 +1548,46 @@ function LabelProperties({ label }: { label: any }) {
         <p className="text-[9px] text-gray-600">Shift+Enter for new line</p>
       </div>
 
-      {/* Icon */}
-      <div className="space-y-1">
+      {/* Icon picker — categorized grid (matches control Properties pattern) */}
+      <div className="space-y-1.5">
         <label className="text-[10px] uppercase tracking-wide text-gray-500">Icon</label>
-        <select
-          value={label.icon ?? ''}
-          onChange={(e) => {
-            pushSnapshot();
-            updateLabel(label.id, { icon: e.target.value || undefined });
-          }}
-          className="w-full h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none focus:border-blue-500"
-        >
-          <option value="">None</option>
-          <option value="arrow-up">▲ Arrow Up</option>
-          <option value="arrow-down">▼ Arrow Down</option>
-          <option value="arrow-left">◀ Arrow Left</option>
-          <option value="arrow-right">▶ Arrow Right</option>
-          <option value="triangle-up">△ Triangle Up</option>
-          <option value="triangle-down">▽ Triangle Down</option>
-          <option value="triangle-left">◁ Triangle Left</option>
-          <option value="triangle-right">▷ Triangle Right</option>
-          <option value="plus">+ Plus</option>
-          <option value="minus">− Minus</option>
-          <option value="play">▶ Play</option>
-          <option value="stop">■ Stop</option>
-          <option value="record">● Record</option>
-          <option value="settings-gear">⚙ Gear</option>
-        </select>
+        {label.icon && (
+          <div className="flex items-center gap-1.5 mb-1">
+            <div className="w-6 h-6 rounded border border-blue-500 bg-blue-500/10 flex items-center justify-center text-blue-400">
+              {HARDWARE_ICON_SVGS[label.icon]
+                ? <div className="w-4 h-4">{HARDWARE_ICON_SVGS[label.icon]}</div>
+                : <span className="text-xs">{HARDWARE_ICONS[label.icon] ?? '?'}</span>}
+            </div>
+            <span className="text-[9px] text-gray-400 flex-1">{label.icon.replace(/-/g, ' ')}</span>
+            <button
+              onClick={() => handleIconPick(undefined)}
+              className="text-[9px] text-gray-600 hover:text-red-400 transition-colors"
+            >clear</button>
+          </div>
+        )}
+        {ICON_CATEGORIES.map((cat) => (
+          <div key={cat.label}>
+            <p className="text-[8px] text-gray-600 uppercase tracking-wider mb-0.5">{cat.label}</p>
+            <div className="flex flex-wrap gap-1 mb-1.5">
+              {cat.keys.map((k) => (
+                <button
+                  key={k}
+                  onClick={() => handleIconPick(k)}
+                  className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${
+                    label.icon === k
+                      ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                      : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                  }`}
+                  title={k.replace(/-/g, ' ')}
+                >
+                  {HARDWARE_ICON_SVGS[k]
+                    ? <div className="w-3.5 h-3.5">{HARDWARE_ICON_SVGS[k]}</div>
+                    : <span className="text-[9px] leading-none">{HARDWARE_ICONS[k] ?? '?'}</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Font size */}
@@ -1554,13 +1606,53 @@ function LabelProperties({ label }: { label: any }) {
         </div>
       </div>
 
-      {/* Position info */}
+      {/* Alignment */}
       <div className="space-y-1">
-        <label className="text-[10px] uppercase tracking-wide text-gray-500">Position</label>
-        <div className="text-[10px] text-gray-400">
-          x: {Math.round(label.x)} · y: {Math.round(label.y)}
-          {label.w != null && <> · w: {Math.round(label.w)}</>}
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Alignment</label>
+        <div className="flex gap-1">
+          {(['left', 'center', 'right'] as const).map((a) => (
+            <button
+              key={a}
+              onClick={() => handleAlignChange(a)}
+              className={`flex-1 h-6 rounded border text-[10px] capitalize transition-colors ${
+                label.align === a
+                  ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                  : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+              }`}
+              title={`Align ${a}`}
+            >
+              {a}
+            </button>
+          ))}
         </div>
+      </div>
+
+      {/* Position — editable x/y/w with Auto-width toggle */}
+      <div className="space-y-1.5">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Position</label>
+        <div className="grid grid-cols-3 gap-1.5">
+          <ContainerNumField label="X" value={label.x} onCommit={handleX} />
+          <ContainerNumField label="Y" value={label.y} onCommit={handleY} />
+          {isAutoWidth ? (
+            <div className="space-y-0.5">
+              <span className="text-[9px] text-gray-600 uppercase">W</span>
+              <div className="w-full h-6 rounded border border-gray-800 bg-gray-900/40 px-1 text-[10px] text-gray-600 text-center flex items-center justify-center italic">
+                auto
+              </div>
+            </div>
+          ) : (
+            <ContainerNumField label="W" value={label.w} onCommit={handleW} />
+          )}
+        </div>
+        <label className="flex items-center gap-1.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={isAutoWidth}
+            onChange={handleAutoWidthToggle}
+            className="h-3 w-3 cursor-pointer accent-blue-500"
+          />
+          <span className="text-[10px] text-gray-400">Auto width (sizes to text)</span>
+        </label>
       </div>
 
       <div className="h-px bg-gray-800" />
@@ -1678,9 +1770,12 @@ export default function PropertiesPanel() {
     panelRef.current?.scrollTo(0, 0);
   }, [selectedIds]);
 
-  // Only show properties panel when something is selected or keyboard exists
+  // Only show properties panel when something is selected or keyboard exists.
+  // selectedLabelId is checked separately because setSelectedLabel clears
+  // selectedIds — without this, clicking a floating label on a keyboardless
+  // device (e.g. xdj-rx3) caused the entire panel to unmount.
   const keyboard = useEditorStore((s) => s.keyboard);
-  const hasContent = selectedIds.length > 0 || keyboard;
+  const hasContent = selectedIds.length > 0 || selectedLabelId || keyboard;
   const [collapsed, setCollapsed] = useState(false);
 
   if (!hasContent) return null;
