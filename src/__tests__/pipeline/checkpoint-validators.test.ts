@@ -9,6 +9,7 @@ import {
   validatePassBatches,
   validateIndependentChecklist,
   validateLedGroupSplitting,
+  validatePostEditorManifest,
 } from '../../lib/pipeline/checkpoint-validators';
 
 describe('checkpoint-validators', () => {
@@ -540,6 +541,295 @@ More items.`;
       expect(result.valid).toBe(false);
       expect(result.errors[0]).toContain('expected 7');
       expect(result.errors[0]).toContain('manifest has 0'); // none in section "lfo1"
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // validatePostEditorManifest — runs after contractor approval, before the rest
+  // of the pipeline. Pure-logic check on manifest structural integrity (control
+  // IDs, section refs, label/container/groupLabel cross-refs).
+  // ---------------------------------------------------------------------------
+  describe('validatePostEditorManifest', () => {
+    /** Build a minimal valid manifest with the given controls + sections. */
+    function makePostEditorManifest(overrides: Record<string, unknown> = {}): string {
+      return JSON.stringify({
+        controls: {
+          'arp-rate': { id: 'arp-rate', label: 'Rate', sectionId: 'arpeggiator' },
+          'arp-gate': { id: 'arp-gate', label: 'Gate', sectionId: 'arpeggiator' },
+        },
+        sections: {
+          arpeggiator: { id: 'arpeggiator', childIds: ['arp-rate', 'arp-gate'] },
+        },
+        editorLabels: [],
+        controlContainers: [],
+        groupLabels: [],
+        ...overrides,
+      });
+    }
+
+    it('passes on a valid manifest with 0 errors and 0 warnings', () => {
+      const result = validatePostEditorManifest(makePostEditorManifest());
+      expect(result.valid).toBe(true);
+      expect(result.errorCount).toBe(0);
+      expect(result.warningCount).toBe(0);
+      expect(result.findings).toHaveLength(0);
+    });
+
+    it('returns INVALID_JSON on malformed input', () => {
+      const result = validatePostEditorManifest('not json {{{');
+      expect(result.valid).toBe(false);
+      expect(result.errorCount).toBe(1);
+      expect(result.findings[0].code).toBe('INVALID_JSON');
+    });
+
+    it('emits NO_CONTROLS when controls is empty', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({ controls: {} }),
+      );
+      expect(result.valid).toBe(false);
+      expect(result.findings.some((f) => f.code === 'NO_CONTROLS')).toBe(true);
+    });
+
+    it('emits NO_SECTIONS when sections is empty', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({ sections: {} }),
+      );
+      expect(result.valid).toBe(false);
+      expect(result.findings.some((f) => f.code === 'NO_SECTIONS')).toBe(true);
+    });
+
+    it('emits CONTROL_MISSING_ID for a control without an id', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          controls: { 'arp-rate': { label: 'Rate' } }, // no id field
+        }),
+      );
+      expect(result.valid).toBe(false);
+      expect(result.findings.some((f) => f.code === 'CONTROL_MISSING_ID')).toBe(true);
+    });
+
+    it('emits CONTROL_ID_DUPLICATE when two controls share an id', () => {
+      const result = validatePostEditorManifest(
+        JSON.stringify({
+          controls: [
+            { id: 'arp-rate', label: 'Rate', sectionId: 'arpeggiator' },
+            { id: 'arp-rate', label: 'Duplicate', sectionId: 'arpeggiator' },
+          ],
+          sections: { arpeggiator: { id: 'arpeggiator', childIds: ['arp-rate'] } },
+        }),
+      );
+      expect(result.valid).toBe(false);
+      const dup = result.findings.find((f) => f.code === 'CONTROL_ID_DUPLICATE');
+      expect(dup).toBeDefined();
+      expect(dup?.controlId).toBe('arp-rate');
+    });
+
+    it('emits SECTION_MISSING_ID for a section without an id', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          sections: { arpeggiator: { childIds: [] } }, // no id field
+        }),
+      );
+      expect(result.valid).toBe(false);
+      expect(result.findings.some((f) => f.code === 'SECTION_MISSING_ID')).toBe(true);
+    });
+
+    it('emits SECTION_ID_DUPLICATE when two sections share an id', () => {
+      const result = validatePostEditorManifest(
+        JSON.stringify({
+          controls: [{ id: 'arp-rate', label: 'Rate', sectionId: 'arpeggiator' }],
+          sections: [
+            { id: 'arpeggiator', childIds: ['arp-rate'] },
+            { id: 'arpeggiator', childIds: [] },
+          ],
+        }),
+      );
+      expect(result.valid).toBe(false);
+      const dup = result.findings.find((f) => f.code === 'SECTION_ID_DUPLICATE');
+      expect(dup).toBeDefined();
+      expect(dup?.sectionId).toBe('arpeggiator');
+    });
+
+    it('emits SECTION_CHILD_ORPHAN when childIds references a non-existent control', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          sections: {
+            arpeggiator: { id: 'arpeggiator', childIds: ['arp-rate', 'arp-gate', 'ghost-control'] },
+          },
+        }),
+      );
+      expect(result.valid).toBe(false);
+      const orphan = result.findings.find((f) => f.code === 'SECTION_CHILD_ORPHAN');
+      expect(orphan).toBeDefined();
+      expect(orphan?.controlId).toBe('ghost-control');
+      expect(orphan?.sectionId).toBe('arpeggiator');
+    });
+
+    it('emits CONTROL_ORPHAN_SECTION when a control points at a non-existent section', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          controls: {
+            'arp-rate': { id: 'arp-rate', label: 'Rate', sectionId: 'ghost-section' },
+            'arp-gate': { id: 'arp-gate', label: 'Gate', sectionId: 'arpeggiator' },
+          },
+          sections: {
+            arpeggiator: { id: 'arpeggiator', childIds: ['arp-gate'] },
+          },
+        }),
+      );
+      expect(result.valid).toBe(false);
+      const orphan = result.findings.find((f) => f.code === 'CONTROL_ORPHAN_SECTION');
+      expect(orphan).toBeDefined();
+      expect(orphan?.controlId).toBe('arp-rate');
+      expect(orphan?.sectionId).toBe('ghost-section');
+    });
+
+    it('emits LABEL_ORPHAN_CONTROL when a linked label points to a non-existent control', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          editorLabels: [
+            { id: 'lbl-1', controlId: 'ghost-control' },
+          ],
+        }),
+      );
+      expect(result.valid).toBe(false);
+      expect(result.findings.some((f) => f.code === 'LABEL_ORPHAN_CONTROL')).toBe(true);
+    });
+
+    it('emits LABEL_ORPHAN_SECTION as a warning for standalone labels pointing to a missing section', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          editorLabels: [
+            { id: 'lbl-1', controlId: null, sectionId: 'ghost-section' },
+          ],
+        }),
+      );
+      expect(result.valid).toBe(true); // warnings don't invalidate
+      expect(result.warningCount).toBe(1);
+      expect(result.findings.some((f) => f.code === 'LABEL_ORPHAN_SECTION')).toBe(true);
+    });
+
+    it('emits CONTAINER_ORPHAN when a container references a missing control', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          controlContainers: [
+            { id: 'ctn-1', controlIds: ['arp-rate', 'ghost-control'] },
+          ],
+        }),
+      );
+      expect(result.valid).toBe(false);
+      const orphan = result.findings.find((f) => f.code === 'CONTAINER_ORPHAN');
+      expect(orphan).toBeDefined();
+      expect(orphan?.controlId).toBe('ghost-control');
+    });
+
+    it('emits GROUPLABEL_ORPHAN when a group label references a missing control', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          groupLabels: [
+            { id: 'gl-1', controlIds: ['ghost-control'] },
+          ],
+        }),
+      );
+      expect(result.valid).toBe(false);
+      expect(result.findings.some((f) => f.code === 'GROUPLABEL_ORPHAN')).toBe(true);
+    });
+
+    it('emits CONTROL_EMPTY_LABEL warning (not error) for controls with no label', () => {
+      const result = validatePostEditorManifest(
+        makePostEditorManifest({
+          controls: {
+            'arp-rate': { id: 'arp-rate', label: '', sectionId: 'arpeggiator' },
+            'arp-gate': { id: 'arp-gate', label: 'Gate', sectionId: 'arpeggiator' },
+          },
+        }),
+      );
+      expect(result.valid).toBe(true);
+      expect(result.warningCount).toBe(1);
+      const w = result.findings.find((f) => f.code === 'CONTROL_EMPTY_LABEL');
+      expect(w?.severity).toBe('warning');
+      expect(w?.controlId).toBe('arp-rate');
+    });
+
+    it('accepts kebab-case, snake_case, and SCREAMING_SNAKE ids without warnings', () => {
+      const result = validatePostEditorManifest(
+        JSON.stringify({
+          controls: [
+            { id: 'arp-rate', label: 'Kebab', sectionId: 'sec' },
+            { id: 'arp_rate', label: 'Snake', sectionId: 'sec' },
+            { id: 'BEAT_JUMP_BACK', label: 'Screaming', sectionId: 'sec' },
+            { id: 'wheel-1', label: 'Mixed', sectionId: 'sec' },
+          ],
+          sections: [
+            { id: 'sec', childIds: ['arp-rate', 'arp_rate', 'BEAT_JUMP_BACK', 'wheel-1'] },
+          ],
+        }),
+      );
+      expect(result.valid).toBe(true);
+      expect(result.findings.filter((f) => f.code === 'CONTROL_ID_INVALID_FORMAT')).toHaveLength(0);
+    });
+
+    it('emits CONTROL_ID_INVALID_FORMAT warning for ids with spaces or special chars', () => {
+      const result = validatePostEditorManifest(
+        JSON.stringify({
+          controls: [
+            { id: 'has space', label: 'Bad', sectionId: 'sec' },
+            { id: '1leading-digit', label: 'AlsoBad', sectionId: 'sec' },
+            { id: 'good-id', label: 'Good', sectionId: 'sec' },
+          ],
+          sections: [
+            { id: 'sec', childIds: ['has space', '1leading-digit', 'good-id'] },
+          ],
+        }),
+      );
+      expect(result.valid).toBe(true); // warnings only
+      const badIds = result.findings
+        .filter((f) => f.code === 'CONTROL_ID_INVALID_FORMAT')
+        .map((f) => f.controlId);
+      expect(badIds).toContain('has space');
+      expect(badIds).toContain('1leading-digit');
+      expect(badIds).not.toContain('good-id');
+    });
+
+    it('supports both Record and Array manifest shapes', () => {
+      const recordShape = validatePostEditorManifest(
+        JSON.stringify({
+          controls: { 'a': { id: 'a', label: 'A', sectionId: 's' } },
+          sections: { 's': { id: 's', childIds: ['a'] } },
+        }),
+      );
+      const arrayShape = validatePostEditorManifest(
+        JSON.stringify({
+          controls: [{ id: 'a', label: 'A', sectionId: 's' }],
+          sections: [{ id: 's', childIds: ['a'] }],
+        }),
+      );
+      expect(recordShape.valid).toBe(true);
+      expect(arrayShape.valid).toBe(true);
+    });
+
+    it('accumulates multiple errors in one pass', () => {
+      const result = validatePostEditorManifest(
+        JSON.stringify({
+          controls: [
+            { id: 'a', label: 'A', sectionId: 'missing-section' }, // E11
+            { id: 'a', label: 'Duplicate', sectionId: 's' }, // E2
+            { label: 'NoId', sectionId: 's' }, // E1
+          ],
+          sections: [
+            { id: 's', childIds: ['a', 'ghost'] }, // E5 (ghost)
+          ],
+        }),
+      );
+      expect(result.valid).toBe(false);
+      const codes = result.findings
+        .filter((f) => f.severity === 'error')
+        .map((f) => f.code);
+      expect(codes).toContain('CONTROL_MISSING_ID');
+      expect(codes).toContain('CONTROL_ID_DUPLICATE');
+      expect(codes).toContain('CONTROL_ORPHAN_SECTION');
+      expect(codes).toContain('SECTION_CHILD_ORPHAN');
+      expect(result.errorCount).toBeGreaterThanOrEqual(4);
     });
   });
 });

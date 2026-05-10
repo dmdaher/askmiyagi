@@ -93,6 +93,15 @@ const ESCALATION_CONFIG: Record<
       { label: 'Send to Contractor', resolution: 'send-to-contractor', variant: 'primary' },
     ],
   },
+  'control-id-validation-failed': {
+    bg: 'rgba(239, 68, 68, 0.1)',
+    border: '#ef4444',
+    buttons: [
+      { label: 'Resolved (Retry Validation)', resolution: 'retry', variant: 'primary' },
+      { label: 'Override & Continue', resolution: 'override', variant: 'secondary' },
+      { label: 'Cancel Pipeline', resolution: 'cancel', variant: 'danger' },
+    ],
+  },
 };
 
 const BUTTON_STYLES: Record<string, { bg: string; text: string; hover: string }> = {

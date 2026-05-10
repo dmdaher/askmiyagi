@@ -342,6 +342,9 @@ async function run() {
         case 'phase-0-layout-engine':
           await doPhase0LayoutEngine(state);
           break;
+        case 'phase-0-post-editor-check':
+          await doPhase0PostEditorCheck(state);
+          break;
         case 'phase-1-section-loop':
           await doPhase1(state);
           break;
@@ -1169,10 +1172,15 @@ async function doPhase0LayoutEngine(state: PipelineState) {
   const outputPath = lePaths.templates;
   const phaseResult = state.phases.find(p => p.phase === 'phase-0-layout-engine');
 
-  // If templates already exist and phase was completed, check editor-ready gate
+  // If templates already exist and phase was completed, check editor-ready gate.
+  // Escalations of type 'editor-ready' are created when the pipeline pauses for
+  // contractor editing; resolving them via /api/pipeline/<id>/escalation lets
+  // the runner advance to QA. Earlier code mistakenly checked type='agent-failure'
+  // here, which caused the gate to never resolve (the type was wrong); fixed
+  // 2026-05-10.
   if (phaseResult?.status === 'passed' && fs.existsSync(outputPath)) {
     const editorResolved = state.escalations.some(
-      e => e.type === 'agent-failure' && e.message.includes('ready for editor') && e.resolvedAt
+      e => e.type === 'editor-ready' && e.resolvedAt
     );
     if (editorResolved) {
       appendLog(deviceId, { level: 'info', message: 'Layout Engine: templates exist and editor gate resolved, advancing' });
@@ -1181,7 +1189,7 @@ async function doPhase0LayoutEngine(state: PipelineState) {
     }
     // Editor gate not yet resolved — check if escalation exists
     const editorPending = state.escalations.some(
-      e => e.type === 'agent-failure' && e.message.includes('ready for editor') && !e.resolvedAt
+      e => e.type === 'editor-ready' && !e.resolvedAt
     );
     if (!editorPending) {
       // Re-create escalation (shouldn't happen, but defensive)
@@ -1421,6 +1429,79 @@ async function doPhase0LayoutEngine(state: PipelineState) {
     completePhase(state, 'phase-0-layout-engine', null, false);
     if (!tryAutoRetry(state, 'agent-failure', `Layout Engine failed: ${errorMsg}`)) return;
   }
+}
+
+/**
+ * Phase 0 Post-Editor Check — pure-logic validation of the contractor-approved
+ * manifest. Runs between layout-engine (with editor pause) and phase-4-extraction.
+ *
+ * No LLM. Catches structural integrity issues that would silently corrupt every
+ * downstream agent and every generated tutorial: missing control IDs, duplicate
+ * IDs, orphaned section.childIds, orphaned label.controlId references, etc.
+ *
+ * On error: creates a `control-id-validation-failed` escalation listing every
+ * issue. Pipeline halts. Admin reviews findings in dashboard, fixes in editor,
+ * resolves escalation, resumes pipeline.
+ *
+ * On warnings only: logs them and advances (informational).
+ *
+ * Origin: 2026-05-10 — replaces the QA work that archived phases 1-3 used to
+ * do, with a fast deterministic check focused on what tutorials actually need
+ * (valid control IDs to reference).
+ */
+async function doPhase0PostEditorCheck(state: PipelineState) {
+  startPhase(state, 'phase-0-post-editor-check');
+  appendLog(deviceId, { level: 'info', message: 'Starting Phase 0: Post-Editor Validation (control-ID integrity)' });
+
+  // Read the contractor-approved manifest from the main pipeline dir
+  // (contractor edits write to root/manifest-editor.json; runner copies
+  //  to worktree at various points but the canonical source is here)
+  const editorManifestPath = paths().editorManifest;
+  if (!fs.existsSync(editorManifestPath)) {
+    appendLog(deviceId, { level: 'warn', message: `manifest-editor.json not found at ${editorManifestPath} — skipping post-editor check` });
+    completePhase(state, 'phase-0-post-editor-check', null, true);
+    advancePhase(state, worktreeCwd);
+    return;
+  }
+
+  const manifestJson = fs.readFileSync(editorManifestPath, 'utf-8');
+  const result = validators.validatePostEditorManifest(manifestJson);
+
+  // Log warnings (always — informational)
+  for (const finding of result.findings) {
+    if (finding.severity === 'warning') {
+      appendLog(deviceId, {
+        level: 'warn',
+        message: `[${finding.code}] ${finding.message}`,
+      });
+    }
+  }
+
+  if (result.errorCount > 0) {
+    const summary = `${result.errorCount} structural error${result.errorCount === 1 ? '' : 's'} in manifest. Fix in editor, resolve escalation, then resume.`;
+    const details = result.findings
+      .filter((f) => f.severity === 'error')
+      .map((f) => `  [${f.code}] ${f.message}`)
+      .join('\n');
+
+    appendLog(deviceId, { level: 'error', message: summary });
+    appendLog(deviceId, { level: 'info', message: details });
+
+    createEscalation(state, 'control-id-validation-failed', `${summary}\n\n${details}`);
+    sendNotification('Miyagi Pipeline', `${state.deviceName}: ${result.errorCount} manifest integrity issue${result.errorCount === 1 ? '' : 's'}`);
+
+    completePhase(state, 'phase-0-post-editor-check', null, false);
+    state.status = 'paused';
+    writeState(deviceId, state);
+    return;
+  }
+
+  appendLog(deviceId, {
+    level: 'info',
+    message: `Post-Editor Check passed: 0 errors, ${result.warningCount} warning${result.warningCount === 1 ? '' : 's'}`,
+  });
+  completePhase(state, 'phase-0-post-editor-check', null, true);
+  advancePhase(state, worktreeCwd);
 }
 
 async function doPhase1(state: PipelineState) {

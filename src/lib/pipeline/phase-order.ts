@@ -23,6 +23,7 @@ export const PIPELINE_PHASES: PipelinePhase[] = [
   'phase-0-diagram-parser',
   'phase-0-gatekeeper',
   'phase-0-layout-engine',
+  'phase-0-post-editor-check',
   'panel-pr',
   'phase-4-extraction',
   'phase-4-audit',
