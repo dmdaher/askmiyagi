@@ -82,13 +82,6 @@ export default function ContextMenu() {
     };
   }, [menu]);
 
-  const handleDuplicate = useCallback(() => {
-    const store = useEditorStore.getState();
-    store.pushSnapshot();
-    store.duplicateSelected();
-    setMenu(null);
-  }, []);
-
   const handleDelete = useCallback(() => {
     const store = useEditorStore.getState();
     store.pushSnapshot();
@@ -321,15 +314,6 @@ export default function ContextMenu() {
         className="min-w-[160px] overflow-y-auto rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300"
         style={{ maxHeight: `${availableHeight}px` }}
       >
-        {/* Duplicate */}
-        <button
-          className="flex w-full items-center justify-between px-3 py-1.5 hover:bg-gray-800 hover:text-white transition-colors text-left"
-          onClick={handleDuplicate}
-        >
-          <span>Duplicate</span>
-          <span className="text-gray-600 ml-4">Cmd+D</span>
-        </button>
-
         {/* Delete */}
         <button
           className={`flex w-full items-center justify-between px-3 py-1.5 transition-colors text-left ${

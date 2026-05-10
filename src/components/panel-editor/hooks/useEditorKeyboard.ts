@@ -49,13 +49,12 @@ export function useEditorKeyboard() {
         return;
       }
 
-      // ── Duplicate: Cmd/Ctrl+D ─────────────────────────────────────────────
-      if (isMod && e.key === 'd') {
-        e.preventDefault();
-        store.pushSnapshot();
-        store.duplicateSelected();
-        return;
-      }
+      // ── Duplicate intentionally not bound ─────────────────────────────────
+      // Control IDs are fixed at pipeline-output time; the contractor (and
+      // by extension everyone, since admin doesn't hand-author panels)
+      // should never mint new IDs from the editor. The store action
+      // `duplicateSelected` is left dormant in case future tooling needs it,
+      // but no UI path invokes it.
 
       // ── Align center-x: Shift+H (no Cmd/Ctrl) ───────────────────────────
       if (!isMod && e.shiftKey && e.key === 'H') {
