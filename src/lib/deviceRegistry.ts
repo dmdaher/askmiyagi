@@ -7,10 +7,10 @@ import { rc505mk2Tutorials } from '@/data/tutorials/rc505-mk2';
 import { deepmind12Tutorials } from '@/data/tutorials/deepmind-12';
 import FantomPanel from '@/components/devices/fantom-08/FantomPanel';
 import RC505Panel from '@/components/devices/rc505-mk2/RC505Panel';
-import DeepMindPanel from '@/components/devices/deepmind-12/DeepMindPanel';
 import CDJ3000Panel from '@/components/devices/cdj-3000/CDJ3000Panel';
 import { makePanelFromManifest } from '@/lib/makePanelFromManifest';
 import fantom06Manifest from '@/data/manifests/fantom-06.json';
+import deepmind12Manifest from '@/data/manifests/deepmind-12.json';
 
 interface DeviceRegistryEntry {
   tutorials: Tutorial[];
@@ -29,10 +29,15 @@ export const DEVICE_REGISTRY: Record<string, DeviceRegistryEntry> = {
     PanelComponent: RC505Panel,
     dimensions: { width: 1200, height: 600 },
   },
+  // Migrated 2026-05-10 from handcrafted DeepMindPanel to manifest-driven
+  // rendering. The handcrafted panel had ~80% control-ID drift vs the manifest;
+  // contractor edits in the editor never reached production. Now the editor →
+  // manifest → production loop is closed. Tutorials cleared pending regeneration
+  // against current manifest IDs.
   'deepmind-12': {
     tutorials: deepmind12Tutorials,
-    PanelComponent: DeepMindPanel,
-    dimensions: { width: 2200, height: 580 },
+    PanelComponent: makePanelFromManifest(deepmind12Manifest as any),
+    dimensions: { width: deepmind12Manifest.panelWidth, height: deepmind12Manifest.panelHeight },
   },
   'cdj-3000': {
     tutorials: [],
