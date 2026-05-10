@@ -73,6 +73,46 @@ This would make a great tutorial for beginners.`;
       const result = validateSieveBucket(content, [1, 10]);
       expect(result.valid).toBe(true);
     });
+
+    // Regression — DeepMind-12 (2026-05-10): description column referenced
+    // "POLY menu, page 2" as a cross-reference. The old regex flagged "page 2"
+    // anywhere in the content as out-of-range. Fixed by only checking the
+    // page number in column 1 of pipe-delimited rows.
+    it('accepts cross-references to other pages in description columns', () => {
+      const content = `| Page | Control | Type | Description |
+|------|---------|------|-------------|
+| 15 | PITCH BEND range | setting | assignable (POLY menu, page 2) |
+| 17 | CUTOFF | knob | full sweep (see envelope on page 4) |
+| 19 | RESONANCE | knob | 0-127 |`;
+
+      const result = validateSieveBucket(content, [11, 20]);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('accepts bare-digit format (no "p." prefix) in column 1', () => {
+      const content = `| Page | Control | Type | Range |
+|------|---------|------|-------|
+| 11 | VOLUME | knob | 0-127 |
+| 13 | CUTOFF | knob | 0-127 |
+| 15 | RESONANCE | knob | 0-127 |`;
+
+      const result = validateSieveBucket(content, [11, 20]);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('still rejects an extracted row whose column-1 page is out of range', () => {
+      const content = `| Page | Control | Type | Range |
+|------|---------|------|-------|
+| 11 | VOLUME | knob | 0-127 |
+| 5  | WRONG | knob | 0-127 |
+| 15 | RESONANCE | knob | 0-127 |`;
+
+      const result = validateSieveBucket(content, [11, 20]);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('outside expected range'))).toBe(true);
+    });
   });
 
   describe('validateSieveVerified', () => {

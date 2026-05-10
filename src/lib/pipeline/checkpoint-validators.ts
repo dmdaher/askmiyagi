@@ -45,10 +45,19 @@ export function validateSieveBucket(content: string, pageRange: [number, number]
     errors.push('No table structure found (expected pipe-delimited or CSV rows)');
   }
 
-  // Check that referenced pages are within the expected range
-  const pageRefs = content.match(/\bp(?:age)?[.\s]*(\d+)/gi) ?? [];
-  for (const ref of pageRefs) {
-    const pageNum = parseInt(ref.replace(/\D/g, ''), 10);
+  // Check that EXTRACTED-FROM page references are within the expected range.
+  // We only check column 1 of pipe-delimited table rows — that's the "page this
+  // row was extracted from." Description columns can legitimately reference
+  // OTHER pages as cross-references (e.g., "see POLY menu, page 2") without
+  // being a validation failure. The old content-wide regex flagged those
+  // cross-refs as false positives. (Fixed 2026-05-10.)
+  //
+  // Accepts column-1 formats: `| 15 |`, `| p.1 |`, `| p1 |`, `| page 5 |`.
+  // Rejects header rows (`| Page |`) and separator rows (`| --- |`) — both
+  // non-numeric.
+  const rowPageMatches = [...content.matchAll(/^\s*\|\s*(?:p(?:age)?[.\s]*)?(\d+)\s*\|/gim)];
+  for (const m of rowPageMatches) {
+    const pageNum = parseInt(m[1], 10);
     if (!isNaN(pageNum) && (pageNum < pageRange[0] || pageNum > pageRange[1])) {
       errors.push(`Page reference ${pageNum} outside expected range ${pageRange[0]}-${pageRange[1]}`);
       break; // One violation is enough

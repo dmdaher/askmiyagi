@@ -9,6 +9,13 @@ import { PipelinePhase } from './types';
  * `panel-pr` is a legacy phase (replaced by PanelRenderer); kept in the array
  * so older pipelines paused there still resolve to a valid index and are
  * included in `getPhaseIndex(...) >= layoutEngineIndex` checks.
+ *
+ * Phases 1-3 (Section Loop / Global Assembly / Harmonic Polish) are archived —
+ * the contractor editor IS the quality gate. The state-machine PHASE_ORDER
+ * already skips them (state-machine.ts:135-139). They remain in the
+ * `PipelinePhase` type union (types.ts) for backward compat with legacy state
+ * files, and the agent SOUL files (.claude/agents/) are preserved for
+ * re-enablement, but they're not part of the canonical active pipeline.
  */
 export const PIPELINE_PHASES: PipelinePhase[] = [
   'pending',
@@ -17,9 +24,6 @@ export const PIPELINE_PHASES: PipelinePhase[] = [
   'phase-0-gatekeeper',
   'phase-0-layout-engine',
   'panel-pr',
-  'phase-1-section-loop',
-  'phase-2-global-assembly',
-  'phase-3-harmonic-polish',
   'phase-4-extraction',
   'phase-4-audit',
   'phase-5-display-build',

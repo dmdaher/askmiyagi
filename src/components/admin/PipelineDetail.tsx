@@ -15,13 +15,14 @@ import ManifestViewer from './ManifestViewer';
 import PanelLayoutEditor from './PanelLayoutEditor';
 import IssuesPanel from './IssuesPanel';
 
+// SI/PQ/Critic agents are archived from the active pipeline (contractor editor
+// IS the quality gate). Phases 1-3 are excluded from this map so the agent
+// scores panel doesn't show perpetually-pending entries. Agent SOUL files are
+// preserved in .claude/agents/ for re-enablement; see phase-order.ts.
 const AGENT_PHASE_MAP: Record<string, string> = {
   'phase-0-diagram-parser': 'diagram-parser',
   'phase-0-gatekeeper': 'gatekeeper',
   'phase-0-layout-engine': 'layout-engine',
-  'phase-1-section-loop': 'structural-inspector',
-  'phase-2-global-assembly': 'panel-questioner',
-  'phase-3-harmonic-polish': 'critic',
   'phase-4-extraction': 'manual-extractor',
   'phase-4-audit': 'coverage-auditor',
   'phase-5-tutorial-build': 'tutorial-builder',
@@ -31,9 +32,6 @@ const AGENT_PHASE_MAP: Record<string, string> = {
 const ALL_AGENTS = [
   'diagram-parser',
   'gatekeeper',
-  'structural-inspector',
-  'panel-questioner',
-  'critic',
   'manual-extractor',
   'coverage-auditor',
   'tutorial-builder',
@@ -59,7 +57,10 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
     ? (pipeline.escalations ?? []).find((e) => e.id === pipeline.activeEscalation) ?? undefined
     : undefined;
 
-  const isPhase1 = pipeline.currentPhase === 'phase-1-section-loop';
+  // Phase 1 (Section Loop) is archived — no active pipeline can be in this phase.
+  // Keeping the constant `false` for now since downstream code reads it; could
+  // be removed entirely in a follow-up cleanup if no other code depends on it.
+  const isPhase1 = false;
   const isPhase5 = pipeline.currentPhase === 'phase-5-tutorial-build';
   const isTemplateReview = activeEscalation?.type === 'template-review';
 
