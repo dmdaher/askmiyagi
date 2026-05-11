@@ -61,7 +61,25 @@ function readReviewed(): ReviewedStore {
   }
 }
 
-function describeChange(change: RepairChange): { description: string; suggestedAction: string; originalState?: Record<string, unknown> } {
+function describeChange(rawChange: RepairChange | { kind: string; [k: string]: unknown }): { description: string; suggestedAction: string; originalState?: Record<string, unknown> } {
+  // Admin actions (audit-only records, auto-reviewed)
+  if (rawChange.kind === 'admin-relink-apply') {
+    const prev = (rawChange as { previousControlId?: string }).previousControlId;
+    const next = (rawChange as { newControlId?: string }).newControlId;
+    return {
+      description: `Admin re-linked: "${prev}" → "${next}"`,
+      suggestedAction: 'No action — admin action recorded for audit.',
+      originalState: { previousControlId: prev, newControlId: next },
+    };
+  }
+  if (rawChange.kind === 'admin-relink-undo') {
+    const restored = (rawChange as { backupRestored?: string }).backupRestored;
+    return {
+      description: `Admin undid a re-link (restored from ${restored})`,
+      suggestedAction: 'No action — admin action recorded for audit.',
+    };
+  }
+  const change = rawChange as RepairChange;
   switch (change.kind) {
     case 'label-orphan-null':
       return {
@@ -154,6 +172,14 @@ function describeFinding(f: PostEditorFinding): { description: string; suggested
 const INVENTORY_SEVERITIES: Set<Severity> = new Set(['critical', 'high']);
 
 /**
+ * Change kinds that represent ADMIN ACTIONS (not findings). They appear in
+ * the inventory for audit purposes but are auto-marked reviewed so they
+ * don't clutter the "needs review" view. Admin can find them via
+ * "Show reviewed" toggle.
+ */
+const ADMIN_ACTION_KINDS = new Set(['admin-relink-apply', 'admin-relink-undo']);
+
+/**
  * Aggregate every actionable repair event + admin-review flag across all
  * devices. Returns items sorted: critical → high, newest first.
  *
@@ -187,13 +213,16 @@ export function loadAttentionItems(): AttentionItem[] {
           continue;
         }
 
-        // Repair changes → one item each (only high+critical reach inventory)
+        // Repair changes → one item each (only high+critical reach inventory).
+        // Admin actions (relink-apply / relink-undo) are auto-marked reviewed
+        // so they're an audit record only, not a "needs review" item.
         for (let chgIdx = 0; chgIdx < (entry.changes ?? []).length; chgIdx++) {
           const change = entry.changes[chgIdx];
           const severity = change.severity ?? 'medium';
           if (!INVENTORY_SEVERITIES.has(severity)) continue;
           const id = `${deviceId}:${entry.timestamp}:c${lineIdx}-${chgIdx}`;
           const info = describeChange(change);
+          const autoReviewed = ADMIN_ACTION_KINDS.has(change.kind);
           items.push({
             id,
             deviceId,
@@ -203,7 +232,7 @@ export function loadAttentionItems(): AttentionItem[] {
             suggestedAction: info.suggestedAction,
             originalState: info.originalState,
             timestamp: entry.timestamp,
-            reviewed: id in reviewed,
+            reviewed: autoReviewed || id in reviewed,
           });
         }
 
