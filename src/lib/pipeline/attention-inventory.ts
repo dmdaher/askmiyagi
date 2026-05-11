@@ -143,8 +143,21 @@ function describeFinding(f: PostEditorFinding): { description: string; suggested
 }
 
 /**
- * Aggregate every repair event + admin-review flag across all devices.
- * Returns items sorted: critical → high → medium → low, then newest first.
+ * Severity levels that EVER reach the admin inventory. Medium/low events
+ * (container dissolved, section.childIds strip, format warnings) still get
+ * written to `repair-log.jsonl` for forensic purposes, but they don't
+ * belong in the admin UI — they're not actionable and admin can't decide
+ * anything about them.
+ *
+ * Engineering can grep the JSONL directly if they ever need to investigate.
+ */
+const INVENTORY_SEVERITIES: Set<Severity> = new Set(['critical', 'high']);
+
+/**
+ * Aggregate every actionable repair event + admin-review flag across all
+ * devices. Returns items sorted: critical → high, newest first.
+ *
+ * Medium/low repairs are deliberately excluded — see INVENTORY_SEVERITIES.
  */
 export function loadAttentionItems(): AttentionItem[] {
   if (!existsSync(PIPELINE_DIR)) return [];
@@ -174,15 +187,17 @@ export function loadAttentionItems(): AttentionItem[] {
           continue;
         }
 
-        // Repair changes → one item each
+        // Repair changes → one item each (only high+critical reach inventory)
         for (let chgIdx = 0; chgIdx < (entry.changes ?? []).length; chgIdx++) {
           const change = entry.changes[chgIdx];
+          const severity = change.severity ?? 'medium';
+          if (!INVENTORY_SEVERITIES.has(severity)) continue;
           const id = `${deviceId}:${entry.timestamp}:c${lineIdx}-${chgIdx}`;
           const info = describeChange(change);
           items.push({
             id,
             deviceId,
-            severity: change.severity ?? 'medium',
+            severity,
             kind: change.kind,
             description: info.description,
             suggestedAction: info.suggestedAction,
@@ -192,15 +207,17 @@ export function loadAttentionItems(): AttentionItem[] {
           });
         }
 
-        // Unrepairable findings → one item each
+        // Unrepairable findings → one item each (only high+critical reach inventory)
         for (let findIdx = 0; findIdx < (entry.unrepairableFindings ?? []).length; findIdx++) {
           const f = entry.unrepairableFindings[findIdx];
+          const severity = findingSeverity(f.code);
+          if (!INVENTORY_SEVERITIES.has(severity)) continue;
           const id = `${deviceId}:${entry.timestamp}:u${lineIdx}-${findIdx}`;
           const info = describeFinding(f);
           items.push({
             id,
             deviceId,
-            severity: findingSeverity(f.code),
+            severity,
             kind: f.code,
             description: info.description,
             suggestedAction: info.suggestedAction,
@@ -213,7 +230,7 @@ export function loadAttentionItems(): AttentionItem[] {
     }
   }
 
-  // Sort: critical → high → medium → low, then newest first
+  // Sort: critical → high, newest first within tier
   const severityRank: Record<Severity, number> = { critical: 0, high: 1, medium: 2, low: 3 };
   items.sort((a, b) => {
     const sevDiff = severityRank[a.severity] - severityRank[b.severity];

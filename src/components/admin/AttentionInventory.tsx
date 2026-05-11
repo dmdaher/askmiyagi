@@ -47,11 +47,6 @@ export default function AttentionInventory() {
   const [data, setData] = useState<AttentionResponse | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [showReviewed, setShowReviewed] = useState(false);
-  // Default: hide medium/low (cosmetic stuff like dissolved containers).
-  // Admin only wants to see things that could affect tutorials — missing
-  // controls, unlinked labels. Medium items stay in the audit log but
-  // don't compete for admin attention.
-  const [showLowPriority, setShowLowPriority] = useState(false);
   const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
 
   const fetchItems = useCallback(async () => {
@@ -89,15 +84,13 @@ export default function AttentionInventory() {
 
   if (!data) return null;
 
-  // Default filter: only HIGH + CRITICAL (things that could affect tutorials).
-  // Medium = cosmetic cleanup (dissolved containers, etc.), low = format warnings.
-  // Toggle reveals everything for power users.
-  const tutorialAffecting = (i: AttentionItem) => i.severity === 'critical' || i.severity === 'high';
-  const severityFiltered = showLowPriority ? data.items : data.items.filter(tutorialAffecting);
-  const visibleItems = showReviewed ? severityFiltered : severityFiltered.filter((i) => !i.reviewed);
+  // Items in `data` are already filtered server-side to high+critical only.
+  // Medium/low repairs (dissolved containers, etc.) stay in repair-log.jsonl
+  // for forensics but don't reach the admin UI at all — they're not
+  // actionable.
+  const visibleItems = showReviewed ? data.items : data.items.filter((i) => !i.reviewed);
 
   const unreviewedHigh = data.counts.high + data.counts.critical;
-  const hiddenLowPriority = data.items.filter((i) => !tutorialAffecting(i) && !i.reviewed).length;
 
   // Empty state — only show when no items at all (not just no unreviewed)
   if (data.total === 0) {
@@ -158,7 +151,7 @@ export default function AttentionInventory() {
             <p className="text-[11px] mt-0.5" style={{ color: '#9ca3af' }}>
               {unreviewedHigh > 0
                 ? <>{unreviewedHigh} item{unreviewedHigh === 1 ? '' : 's'} that may affect tutorials — review when convenient</>
-                : <>No tutorial-affecting items{hiddenLowPriority > 0 ? <> · {hiddenLowPriority} cosmetic items hidden</> : ''}</>}
+                : <>No items needing review</>}
             </p>
           </div>
         </div>
@@ -177,19 +170,6 @@ export default function AttentionInventory() {
             <div className="px-4 pb-4" style={{ borderTop: '1px solid var(--card-border, #2a2a3a)' }}>
               {/* Filter strip */}
               <div className="flex items-center gap-3 py-2.5 text-[11px] flex-wrap">
-                <label className="flex items-center gap-1.5 cursor-pointer" style={{ color: '#9ca3af' }}>
-                  <input
-                    type="checkbox"
-                    checked={showLowPriority}
-                    onChange={(e) => setShowLowPriority(e.target.checked)}
-                    className="h-3 w-3 accent-blue-500"
-                  />
-                  Show cosmetic items
-                  {hiddenLowPriority > 0 && !showLowPriority && (
-                    <span style={{ color: '#6b7280' }}> ({hiddenLowPriority} hidden)</span>
-                  )}
-                </label>
-                <span style={{ color: '#6b7280' }}>·</span>
                 <label className="flex items-center gap-1.5 cursor-pointer" style={{ color: '#9ca3af' }}>
                   <input
                     type="checkbox"
