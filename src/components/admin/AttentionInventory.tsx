@@ -90,6 +90,49 @@ export default function AttentionInventory() {
     }
   }, [fetchItems]);
 
+  /**
+   * Restore the manifest from the LAST pre-relink backup for a device.
+   * Server enforces safety guards (pipeline-running, phase-advance,
+   * stale-backup); UI just confirms and surfaces the result. If the server
+   * returns 409 with a stale-backup warning, prompt admin to re-confirm
+   * with `confirmOverwrite: true`.
+   */
+  const undoRelink = useCallback(async (deviceId: string, itemId: string) => {
+    if (!confirm(`Undo the most recent re-link on ${deviceId}?\n\nThis restores manifest-editor.json from the pre-relink backup. Pipeline-running and phase-advance guards apply.`)) return;
+    setBusyIds((s) => new Set(s).add(itemId));
+    try {
+      let res = await fetch('/api/admin/inventory/undo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId }),
+      });
+      let data = await res.json();
+      if (res.status === 409 && data.error && /modified after/i.test(data.error)) {
+        const ok = confirm(`Stale backup warning:\n\n${data.error}\n\nRestore anyway? Local changes since the backup will be discarded.`);
+        if (!ok) return;
+        res = await fetch('/api/admin/inventory/undo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deviceId, confirmOverwrite: true }),
+        });
+        data = await res.json();
+      }
+      if (!res.ok) {
+        alert(`Undo failed: ${data.error ?? res.statusText}`);
+        return;
+      }
+      await fetchItems();
+    } catch (e) {
+      alert(`Undo error: ${(e as Error).message}`);
+    } finally {
+      setBusyIds((s) => {
+        const next = new Set(s);
+        next.delete(itemId);
+        return next;
+      });
+    }
+  }, [fetchItems]);
+
   if (!data) return null;
 
   // Items in `data` are already filtered server-side to high+critical only.
@@ -252,6 +295,17 @@ export default function AttentionInventory() {
                               style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.35)' }}
                             >
                               Suggest re-link
+                            </button>
+                          )}
+                          {item.kind === 'admin-relink-apply' && (
+                            <button
+                              onClick={() => undoRelink(item.deviceId, item.id)}
+                              disabled={isBusy}
+                              className="text-[11px] px-2.5 py-1 rounded font-medium transition-colors"
+                              style={{ backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24', border: '1px solid rgba(245, 158, 11, 0.35)' }}
+                              title="Restore manifest from pre-relink backup"
+                            >
+                              Undo
                             </button>
                           )}
                           <button

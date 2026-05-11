@@ -51,8 +51,11 @@ function listRelinkBackups(deviceId: string): string[] {
     .reverse();
 }
 
+// Phases STRICTLY past phase-0-post-editor-check. Re-link applies happen
+// BEFORE post-editor-check runs in the normal flow; undo is safe while we're
+// still at or before that gate. Once the pipeline has advanced into
+// extraction or beyond, an undo would invalidate downstream artifacts.
 const STABLE_PHASES_AFTER_RELINK = new Set([
-  'phase-0-post-editor-check',
   'phase-4-extraction',
   'phase-4-audit',
   'phase-5-display-build',
