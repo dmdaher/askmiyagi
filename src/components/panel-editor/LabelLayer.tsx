@@ -182,8 +182,16 @@ export default function LabelLayer() {
               }}
             >
               <span
-                className="font-medium uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move text-gray-300"
-                style={{ padding: '4px 6px', margin: '-4px -6px', display: 'inline-block', minWidth: 16, minHeight: label.fontSize + 4 }}
+                className={`font-medium uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move${label.color ? '' : ' text-gray-300'}`}
+                style={{
+                  padding: '4px 6px',
+                  margin: '-4px -6px',
+                  display: 'inline-block',
+                  minWidth: 16,
+                  minHeight: label.fontSize + 4,
+                  // Apply color override when set; otherwise fall back to text-gray-300 via class
+                  ...(label.color ? { color: label.color } : {}),
+                }}
                 data-label-id={label.id}
                 onMouseDown={(e) => handleMouseDown(e, label)}
                 onDoubleClick={() => handleDoubleClick(label)}

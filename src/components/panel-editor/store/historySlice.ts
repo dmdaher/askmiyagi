@@ -27,6 +27,9 @@ export interface EditorLabel {
   fontSize: number;
   align: 'left' | 'center' | 'right';
   hidden?: boolean;  // soft-hide: preserves position, just not rendered
+  /** Optional text color override. Empty/undefined renders at the default
+   *  `text-gray-300`. Set via the Properties panel color picker. */
+  color?: string;
 }
 export interface ControlGroup {
   id: string;

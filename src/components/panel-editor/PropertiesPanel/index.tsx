@@ -966,10 +966,12 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         secondaryMixed={secondaryMixed}
         labelDistinctCount={new Set(labels).size}
         secondaryDistinctCount={new Set(secondaryLabels.filter((s) => s !== undefined)).size}
+        labelColor={allSame(controls.map((c) => c.labelColor)) ? controls[0]?.labelColor : undefined}
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
         onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
+        onColorChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelColor', val || undefined); }}
       />
 
       <div className="h-px bg-gray-800" />
@@ -1477,6 +1479,12 @@ function LabelProperties({ label }: { label: any }) {
     updateLabel(label.id, { align });
   }, [label.id, label.align, updateLabel, pushSnapshot]);
 
+  const handleColorChange = useCallback((color: string) => {
+    pushSnapshot();
+    // Empty string clears the override → renders at default text-gray-300
+    updateLabel(label.id, { color: color || undefined });
+  }, [label.id, updateLabel, pushSnapshot]);
+
   const handleX = useCallback((v: number) => {
     pushSnapshot();
     updateLabel(label.id, { x: Math.round(v) });
@@ -1624,6 +1632,47 @@ function LabelProperties({ label }: { label: any }) {
               {a}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Color override — same 6 presets as control labels. Empty = default grey. */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Text Color</label>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {['#e5e5e5', '#fbbf24', '#22c55e', '#3b82f6', '#a855f7', '#ef4444'].map((color) => (
+            <button
+              key={color}
+              onClick={() => handleColorChange(color)}
+              className={`w-4 h-4 rounded-sm border transition-colors ${
+                label.color === color ? 'border-blue-500 ring-1 ring-blue-500/30' : 'border-gray-600 hover:border-gray-400'
+              }`}
+              style={{ backgroundColor: color }}
+              title={color}
+            />
+          ))}
+          <button
+            onClick={() => handleColorChange('')}
+            className={`px-1.5 h-4 rounded-sm border text-[8px] text-gray-400 transition-colors ${
+              !label.color ? 'border-blue-500 ring-1 ring-blue-500/30 text-blue-400' : 'border-gray-600 hover:border-gray-400'
+            }`}
+            title="Default grey"
+          >
+            default
+          </button>
+          <input
+            type="text"
+            value={label.color ?? ''}
+            placeholder="#hex"
+            onChange={(e) => {
+              const v = e.target.value;
+              if (/^#[0-9a-fA-F]{0,6}$/.test(v) || v === '') handleColorChange(v);
+            }}
+            onBlur={(e) => {
+              const v = e.target.value;
+              if (v && !/^#[0-9a-fA-F]{6}$/.test(v)) handleColorChange('');
+            }}
+            className="w-16 h-5 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 outline-none focus:border-blue-500 font-mono"
+          />
         </div>
       </div>
 

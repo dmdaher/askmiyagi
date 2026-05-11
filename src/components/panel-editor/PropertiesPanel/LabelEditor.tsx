@@ -239,7 +239,10 @@ export default function LabelEditor({
         </div>
       )}
 
-      {labelPosition === 'on-button' && onColorChange && (
+      {/* Color picker shows for ANY label position, not just on-button.
+          Default render is text-gray-300; admin can override with a preset
+          or freeform hex. Empty value means "use default grey". */}
+      {onColorChange && (
         <div className="space-y-1">
           <label className="text-[10px] text-gray-500">Text Color</label>
           <div className="flex items-center gap-1.5">
