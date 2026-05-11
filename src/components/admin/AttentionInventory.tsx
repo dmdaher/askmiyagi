@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Severity } from '@/lib/pipeline/manifest-repair';
+import RelinkModal from './RelinkModal';
 
 interface AttentionItem {
   id: string;
@@ -43,11 +44,18 @@ function formatRelativeTime(iso: string): string {
   return `${Math.floor(hr / 24)}d ago`;
 }
 
+interface RelinkTarget {
+  deviceId: string;
+  labelId: string;
+  previousControlId: string;
+}
+
 export default function AttentionInventory() {
   const [data, setData] = useState<AttentionResponse | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [showReviewed, setShowReviewed] = useState(false);
   const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
+  const [relinkTarget, setRelinkTarget] = useState<RelinkTarget | null>(null);
 
   const fetchItems = useCallback(async () => {
     try {
@@ -230,15 +238,31 @@ export default function AttentionInventory() {
                           </p>
                         </div>
 
-                        {/* Action */}
-                        <button
-                          onClick={() => markReviewed(item.id, !item.reviewed)}
-                          disabled={isBusy}
-                          className="flex-shrink-0 self-center text-[11px] px-2.5 py-1 rounded transition-colors hover:bg-white/10 disabled:opacity-40"
-                          style={{ color: item.reviewed ? '#60a5fa' : '#9ca3af', border: '1px solid #374151' }}
-                        >
-                          {isBusy ? '...' : item.reviewed ? 'Unreview' : 'Mark reviewed'}
-                        </button>
+                        {/* Actions */}
+                        <div className="flex-shrink-0 self-center flex items-center gap-2">
+                          {item.kind === 'label-orphan-null' && !item.reviewed && (
+                            <button
+                              onClick={() => {
+                                const prev = (item.originalState?.previousControlId as string | undefined) ?? '';
+                                const lbl = (item.originalState?.labelId as string | undefined) ?? '';
+                                if (prev && lbl) setRelinkTarget({ deviceId: item.deviceId, labelId: lbl, previousControlId: prev });
+                              }}
+                              disabled={isBusy}
+                              className="text-[11px] px-2.5 py-1 rounded font-medium transition-colors"
+                              style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.35)' }}
+                            >
+                              Suggest re-link
+                            </button>
+                          )}
+                          <button
+                            onClick={() => markReviewed(item.id, !item.reviewed)}
+                            disabled={isBusy}
+                            className="text-[11px] px-2.5 py-1 rounded transition-colors hover:bg-white/10 disabled:opacity-40"
+                            style={{ color: item.reviewed ? '#60a5fa' : '#9ca3af', border: '1px solid #374151' }}
+                          >
+                            {isBusy ? '...' : item.reviewed ? 'Unreview' : 'Mark reviewed'}
+                          </button>
+                        </div>
                       </div>
                     );
                   })
@@ -248,6 +272,17 @@ export default function AttentionInventory() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Re-link modal (overlay) */}
+      {relinkTarget && (
+        <RelinkModal
+          deviceId={relinkTarget.deviceId}
+          labelId={relinkTarget.labelId}
+          previousControlId={relinkTarget.previousControlId}
+          onClose={() => setRelinkTarget(null)}
+          onChanged={() => { setRelinkTarget(null); fetchItems(); }}
+        />
+      )}
     </motion.div>
   );
 }
