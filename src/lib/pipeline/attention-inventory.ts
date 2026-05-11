@@ -16,24 +16,17 @@
  */
 import { readdirSync, readFileSync, existsSync, statSync } from 'fs';
 import { join } from 'path';
+import type { Severity, RepairChange } from './manifest-repair';
 import type { PostEditorFinding } from './checkpoint-validators';
 
 // Inlined from manifest-repair to avoid a Turbopack 16.1.6 production-build
-// resolution bug — Vercel's build fails to resolve ANY named import from
-// './manifest-repair' (function or type), even server-to-server. Local
-// builds (16.2.6) work fine. Types/values duplicated here, no shared state.
+// resolution bug — when the import was named, Vercel's build failed with
+// "Cannot find findingSeverity" against this exact line, even though the
+// export existed. Inlining is fine: 4 lines, no shared state.
 //
 // TODO(2026-Q3): once Vercel's default Next.js detection catches up to
-// 16.2.6+, revert to importing from './manifest-repair' to remove this
-// duplication.
-type Severity = 'critical' | 'high' | 'medium' | 'low';
-type RepairChange =
-  | { kind: 'container-strip'; severity: Severity; containerId: string; controlId: string }
-  | { kind: 'container-dissolve'; severity: Severity; containerId: string; originalControlIds: string[] }
-  | { kind: 'grouplabel-strip'; severity: Severity; groupLabelId: string; controlId: string }
-  | { kind: 'grouplabel-dissolve'; severity: Severity; groupLabelId: string; originalControlIds: string[] }
-  | { kind: 'label-orphan-null'; severity: Severity; labelId: string; previousControlId: string }
-  | { kind: 'section-childids-strip'; severity: Severity; sectionId: string; controlId: string };
+// 16.2.6+ (current default is 16.1.6), revert to importing findingSeverity
+// from './manifest-repair' to remove this duplication.
 const CRITICAL_CODES = new Set([
   'INVALID_JSON',
   'NO_CONTROLS',
