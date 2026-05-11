@@ -275,17 +275,29 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
         // Check sessionStorage for a recent local save — bypasses CDN propagation delay.
         // On refresh, the server might return stale data for a few seconds due to
         // Blob CDN caching. If we saved recently, use the local copy instead.
+        //
+        // EXCEPTION: when `?reload=` is in the URL, skip the cache entirely. The
+        // reload param is set by flows that explicitly want fresh server data —
+        // most importantly "Pull from Hosted → Review" (ContractorSubmissions.tsx).
+        // Without this skip, an admin who saved locally within the last 60 sec
+        // and then pulled the contractor's manifest would see the stale local
+        // save, not the pull. We also clear the cache key in that path so any
+        // later (non-reload) load in the same session starts clean.
         let data: any = null;
         let usedLocalCache = false;
         try {
-          const cached = sessionStorage.getItem(`manifest-cache-${deviceId}`);
-          if (cached) {
-            const { data: cachedData, savedAt } = JSON.parse(cached);
-            if (Date.now() - savedAt < 60000) {
-              // Local save within last 60 seconds — use it directly
-              data = { ...cachedData, _source: 'hosted' };
-              usedLocalCache = true;
+          if (!hasReloadParam) {
+            const cached = sessionStorage.getItem(`manifest-cache-${deviceId}`);
+            if (cached) {
+              const { data: cachedData, savedAt } = JSON.parse(cached);
+              if (Date.now() - savedAt < 60000) {
+                // Local save within last 60 seconds — use it directly
+                data = { ...cachedData, _source: 'hosted' };
+                usedLocalCache = true;
+              }
+              sessionStorage.removeItem(`manifest-cache-${deviceId}`);
             }
+          } else {
             sessionStorage.removeItem(`manifest-cache-${deviceId}`);
           }
         } catch { /* sessionStorage not available */ }
