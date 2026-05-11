@@ -17,8 +17,30 @@
 import { readdirSync, readFileSync, existsSync, statSync } from 'fs';
 import { join } from 'path';
 import type { Severity, RepairChange } from './manifest-repair';
-import { findingSeverity } from './manifest-repair';
 import type { PostEditorFinding } from './checkpoint-validators';
+
+// Inlined from manifest-repair to avoid a Turbopack 16.1.6 production-build
+// resolution bug — when the import was named, Vercel's build failed with
+// "Cannot find findingSeverity" against this exact line, even though the
+// export existed. Inlining is fine: 4 lines, no shared state.
+//
+// TODO(2026-Q3): once Vercel's default Next.js detection catches up to
+// 16.2.6+ (current default is 16.1.6), revert to importing findingSeverity
+// from './manifest-repair' to remove this duplication.
+const CRITICAL_CODES = new Set([
+  'INVALID_JSON',
+  'NO_CONTROLS',
+  'NO_SECTIONS',
+  'CONTROL_MISSING_ID',
+  'SECTION_MISSING_ID',
+  'CONTROL_ID_DUPLICATE',
+  'SECTION_ID_DUPLICATE',
+]);
+function findingSeverity(code: string): Severity {
+  if (CRITICAL_CODES.has(code)) return 'critical';
+  if (code === 'CONTROL_ORPHAN_SECTION' || code === 'LABEL_ORPHAN_CONTROL') return 'high';
+  return 'medium';
+}
 
 const PIPELINE_DIR = '.pipeline';
 const REVIEWED_FILE = join(PIPELINE_DIR, 'attention-reviewed.json');
