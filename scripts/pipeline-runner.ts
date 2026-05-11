@@ -1953,6 +1953,9 @@ Write to: ${extractorSievePath}/pass-2-relationships.md`,
 Read:
 - ${extractorSievePath}/pass-1-inventory.md
 - ${extractorSievePath}/pass-2-relationships.md
+- .pipeline/${deviceId}/extractor-directives.md (IF IT EXISTS — auditor-flagged gaps from a prior pass that MUST be addressed this time)
+
+If extractor-directives.md exists, treat every gap listed there as a NON-NEGOTIABLE requirement for this curriculum. Each critical gap MUST have a tutorial (new or expanded) that covers it. Cite the manual pages from the directives in your tutorial entries.
 
 Design the tutorial curriculum:
 1. Group features into TUTORIAL blocks (3-8 related features per tutorial)
@@ -1960,6 +1963,8 @@ Design the tutorial curriculum:
 3. For each TUTORIAL, list: title, features covered, manual pages, prerequisites
 4. Build a DAG (dependency graph) showing tutorial ordering
 5. Output the DAG as both ASCII art and a JSON dependency array
+6. If directives existed, add a "Directive Coverage" section confirming each
+   listed gap has a tutorial home; cite the new/expanded tutorial id.
 
 Write to: ${extractorSievePath}/pass-3-curriculum.md`,
     },
@@ -2249,34 +2254,99 @@ Include a summary of your findings in the checkpoint body.`,
     return;
   }
 
-  // Auditor wasn't certain. Per admin preference (2026-05-10), don't halt
-  // the pipeline for curriculum review — proceed to tutorial build and
-  // surface the auditor's verdict in the repair-log so it lands in the
-  // attention inventory for later admin review. This trades an immediate
-  // manual gate for a "review when convenient" workflow.
-  appendLog(deviceId, {
-    level: 'warn',
-    message: `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'} (score ${checkpoint.score ?? 'null'}). Auto-approved per admin policy; logged to attention inventory.`,
-  });
-  try {
-    const logPath = path.join('.pipeline', deviceId, 'repair-log.jsonl');
-    const entry = {
-      timestamp: new Date().toISOString(),
-      changes: [],
-      unrepairableFindings: [{
-        severity: 'error', // surfaces as HIGH in inventory
-        code: 'CURRICULUM_AUDITOR_NON_APPROVAL',
-        message: `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'} (score ${checkpoint.score ?? 'null'}). Tutorial build proceeded under auto-approve policy. Review the plan at .pipeline/${deviceId}/agents/coverage-auditor/.`,
-      }],
-      bailed: false,
-      note: 'curriculum-review auto-approved; surfaced for later admin review',
-    };
-    fs.appendFileSync(logPath, JSON.stringify(entry) + '\n');
-  } catch {
-    // best-effort logging; don't fail the pipeline if log write fails
+  // REJECTED verdicts are quality-critical: the auditor read the full
+  // manual independently and identified gaps in tutorial coverage.
+  // Shipping with known gaps means users miss documented features.
+  //
+  // Auto-retry policy: roll back to phase-4-extraction with a directives
+  // file telling the extractor which gaps to cover, up to MAX_AUDIT_RETRIES
+  // attempts. If still rejected after retries, escalate to admin — at that
+  // point the gap is genuinely hard to bridge and needs human judgment.
+  //
+  // Other non-APPROVED verdicts (null, REVIEW_NEEDED) are treated as
+  // soft escalations — halt for admin but no auto-retry (the auditor
+  // wasn't confident either way; admin needs to interpret).
+  const MAX_AUDIT_RETRIES = 2;
+  const auditKey = 'phase-4-audit';
+  const retryCount = state.strikeTracker[auditKey] ?? 0;
+
+  if (checkpoint.verdict === 'REJECTED' && retryCount < MAX_AUDIT_RETRIES) {
+    // Extract critical gaps from the auditor's checkpoint so the extractor
+    // knows specifically what to add. Falls back to full message if parser
+    // doesn't find a gaps section.
+    const directives = extractAuditorDirectives(checkpoint.markdown ?? '');
+    try {
+      const directivePath = path.join('.pipeline', deviceId, 'extractor-directives.md');
+      fs.writeFileSync(directivePath, directives);
+      appendLog(deviceId, {
+        level: 'info',
+        message: `Auditor REJECTED (score ${checkpoint.score ?? 'null'}). Auto-retry ${retryCount + 1}/${MAX_AUDIT_RETRIES}: rolling back to phase-4-extraction with directives.`,
+      });
+    } catch (err) {
+      appendLog(deviceId, { level: 'warn', message: `Could not write directives: ${(err as Error).message}` });
+    }
+
+    state.strikeTracker[auditKey] = retryCount + 1;
+    completePhase(state, 'phase-4-audit', checkpoint.score, false);
+    // Walk back: re-enter extraction with directives in scope
+    startPhase(state, 'phase-4-extraction');
+    writeState(deviceId, state);
+    return;
   }
-  completePhase(state, 'phase-4-audit', checkpoint.score, true);
-  advancePhase(state, worktreeCwd);
+
+  // Escalate to admin: either auditor still REJECTS after MAX_AUDIT_RETRIES
+  // attempts (genuine quality gap that needs human judgment) OR verdict
+  // was uncertain (null / REVIEW_NEEDED).
+  completePhase(state, 'phase-4-audit', checkpoint.score, false);
+  const escalationMsg = retryCount >= MAX_AUDIT_RETRIES
+    ? `Auditor still REJECTED after ${MAX_AUDIT_RETRIES} auto-retries. Critical gaps remain — admin must decide whether to ship as-is or address manually. See checkpoint at .pipeline/${deviceId}/agents/coverage-auditor/checkpoint.md`
+    : `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'} (score ${checkpoint.score ?? 'null'}). Review the tutorial plan at .pipeline/${deviceId}/agents/coverage-auditor/checkpoint.md`;
+  createEscalation(state, 'curriculum-review', escalationMsg);
+  sendNotification('Miyagi Pipeline', `Curriculum review needed for ${state.deviceName}`);
+}
+
+/**
+ * Parse the auditor checkpoint markdown to pull out the "Critical Gaps" or
+ * "What's Needed to Pass" sections. These get written to a directives file
+ * the extractor reads on its next pass, scoping the gap-fill work.
+ *
+ * Defensive: returns an explainer wrapping the full message when no
+ * structured section is found, so the extractor still has SOMETHING to act
+ * on.
+ */
+function extractAuditorDirectives(checkpointMarkdown: string): string {
+  const sections = ['Critical Gaps Blocking Approval', 'What\'s Needed to Pass', 'Critical Gaps', 'Required Fixes'];
+  const lines = checkpointMarkdown.split('\n');
+  const directives: string[] = [
+    '# Extractor Directives — Auditor-Identified Gaps',
+    '',
+    'The coverage auditor REJECTED the previous curriculum with the gaps below.',
+    'On this pass, the manual-extractor MUST add tutorial coverage for every',
+    'item listed here. Read the manual pages cited and produce tutorials that',
+    'teach each gap explicitly.',
+    '',
+  ];
+
+  let captured = false;
+  for (const sectionName of sections) {
+    const startIdx = lines.findIndex((l) => l.includes(sectionName));
+    if (startIdx === -1) continue;
+    // Capture until next ## heading or end of file
+    let endIdx = lines.length;
+    for (let i = startIdx + 1; i < lines.length; i++) {
+      if (/^##\s/.test(lines[i])) { endIdx = i; break; }
+    }
+    directives.push(`## ${sectionName}`, '');
+    directives.push(...lines.slice(startIdx + 1, endIdx));
+    directives.push('');
+    captured = true;
+  }
+
+  if (!captured) {
+    directives.push('## Auditor Output (Full)', '', checkpointMarkdown);
+  }
+
+  return directives.join('\n');
 }
 
 async function doPhase5DisplayBuild(state: PipelineState) {
