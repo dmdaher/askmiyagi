@@ -42,7 +42,10 @@ export async function POST(
 
   const pipelineDir = path.join('.pipeline', deviceId);
 
-  // 3. Backup manifest-editor.json (contractor positions are SACRED)
+  // 3. Backup manifest-editor.json (contractor positions are SACRED).
+  // Save to .pipeline/saved/<id>/ so future runs can recover the manifest
+  // even if this directory gets wiped. The editor's GET route also reads
+  // from saved/ as a fallback when the root copy is missing.
   const editorManifest = path.join(pipelineDir, 'manifest-editor.json');
   const savedDir = path.join('.pipeline', 'saved', deviceId);
   if (fs.existsSync(editorManifest)) {
@@ -50,10 +53,16 @@ export async function POST(
     fs.copyFileSync(editorManifest, path.join(savedDir, 'manifest-editor.json'));
   }
 
-  // 4. Delete execution artifacts (preserve input/ and manifest-editor.json backup)
+  // 4. Delete execution artifacts. CRITICAL: manifest-editor.json is NOT
+  // in this list — keeping it on disk means the editor route never returns
+  // 404 between restart and the first manifest re-generation. Earlier
+  // versions of this code wiped manifest-editor.json and relied on the
+  // editor's GET-side auto-restore from saved/, but there's a window
+  // where admin visits /admin/<id>/editor before any API call fires —
+  // they'd see an error page. Keep the root file intact.
   const toDelete = [
     'state.json', 'manifest.json', 'templates.json', 'inferred-layout.json',
-    'cost.json', 'runner.log', 'manifest-editor.json',
+    'cost.json', 'runner.log',
   ];
   for (const file of toDelete) {
     const filePath = path.join(pipelineDir, file);
