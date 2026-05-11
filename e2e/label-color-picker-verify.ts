@@ -95,13 +95,23 @@ async function run() {
 
     if (hasColorSection) {
       // Default-grey preset (#d1d5db) should be the first option in the
-      // unified preset list (matches the LabelEditor used by controls).
-      const greyBtn = page.locator('button[title="#d1d5db"]').first();
+      // unified preset list. Title now includes "Match other labels (default)"
+      // helper text from ColorPickerRow.
+      const greyBtn = page.locator('button[title*="#d1d5db"]').first();
       const hasGrey = (await greyBtn.count()) > 0;
       record('Default-grey preset (#d1d5db) in picker', hasGrey, hasGrey ? 'visible' : 'missing');
+      if (hasGrey) {
+        const greyTitle = await greyBtn.getAttribute('title');
+        const hasHelpfulCopy = greyTitle?.includes('Match other labels');
+        record(
+          'Default-grey tooltip explains intent ("Match other labels")',
+          !!hasHelpfulCopy,
+          hasHelpfulCopy ? `title: "${greyTitle}"` : `title: "${greyTitle}"`,
+        );
+      }
 
       // Click the amber preset (#f59e0b) — matches the shared LabelEditor palette
-      const amberBtn = page.locator('button[title="#f59e0b"]').first();
+      const amberBtn = page.locator('button[title*="#f59e0b"]').first();
       const hasAmber = (await amberBtn.count()) > 0;
       record('Amber preset (#f59e0b) button visible', hasAmber, hasAmber ? 'visible' : 'missing');
 
@@ -119,22 +129,52 @@ async function run() {
           appliedColor ? `style includes color override` : `style: ${styleAttr?.slice(0, 80) ?? '(no style)'}`,
         );
 
+        // UX check: amber preset now has the blue ring (selected state)
+        const ringClass = await amberBtn.getAttribute('class');
+        const hasRing = ringClass?.includes('ring-blue-500') || ringClass?.includes('border-blue-500');
+        record(
+          'Selected preset shows blue ring (selection feedback)',
+          !!hasRing,
+          hasRing ? 'ring visible on amber' : 'no selection indicator',
+        );
+
+        // UX check: default button does NOT have the ring (only amber should)
+        const defaultBtnNow = page.locator('button[title*="Reset to default"]').first();
+        if (await defaultBtnNow.count() > 0) {
+          const defClass = await defaultBtnNow.getAttribute('class');
+          const defHasRing = defClass?.includes('ring-blue-500');
+          record(
+            'Only ONE preset has the ring at a time (default button is NOT selected when amber is)',
+            !defHasRing,
+            !defHasRing ? 'default unhighlighted' : 'both highlighted (bug)',
+          );
+        }
+
         const shotColored = path.join(SCREENSHOT_DIR, '1-amber-applied.png');
         await page.screenshot({ path: shotColored, fullPage: false });
 
         // Now click the "default" button to clear the override
-        const defaultBtn = page.locator('button[title="Default grey"]').first();
+        const defaultBtn = page.locator('button[title*="Reset to default"]').first();
         if (await defaultBtn.count() > 0) {
           await defaultBtn.click();
           await page.waitForTimeout(500);
 
           const coloredSpanAfter = page.locator('[data-label-id]').last();
           const styleAfter = await coloredSpanAfter.getAttribute('style');
-          const cleared = !styleAfter?.includes('rgb(251, 191, 36)') && !styleAfter?.toLowerCase().includes('#fbbf24');
+          const cleared = !styleAfter?.includes('rgb(245, 158, 11)') && !styleAfter?.toLowerCase().includes('#f59e0b');
           record(
             'Default button clears color override',
             cleared,
             cleared ? 'override cleared' : `still has: ${styleAfter?.slice(0, 80)}`,
+          );
+
+          // After clearing, the default button itself should have the ring
+          const defClassAfter = await defaultBtn.getAttribute('class');
+          const defRingAfter = defClassAfter?.includes('ring-blue-500');
+          record(
+            'After default-click, the default button gets the blue ring',
+            !!defRingAfter,
+            defRingAfter ? 'ring on default' : 'no ring',
           );
 
           const shotCleared = path.join(SCREENSHOT_DIR, '2-default-cleared.png');

@@ -6,6 +6,7 @@ import type { ControlDef, SectionDef } from '../store';
 import ControlTypeSelector from './ControlTypeSelector';
 import LabelEditor from './LabelEditor';
 import GeometryFields from './GeometryFields';
+import ColorPickerRow from './ColorPickerRow';
 import {
   AlignLeftIcon,
   AlignCenterHIcon,
@@ -990,6 +991,7 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         labelDistinctCount={new Set(labels).size}
         secondaryDistinctCount={new Set(secondaryLabels.filter((s) => s !== undefined)).size}
         labelColor={allSame(controls.map((c) => c.labelColor)) ? controls[0]?.labelColor : undefined}
+        colorMixed={!allSame(controls.map((c) => c.labelColor))}
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
@@ -1658,48 +1660,8 @@ function LabelProperties({ label }: { label: any }) {
         </div>
       </div>
 
-      {/* Color override — matches the LabelEditor preset list (single source
-          of truth for label color UX). Empty/default button clears override
-          to render at text-gray-300 baseline. */}
-      <div className="space-y-1">
-        <label className="text-[10px] uppercase tracking-wide text-gray-500">Text Color</label>
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {['#d1d5db', '#e5e5e5', '#f59e0b', '#22d3ee', '#22c55e', '#ef4444'].map((color) => (
-            <button
-              key={color}
-              onClick={() => handleColorChange(color)}
-              className={`w-4 h-4 rounded-sm border transition-colors ${
-                label.color === color ? 'border-blue-500 ring-1 ring-blue-500/30' : 'border-gray-600 hover:border-gray-400'
-              }`}
-              style={{ backgroundColor: color }}
-              title={color}
-            />
-          ))}
-          <button
-            onClick={() => handleColorChange('')}
-            className={`px-1.5 h-4 rounded-sm border text-[8px] text-gray-400 transition-colors ${
-              !label.color ? 'border-blue-500 ring-1 ring-blue-500/30 text-blue-400' : 'border-gray-600 hover:border-gray-400'
-            }`}
-            title="Default grey"
-          >
-            default
-          </button>
-          <input
-            type="text"
-            value={label.color ?? ''}
-            placeholder="#hex"
-            onChange={(e) => {
-              const v = e.target.value;
-              if (/^#[0-9a-fA-F]{0,6}$/.test(v) || v === '') handleColorChange(v);
-            }}
-            onBlur={(e) => {
-              const v = e.target.value;
-              if (v && !/^#[0-9a-fA-F]{6}$/.test(v)) handleColorChange('');
-            }}
-            className="w-16 h-5 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 outline-none focus:border-blue-500 font-mono"
-          />
-        </div>
-      </div>
+      {/* Shared color picker — same UX as control labels in LabelEditor. */}
+      <ColorPickerRow value={label.color} onChange={handleColorChange} />
 
       {/* Position — editable x/y/w with Auto-width toggle */}
       <div className="space-y-1.5">

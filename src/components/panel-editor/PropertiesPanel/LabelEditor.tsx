@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import type { ControlDef } from '../store';
+import ColorPickerRow from './ColorPickerRow';
 
 const LABEL_POSITIONS: ControlDef['labelPosition'][] = [
   'above',
@@ -23,6 +24,9 @@ interface LabelEditorProps {
   labelMixed?: boolean;
   positionMixed?: boolean;
   secondaryMixed?: boolean;
+  /** When true (multi-select), labelColor differs across selected items.
+   *  Picker renders with no preset highlighted + a "(mixed)" caption. */
+  colorMixed?: boolean;
   /** Count of distinct values when labelMixed is true (for warning label) */
   labelDistinctCount?: number;
   secondaryDistinctCount?: number;
@@ -42,18 +46,9 @@ const ALIGN_POSITIONS = [
   'bottom-left', 'bottom-center', 'bottom-right',
 ] as const;
 
-// Single source of truth for label color presets. Used by both control
-// label editor (this file) and standalone-label LabelProperties.
-// `#d1d5db` matches the default `text-gray-300` baseline so admin can
-// reset to "what every other label looks like".
-const COLOR_PRESETS = [
-  '#d1d5db', // default grey (text-gray-300 — matches LabelLayer baseline)
-  '#e5e5e5', // white
-  '#f59e0b', // amber
-  '#22d3ee', // cyan
-  '#22c55e', // green
-  '#ef4444', // red
-];
+// Color preset palette + the visual row are owned by ColorPickerRow.
+// Imported below so both LabelEditor and LabelProperties (standalone
+// labels) render an identical picker UX.
 
 export default function LabelEditor({
   label,
@@ -66,6 +61,7 @@ export default function LabelEditor({
   labelMixed,
   positionMixed,
   secondaryMixed,
+  colorMixed,
   labelDistinctCount,
   secondaryDistinctCount,
   onLabelChange,
@@ -243,40 +239,12 @@ export default function LabelEditor({
         </div>
       )}
 
-      {/* Color picker shows for ANY label position, not just on-button.
-          Default render is text-gray-300; admin can override with a preset
-          or freeform hex. Empty value means "use default grey". */}
+      {/* Shared color picker. Caller decides where the value writes —
+          control.labelColor for on-button rendering, or the linked
+          editorLabel.color for external positions (handled in PropertiesPanel
+          index.tsx for single-control case). */}
       {onColorChange && (
-        <div className="space-y-1">
-          <label className="text-[10px] text-gray-500">Text Color</label>
-          <div className="flex items-center gap-1.5">
-            {COLOR_PRESETS.map((color) => (
-              <button
-                key={color}
-                onClick={() => onColorChange(color)}
-                className={`w-4 h-4 rounded-sm border transition-colors ${
-                  labelColor === color ? 'border-blue-500 ring-1 ring-blue-500/30' : 'border-gray-600 hover:border-gray-400'
-                }`}
-                style={{ backgroundColor: color }}
-                title={color}
-              />
-            ))}
-            <input
-              type="text"
-              value={labelColor ?? ''}
-              placeholder="#hex"
-              onChange={(e) => {
-                const v = e.target.value;
-                if (/^#[0-9a-fA-F]{0,6}$/.test(v) || v === '') onColorChange(v || '');
-              }}
-              onBlur={(e) => {
-                const v = e.target.value;
-                if (v && !/^#[0-9a-fA-F]{6}$/.test(v)) onColorChange('');
-              }}
-              className="w-16 h-5 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 outline-none focus:border-blue-500 font-mono"
-            />
-          </div>
-        </div>
+        <ColorPickerRow value={labelColor} mixed={colorMixed} onChange={onColorChange} />
       )}
 
       {/* Secondary label */}
