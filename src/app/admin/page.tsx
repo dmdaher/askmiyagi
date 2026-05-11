@@ -160,65 +160,9 @@ export default function AdminPage() {
         </p>
       </motion.div>
 
-      {/* Status banners — separate signal for genuine problems vs planned
-          hand-offs. Both can show simultaneously. Healthy state shows
-          neither (cards below speak for themselves). */}
-      {hasRuns && attentionCount > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.05 }}
-          className="mb-3 rounded-xl px-4 py-3 flex items-center gap-3"
-          style={{
-            backgroundColor: 'rgba(239, 68, 68, 0.08)',
-            border: '1px solid #ef4444',
-          }}
-        >
-          <div
-            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold"
-            style={{ backgroundColor: 'rgba(239, 68, 68, 0.18)', color: '#f87171' }}
-          >
-            !
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
-              {attentionCount} pipeline{attentionCount === 1 ? '' : 's'} need your attention
-            </p>
-            <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
-              Failed or halted with an issue. Sorted to the top below. Click into one to see the recommended action.
-            </p>
-          </div>
-        </motion.div>
-      )}
-
-      {hasRuns && handoffCount > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.08 }}
-          className="mb-3 rounded-xl px-4 py-3 flex items-center gap-3"
-          style={{
-            backgroundColor: 'rgba(59, 130, 246, 0.08)',
-            border: '1px solid #3b82f6',
-          }}
-        >
-          <div
-            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold"
-            style={{ backgroundColor: 'rgba(59, 130, 246, 0.18)', color: '#60a5fa' }}
-          >
-            ◇
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
-              {handoffCount} ready for review or hand-off
-            </p>
-            <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
-              Planned gates: send to contractor, approve templates, or approve curriculum. Decide when convenient.
-            </p>
-          </div>
-        </motion.div>
-      )}
-
+      {/* Status confirmation — only the healthy case. When there's anything
+          to act on, the bucket sections below carry the signal (they have
+          their own colored headers + descriptions). */}
       {hasRuns && attentionCount === 0 && handoffCount === 0 && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -300,22 +244,107 @@ export default function AdminPage() {
           </label>
         </div>
 
-        {/* Grid layout: upload zone first, then pipeline cards */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Upload zone as the first card */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <UploadZone onCreated={handleCreated} />
-          </motion.div>
+        {/* Bucketed layout: cards grouped by what kind of admin action they
+            require. Each bucket has its own header + grid. Empty buckets
+            are hidden so the eye lands on the right cluster. */}
+        {(() => {
+          const filteredArr = Object.values(filteredRuns);
+          const needsAttentionRuns = Object.fromEntries(
+            Object.entries(filteredRuns).filter(([, r]) => needsAttention(r)),
+          );
+          const handoffRuns = Object.fromEntries(
+            Object.entries(filteredRuns).filter(([, r]) => isHandoff(r)),
+          );
+          const inProgressRuns = Object.fromEntries(
+            Object.entries(filteredRuns).filter(([, r]) => r.status === 'running'),
+          );
+          const idleRuns = Object.fromEntries(
+            Object.entries(filteredRuns).filter(([, r]) => {
+              if (needsAttention(r)) return false;
+              if (isHandoff(r)) return false;
+              if (r.status === 'running') return false;
+              return true; // paused-without-escalation OR completed
+            }),
+          );
 
-          <PipelineDashboard
-            runs={filteredRuns}
-            onSelectPipeline={handleSelectPipeline}
-          />
-        </div>
+          const hasNeedsAttention = Object.keys(needsAttentionRuns).length > 0;
+          const hasHandoff = Object.keys(handoffRuns).length > 0;
+          const hasInProgress = Object.keys(inProgressRuns).length > 0;
+          const hasIdle = Object.keys(idleRuns).length > 0;
+
+          return (
+            <div className="space-y-8">
+              {/* Upload zone — always visible at top */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+              >
+                <UploadZone onCreated={handleCreated} />
+              </motion.div>
+
+              {hasNeedsAttention && (
+                <BucketSection
+                  title="Needs your attention"
+                  description="Failed or halted with an issue. Click in to see what to do."
+                  toneColor="#ef4444"
+                  toneBg="rgba(239, 68, 68, 0.06)"
+                  icon="!"
+                  count={Object.keys(needsAttentionRuns).length}
+                  runs={needsAttentionRuns}
+                  onSelectPipeline={handleSelectPipeline}
+                />
+              )}
+
+              {hasHandoff && (
+                <BucketSection
+                  title="Ready for hand-off"
+                  description="Send manifest to contractor, or approve templates/curriculum. Decide when convenient — no problem to fix."
+                  toneColor="#3b82f6"
+                  toneBg="rgba(59, 130, 246, 0.06)"
+                  icon="◇"
+                  count={Object.keys(handoffRuns).length}
+                  runs={handoffRuns}
+                  onSelectPipeline={handleSelectPipeline}
+                />
+              )}
+
+              {hasInProgress && (
+                <BucketSection
+                  title="In progress"
+                  description="Pipeline is running. Nothing for you to do — check back when it pauses or completes."
+                  toneColor="#9ca3af"
+                  toneBg="transparent"
+                  icon="◐"
+                  count={Object.keys(inProgressRuns).length}
+                  runs={inProgressRuns}
+                  onSelectPipeline={handleSelectPipeline}
+                />
+              )}
+
+              {hasIdle && (
+                <BucketSection
+                  title="Idle & completed"
+                  description="Stable terminal state. Open to test, preview, or publish."
+                  toneColor="#6b7280"
+                  toneBg="transparent"
+                  icon="○"
+                  count={Object.keys(idleRuns).length}
+                  runs={idleRuns}
+                  onSelectPipeline={handleSelectPipeline}
+                />
+              )}
+
+              {/* Defensive: show full list if filtering left nothing visible */}
+              {!hasNeedsAttention && !hasHandoff && !hasInProgress && !hasIdle && filteredArr.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <PipelineDashboard runs={filteredRuns} onSelectPipeline={handleSelectPipeline} />
+                </div>
+              )}
+            </div>
+          );
+        })()}
         </>
       ) : (
         /* Empty state: centered upload zone */
@@ -355,5 +384,70 @@ export default function AdminPage() {
         </motion.div>
       )}
     </div>
+  );
+}
+
+// ─── Bucketed section ──────────────────────────────────────────────────────
+// A titled grid of pipeline cards. Each bucket on the dashboard renders one
+// of these. The title + description + color tone tell admin what KIND of
+// action (if any) these pipelines need.
+
+interface BucketSectionProps {
+  title: string;
+  description: string;
+  toneColor: string;
+  toneBg: string;
+  icon: string;
+  count: number;
+  runs: Record<string, PipelineRunSummary>;
+  onSelectPipeline: (deviceId: string) => void;
+}
+
+function BucketSection({
+  title,
+  description,
+  toneColor,
+  toneBg,
+  icon,
+  count,
+  runs,
+  onSelectPipeline,
+}: BucketSectionProps) {
+  return (
+    <section>
+      {/* Bucket header */}
+      <div
+        className="mb-3 flex items-center gap-3 rounded-lg px-3 py-2"
+        style={{
+          backgroundColor: toneBg,
+          borderLeft: `3px solid ${toneColor}`,
+        }}
+      >
+        <div
+          className="flex-shrink-0 w-7 h-7 rounded flex items-center justify-center text-sm font-bold"
+          style={{ backgroundColor: `${toneColor}22`, color: toneColor }}
+        >
+          {icon}
+        </div>
+        <div className="flex-1">
+          <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--foreground, #e0e0e0)' }}>
+            {title}
+            <span
+              className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+              style={{ backgroundColor: `${toneColor}22`, color: toneColor }}
+            >
+              {count}
+            </span>
+          </h2>
+          <p className="text-[11px] mt-0.5" style={{ color: '#9ca3af' }}>
+            {description}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <PipelineDashboard runs={runs} onSelectPipeline={onSelectPipeline} />
+      </div>
+    </section>
   );
 }
