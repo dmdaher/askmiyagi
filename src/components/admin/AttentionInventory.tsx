@@ -4,11 +4,10 @@ import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RelinkModal from './RelinkModal';
 
-// Inlined to avoid Turbopack 16.1.6 cross-boundary type-import bug —
-// importing this type from manifest-repair.ts (a server-only module
-// that uses fs) into this 'use client' component fails on Vercel's
-// production build. Type is small and stable; safe to duplicate.
-// TODO(2026-Q3): revert to import once Vercel default is ≥16.2.6.
+// Duplicated from manifest-repair to sidestep a Vercel build-cache bug —
+// Vercel restores a stale compiled version of manifest-repair.ts whose
+// export map is missing newer exports, breaking ANY named import from
+// that file. See attention-inventory.ts for the full explanation.
 type Severity = 'critical' | 'high' | 'medium' | 'low';
 
 interface AttentionItem {

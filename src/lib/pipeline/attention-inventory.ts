@@ -16,17 +16,27 @@
  */
 import { readdirSync, readFileSync, existsSync, statSync } from 'fs';
 import { join } from 'path';
-import type { Severity, RepairChange } from './manifest-repair';
 import type { PostEditorFinding } from './checkpoint-validators';
 
-// Inlined from manifest-repair to avoid a Turbopack 16.1.6 production-build
-// resolution bug — when the import was named, Vercel's build failed with
-// "Cannot find findingSeverity" against this exact line, even though the
-// export existed. Inlining is fine: 4 lines, no shared state.
-//
-// TODO(2026-Q3): once Vercel's default Next.js detection catches up to
-// 16.2.6+ (current default is 16.1.6), revert to importing findingSeverity
-// from './manifest-repair' to remove this duplication.
+// Types + helper duplicated from manifest-repair to sidestep a Vercel
+// build-cache bug. Vercel restores a cached compiled version of
+// manifest-repair.ts on every deploy ("Restored build cache from previous
+// deployment ..." in the build log), and that cached module's
+// statically-known export map is missing newer exports — Turbopack then
+// reports e.g. "Export findingSeverity doesn't exist in target module"
+// even though it clearly does. The cache cannot be invalidated from
+// vercel.json or by changing the install command; only renaming the
+// source file (a bigger refactor) would bust the module identity.
+// Inlining everything we need from manifest-repair here is the minimal
+// safe workaround. No shared state, no runtime change.
+type Severity = 'critical' | 'high' | 'medium' | 'low';
+type RepairChange =
+  | { kind: 'container-strip'; severity: Severity; containerId: string; controlId: string }
+  | { kind: 'container-dissolve'; severity: Severity; containerId: string; originalControlIds: string[] }
+  | { kind: 'grouplabel-strip'; severity: Severity; groupLabelId: string; controlId: string }
+  | { kind: 'grouplabel-dissolve'; severity: Severity; groupLabelId: string; originalControlIds: string[] }
+  | { kind: 'label-orphan-null'; severity: Severity; labelId: string; previousControlId: string }
+  | { kind: 'section-childids-strip'; severity: Severity; sectionId: string; controlId: string };
 const CRITICAL_CODES = new Set([
   'INVALID_JSON',
   'NO_CONTROLS',
