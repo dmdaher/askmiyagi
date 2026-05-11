@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { usePipelineStore } from '@/store/pipelineStore';
+import { hasUsableManifest } from '@/lib/pipeline/phase-order';
 
 interface DeviceNavProps {
   deviceId: string;
@@ -12,9 +13,16 @@ export default function DeviceNav({ deviceId }: DeviceNavProps) {
   const pathname = usePathname();
   const activePipeline = usePipelineStore((s) => s.activePipeline);
 
-  const gatekeeperPassed = activePipeline?.phases?.some(
-    (p: { phase: string; status: string }) => p.phase === 'phase-0-gatekeeper' && p.status === 'passed'
-  ) ?? false;
+  // Editor button unlocks when a usable manifest exists. See
+  // hasUsableManifest — checks phase history AND current-phase position
+  // so Restart (which wipes phase history) doesn't falsely gate the
+  // Editor button.
+  const gatekeeperPassed = activePipeline
+    ? hasUsableManifest(
+        activePipeline.currentPhase,
+        activePipeline.phases as { phase: string; status: string }[] | undefined,
+      )
+    : false;
 
   const codegenCompleted = (activePipeline as any)?.codegenCompleted ?? false;
 

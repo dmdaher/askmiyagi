@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { PipelineState, LogEntry, Escalation } from '@/lib/pipeline/types';
 import { formatTimeAgo, isRecent } from '@/lib/format-time-ago';
+import { hasUsableManifest } from '@/lib/pipeline/phase-order';
 import PipelineStatusHero from './PipelineStatusHero';
 import PhaseTimeline from './PhaseTimeline';
 import LogStream from './LogStream';
@@ -61,9 +62,11 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
   // Collapsible "advanced" sections — open by default (admin preference)
   const [showAdvanced, setShowAdvanced] = useState(true);
 
-  const gatekeeperPassed = (pipeline.phases ?? []).some(
-    (p) => p.phase === 'phase-0-gatekeeper' && p.status === 'passed'
-  );
+  // Manifest / Layout tabs unlock when a usable manifest exists. Checks
+  // BOTH phase history AND current-phase position — position fallback
+  // matters because Restart wipes phase history but leaves the manifest
+  // file on disk. See hasUsableManifest in phase-order.ts.
+  const gatekeeperPassed = hasUsableManifest(pipeline.currentPhase, pipeline.phases);
 
   // Agent scores — used in advanced panel
   const agentData = ALL_AGENTS.map((agent) => {
