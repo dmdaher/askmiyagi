@@ -47,6 +47,7 @@ import {
   validateArchetypeGeometry,
 } from '../src/lib/pipeline/checkpoint-validators';
 import * as validators from '../src/lib/pipeline/checkpoint-validators';
+import * as coverageScorer from '../src/lib/pipeline/coverage-scorer';
 import { pipelinePaths, agentPath, inputPath } from '../src/lib/pipeline/paths';
 
 const deviceId = process.argv[2];
@@ -2248,105 +2249,83 @@ Include a summary of your findings in the checkpoint body.`,
   const batches = parseBatchesFromAuditor();
   if (batches.length > 0) state.tutorialBatches = batches;
 
-  if (checkpoint.verdict === 'APPROVED') {
-    completePhase(state, 'phase-4-audit', checkpoint.score, true);
+  // Deterministic verdict from the coverage-scorer. The LLM auditor's
+  // frontmatter verdict is ADVISORY only — the script applies codified
+  // thresholds to the auditor's structured gap output for the
+  // authoritative verdict. See src/lib/pipeline/coverage-scorer.ts.
+  const auditorMarkdown = checkpoint.markdown ?? '';
+  const prevGapsRaw = state.strikeTracker['phase-4-audit-prev-critical-gaps'];
+  const previousGaps = typeof prevGapsRaw === 'string'
+    ? prevGapsRaw.split('|').filter(Boolean)
+    : [];
+  const verdict = coverageScorer.scoreCoverage(auditorMarkdown, {
+    previousCriticalGapFeatures: previousGaps,
+  });
+  appendLog(deviceId, {
+    level: 'info',
+    message: `Coverage scorer verdict: ${verdict.verdict}. ${verdict.reason}`,
+  });
+  // Persist current critical gap set for convergence check on next retry
+  state.strikeTracker['phase-4-audit-prev-critical-gaps'] = verdict.criticalGaps
+    .map(g => g.feature)
+    .join('|') as unknown as number;
+
+  if (verdict.verdict === 'APPROVED' || verdict.verdict === 'APPROVED_WITH_WARNINGS') {
+    if (verdict.verdict === 'APPROVED_WITH_WARNINGS') {
+      try {
+        fs.appendFileSync(
+          path.join('.pipeline', deviceId, 'repair-log.jsonl'),
+          JSON.stringify({
+            timestamp: new Date().toISOString(),
+            changes: [],
+            unrepairableFindings: [{
+              severity: 'error',
+              code: 'CURRICULUM_APPROVED_WITH_WARNINGS',
+              message: `${verdict.reason} ${verdict.moderateGaps.length} moderate gap${verdict.moderateGaps.length === 1 ? '' : 's'} logged.`,
+            }],
+            bailed: false,
+            note: 'curriculum advanced with moderate gaps flagged for later review',
+          }) + '\n',
+        );
+      } catch { /* best-effort logging */ }
+    }
+    completePhase(state, 'phase-4-audit', verdict.scores.composite, true);
     advancePhase(state, worktreeCwd);
     return;
   }
 
-  // REJECTED verdicts are quality-critical: the auditor read the full
-  // manual independently and identified gaps in tutorial coverage.
-  // Shipping with known gaps means users miss documented features.
-  //
-  // Auto-retry policy: roll back to phase-4-extraction with a directives
-  // file telling the extractor which gaps to cover, up to MAX_AUDIT_RETRIES
-  // attempts. If still rejected after retries, escalate to admin — at that
-  // point the gap is genuinely hard to bridge and needs human judgment.
-  //
-  // Other non-APPROVED verdicts (null, REVIEW_NEEDED) are treated as
-  // soft escalations — halt for admin but no auto-retry (the auditor
-  // wasn't confident either way; admin needs to interpret).
+  // ── REJECTED or CRITICAL — decide auto-retry vs escalate ────────────────
   const MAX_AUDIT_RETRIES = 2;
   const auditKey = 'phase-4-audit';
   const retryCount = state.strikeTracker[auditKey] ?? 0;
 
-  if (checkpoint.verdict === 'REJECTED' && retryCount < MAX_AUDIT_RETRIES) {
-    // Extract critical gaps from the auditor's checkpoint so the extractor
-    // knows specifically what to add. Falls back to full message if parser
-    // doesn't find a gaps section.
-    const directives = extractAuditorDirectives(checkpoint.markdown ?? '');
+  if (verdict.shouldAutoRetry && retryCount < MAX_AUDIT_RETRIES) {
+    const directives = coverageScorer.buildDirectivesFromVerdict(verdict);
     try {
-      const directivePath = path.join('.pipeline', deviceId, 'extractor-directives.md');
-      fs.writeFileSync(directivePath, directives);
+      fs.writeFileSync(path.join('.pipeline', deviceId, 'extractor-directives.md'), directives);
       appendLog(deviceId, {
         level: 'info',
-        message: `Auditor REJECTED (score ${checkpoint.score ?? 'null'}). Auto-retry ${retryCount + 1}/${MAX_AUDIT_RETRIES}: rolling back to phase-4-extraction with directives.`,
+        message: `${verdict.verdict}: auto-retry ${retryCount + 1}/${MAX_AUDIT_RETRIES} with directives (${verdict.criticalGaps.length} critical + ${verdict.moderateGaps.length} moderate gaps).`,
       });
     } catch (err) {
       appendLog(deviceId, { level: 'warn', message: `Could not write directives: ${(err as Error).message}` });
     }
-
     state.strikeTracker[auditKey] = retryCount + 1;
-    completePhase(state, 'phase-4-audit', checkpoint.score, false);
-    // Walk back: re-enter extraction with directives in scope
+    completePhase(state, 'phase-4-audit', verdict.scores.composite, false);
     startPhase(state, 'phase-4-extraction');
     writeState(deviceId, state);
     return;
   }
 
-  // Escalate to admin: either auditor still REJECTS after MAX_AUDIT_RETRIES
-  // attempts (genuine quality gap that needs human judgment) OR verdict
-  // was uncertain (null / REVIEW_NEEDED).
-  completePhase(state, 'phase-4-audit', checkpoint.score, false);
-  const escalationMsg = retryCount >= MAX_AUDIT_RETRIES
-    ? `Auditor still REJECTED after ${MAX_AUDIT_RETRIES} auto-retries. Critical gaps remain — admin must decide whether to ship as-is or address manually. See checkpoint at .pipeline/${deviceId}/agents/coverage-auditor/checkpoint.md`
-    : `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'} (score ${checkpoint.score ?? 'null'}). Review the tutorial plan at .pipeline/${deviceId}/agents/coverage-auditor/checkpoint.md`;
+  // Escalate: CRITICAL verdict, regressed retry, or max retries hit
+  completePhase(state, 'phase-4-audit', verdict.scores.composite, false);
+  const escalationMsg = verdict.regressed
+    ? `Extractor regressed on retry — ${verdict.reason}`
+    : retryCount >= MAX_AUDIT_RETRIES
+      ? `${verdict.verdict} after ${MAX_AUDIT_RETRIES} auto-retries. ${verdict.reason}`
+      : `${verdict.verdict}: ${verdict.reason}`;
   createEscalation(state, 'curriculum-review', escalationMsg);
   sendNotification('Miyagi Pipeline', `Curriculum review needed for ${state.deviceName}`);
-}
-
-/**
- * Parse the auditor checkpoint markdown to pull out the "Critical Gaps" or
- * "What's Needed to Pass" sections. These get written to a directives file
- * the extractor reads on its next pass, scoping the gap-fill work.
- *
- * Defensive: returns an explainer wrapping the full message when no
- * structured section is found, so the extractor still has SOMETHING to act
- * on.
- */
-function extractAuditorDirectives(checkpointMarkdown: string): string {
-  const sections = ['Critical Gaps Blocking Approval', 'What\'s Needed to Pass', 'Critical Gaps', 'Required Fixes'];
-  const lines = checkpointMarkdown.split('\n');
-  const directives: string[] = [
-    '# Extractor Directives — Auditor-Identified Gaps',
-    '',
-    'The coverage auditor REJECTED the previous curriculum with the gaps below.',
-    'On this pass, the manual-extractor MUST add tutorial coverage for every',
-    'item listed here. Read the manual pages cited and produce tutorials that',
-    'teach each gap explicitly.',
-    '',
-  ];
-
-  let captured = false;
-  for (const sectionName of sections) {
-    const startIdx = lines.findIndex((l) => l.includes(sectionName));
-    if (startIdx === -1) continue;
-    // Capture until next ## heading or end of file
-    let endIdx = lines.length;
-    for (let i = startIdx + 1; i < lines.length; i++) {
-      if (/^##\s/.test(lines[i])) { endIdx = i; break; }
-    }
-    directives.push(`## ${sectionName}`, '');
-    directives.push(...lines.slice(startIdx + 1, endIdx));
-    directives.push('');
-    captured = true;
-  }
-
-  if (!captured) {
-    directives.push('## Auditor Output (Full)', '', checkpointMarkdown);
-  }
-
-  return directives.join('\n');
 }
 
 async function doPhase5DisplayBuild(state: PipelineState) {

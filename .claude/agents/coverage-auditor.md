@@ -140,6 +140,8 @@ NOW read the Manual Extractor's checkpoint and tutorial plan. Compare systematic
 
 ### PHASE 3: VERDICT & RECOMMENDATIONS
 
+Your verdict + score are now ADVISORY. The pipeline's `coverage-scorer` (src/lib/pipeline/coverage-scorer.ts) reads your gap output and applies codified thresholds to determine the authoritative verdict. Your job: produce the gap list in the structured format below (numbered list, `**Name**` bold, `(pp. N-N)` page citations). The script handles arithmetic + verdict; you handle perception + judgment.
+
 Produce the final audit verdict:
 
 1. **Gap Summary:** Total features missed by the Extractor, categorized by severity:
