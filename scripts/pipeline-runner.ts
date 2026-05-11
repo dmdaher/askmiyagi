@@ -354,7 +354,23 @@ async function run() {
         case 'phase-3-harmonic-polish':
           await doPhase3(state);
           break;
-        // panel-pr removed — PanelRenderer uses committed JSON, no codegen PR needed
+        // Legacy panel-pr: deprecated when PanelRenderer replaced codegen,
+        // but older state files still reference it. Transparently advance
+        // past — getNextPhase('panel-pr', ...) returns 'phase-4-extraction'.
+        case 'panel-pr': {
+          appendLog(deviceId, {
+            level: 'info',
+            message: 'Skipping legacy panel-pr phase (PanelRenderer obviates codegen PR step).',
+          });
+          // Mark the historical phase as skipped so the timeline reflects it
+          const existingPanelPr = state.phases.find((p) => p.phase === 'panel-pr');
+          if (existingPanelPr) {
+            existingPanelPr.status = 'skipped';
+            existingPanelPr.completedAt = new Date().toISOString();
+          }
+          advancePhase(state, worktreeCwd);
+          break;
+        }
         case 'phase-4-extraction':
           await doPhase4Extract(state);
           break;
