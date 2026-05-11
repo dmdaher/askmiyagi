@@ -658,7 +658,13 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         </>
       )}
 
-      {/* Label */}
+      {/* Label.
+          Color routing: when labelPosition === 'on-button' the label renders
+          INSIDE the button face via PanelButton — written to control.labelColor.
+          For external positions (above/below/right/left/etc.) the visible
+          label is the linked editorLabel rendered by LabelLayer — color
+          must be written to controlLabel.color or the picker appears to
+          do nothing. Single picker, position-aware routing. */}
       <LabelEditor
         label={control.label}
         labelPosition={control.labelPosition}
@@ -666,13 +672,30 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         labelFontSize={control.labelFontSize}
         isDualLabel={control.ledVariant === 'dual-label'}
         labelAlign={control.labelAlign}
-        labelColor={control.labelColor}
+        labelColor={
+          control.labelPosition === 'on-button'
+            ? control.labelColor
+            : controlLabel?.color
+        }
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
         onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
         onAlignChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelAlign', val); }}
-        onColorChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelColor', val || undefined); }}
+        onColorChange={(val) => {
+          pushSnapshot();
+          if (control.labelPosition === 'on-button') {
+            updateControlProp(ids, 'labelColor', val || undefined);
+          } else if (controlLabel) {
+            // External label — write to the linked editor label
+            updateLabel(controlLabel.id, { color: val || undefined });
+          } else {
+            // No linked editor label exists yet (rare — usually one exists
+            // when labelPosition is external). Fall back to control.labelColor
+            // so the value isn't lost.
+            updateControlProp(ids, 'labelColor', val || undefined);
+          }
+        }}
       />
 
       {/* Divider */}
@@ -1635,11 +1658,13 @@ function LabelProperties({ label }: { label: any }) {
         </div>
       </div>
 
-      {/* Color override — same 6 presets as control labels. Empty = default grey. */}
+      {/* Color override — matches the LabelEditor preset list (single source
+          of truth for label color UX). Empty/default button clears override
+          to render at text-gray-300 baseline. */}
       <div className="space-y-1">
         <label className="text-[10px] uppercase tracking-wide text-gray-500">Text Color</label>
         <div className="flex items-center gap-1.5 flex-wrap">
-          {['#e5e5e5', '#fbbf24', '#22c55e', '#3b82f6', '#a855f7', '#ef4444'].map((color) => (
+          {['#d1d5db', '#e5e5e5', '#f59e0b', '#22d3ee', '#22c55e', '#ef4444'].map((color) => (
             <button
               key={color}
               onClick={() => handleColorChange(color)}

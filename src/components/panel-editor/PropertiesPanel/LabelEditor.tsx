@@ -42,9 +42,13 @@ const ALIGN_POSITIONS = [
   'bottom-left', 'bottom-center', 'bottom-right',
 ] as const;
 
+// Single source of truth for label color presets. Used by both control
+// label editor (this file) and standalone-label LabelProperties.
+// `#d1d5db` matches the default `text-gray-300` baseline so admin can
+// reset to "what every other label looks like".
 const COLOR_PRESETS = [
+  '#d1d5db', // default grey (text-gray-300 — matches LabelLayer baseline)
   '#e5e5e5', // white
-  '#9ca3af', // gray
   '#f59e0b', // amber
   '#22d3ee', // cyan
   '#22c55e', // green

@@ -94,22 +94,27 @@ async function run() {
     record('Properties shows "Text Color" section for label', hasColorSection, hasColorSection ? 'visible' : 'missing');
 
     if (hasColorSection) {
-      // Find the amber preset (#fbbf24). Click it.
-      const amberBtn = page.locator('button[title="#fbbf24"]').first();
+      // Default-grey preset (#d1d5db) should be the first option in the
+      // unified preset list (matches the LabelEditor used by controls).
+      const greyBtn = page.locator('button[title="#d1d5db"]').first();
+      const hasGrey = (await greyBtn.count()) > 0;
+      record('Default-grey preset (#d1d5db) in picker', hasGrey, hasGrey ? 'visible' : 'missing');
+
+      // Click the amber preset (#f59e0b) — matches the shared LabelEditor palette
+      const amberBtn = page.locator('button[title="#f59e0b"]').first();
       const hasAmber = (await amberBtn.count()) > 0;
-      record('Amber preset (#fbbf24) button visible', hasAmber, hasAmber ? 'visible' : 'missing');
+      record('Amber preset (#f59e0b) button visible', hasAmber, hasAmber ? 'visible' : 'missing');
 
       if (hasAmber) {
         await amberBtn.click();
         await page.waitForTimeout(500);
 
-        // Verify the label in the canvas now has color: #fbbf24 inline style
-        // The label root in LabelLayer has data-label-id on the span
+        // Verify the label in the canvas now has color: #f59e0b inline style
         const coloredSpan = page.locator('[data-label-id]').last();
         const styleAttr = await coloredSpan.getAttribute('style');
-        const appliedColor = styleAttr?.includes('rgb(251, 191, 36)') || styleAttr?.toLowerCase().includes('#fbbf24');
+        const appliedColor = styleAttr?.includes('rgb(245, 158, 11)') || styleAttr?.toLowerCase().includes('#f59e0b');
         record(
-          'Label rendered with amber color (#fbbf24) after click',
+          'Label rendered with amber color (#f59e0b) after click',
           !!appliedColor,
           appliedColor ? `style includes color override` : `style: ${styleAttr?.slice(0, 80) ?? '(no style)'}`,
         );
