@@ -578,7 +578,13 @@ export default function PanelRenderer({
             fontSize: label.fontSize,
             lineHeight: `${label.lineHeight ?? label.fontSize + 2}px`,
           }}>
-          <span className={`font-medium uppercase tracking-wider whitespace-nowrap ${label.icon ? 'text-gray-200' : 'text-gray-400'}`}>
+          {/* Unify icon + text label tone — previous code rendered icons
+              text-gray-200 (whiter) while text was text-gray-400 (greyer),
+              creating an inconsistent contrast when a section had both
+              styles (e.g., OSC 1/2 on DeepMind-12 had a brighter waveform
+              icon label than its neighbouring "OSC 1" text label). Both
+              render at text-gray-300 now, matching LabelLayer (editor). */}
+          <span className="font-medium uppercase tracking-wider whitespace-nowrap text-gray-300">
             {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
               <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
                 {HARDWARE_ICON_SVGS[label.icon]}

@@ -346,8 +346,21 @@ export default function EditorToolbar({
       <button
         onClick={() => {
           pushSnapshot();
-          // Create at center of canvas area
-          addStandaloneLabel(canvasWidth / 2 - 30, canvasHeight / 2);
+          // Create at center of canvas area; flash + scroll-to so the
+          // contractor sees where the new label landed (matches the
+          // new-container pattern in ContextMenu.tsx).
+          const newId = addStandaloneLabel(canvasWidth / 2 - 30, canvasHeight / 2);
+          const store = useEditorStore.getState();
+          store.flashLabelCreated(newId);
+          store.setSelectedLabel(newId);
+          if (typeof document !== 'undefined') {
+            setTimeout(() => {
+              const el = document.querySelector(`[data-label-id="${newId}"]`);
+              if (el && 'scrollIntoView' in el) {
+                el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+              }
+            }, 50);
+          }
         }}
         disabled={previewMode}
         className={iconBtn}

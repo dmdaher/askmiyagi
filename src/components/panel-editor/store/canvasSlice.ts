@@ -56,6 +56,13 @@ export interface CanvasSlice {
    * ~2.5 seconds via setTimeout in `flashContainerCreated`.
    */
   recentlyCreatedContainerId: string | null;
+  /**
+   * Transient: ID of the most recently created standalone label. Same flash
+   * pattern as recentlyCreatedContainerId — LabelLayer reads this and applies
+   * a brief outline so the contractor can see where the new label landed.
+   * Cleared after ~2.5 seconds via setTimeout in `flashLabelCreated`.
+   */
+  recentlyCreatedLabelId: string | null;
   showRulers: boolean;
   guides: { id: string; orientation: 'horizontal' | 'vertical'; position: number }[];
 
@@ -88,6 +95,8 @@ export interface CanvasSlice {
 
   /** Mark a container as just-created → triggers flash animation. */
   flashContainerCreated: (containerId: string) => void;
+  /** Mark a label as just-created → triggers flash animation in LabelLayer. */
+  flashLabelCreated: (labelId: string) => void;
 
   /** Set the scale base snapshot directly (called by scaleFromBase). */
   setScaleBase: (base: ScaleBase | null) => void;
@@ -136,6 +145,7 @@ export const createCanvasSlice: StateCreator<
   panelScale: 1.0, // 100% default panel scale
   previewMode: false,
   recentlyCreatedContainerId: null,
+  recentlyCreatedLabelId: null,
   showRulers: false,
   guides: [],
   scaleBase: null,
@@ -177,6 +187,15 @@ export const createCanvasSlice: StateCreator<
     setTimeout(() => {
       if (get().recentlyCreatedContainerId === containerId) {
         set({ recentlyCreatedContainerId: null });
+      }
+    }, 2500);
+  },
+
+  flashLabelCreated: (labelId) => {
+    set({ recentlyCreatedLabelId: labelId });
+    setTimeout(() => {
+      if (get().recentlyCreatedLabelId === labelId) {
+        set({ recentlyCreatedLabelId: null });
       }
     }, 2500);
   },

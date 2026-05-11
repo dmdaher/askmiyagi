@@ -22,6 +22,9 @@ export default function LabelLayer() {
   const zoom = useEditorStore((s) => s.zoom);
   const selectedLabel = useEditorStore((s) => s.selectedLabelId);
   const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
+  // Set by flashLabelCreated for ~2.5s after a new label is added; drives
+  // the "flash" outline below so the contractor can see where it landed.
+  const recentlyCreatedLabelId = useEditorStore((s) => s.recentlyCreatedLabelId);
 
   const [dragging, setDragging] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -153,7 +156,10 @@ export default function LabelLayer() {
               entirely in the generated panel). */}
           {editing !== label.id && (
             <div
-              className="absolute pointer-events-none select-none"
+              className={
+                'absolute pointer-events-none select-none' +
+                (recentlyCreatedLabelId === label.id ? ' label-flash-new' : '')
+              }
               style={{
                 left: label.x,
                 top: label.y,
