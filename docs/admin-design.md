@@ -282,6 +282,64 @@ If you add a new place tutorials reference IDs (e.g., a future `highlightSection
 
 ---
 
+## The Auto-Route Pattern (for pipeline phases that score LLM output)
+
+When an LLM agent produces structured output that's followed by a verdict
+(APPROVED / REJECTED / SCORE), route the pipeline based on a **deterministic
+script**, not on the LLM's own verdict string. LLMs hallucinate verdicts
+and invent thresholds inconsistently across runs; scripts apply codified
+rules every time.
+
+The pattern:
+
+```
+LLM agent  →  produces structured findings (gaps, scores, schema items)
+Script     →  applies codified thresholds → verdict + directives
+Runner     →  routes based on script verdict:
+                ├─ PASSES                → advance to next phase
+                ├─ TRIVIALLY FIXABLE     → auto-repair (no LLM re-run)
+                ├─ RECOVERABLE w/ DIRECTIVES → auto-retry feedback loop (max N tries)
+                ├─ REGRESSION DETECTED   → escalate (LLM not converging)
+                ├─ CRITICAL / MASS CORRUPTION → escalate immediately
+                └─ HALLUCINATION suspected → optional claim-verifier pass
+```
+
+### Apply at
+
+- Any phase where LLM output gets scored or has a PASS/FAIL verdict
+- Where the deterministic check can be expressed (counts, set comparisons,
+  threshold math, topological sort)
+
+### DO NOT apply at
+
+- **Planned admin gates** — `editor-ready`, `template-review`,
+  `curriculum-review`. These are intentional human-judgment moments;
+  don't try to route around them.
+- **Content / judgment work** — e.g., YouTube content curation. Where
+  the value IS the human's editorial decision.
+- **Cases with no observable convergence signal** — if the LLM can't
+  improve on retry given more directives, don't auto-retry; escalate.
+
+### Reference implementations
+
+- `src/lib/pipeline/coverage-scorer.ts` — coverage auditor verdict
+- `src/lib/pipeline/manifest-repair.ts` — post-editor manifest cleanup
+- `src/lib/tutorial/cumulative-state-validator.ts` — tutorial state drift
+- `src/lib/pipeline/checkpoint-validators.ts:detectBatchCycles` — DAG cycle check
+
+### Convergence safety
+
+When using auto-retry with directives:
+1. Cap retries (`MAX_AUDIT_RETRIES = 2` is the current default)
+2. Compare current findings against previous run's findings — if NEW
+   issues appear that weren't there before, the LLM regressed; escalate
+   immediately rather than loop
+3. If feedback is consistently ignored across retries, the LLM lacks
+   the manual content to bridge the gap; escalate (not the LLM's fault,
+   not solvable by more retries)
+
+---
+
 ## What This File Doesn't Cover
 
 - Specific component styling (Tailwind colors, font sizes) — see existing components for patterns

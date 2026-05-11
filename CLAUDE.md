@@ -95,6 +95,7 @@ Quick rules (full detail in admin-design.md):
 - **One-glance admin UX**: top of any admin detail page = one sentence + one recommended action. Everything else is collapsed diagnostics. Don't surface healthy state for review.
 - **Atomic cross-ref writes**: `section.childIds` and `control.sectionId` mutate through `setControlSection()` only.
 - **No cost UI**: cost tracked server-side in `cost.json`; never shown in admin views; stripped from log content via `stripCosts()`.
+- **Auto-route pattern**: pipeline phases that score LLM output use a deterministic script for the verdict + directives (see `docs/admin-design.md`). LLMs do perception/judgment; scripts do arithmetic/thresholds.
 
 ---
 

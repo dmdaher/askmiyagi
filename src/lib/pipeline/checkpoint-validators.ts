@@ -451,6 +451,9 @@ export function validatePassCurriculum(content: string): ValidationResult {
 
 /**
  * Validate Pass 4 — Batches: must have BATCH blocks and dependency chain.
+ * Also runs a deterministic cycle detection on any JSON dependency array
+ * found in the content (the LLM is unreliable at cycle detection; a
+ * topological sort handles it perfectly).
  */
 export function validatePassBatches(content: string): ValidationResult {
   const errors: string[] = [];
@@ -464,7 +467,92 @@ export function validatePassBatches(content: string): ValidationResult {
     errors.push('Missing dependency chain or batch ordering');
   }
 
+  // Deterministic cycle detection on the JSON dependency array
+  const cycleResult = detectBatchCycles(content);
+  if (cycleResult.cycleMembers.length > 0) {
+    errors.push(
+      `Dependency cycle detected: ${cycleResult.cycleMembers.join(' → ')} → ${cycleResult.cycleMembers[0]}. ` +
+      'Break this cycle and re-run.',
+    );
+  }
+
   return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Parse a JSON dependency array out of pass-4-batches.md content and detect
+ * cycles via Kahn's algorithm.
+ *
+ * Expected format (the extractor's SOUL guides toward this):
+ *
+ *   [
+ *     { "batch": "A", "depends_on": [] },
+ *     { "batch": "B", "depends_on": ["A"] },
+ *     { "batch": "C", "depends_on": ["B"] }
+ *   ]
+ *
+ * If no JSON array is found, returns empty (the LLM may have only produced
+ * an ASCII DAG — caller should treat as "no cycle check possible" rather
+ * than "no cycle"; existing required-content checks still apply).
+ *
+ * Exported for tests.
+ */
+export function detectBatchCycles(content: string): { cycleMembers: string[]; checked: boolean } {
+  // Find the first JSON array of objects with `batch` + `depends_on`
+  // Use a non-greedy match to handle multiple JSON blocks in the content
+  const jsonMatches = content.matchAll(/\[\s*\{[\s\S]*?\}\s*\]/g);
+  let deps: { batch: string; depends_on: string[] }[] | null = null;
+  for (const match of jsonMatches) {
+    try {
+      const parsed = JSON.parse(match[0]);
+      if (
+        Array.isArray(parsed) &&
+        parsed.length > 0 &&
+        parsed.every(
+          (e): e is { batch: string; depends_on: string[] } =>
+            e && typeof e.batch === 'string' && Array.isArray(e.depends_on),
+        )
+      ) {
+        deps = parsed;
+        break;
+      }
+    } catch { /* not JSON or wrong shape, keep looking */ }
+  }
+
+  if (!deps) {
+    return { cycleMembers: [], checked: false };
+  }
+
+  // Kahn's algorithm: nodes with 0 in-degree go first; repeat. Any unvisited
+  // nodes at the end are part of a cycle.
+  const inDegree = new Map<string, number>();
+  const adj = new Map<string, string[]>();
+  for (const node of deps) {
+    if (!inDegree.has(node.batch)) inDegree.set(node.batch, 0);
+    if (!adj.has(node.batch)) adj.set(node.batch, []);
+    for (const dep of node.depends_on) {
+      // edge: dep -> node.batch (dep must come before)
+      if (!inDegree.has(dep)) inDegree.set(dep, 0);
+      if (!adj.has(dep)) adj.set(dep, []);
+      adj.get(dep)!.push(node.batch);
+      inDegree.set(node.batch, (inDegree.get(node.batch) ?? 0) + 1);
+    }
+  }
+
+  const queue: string[] = [];
+  for (const [n, d] of inDegree) if (d === 0) queue.push(n);
+  const visited = new Set<string>();
+  while (queue.length > 0) {
+    const n = queue.shift()!;
+    visited.add(n);
+    for (const next of adj.get(n) ?? []) {
+      inDegree.set(next, (inDegree.get(next) ?? 0) - 1);
+      if (inDegree.get(next) === 0) queue.push(next);
+    }
+  }
+
+  const unvisited = Array.from(inDegree.keys()).filter((n) => !visited.has(n));
+  return { cycleMembers: unvisited, checked: true };
 }
 
 /**
