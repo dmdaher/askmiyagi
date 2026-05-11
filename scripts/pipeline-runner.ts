@@ -47,6 +47,7 @@ import {
   validateArchetypeGeometry,
 } from '../src/lib/pipeline/checkpoint-validators';
 import * as validators from '../src/lib/pipeline/checkpoint-validators';
+import * as coverageScorer from '../src/lib/pipeline/coverage-scorer';
 import { pipelinePaths, agentPath, inputPath } from '../src/lib/pipeline/paths';
 
 const deviceId = process.argv[2];
@@ -354,7 +355,23 @@ async function run() {
         case 'phase-3-harmonic-polish':
           await doPhase3(state);
           break;
-        // panel-pr removed — PanelRenderer uses committed JSON, no codegen PR needed
+        // Legacy panel-pr: deprecated when PanelRenderer replaced codegen,
+        // but older state files still reference it. Transparently advance
+        // past — getNextPhase('panel-pr', ...) returns 'phase-4-extraction'.
+        case 'panel-pr': {
+          appendLog(deviceId, {
+            level: 'info',
+            message: 'Skipping legacy panel-pr phase (PanelRenderer obviates codegen PR step).',
+          });
+          // Mark the historical phase as skipped so the timeline reflects it
+          const existingPanelPr = state.phases.find((p) => p.phase === 'panel-pr');
+          if (existingPanelPr) {
+            existingPanelPr.status = 'skipped';
+            existingPanelPr.completedAt = new Date().toISOString();
+          }
+          advancePhase(state, worktreeCwd);
+          break;
+        }
         case 'phase-4-extraction':
           await doPhase4Extract(state);
           break;
@@ -1937,6 +1954,9 @@ Write to: ${extractorSievePath}/pass-2-relationships.md`,
 Read:
 - ${extractorSievePath}/pass-1-inventory.md
 - ${extractorSievePath}/pass-2-relationships.md
+- .pipeline/${deviceId}/extractor-directives.md (IF IT EXISTS — auditor-flagged gaps from a prior pass that MUST be addressed this time)
+
+If extractor-directives.md exists, treat every gap listed there as a NON-NEGOTIABLE requirement for this curriculum. Each critical gap MUST have a tutorial (new or expanded) that covers it. Cite the manual pages from the directives in your tutorial entries.
 
 Design the tutorial curriculum:
 1. Group features into TUTORIAL blocks (3-8 related features per tutorial)
@@ -1944,6 +1964,8 @@ Design the tutorial curriculum:
 3. For each TUTORIAL, list: title, features covered, manual pages, prerequisites
 4. Build a DAG (dependency graph) showing tutorial ordering
 5. Output the DAG as both ASCII art and a JSON dependency array
+6. If directives existed, add a "Directive Coverage" section confirming each
+   listed gap has a tutorial home; cite the new/expanded tutorial id.
 
 Write to: ${extractorSievePath}/pass-3-curriculum.md`,
     },
@@ -2224,16 +2246,86 @@ Include a summary of your findings in the checkpoint body.`,
 
   const checkpoint = readAgentCheckpoint('coverage-auditor');
   copyAgentOutput('coverage-auditor');
-  if (checkpoint.verdict === 'APPROVED') {
-    completePhase(state, 'phase-4-audit', checkpoint.score, true);
-    const batches = parseBatchesFromAuditor();
-    if (batches.length > 0) state.tutorialBatches = batches;
+  const batches = parseBatchesFromAuditor();
+  if (batches.length > 0) state.tutorialBatches = batches;
+
+  // Deterministic verdict from the coverage-scorer. The LLM auditor's
+  // frontmatter verdict is ADVISORY only — the script applies codified
+  // thresholds to the auditor's structured gap output for the
+  // authoritative verdict. See src/lib/pipeline/coverage-scorer.ts.
+  const auditorMarkdown = checkpoint.markdown ?? '';
+  const prevGapsRaw = state.strikeTracker['phase-4-audit-prev-critical-gaps'];
+  const previousGaps = typeof prevGapsRaw === 'string'
+    ? prevGapsRaw.split('|').filter(Boolean)
+    : [];
+  const verdict = coverageScorer.scoreCoverage(auditorMarkdown, {
+    previousCriticalGapFeatures: previousGaps,
+  });
+  appendLog(deviceId, {
+    level: 'info',
+    message: `Coverage scorer verdict: ${verdict.verdict}. ${verdict.reason}`,
+  });
+  // Persist current critical gap set for convergence check on next retry
+  state.strikeTracker['phase-4-audit-prev-critical-gaps'] = verdict.criticalGaps
+    .map(g => g.feature)
+    .join('|') as unknown as number;
+
+  if (verdict.verdict === 'APPROVED' || verdict.verdict === 'APPROVED_WITH_WARNINGS') {
+    if (verdict.verdict === 'APPROVED_WITH_WARNINGS') {
+      try {
+        fs.appendFileSync(
+          path.join('.pipeline', deviceId, 'repair-log.jsonl'),
+          JSON.stringify({
+            timestamp: new Date().toISOString(),
+            changes: [],
+            unrepairableFindings: [{
+              severity: 'error',
+              code: 'CURRICULUM_APPROVED_WITH_WARNINGS',
+              message: `${verdict.reason} ${verdict.moderateGaps.length} moderate gap${verdict.moderateGaps.length === 1 ? '' : 's'} logged.`,
+            }],
+            bailed: false,
+            note: 'curriculum advanced with moderate gaps flagged for later review',
+          }) + '\n',
+        );
+      } catch { /* best-effort logging */ }
+    }
+    completePhase(state, 'phase-4-audit', verdict.scores.composite, true);
     advancePhase(state, worktreeCwd);
-  } else {
-    completePhase(state, 'phase-4-audit', checkpoint.score, false);
-    createEscalation(state, 'curriculum-review', `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'}. Review the tutorial plan.`);
-    sendNotification('Miyagi Pipeline', `Curriculum review needed for ${state.deviceName}`);
+    return;
   }
+
+  // ── REJECTED or CRITICAL — decide auto-retry vs escalate ────────────────
+  const MAX_AUDIT_RETRIES = 2;
+  const auditKey = 'phase-4-audit';
+  const retryCount = state.strikeTracker[auditKey] ?? 0;
+
+  if (verdict.shouldAutoRetry && retryCount < MAX_AUDIT_RETRIES) {
+    const directives = coverageScorer.buildDirectivesFromVerdict(verdict);
+    try {
+      fs.writeFileSync(path.join('.pipeline', deviceId, 'extractor-directives.md'), directives);
+      appendLog(deviceId, {
+        level: 'info',
+        message: `${verdict.verdict}: auto-retry ${retryCount + 1}/${MAX_AUDIT_RETRIES} with directives (${verdict.criticalGaps.length} critical + ${verdict.moderateGaps.length} moderate gaps).`,
+      });
+    } catch (err) {
+      appendLog(deviceId, { level: 'warn', message: `Could not write directives: ${(err as Error).message}` });
+    }
+    state.strikeTracker[auditKey] = retryCount + 1;
+    completePhase(state, 'phase-4-audit', verdict.scores.composite, false);
+    startPhase(state, 'phase-4-extraction');
+    writeState(deviceId, state);
+    return;
+  }
+
+  // Escalate: CRITICAL verdict, regressed retry, or max retries hit
+  completePhase(state, 'phase-4-audit', verdict.scores.composite, false);
+  const escalationMsg = verdict.regressed
+    ? `Extractor regressed on retry — ${verdict.reason}`
+    : retryCount >= MAX_AUDIT_RETRIES
+      ? `${verdict.verdict} after ${MAX_AUDIT_RETRIES} auto-retries. ${verdict.reason}`
+      : `${verdict.verdict}: ${verdict.reason}`;
+  createEscalation(state, 'curriculum-review', escalationMsg);
+  sendNotification('Miyagi Pipeline', `Curriculum review needed for ${state.deviceName}`);
 }
 
 async function doPhase5DisplayBuild(state: PipelineState) {

@@ -206,6 +206,14 @@ export function getNextPhase(
     return hasManual ? 'phase-0-diagram-parser' : 'phase-preflight';
   }
 
+  // Legacy `panel-pr` was deprecated when PanelRenderer replaced codegen.
+  // Older state files still reference it; without this special-case
+  // getNextPhase would return null and the runner would mark the pipeline
+  // as failed. Skip transparently to the next active phase.
+  if (currentPhase === 'panel-pr') {
+    return 'phase-4-extraction';
+  }
+
   const idx = PHASE_ORDER.indexOf(currentPhase);
   if (idx === -1 || idx >= PHASE_ORDER.length - 1) return null;
 

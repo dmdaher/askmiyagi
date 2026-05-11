@@ -48,6 +48,13 @@ If any pre-condition fails, HALT with `PRE-CONDITION FAILURE`.
 
 Run these checks programmatically before spending time on manual review. If automated checks fail, the batch is REJECTED immediately.
 
+Two deterministic validators already cover structural checks — your job is teaching quality, not re-doing what scripts handle:
+- `src/__tests__/tutorials/tutorialControlRefs.test.ts` — every highlightControls/panelStateChanges key resolves to a manifest control
+- `src/lib/tutorial/cumulative-state-validator.ts` — walks each tutorial's step-by-step state to surface drift bugs (forgot-to-reset, LED still on at end, etc.)
+
+If those scripts pass, focus your effort below on teaching quality + visual verification.
+
+
 1. **Test suite:** Run `npm test` yourself. Record the exact output. All tests must pass.
 2. **Build:** Run `npm run build`. Must compile with zero errors.
 3. **Control ID validation:** For every `highlightControls` entry and `panelStateChanges` key across all tutorials in the batch, verify the ID exists in the panel constants file. Produce a report:

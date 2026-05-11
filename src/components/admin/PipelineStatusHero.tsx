@@ -480,13 +480,35 @@ export default function PipelineStatusHero({
         document.querySelector('[data-section="logs"]')?.scrollIntoView({ behavior: 'smooth' });
         break;
       case 'publish':
-        // Surface the manual step — toggling `available: true` in src/data/devices.ts
-        alert(
-          `To publish "${pipeline.deviceName}" to the home page:\n\n` +
-          `1. Open src/data/devices.ts\n` +
-          `2. Set available: true on the "${pipeline.deviceId}" entry\n` +
-          `3. Commit + push to test → owner merges test → main`
-        );
+        // Fetch the current inventory count first so admin sees pending review
+        // items before committing to publish. Inventory now powers the
+        // "review before flipping the available flag" gate.
+        fetch('/api/admin/attention-items', { cache: 'no-store' })
+          .then((r) => r.json())
+          .then((data: { unreviewed?: number; counts?: Record<string, number> }) => {
+            const unreviewed = data?.unreviewed ?? 0;
+            const high = (data?.counts?.high ?? 0) + (data?.counts?.critical ?? 0);
+            const heads = unreviewed > 0
+              ? `⚠ ${unreviewed} unreviewed inventory item${unreviewed === 1 ? '' : 's'}` +
+                (high > 0 ? ` (${high} high+) — review on /admin before publishing.\n\n` : '.\n\n')
+              : '✓ Attention inventory is clear.\n\n';
+            alert(
+              `${heads}` +
+              `To publish "${pipeline.deviceName}" to the home page:\n\n` +
+              `1. Open src/data/devices.ts\n` +
+              `2. Set available: true on the "${pipeline.deviceId}" entry\n` +
+              `3. Commit + push to test → owner merges test → main`,
+            );
+          })
+          .catch(() => {
+            // Network failure — fall back to the original message
+            alert(
+              `To publish "${pipeline.deviceName}" to the home page:\n\n` +
+              `1. Open src/data/devices.ts\n` +
+              `2. Set available: true on the "${pipeline.deviceId}" entry\n` +
+              `3. Commit + push to test → owner merges test → main`,
+            );
+          });
         break;
     }
   };

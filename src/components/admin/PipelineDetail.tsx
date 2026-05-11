@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { PipelineState, LogEntry, Escalation } from '@/lib/pipeline/types';
 import { formatTimeAgo, isRecent } from '@/lib/format-time-ago';
+import { hasUsableManifest } from '@/lib/pipeline/phase-order';
 import PipelineStatusHero from './PipelineStatusHero';
 import PhaseTimeline from './PhaseTimeline';
 import LogStream from './LogStream';
@@ -61,9 +62,11 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
   // Collapsible "advanced" sections — open by default (admin preference)
   const [showAdvanced, setShowAdvanced] = useState(true);
 
-  const gatekeeperPassed = (pipeline.phases ?? []).some(
-    (p) => p.phase === 'phase-0-gatekeeper' && p.status === 'passed'
-  );
+  // Manifest / Layout tabs unlock when a usable manifest exists. Checks
+  // BOTH phase history AND current-phase position — position fallback
+  // matters because Restart wipes phase history but leaves the manifest
+  // file on disk. See hasUsableManifest in phase-order.ts.
+  const gatekeeperPassed = hasUsableManifest(pipeline.currentPhase, pipeline.phases);
 
   // Agent scores — used in advanced panel
   const agentData = ALL_AGENTS.map((agent) => {
@@ -252,8 +255,38 @@ function useContractorActions(deviceId: string) {
     const lastSavedMsg = contractorLastSavedAt
       ? `Contractor last saved: ${formatTimeAgo(contractorLastSavedAt)} (${new Date(contractorLastSavedAt).toLocaleString()})`
       : 'Contractor save time: unknown';
+
+    // Detect admin re-links applied locally that aren't in the contractor's
+    // hosted version. Pulling will overwrite them (local backup is still
+    // created), but admin should know up-front so they can re-apply after.
+    let relinkWarning = '';
+    try {
+      const res = await fetch('/api/admin/attention-items', { cache: 'no-store' });
+      if (res.ok) {
+        const data = (await res.json()) as { items?: { id: string; deviceId: string; kind: string }[] };
+        // We don't have per-kind audit log of admin actions exposed yet, so
+        // approximate: count any high-severity inventory items resolved on
+        // THIS device since the last contractor save. If the inventory has
+        // unreviewed items for this device, those are likely admin relinks
+        // that will reappear post-pull.
+        const localOrphansResolved = (data.items ?? []).filter(
+          (i) => i.deviceId === deviceId && i.kind === 'admin-relink-apply'
+        ).length;
+        if (localOrphansResolved > 0) {
+          relinkWarning =
+            `\n\n⚠ You have ${localOrphansResolved} admin re-link${localOrphansResolved === 1 ? '' : 's'} applied locally that aren't in contractor's version. ` +
+            `Pulling will revert them — they'll reappear as orphans in the attention inventory. Use "Suggest re-link" to re-apply (one click each).`;
+        }
+      }
+    } catch {
+      /* network blip — show the normal confirm without the warning */
+    }
+
     const ok = confirm(
-      `Pull contractor's manifest and build tutorials?\n\n${lastSavedMsg}\n\nThis will OVERWRITE your local manifest-editor.json. A timestamped backup will be created automatically.`
+      `Pull contractor's manifest and build tutorials?\n\n` +
+      `${lastSavedMsg}\n\n` +
+      `This will OVERWRITE your local manifest-editor.json. A timestamped backup will be created automatically.` +
+      relinkWarning,
     );
     if (!ok) return;
 
@@ -262,7 +295,10 @@ function useContractorActions(deviceId: string) {
     try {
       const res = await fetch(`/api/pipeline/${deviceId}/pull-from-hosted`, { method: 'POST' });
       const data = await res.json();
-      setResult(data.ok ? `✓ ${data.output}` : `✗ ${data.error}`);
+      const suffix = relinkWarning
+        ? ' — Re-apply re-links from the attention inventory.'
+        : '';
+      setResult(data.ok ? `✓ ${data.output}${suffix}` : `✗ ${data.error}`);
     } catch (err) {
       setResult(`✗ ${(err as Error).message}`);
     }

@@ -10,6 +10,7 @@ import {
   validateIndependentChecklist,
   validateLedGroupSplitting,
   validatePostEditorManifest,
+  detectBatchCycles,
 } from '../../lib/pipeline/checkpoint-validators';
 
 describe('checkpoint-validators', () => {
@@ -335,6 +336,102 @@ Tutorials: three, four`;
       const result = validatePassBatches(content);
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => e.includes('dependency chain'))).toBe(true);
+    });
+
+    it('detects dependency cycles in the JSON deps array', () => {
+      const content = `# Batch Plan
+
+## BATCH A
+## BATCH B
+## BATCH C
+
+Execution order: A → B → C → A
+
+\`\`\`json
+[
+  { "batch": "A", "depends_on": ["C"] },
+  { "batch": "B", "depends_on": ["A"] },
+  { "batch": "C", "depends_on": ["B"] }
+]
+\`\`\``;
+
+      const result = validatePassBatches(content);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('cycle'))).toBe(true);
+    });
+
+    it('accepts acyclic dependency JSON', () => {
+      const content = `# Batch Plan
+
+## BATCH A
+## BATCH B
+## BATCH C
+
+Execution order:
+
+\`\`\`json
+[
+  { "batch": "A", "depends_on": [] },
+  { "batch": "B", "depends_on": ["A"] },
+  { "batch": "C", "depends_on": ["A", "B"] }
+]
+\`\`\``;
+
+      const result = validatePassBatches(content);
+      expect(result.valid).toBe(true);
+    });
+  });
+
+  // ── detectBatchCycles direct ─────────────────────────────────────────────
+  describe('detectBatchCycles', () => {
+    it('returns checked=false when no JSON array is present', () => {
+      const r = detectBatchCycles('# No deps here, just prose');
+      expect(r.checked).toBe(false);
+      expect(r.cycleMembers).toEqual([]);
+    });
+
+    it('returns empty cycle for valid acyclic graph', () => {
+      const content = `[
+        { "batch": "A", "depends_on": [] },
+        { "batch": "B", "depends_on": ["A"] },
+        { "batch": "C", "depends_on": ["B"] }
+      ]`;
+      const r = detectBatchCycles(content);
+      expect(r.checked).toBe(true);
+      expect(r.cycleMembers).toEqual([]);
+    });
+
+    it('detects a simple A→B→A cycle', () => {
+      const content = `[
+        { "batch": "A", "depends_on": ["B"] },
+        { "batch": "B", "depends_on": ["A"] }
+      ]`;
+      const r = detectBatchCycles(content);
+      expect(r.checked).toBe(true);
+      expect(r.cycleMembers.sort()).toEqual(['A', 'B']);
+    });
+
+    it('detects a 3-node A→B→C→A cycle', () => {
+      const content = `[
+        { "batch": "A", "depends_on": ["C"] },
+        { "batch": "B", "depends_on": ["A"] },
+        { "batch": "C", "depends_on": ["B"] }
+      ]`;
+      const r = detectBatchCycles(content);
+      expect(r.checked).toBe(true);
+      expect(r.cycleMembers.sort()).toEqual(['A', 'B', 'C']);
+    });
+
+    it('ignores non-matching JSON arrays in the content', () => {
+      const content = `Some unrelated JSON: [{"foo": 1}, {"bar": 2}]
+      Then the deps:
+      [
+        { "batch": "A", "depends_on": [] },
+        { "batch": "B", "depends_on": ["A"] }
+      ]`;
+      const r = detectBatchCycles(content);
+      expect(r.checked).toBe(true);
+      expect(r.cycleMembers).toEqual([]);
     });
   });
 

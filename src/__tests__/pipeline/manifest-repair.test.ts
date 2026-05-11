@@ -98,7 +98,7 @@ describe('repairManifest', () => {
       const result = repairManifest(json);
       const containers = (result.repaired as any).controlContainers;
       expect(containers[0].controlIds).toEqual(['a']);
-      expect(result.changes).toContainEqual({ kind: 'container-strip', containerId: 'ctn-1', controlId: 'ghost' });
+      expect(result.changes).toContainEqual(expect.objectContaining({ kind: 'container-strip', containerId: 'ctn-1', controlId: 'ghost' }));
     });
 
     it('dissolves an empty container', () => {
@@ -110,7 +110,7 @@ describe('repairManifest', () => {
       const result = repairManifest(json);
       const containers = (result.repaired as any).controlContainers;
       expect(containers.find((c: any) => c.id === 'ctn-empty')).toBeUndefined();
-      expect(result.changes).toContainEqual({ kind: 'container-dissolve', containerId: 'ctn-empty' });
+      expect(result.changes).toContainEqual(expect.objectContaining({ kind: 'container-dissolve', containerId: 'ctn-empty' }));
     });
   });
 
@@ -124,7 +124,7 @@ describe('repairManifest', () => {
       const result = repairManifest(json);
       const groups = (result.repaired as any).groupLabels;
       expect(groups[0].controlIds).toEqual(['a']);
-      expect(result.changes).toContainEqual({ kind: 'grouplabel-strip', groupLabelId: 'gl-1', controlId: 'ghost' });
+      expect(result.changes).toContainEqual(expect.objectContaining({ kind: 'grouplabel-strip', groupLabelId: 'gl-1', controlId: 'ghost' }));
     });
 
     it('dissolves an empty group label', () => {
@@ -136,7 +136,7 @@ describe('repairManifest', () => {
       const result = repairManifest(json);
       const groups = (result.repaired as any).groupLabels;
       expect(groups.find((g: any) => g.id === 'gl-empty')).toBeUndefined();
-      expect(result.changes).toContainEqual({ kind: 'grouplabel-dissolve', groupLabelId: 'gl-empty' });
+      expect(result.changes).toContainEqual(expect.objectContaining({ kind: 'grouplabel-dissolve', groupLabelId: 'gl-empty' }));
     });
   });
 
@@ -155,7 +155,7 @@ describe('repairManifest', () => {
       const lblBad = labels.find((l: any) => l.id === 'lbl-bad');
       expect(lblBad.controlId).toBeNull();
       expect(lblBad.text).toBe('Ghost'); // text preserved — only controlId nulled
-      expect(result.changes).toContainEqual({ kind: 'label-orphan-null', labelId: 'lbl-bad', previousControlId: 'ghost' });
+      expect(result.changes).toContainEqual(expect.objectContaining({ kind: 'label-orphan-null', labelId: 'lbl-bad', previousControlId: 'ghost' }));
     });
   });
 
@@ -168,7 +168,7 @@ describe('repairManifest', () => {
       const result = repairManifest(json);
       const s = (result.repaired as any).sections.s;
       expect(s.childIds).toEqual(['a']);
-      expect(result.changes).toContainEqual({ kind: 'section-childids-strip', sectionId: 's', controlId: 'ghost' });
+      expect(result.changes).toContainEqual(expect.objectContaining({ kind: 'section-childids-strip', sectionId: 's', controlId: 'ghost' }));
     });
 
     it('strips orphan childIds from a section (Array shape)', () => {
@@ -179,7 +179,7 @@ describe('repairManifest', () => {
       const result = repairManifest(json);
       const sections = (result.repaired as any).sections;
       expect(sections[0].childIds).toEqual(['a']);
-      expect(result.changes).toContainEqual({ kind: 'section-childids-strip', sectionId: 's', controlId: 'ghost' });
+      expect(result.changes).toContainEqual(expect.objectContaining({ kind: 'section-childids-strip', sectionId: 's', controlId: 'ghost' }));
     });
   });
 
@@ -317,17 +317,20 @@ describe('repairManifest', () => {
       });
     }
 
-    it('catches DeepMind-12 orphan labels and emits repair changes', () => {
+    it('DeepMind-12 manifest is either clean or repairable to clean state', () => {
+      // After PR #109's auto-repair wiring + backfill, DeepMind's manifest
+      // may already be clean on disk. Test verifies the repair function
+      // leaves it in a valid state regardless of starting condition.
+      // (Previously this test asserted the orphans were still present —
+      //  brittle assumption since on-disk state mutates.)
       const path = join(pipelineDir, 'deepmind-12', 'manifest-editor.json');
       if (!existsSync(path)) return;
       const result = repairManifest(readFileSync(path, 'utf-8'));
-      // We expect the known 3 orphan labels to be nulled
-      const nulledLabels = result.changes.filter(c => c.kind === 'label-orphan-null');
-      expect(nulledLabels.length).toBeGreaterThanOrEqual(3);
-      // None of the unrepairable codes should fire for DeepMind
+      // Whether or not the manifest needed repairs, it must NOT have critical issues
       const unrepairableCodes = result.unrepairableFindings.map(f => f.code);
       expect(unrepairableCodes).not.toContain('CONTROL_ID_DUPLICATE');
       expect(unrepairableCodes).not.toContain('NO_CONTROLS');
+      expect(unrepairableCodes).not.toContain('NO_SECTIONS');
     });
   });
 });

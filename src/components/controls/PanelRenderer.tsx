@@ -578,7 +578,13 @@ export default function PanelRenderer({
             fontSize: label.fontSize,
             lineHeight: `${label.lineHeight ?? label.fontSize + 2}px`,
           }}>
-          <span className={`font-medium uppercase tracking-wider whitespace-nowrap ${label.icon ? 'text-gray-200' : 'text-gray-400'}`}>
+          {/* Unify icon + text label tone — default text-gray-300. When the
+              EditorLabel has a `color` override set via Properties Panel,
+              use it. Mirrors LabelLayer (editor view). */}
+          <span
+            className={`font-medium uppercase tracking-wider whitespace-nowrap${(label as { color?: string }).color ? '' : ' text-gray-300'}`}
+            style={(label as { color?: string }).color ? { color: (label as { color?: string }).color } : undefined}
+          >
             {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
               <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
                 {HARDWARE_ICON_SVGS[label.icon]}

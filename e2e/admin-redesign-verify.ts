@@ -189,6 +189,42 @@ async function run() {
         `options: [${opts.join(', ')}]`
       );
     }
+
+    // ── 7. Attention inventory renders + has items ──────────────────────
+    const inventoryHeader = page.locator('text=Attention inventory').first();
+    const hasInventory = (await inventoryHeader.count()) > 0;
+    record(
+      'Attention inventory panel renders on /admin',
+      hasInventory,
+      hasInventory ? 'panel visible' : 'header text "Attention inventory" not found'
+    );
+
+    if (hasInventory) {
+      // Click to expand
+      await inventoryHeader.click();
+      await page.waitForTimeout(400);
+
+      // Should see at least one deepmind-12 entry (backfill produced 6)
+      const deepmindEntry = page.locator('text=deepmind-12').first();
+      const hasDeepmindItem = (await deepmindEntry.count()) > 0;
+      const invShot = path.join(SCREENSHOT_DIR, '7-attention-inventory.png');
+      await page.screenshot({ path: invShot, fullPage: false });
+      record(
+        'Inventory shows real findings (DeepMind orphans)',
+        hasDeepmindItem,
+        hasDeepmindItem ? 'deepmind-12 row found' : 'no deepmind-12 entry visible',
+        invShot
+      );
+
+      // Mark reviewed button
+      const markBtn = page.locator('button:has-text("Mark reviewed")').first();
+      const hasMarkBtn = (await markBtn.count()) > 0;
+      record(
+        'Mark reviewed button visible per item',
+        hasMarkBtn,
+        hasMarkBtn ? 'button present' : 'no Mark reviewed button rendered'
+      );
+    }
   } catch (err) {
     record('Smoke test crashed', false, (err as Error).message);
   } finally {

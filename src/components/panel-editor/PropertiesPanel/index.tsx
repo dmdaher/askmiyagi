@@ -6,6 +6,7 @@ import type { ControlDef, SectionDef } from '../store';
 import ControlTypeSelector from './ControlTypeSelector';
 import LabelEditor from './LabelEditor';
 import GeometryFields from './GeometryFields';
+import ColorPickerRow from './ColorPickerRow';
 import {
   AlignLeftIcon,
   AlignCenterHIcon,
@@ -658,7 +659,13 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         </>
       )}
 
-      {/* Label */}
+      {/* Label.
+          Color routing: when labelPosition === 'on-button' the label renders
+          INSIDE the button face via PanelButton — written to control.labelColor.
+          For external positions (above/below/right/left/etc.) the visible
+          label is the linked editorLabel rendered by LabelLayer — color
+          must be written to controlLabel.color or the picker appears to
+          do nothing. Single picker, position-aware routing. */}
       <LabelEditor
         label={control.label}
         labelPosition={control.labelPosition}
@@ -666,13 +673,30 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         labelFontSize={control.labelFontSize}
         isDualLabel={control.ledVariant === 'dual-label'}
         labelAlign={control.labelAlign}
-        labelColor={control.labelColor}
+        labelColor={
+          control.labelPosition === 'on-button'
+            ? control.labelColor
+            : controlLabel?.color
+        }
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
         onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
         onAlignChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelAlign', val); }}
-        onColorChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelColor', val || undefined); }}
+        onColorChange={(val) => {
+          pushSnapshot();
+          if (control.labelPosition === 'on-button') {
+            updateControlProp(ids, 'labelColor', val || undefined);
+          } else if (controlLabel) {
+            // External label — write to the linked editor label
+            updateLabel(controlLabel.id, { color: val || undefined });
+          } else {
+            // No linked editor label exists yet (rare — usually one exists
+            // when labelPosition is external). Fall back to control.labelColor
+            // so the value isn't lost.
+            updateControlProp(ids, 'labelColor', val || undefined);
+          }
+        }}
       />
 
       {/* Divider */}
@@ -966,10 +990,13 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         secondaryMixed={secondaryMixed}
         labelDistinctCount={new Set(labels).size}
         secondaryDistinctCount={new Set(secondaryLabels.filter((s) => s !== undefined)).size}
+        labelColor={allSame(controls.map((c) => c.labelColor)) ? controls[0]?.labelColor : undefined}
+        colorMixed={!allSame(controls.map((c) => c.labelColor))}
         onLabelChange={handleLabelChange}
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
         onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
+        onColorChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelColor', val || undefined); }}
       />
 
       <div className="h-px bg-gray-800" />
@@ -1477,6 +1504,12 @@ function LabelProperties({ label }: { label: any }) {
     updateLabel(label.id, { align });
   }, [label.id, label.align, updateLabel, pushSnapshot]);
 
+  const handleColorChange = useCallback((color: string) => {
+    pushSnapshot();
+    // Empty string clears the override → renders at default text-gray-300
+    updateLabel(label.id, { color: color || undefined });
+  }, [label.id, updateLabel, pushSnapshot]);
+
   const handleX = useCallback((v: number) => {
     pushSnapshot();
     updateLabel(label.id, { x: Math.round(v) });
@@ -1626,6 +1659,9 @@ function LabelProperties({ label }: { label: any }) {
           ))}
         </div>
       </div>
+
+      {/* Shared color picker — same UX as control labels in LabelEditor. */}
+      <ColorPickerRow value={label.color} onChange={handleColorChange} />
 
       {/* Position — editable x/y/w with Auto-width toggle */}
       <div className="space-y-1.5">

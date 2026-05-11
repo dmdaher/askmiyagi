@@ -53,3 +53,27 @@ export const LAYOUT_ENGINE_INDEX = getPhaseIndex('phase-0-layout-engine');
 export function isEditorReady(phase: PipelinePhase): boolean {
   return getPhaseIndex(phase) >= LAYOUT_ENGINE_INDEX;
 }
+
+/** Index of the gatekeeper phase. Phases ≥ this index imply a usable
+ *  manifest exists on disk, regardless of what `phases[]` history says. */
+export const GATEKEEPER_INDEX = getPhaseIndex('phase-0-gatekeeper');
+
+/**
+ * True when the pipeline has produced a manifest the editor + manifest +
+ * layout tabs can render. Checks BOTH phase history AND current-phase
+ * position — the position fallback catches the case where Restart has
+ * wiped phase history but the manifest is still on disk.
+ *
+ * Used by:
+ * - PipelineDetail (Manifest / Layout tab gating)
+ * - DeviceNav (Editor button gating)
+ */
+export function hasUsableManifest(
+  currentPhase: PipelinePhase,
+  phases: { phase: string; status: string }[] | undefined,
+): boolean {
+  if (phases?.some((p) => p.phase === 'phase-0-gatekeeper' && p.status === 'passed')) {
+    return true;
+  }
+  return getPhaseIndex(currentPhase) >= GATEKEEPER_INDEX;
+}

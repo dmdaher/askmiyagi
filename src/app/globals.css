@@ -58,3 +58,21 @@ body {
   60%  { outline-color: rgba(34, 197, 94, 0.4);  transform: scale(1);    }
   100% { outline-color: rgba(34, 197, 94, 0);    transform: scale(1);    }
 }
+
+/* Label creation flash — mirrors container-flash but uses a narrower outline
+   since labels are tiny. Driven by `.label-flash-new` class applied in
+   LabelLayer (canvasSlice.recentlyCreatedLabelId) on +L button. */
+.label-flash-new {
+  outline: 2px solid rgba(34, 197, 94, 0.95) !important;
+  outline-offset: 2px;
+  border-radius: 3px;
+  animation: label-flash 2.4s ease-out forwards;
+}
+@keyframes label-flash {
+  0%   { outline-color: rgba(34, 197, 94, 0.95); transform: scale(1);    }
+  15%  { outline-color: rgba(34, 197, 94, 0.95); transform: scale(1.06); }
+  30%  { outline-color: rgba(34, 197, 94, 0.4);  transform: scale(1);    }
+  45%  { outline-color: rgba(34, 197, 94, 0.95); transform: scale(1.04); }
+  60%  { outline-color: rgba(34, 197, 94, 0.4);  transform: scale(1);    }
+  100% { outline-color: rgba(34, 197, 94, 0);    transform: scale(1);    }
+}
