@@ -2240,16 +2240,43 @@ Include a summary of your findings in the checkpoint body.`,
 
   const checkpoint = readAgentCheckpoint('coverage-auditor');
   copyAgentOutput('coverage-auditor');
+  const batches = parseBatchesFromAuditor();
+  if (batches.length > 0) state.tutorialBatches = batches;
+
   if (checkpoint.verdict === 'APPROVED') {
     completePhase(state, 'phase-4-audit', checkpoint.score, true);
-    const batches = parseBatchesFromAuditor();
-    if (batches.length > 0) state.tutorialBatches = batches;
     advancePhase(state, worktreeCwd);
-  } else {
-    completePhase(state, 'phase-4-audit', checkpoint.score, false);
-    createEscalation(state, 'curriculum-review', `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'}. Review the tutorial plan.`);
-    sendNotification('Miyagi Pipeline', `Curriculum review needed for ${state.deviceName}`);
+    return;
   }
+
+  // Auditor wasn't certain. Per admin preference (2026-05-10), don't halt
+  // the pipeline for curriculum review — proceed to tutorial build and
+  // surface the auditor's verdict in the repair-log so it lands in the
+  // attention inventory for later admin review. This trades an immediate
+  // manual gate for a "review when convenient" workflow.
+  appendLog(deviceId, {
+    level: 'warn',
+    message: `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'} (score ${checkpoint.score ?? 'null'}). Auto-approved per admin policy; logged to attention inventory.`,
+  });
+  try {
+    const logPath = path.join('.pipeline', deviceId, 'repair-log.jsonl');
+    const entry = {
+      timestamp: new Date().toISOString(),
+      changes: [],
+      unrepairableFindings: [{
+        severity: 'error', // surfaces as HIGH in inventory
+        code: 'CURRICULUM_AUDITOR_NON_APPROVAL',
+        message: `Coverage auditor verdict: ${checkpoint.verdict ?? 'unknown'} (score ${checkpoint.score ?? 'null'}). Tutorial build proceeded under auto-approve policy. Review the plan at .pipeline/${deviceId}/agents/coverage-auditor/.`,
+      }],
+      bailed: false,
+      note: 'curriculum-review auto-approved; surfaced for later admin review',
+    };
+    fs.appendFileSync(logPath, JSON.stringify(entry) + '\n');
+  } catch {
+    // best-effort logging; don't fail the pipeline if log write fails
+  }
+  completePhase(state, 'phase-4-audit', checkpoint.score, true);
+  advancePhase(state, worktreeCwd);
 }
 
 async function doPhase5DisplayBuild(state: PipelineState) {
