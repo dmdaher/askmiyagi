@@ -59,7 +59,7 @@ async function run() {
       width: r.width,
       height: r.height,
     };
-  })()`);
+  })()`) as { id: string; left: number; top: number; width: number; height: number } | null;
   results.push(`Editor banner rendered: ${editorBanner ? 'YES' : 'NO'}`);
   if (editorBanner) {
     results.push(`  id=${editorBanner.id} size=${editorBanner.width.toFixed(0)}x${editorBanner.height.toFixed(0)}`);
@@ -112,7 +112,7 @@ async function run() {
       zIndex: cs.zIndex,
       display: cs.display,
     };
-  })()`);
+  })()`) as { stillInDom: boolean; visible: boolean; zIndex: string; display: string } | null;
   results.push(`Banner survives deselect: ${afterDeselect && afterDeselect.visible ? 'YES' : 'NO'}`);
   if (afterDeselect) {
     results.push(`  zIndex=${afterDeselect.zIndex}, display=${afterDeselect.display}`);
@@ -151,7 +151,20 @@ async function run() {
       textColor: textCs ? textCs.color : null,
       letterSpacing: textCs ? textCs.letterSpacing : null,
     };
-  })()`);
+  })()`) as {
+    id: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    text: string;
+    pointerEvents: string;
+    backgroundColor: string;
+    borderRadius: string;
+    boxShadow: string;
+    textColor: string | null;
+    letterSpacing: string | null;
+  } | null;
   results.push(`Preview banner rendered: ${previewBanner ? 'YES' : 'NO'}`);
   if (previewBanner) {
     results.push(`  text="${previewBanner.text}" pointerEvents=${previewBanner.pointerEvents}`);
