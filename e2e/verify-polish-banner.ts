@@ -92,6 +92,37 @@ async function run() {
 
   await page.screenshot({ path: path.join(SHOT_DIR, '2-editor-with-text.png'), fullPage: false });
 
+  // 4b. Deselect (click on canvas background) — banner must REMAIN visible
+  // This is the bug the contractor reported: after deselect, banner
+  // disappeared behind sections because sections had explicit z-index and
+  // banner did not. Fix: PolishBannerLayer sets explicit z-index 50.
+  await page.evaluate(`(() => {
+    const canvas = document.querySelector('.absolute.inset-0[style*="transform"]');
+    if (canvas) canvas.click();
+  })()`);
+  await page.waitForTimeout(500);
+  const afterDeselect = await page.evaluate(`(() => {
+    const el = document.querySelector('[data-banner-id]');
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    const cs = window.getComputedStyle(el);
+    return {
+      stillInDom: true,
+      visible: r.width > 0 && r.height > 0,
+      zIndex: cs.zIndex,
+      display: cs.display,
+    };
+  })()`);
+  results.push(`Banner survives deselect: ${afterDeselect && afterDeselect.visible ? 'YES' : 'NO'}`);
+  if (afterDeselect) {
+    results.push(`  zIndex=${afterDeselect.zIndex}, display=${afterDeselect.display}`);
+    if (afterDeselect.zIndex === 'auto' || afterDeselect.zIndex === '0') {
+      fail.push(`FAIL: banner needs explicit zIndex to sit above sections (got "${afterDeselect.zIndex}")`);
+    }
+  } else {
+    fail.push('FAIL: banner disappeared from DOM after deselect');
+  }
+
   // 5. Toggle Preview
   const previewBtn = page.locator('button:has-text("Preview")').first();
   await previewBtn.click();
