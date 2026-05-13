@@ -319,21 +319,25 @@ function renderControl(
           </div>
         );
       }
+      // Default: simple transparent dot, no housing, no label.
+      // Matches the editor's ControlNode rendering (label comes from
+      // editorLabels via LabelLayer / PanelRenderer's editorLabels block).
+      // Previously this path unconditionally rendered `control.label` in a
+      // <span> below the dot — which leaked through `labelPosition: hidden`
+      // and any user-hidden floating label state, breaking editor/preview
+      // parity.
+      const ledIsOn = ledOn === true;
+      const dotColor = ledIsOn ? ledColor : '#333';
       return (
-        <div className="flex flex-col items-center justify-center gap-1 rounded"
-          style={{ backgroundColor: '#1a1a2a', padding: 4 }}>
-          <div className="rounded-full" style={{
-            width: 20, height: 20,
-            backgroundColor: ledOn ? ledColor : '#333',
-            border: `3px solid ${ledOn ? `${ledColor}44` : '#222'}`,
-            boxShadow: ledOn
-              ? 'inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.2)'
-              : 'inset 0 1px 3px rgba(0,0,0,0.5)',
-            transition: 'background-color 200ms, border-color 200ms, box-shadow 200ms',
+        <div className="flex items-center justify-center" style={{ width: w, height: h }}>
+          <div className="rounded-full flex-shrink-0" style={{
+            width: Math.min(w, h) * 0.7,
+            height: Math.min(w, h) * 0.7,
+            minWidth: 6, minHeight: 6,
+            backgroundColor: dotColor,
+            border: ledIsOn ? `2px solid ${ledColor}44` : '1px solid #444',
+            boxShadow: ledIsOn ? `0 0 6px ${ledColor}` : 'none',
           }} />
-          <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
-            {renderLabelText(control.label)}
-          </span>
         </div>
       );
     }
@@ -538,6 +542,10 @@ export default function PanelRenderer({
             style={{
               left: ep.x, top: ep.y, width: w, height: h,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
+              // Match editor's ControlNode `overflow-visible` — without this,
+              // LED box-shadow glows are clipped by PanelShell's `overflow:
+              // hidden`, leaving the editor and preview visually different.
+              overflow: 'visible',
             }}
           >
             {rotation ? (
@@ -573,7 +581,10 @@ export default function PanelRenderer({
         <div key={label.id} className="absolute pointer-events-none"
           style={{
             left: label.x, top: label.y,
-            width: label.w ?? 'auto',
+            // Figma-style "hug contents" for icon-only labels: when there's
+            // no text, the stored width is meaningless and visually wasteful.
+            // Matches the editor's LabelLayer behavior.
+            width: (label.icon && !label.text) ? 'auto' : (label.w ?? 'auto'),
             textAlign: (label.align ?? 'center') as any,
             fontSize: label.fontSize,
             lineHeight: `${label.lineHeight ?? label.fontSize + 2}px`,
@@ -583,10 +594,21 @@ export default function PanelRenderer({
               use it. Mirrors LabelLayer (editor view). */}
           <span
             className={`font-medium uppercase tracking-wider whitespace-nowrap${(label as { color?: string }).color ? '' : ' text-gray-300'}`}
-            style={(label as { color?: string }).color ? { color: (label as { color?: string }).color } : undefined}
+            style={{
+              // Parity with editor's LabelLayer inner span (minWidth + minHeight).
+              // Without these, short or empty labels jitter in width/height when
+              // toggling between editor and preview.
+              display: 'inline-block',
+              minWidth: 16,
+              minHeight: label.fontSize + 4,
+              ...((label as { color?: string }).color ? { color: (label as { color?: string }).color } : {}),
+            }}
           >
             {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
-              <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
+              // inline-flex + center alignment removes dependence on parent
+              // line-height for vertical centering — keeps the icon aligned
+              // identically between editor and preview at any zoom level.
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
                 {HARDWARE_ICON_SVGS[label.icon]}
               </span>
             ) : label.icon && HARDWARE_ICONS[label.icon] ? (
