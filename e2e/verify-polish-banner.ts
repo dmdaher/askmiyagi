@@ -103,6 +103,9 @@ async function run() {
     const el = els[0];
     const r = el.getBoundingClientRect();
     const cs = window.getComputedStyle(el);
+    // Find inner text element for text-color check
+    const textEl = el.querySelector('div');
+    const textCs = textEl ? window.getComputedStyle(textEl) : null;
     return {
       id: el.dataset.bannerId,
       left: r.left,
@@ -111,16 +114,46 @@ async function run() {
       height: r.height,
       text: el.textContent,
       pointerEvents: cs.pointerEvents,
+      backgroundColor: cs.backgroundColor,
+      borderRadius: cs.borderRadius,
+      boxShadow: cs.boxShadow,
+      textColor: textCs ? textCs.color : null,
+      letterSpacing: textCs ? textCs.letterSpacing : null,
     };
   })()`);
   results.push(`Preview banner rendered: ${previewBanner ? 'YES' : 'NO'}`);
   if (previewBanner) {
     results.push(`  text="${previewBanner.text}" pointerEvents=${previewBanner.pointerEvents}`);
+    results.push(`  bg=${previewBanner.backgroundColor}, textColor=${previewBanner.textColor}`);
+    results.push(`  borderRadius=${previewBanner.borderRadius}, boxShadow=${previewBanner.boxShadow}`);
+    results.push(`  letterSpacing=${previewBanner.letterSpacing}`);
     if (previewBanner.text !== 'TEST BANNER') {
       fail.push(`FAIL: preview text mismatch (got "${previewBanner.text}")`);
     }
     if (previewBanner.pointerEvents !== 'none') {
       fail.push(`FAIL: preview banner should have pointer-events: none (got "${previewBanner.pointerEvents}")`);
+    }
+    // Check section-header default colors (Option B applied):
+    //   bg should be rgba(0,0,0,0.15) — black at 15% opacity
+    //   text should be rgb(102,102,102) — #666666
+    if (!previewBanner.backgroundColor.includes('rgba(0, 0, 0')) {
+      fail.push(`FAIL: bg should be black-based (got "${previewBanner.backgroundColor}")`);
+    }
+    if (!previewBanner.backgroundColor.includes('0.15')) {
+      fail.push(`FAIL: bg opacity should be 0.15 (got "${previewBanner.backgroundColor}")`);
+    }
+    if (previewBanner.textColor !== 'rgb(102, 102, 102)') {
+      fail.push(`FAIL: textColor should be #666 (got "${previewBanner.textColor}")`);
+    }
+    if (previewBanner.letterSpacing !== '2.4px' && !previewBanner.letterSpacing?.includes('2.4')) {
+      // 0.15em at 16px fontSize = 2.4px
+      fail.push(`FAIL: letter-spacing should match 0.15em (got "${previewBanner.letterSpacing}")`);
+    }
+    if (previewBanner.borderRadius !== '8px') {
+      fail.push(`FAIL: borderRadius should be 8px (got "${previewBanner.borderRadius}")`);
+    }
+    if (!previewBanner.boxShadow.includes('rgba(0, 0, 0')) {
+      fail.push(`FAIL: boxShadow should be inset black (got "${previewBanner.boxShadow}")`);
     }
   } else {
     fail.push('FAIL: preview banner not in DOM');
