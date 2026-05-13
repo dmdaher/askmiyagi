@@ -43,6 +43,30 @@ const svgIcon = (d: string) => React.createElement('svg', {
   d, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round',
 }));
 
+// Multi-path icon helper for SVGs imported from external design files that
+// use their own viewBox + per-path transforms. The original 1500-unit viewBox
+// is preserved so the source coordinates remain pixel-accurate; CSS handles
+// the resize to the icon container. strokeWidth is bumped from the source's
+// thin ~25 (0.4px effective at 24px display) to 120 to match the visual
+// weight of the existing 24-viewBox icons.
+const rawSvgIcon = (
+  paths: Array<{ d: string; transform: string }>,
+  opts: { viewBox?: string; strokeWidth?: number } = {},
+) => React.createElement('svg', {
+  viewBox: opts.viewBox ?? '0 0 1500 1500',
+  width: '100%', height: '100%',
+  style: { display: 'block', pointerEvents: 'all' },
+}, paths.map((p, i) => React.createElement('path', {
+  key: i,
+  d: p.d,
+  transform: p.transform,
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: opts.strokeWidth ?? 120,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+})));
+
 export const HARDWARE_ICON_SVGS: Record<string, React.ReactNode> = {
   // ── Waveform shapes (synths: DeepMind-12, Minimoog) ──
   'sine-wave': svgIcon('M2 12 C4 6, 8 6, 10 12 S16 18, 18 12 S22 6, 22 12'),
@@ -56,10 +80,25 @@ export const HARDWARE_ICON_SVGS: Record<string, React.ReactNode> = {
   'noise': svgIcon('M2 12 L4 9 L5 15 L7 7 L8 14 L10 10 L11 16 L13 8 L14 13 L16 11 L17 15 L19 9 L20 14 L22 12'),
 
   // ── Envelope / LFO curve shapes (synths: DeepMind-12 envelope curve LEDs) ──
-  // Converted from source SVGs (100-unit space → 24-unit viewBox, factor ×0.24).
-  'curve-exp': svgIcon('M4.3 17.3 C9.1 16.8 13.4 13.7 14.6 8.4 C14.9 7.2 14.9 6 15.4 5.3 C18.2 5.3 20.4 6.2 21.1 9.4 C21.6 11.5 21.1 14.6 21.1 17.3'),
-  'curve-lin': svgIcon('M4.8 18.2 L12 4.3 L19.2 18.2'),
-  'curve-log': svgIcon('M4.3 15.8 C8.2 15.4 10.6 13 11.8 8.9 C12.2 7.4 12.2 5.8 12.7 5 C16.6 5 19.4 6.7 20.2 10.1 C20.6 12.2 20.2 15.1 20.2 17.3'),
+  // Updated 2026-05-11 with hand-drawn source SVGs from design folder. Paths
+  // + transforms preserved exactly from source (1.svg/2.svg/3.svg); stroke
+  // weight + linecap normalized to match the rest of the icon set.
+  // Per-icon viewBox tightly crops each curve's actual content extents
+  // (computed from the path-and-transform geometry). Without this, the source
+  // SVGs render at ~40-70% of their 1500-viewBox, making the icons appear
+  // smaller than the rest of the icon set.
+  'curve-exp': rawSvgIcon([
+    { d: 'M 7.816581 9.753682 C 592.62347 478.273876 1074.780355 478.277328 1454.285694 9.756835', transform: 'matrix(-0.407524, -0.629622, 0.629622, -0.407524, 1147.395871, 1260.298695)' },
+    { d: 'M 5.652851 181.359162 C 449.709609 -43.788396 893.762921 -43.785725 1337.822285 181.362891', transform: 'matrix(-0.308429, 0.683645, -0.683645, -0.308429, 686.603878, 392.743833)' },
+  ], { viewBox: '60 180 1220 1220' }),
+  'curve-lin': rawSvgIcon([
+    { d: 'M 0.000528185 11.498517 L 829.920153 11.501013', transform: 'matrix(0.373198, 0.650556, -0.650556, 0.373198, 757.03492, 471.017027)' },
+    { d: 'M -0.000850058 11.502203 L 831.973762 11.501445', transform: 'matrix(-0.375984, 0.64895, -0.64895, -0.375984, 757.460128, 479.629883)' },
+  ], { viewBox: '340 340 820 820' }),
+  'curve-log': rawSvgIcon([
+    { d: 'M 5.641764 11.713561 C 493.473639 246.710539 877.381614 246.709883 1157.36569 11.711593', transform: 'matrix(-0.326546, 0.67518, -0.67518, -0.326546, 849.62996, 270.609566)' },
+    { d: 'M 10.242608 217.765048 C 223.615099 -55.253907 619.851273 -55.254029 1198.95113 217.76468', transform: 'matrix(-0.366821, -0.654173, 0.654173, -0.366821, 1137.226927, 1134.792074)' },
+  ], { viewBox: '300 130 1070 1070' }),
 
   // ── DJ symbols (CDJ-3000, DDJ-FLX4, XDJ, DJS-1000) ──
   'cue': React.createElement('svg', {

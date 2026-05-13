@@ -1630,7 +1630,7 @@ function LabelProperties({ label }: { label: any }) {
           <input
             type="range"
             min={4}
-            max={20}
+            max={40}
             value={label.fontSize}
             onChange={(e) => handleFontSizeChange(Number(e.target.value))}
             className="h-1 flex-1 cursor-pointer accent-blue-500"
