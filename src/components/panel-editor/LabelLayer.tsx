@@ -22,6 +22,7 @@ export default function LabelLayer() {
   const zoom = useEditorStore((s) => s.zoom);
   const selectedLabel = useEditorStore((s) => s.selectedLabelId);
   const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
+  const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   // Set by flashLabelCreated for ~2.5s after a new label is added; drives
   // the "flash" outline below so the contractor can see where it landed.
   const recentlyCreatedLabelId = useEditorStore((s) => s.recentlyCreatedLabelId);
@@ -83,6 +84,15 @@ export default function LabelLayer() {
     if (editing === label.id) return;
     e.stopPropagation();
     e.preventDefault();
+    // Option/Alt+click drills down through the label to the underlying
+    // control — mirrors the cycle-to-background behavior on ControlNode.
+    // Without this, labels swallow alt-clicks and the user can't reach
+    // the control beneath. setSelectedIds clears selectedLabelId, so the
+    // visual selection moves cleanly from the label to the control.
+    if (e.altKey && label.controlId) {
+      setSelectedIds([label.controlId]);
+      return;
+    }
     setSelectedLabel(label.id);
     setDragging(label.id);
     dragStart.current = {
@@ -163,7 +173,11 @@ export default function LabelLayer() {
               style={{
                 left: label.x,
                 top: label.y,
-                width: label.w ?? undefined,
+                // Figma-style "hug contents" for icon-only labels: the stored
+                // `label.w` (default 60) is meaningful only when text is
+                // present. Icon-only labels render at content width so the
+                // selection outline + drag target hug the icon exactly.
+                width: (label.icon && !label.text) ? undefined : (label.w ?? undefined),
                 fontSize: label.fontSize,
                 // Explicit line-height matches computeLabelPosition's lineH = fontSize + 2.
                 // This keeps computed label height consistent with rendered height,
@@ -212,7 +226,10 @@ export default function LabelLayer() {
                 }}
               >
                 {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
-                  <span style={{ display: 'inline-block', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
+                  // inline-flex + center alignment removes dependence on parent
+                  // line-height for vertical centering — keeps the icon aligned
+                  // identically between editor and preview at any zoom level.
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
                     {HARDWARE_ICON_SVGS[label.icon]}
                   </span>
                 ) : label.icon && HARDWARE_ICONS[label.icon] ? (
