@@ -1628,13 +1628,15 @@ export const createManifestSlice: StateCreator<
       h: 70,
       text: '',
       textColor: '#d1d5db',
-      backgroundColor: '#1f2937', // dark gray (darker than container's rgba black 0.15)
+      backgroundColor: '#1a1a2a', // dark navy — matches the panel's overall tonal aesthetic + inset shadow reads cleanly
       backgroundOpacity: 1.0,     // fully opaque per user's spec
-      borderRadius: 4,
+      borderRadius: 8,            // matches SectionContainer's rounded-lg
       fontSize: 16,
       align: 'center',
       verticalAlign: 'center',
-      zIndex: 5,                  // above sections (1-2), below controls (200+)
+      // No explicit zIndex on creation — DOM order puts the banner behind
+      // controls (rendered earlier in JSX tree). Contractor can override via
+      // Properties panel if they want banner ON TOP for a specific layout.
       locked: false,
     };
     set((s) => ({

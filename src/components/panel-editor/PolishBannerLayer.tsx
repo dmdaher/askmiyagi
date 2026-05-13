@@ -72,7 +72,10 @@ export default function PolishBannerLayer() {
               ...visualStyle as React.CSSProperties,
               outline: isSelected ? '2px solid rgba(59,130,246,0.8)' : undefined,
               outlineOffset: 2,
-              zIndex: banner.zIndex ?? 5,
+              // Inherit zIndex from computeBannerBoxStyle (undefined unless
+              // contractor explicitly set it) so DOM order determines
+              // stacking. PolishBannerLayer renders BEFORE ControlLayer in
+              // PanCanvas → banner sits behind controls automatically.
               cursor: banner.locked ? 'default' : 'move',
             }}
           >

@@ -40,6 +40,12 @@ function resolveBackground(bg: string | undefined, opacity: number): string {
 /**
  * Compute the outer-box CSS for a polish banner. Identical in editor and
  * preview — same width, height, position, color, opacity, radius.
+ *
+ * Stacking: banner has NO explicit zIndex by default — relies on DOM order.
+ * In PanelRenderer + PanCanvas, banners are rendered BEFORE controls in the
+ * JSX tree, so they stack behind controls automatically. Contractor can
+ * override via `banner.zIndex` if they want the banner ON TOP of controls
+ * for a specific layout (e.g., translucent header bar over the panel).
  */
 export function computeBannerBoxStyle(banner: PolishBanner): CSSProperties {
   return {
@@ -50,8 +56,15 @@ export function computeBannerBoxStyle(banner: PolishBanner): CSSProperties {
     height: banner.h,
     backgroundColor: resolveBackground(banner.backgroundColor, banner.backgroundOpacity ?? 1.0),
     border: banner.borderColor ? `1px solid ${banner.borderColor}` : undefined,
-    borderRadius: banner.borderRadius ?? 4,
-    zIndex: banner.zIndex ?? 5,
+    borderRadius: banner.borderRadius ?? 8,
+    // Subtle inset shadow — matches section frames' polish (SectionContainer
+    // uses the same shadow). Gives the banner a "carved-in" depth instead of
+    // a flat rectangle.
+    boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.25)',
+    // Only set zIndex if the contractor explicitly overrode it. Default
+    // behavior: DOM-order stacking — banner sits behind controls because
+    // it renders earlier in the JSX tree.
+    zIndex: banner.zIndex !== undefined ? banner.zIndex : undefined,
     overflow: 'hidden',
   };
 }
@@ -75,11 +88,13 @@ export function computeBannerTextStyle(banner: PolishBanner): CSSProperties {
     display: 'flex',
     justifyContent,
     alignItems,
-    padding: '0 12px',
+    padding: '0 16px',
     color: banner.textColor ?? '#d1d5db',
     fontSize: banner.fontSize ?? 16,
     fontWeight: 500,
-    letterSpacing: '0.05em',
+    // Match SectionContainer header letterSpacing (0.15em) — refined,
+    // pro-audio panel typography feel rather than a generic uppercase strip.
+    letterSpacing: '0.15em',
     textTransform: 'uppercase',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
