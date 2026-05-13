@@ -578,7 +578,7 @@ export default function PanelRenderer({
 
       {/* Floating labels */}
       {(manifest.editorLabels ?? []).filter(l => !l.hidden).map((label) => (
-        <div key={label.id} className="absolute pointer-events-none"
+        <div key={label.id} data-label-id={label.id} className="absolute pointer-events-none"
           style={{
             left: label.x, top: label.y,
             // Figma-style "hug contents" for icon-only labels: when there's
@@ -588,6 +588,13 @@ export default function PanelRenderer({
             textAlign: (label.align ?? 'center') as any,
             fontSize: label.fontSize,
             lineHeight: `${label.lineHeight ?? label.fontSize + 2}px`,
+            // Match editor's LabelLayer outer-div padding (LabelLayer.tsx:181).
+            // Without this, preview's outer box is 6 px narrower than editor's
+            // (3 px on each side), shifting the visually-centered icon left by
+            // ~3 px at zoom 1.0 (and ~2-3 px at zoom 0.8). Visible as the
+            // "icon shifts left at the LFO1/LFO2 bridge" bug.
+            padding: '1px 3px',
+            borderRadius: 2,
           }}>
           {/* Unify icon + text label tone — default text-gray-300. When the
               EditorLabel has a `color` override set via Properties Panel,
