@@ -20,6 +20,8 @@
 export const COLOR_PRESETS = [
   '#d1d5db', // default grey (text-gray-300 baseline — leftmost)
   '#e5e5e5', // white
+  '#666666', // section-header gray (matches SectionContainer header text)
+  '#000000', // black (useful for translucent banner backgrounds)
   '#f59e0b', // amber
   '#22d3ee', // cyan
   '#22c55e', // green

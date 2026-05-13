@@ -1627,9 +1627,14 @@ export const createManifestSlice: StateCreator<
       w: canvasWidth,
       h: 70,
       text: '',
-      textColor: '#d1d5db',
-      backgroundColor: '#1a1a2a', // dark navy — matches the panel's overall tonal aesthetic + inset shadow reads cleanly
-      backgroundOpacity: 1.0,     // fully opaque per user's spec
+      // Defaults match SectionContainer header styling — translucent black bg
+      // + muted gray text (#666 = section header's color). Gives the banner
+      // the same refined "carved into the panel" feel as section headers,
+      // while keeping banner's distinctive size (70 tall × full width).
+      // Contractor can override via Properties (color pickers + opacity slider).
+      textColor: '#666666',
+      backgroundColor: '#000000',
+      backgroundOpacity: 0.15,    // matches rgba(0,0,0,0.15) on SectionContainer header
       borderRadius: 8,            // matches SectionContainer's rounded-lg
       fontSize: 16,
       align: 'center',
