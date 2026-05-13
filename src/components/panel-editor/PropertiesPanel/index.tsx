@@ -1626,6 +1626,31 @@ function PolishBannerProperties({ banner }: { banner: import('../store/historySl
         <ContainerNumField label="H" value={banner.h} onCommit={(val) => { pushSnapshot(); updatePolishBanner(banner.id, { h: val }); }} />
       </div>
 
+      {/* Layer order — matches SingleControlProperties pattern */}
+      <div className="h-px bg-gray-800" />
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-wide text-gray-500">
+          Layer
+        </span>
+        <div className="flex items-center gap-1">
+          <span className="text-[10px] text-gray-400 mr-1">{banner.zIndex ?? 0}</span>
+          <button
+            onClick={() => { pushSnapshot(); updatePolishBanner(banner.id, { zIndex: (banner.zIndex ?? 0) + 10 }); }}
+            className="flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-white/10 hover:text-gray-300"
+            title="Bring Forward — moves banner above other elements"
+          >
+            <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor"><path d="M6 2l4 4H2z" /></svg>
+          </button>
+          <button
+            onClick={() => { pushSnapshot(); updatePolishBanner(banner.id, { zIndex: (banner.zIndex ?? 0) - 10 }); }}
+            className="flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-white/10 hover:text-gray-300"
+            title="Send Backward — moves banner below other elements"
+          >
+            <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor"><path d="M6 10l4-4H2z" /></svg>
+          </button>
+        </div>
+      </div>
+
       {/* Delete */}
       <div className="h-px bg-gray-800" />
       <button

@@ -72,15 +72,16 @@ export default function PolishBannerLayer() {
               ...visualStyle as React.CSSProperties,
               outline: isSelected ? '2px solid rgba(59,130,246,0.8)' : undefined,
               outlineOffset: 2,
-              // Editor-only: explicit z-index above SectionFrame's default
-              // (sections get z=1..N via PanCanvas; selected sections jump
-              // to 99-100). Without this, the banner sinks behind section
-              // frames when deselected (sections have explicit z, banner
-              // would have auto → explicit wins → banner hidden).
-              // Preview rendering (PanelRenderer) does NOT set zIndex —
-              // DOM order keeps controls on top there, which is what we
-              // want for production view.
-              zIndex: banner.zIndex ?? 50,
+              // Editor-only: BASE z=50 (above default section frames at
+              // z=1..N; below selected/focused section at z=99-100) PLUS
+              // contractor's adjustment via the Layer up/down arrows in
+              // Properties. Default banner.zIndex = 0 (relative offset).
+              // Bring-forward arrow increments by 10, send-backward decrements.
+              //
+              // Preview side (PanelRenderer) uses banner.zIndex directly
+              // (no +50 base) so the contractor's "bring forward" still
+              // means "in front of controls in production view."
+              zIndex: 50 + (banner.zIndex ?? 0),
               cursor: banner.locked ? 'default' : 'move',
             }}
           >
