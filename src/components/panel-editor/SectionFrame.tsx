@@ -92,6 +92,7 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
         onClick={handleClick}
       >
         <div
+          data-section-id={sectionId}
           className="section-drag-handle flex items-center gap-2 px-2 h-7 cursor-grab active:cursor-grabbing select-none rounded"
           style={{
             backgroundColor: isSelected ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
@@ -137,6 +138,7 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
     >
       {/* Section drag handle — grab here to move the section */}
       <div
+        data-section-id={sectionId}
         className="section-drag-handle flex items-center gap-2 px-2 h-7 cursor-grab active:cursor-grabbing select-none"
         style={{
           backgroundColor: isSelected ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.08)',
