@@ -245,13 +245,19 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
   const [reloadKey, setReloadKey] = useState(0);
   const [adminNote, setAdminNote] = useState<string | null>(null);
 
-  // Exposed for VersionHistoryDropdown to trigger a reload after restore
+  // Exposed for VersionHistoryDropdown to trigger a reload after restore.
+  // Clear the sessionStorage manifest cache — restore intentionally changed
+  // server-side state, and the cache (populated by the previous autosave)
+  // would otherwise mask the restored data on the next mount.
   const forceReload = useCallback(() => {
     // Push current state for undo before loading restored version
     useEditorStore.getState().pushSnapshot();
+    try {
+      sessionStorage.removeItem(`manifest-cache-${deviceId}`);
+    } catch { /* sessionStorage not available — non-critical */ }
     setLoading(true);
     setReloadKey((k) => k + 1);
-  }, []);
+  }, [deviceId]);
 
   useEffect(() => {
     // If the Zustand store already has data for this device (e.g., we switched
