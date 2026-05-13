@@ -260,7 +260,19 @@ export default function ContractorSubmissions() {
     try {
       const res = await fetch(`/api/hosted/panels/${did}/history`);
       const data = await res.json();
-      setDeviceHistory(prev => ({ ...prev, [did]: Array.isArray(data) ? data : [] }));
+      // Endpoint now returns { versions: [{filename, timestamp, sizeBytes, isCurrent}], total }.
+      // Filter out the current-manifest sentinel and normalize to the legacy
+      // shape this component renders (uses `name` as key, `url` for restore).
+      const versions = Array.isArray(data.versions) ? data.versions : [];
+      const history = versions
+        .filter((v: { isCurrent: boolean }) => !v.isCurrent)
+        .map((v: { filename: string; timestamp: string; sizeBytes: number }) => ({
+          name: v.filename,
+          url: v.filename,
+          timestamp: v.timestamp,
+          sizeBytes: v.sizeBytes,
+        }));
+      setDeviceHistory(prev => ({ ...prev, [did]: history }));
     } catch { /* ignore */ }
   };
 

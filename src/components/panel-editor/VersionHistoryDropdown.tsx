@@ -1,13 +1,39 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { isHosted } from '@/lib/env';
 
 interface Version {
   filename: string;
   timestamp: string;
   sizeBytes: number;
   isCurrent: boolean;
-  source?: 'autosave' | 'pull-from-hosted';
+  source?: 'autosave' | 'pull-from-hosted' | 'admin-send';
+}
+
+/**
+ * Picks the version API base for this device.
+ *
+ * - Hosted contractor mode → /api/hosted/panels/<id>/history
+ *   GET lists Blob backups; POST { filename: <blob-url> } restores.
+ * - Local admin/sandbox mode → /api/pipeline/<id>/versions
+ *   GET lists filesystem backups; POST /versions/restore { filename } restores.
+ *
+ * The two endpoints return the same shape ({ versions, total }) and accept
+ * the same restore payload ({ filename }) so this dropdown is mode-agnostic.
+ */
+function getVersionEndpoints(deviceId: string) {
+  const useHosted = isHosted || deviceId.startsWith('sandbox-');
+  if (useHosted) {
+    return {
+      list: `/api/hosted/panels/${deviceId}/history`,
+      restore: `/api/hosted/panels/${deviceId}/history`,
+    };
+  }
+  return {
+    list: `/api/pipeline/${deviceId}/versions`,
+    restore: `/api/pipeline/${deviceId}/versions/restore`,
+  };
 }
 
 const PAGE_SIZE = 50;
@@ -62,7 +88,8 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
   const fetchVersions = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/pipeline/${deviceId}/versions`);
+      const { list } = getVersionEndpoints(deviceId);
+      const res = await fetch(list);
       if (res.ok) {
         const data = await res.json();
         setVersions(data.versions ?? []);
@@ -83,9 +110,11 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
   }, [open, fetchVersions]);
 
   const handleRestore = useCallback(async (filename: string) => {
+    if (!confirm('Restore this version? Your current work will be backed up first.')) return;
     setRestoring(filename);
     try {
-      const res = await fetch(`/api/pipeline/${deviceId}/versions/restore`, {
+      const { restore } = getVersionEndpoints(deviceId);
+      const res = await fetch(restore, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename }),
@@ -100,9 +129,9 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
 
       setOpen(false);
 
-      // Trigger PanelEditor to reload from disk (which now has the restored data).
-      // This goes through the normal fetch → load cycle, avoiding React hooks errors
-      // from direct setState with dramatically different data.
+      // Trigger PanelEditor to reload from disk/blob (which now has the
+      // restored data). Goes through the normal fetch → load cycle, avoiding
+      // React hooks errors from direct setState with dramatically different data.
       if (onRestore) {
         onRestore();
       }

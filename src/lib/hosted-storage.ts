@@ -131,26 +131,58 @@ export async function putDeviceManifest(deviceId: string, manifest: Record<strin
 
 // ─── Manifest history (backup before admin overwrites) ─────────────────────
 
-const MAX_HISTORY = 5;
+const MAX_HISTORY = 50;
+const AUTOSAVE_BACKUP_THROTTLE_MS = 5 * 60 * 1000; // 5 minutes between autosave-triggered backups
 
 function historyPrefix(deviceId: string) {
   return `${PREFIX}/${deviceId}/history/`;
 }
 
-/** Backup the current manifest to history before overwriting. Best-effort. */
-export async function backupManifest(deviceId: string): Promise<string | null> {
+/**
+ * Backup the current manifest to history before overwriting. Best-effort.
+ *
+ * Behavior:
+ * - { force: true } (default for admin actions) — always creates a snapshot
+ * - { force: false } — skips if the most recent backup is < 5 minutes old.
+ *   Used by the autosave PUT handler so the contractor's continuous typing
+ *   doesn't flood Blob with thousands of nearly-identical snapshots.
+ *
+ * Returns the history path of the created backup, or null if skipped/failed.
+ */
+export async function backupManifest(
+  deviceId: string,
+  opts?: { force?: boolean },
+): Promise<string | null> {
+  const force = opts?.force ?? true;
   try {
+    // List existing backups ONCE. We use this for both the throttle check
+    // and the post-write prune so we don't hit Blob's list endpoint twice.
+    const initialList = await list({ prefix: historyPrefix(deviceId) });
+
+    // Throttle check: if not forced and a recent backup exists, skip.
+    if (!force && initialList.blobs.length > 0) {
+      const newest = [...initialList.blobs].sort((a, b) =>
+        new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+      )[0];
+      const ageMs = Date.now() - new Date(newest.uploadedAt).getTime();
+      if (ageMs < AUTOSAVE_BACKUP_THROTTLE_MS) {
+        return null; // Within throttle window — skip
+      }
+    }
+
     const meta = await head(manifestPath(deviceId));
     const historyPath = `${historyPrefix(deviceId)}${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
     await copy(meta.url, historyPath, { access: 'public' });
 
-    // Prune old backups beyond MAX_HISTORY
-    const { blobs } = await list({ prefix: historyPrefix(deviceId) });
-    if (blobs.length > MAX_HISTORY) {
-      const sorted = [...blobs].sort((a, b) =>
+    // Prune: count is current pre-copy count + 1 (the one we just wrote).
+    // We compare to MAX_HISTORY using the pre-copy list — if it was already
+    // at or above MAX_HISTORY, oldest entries get pruned.
+    if (initialList.blobs.length >= MAX_HISTORY) {
+      const sorted = [...initialList.blobs].sort((a, b) =>
         new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
       );
-      const toDelete = sorted.slice(MAX_HISTORY);
+      // Keep newest (MAX_HISTORY - 1) old entries + the one we just wrote = MAX_HISTORY total.
+      const toDelete = sorted.slice(MAX_HISTORY - 1);
       for (const blob of toDelete) {
         await del(blob.url);
       }

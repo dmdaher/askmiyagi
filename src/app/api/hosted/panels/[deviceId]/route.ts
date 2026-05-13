@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDeviceStatus, getDeviceManifest, putDeviceManifest, putDeviceStatus } from '@/lib/hosted-storage';
+import { getDeviceStatus, getDeviceManifest, putDeviceManifest, putDeviceStatus, backupManifest } from '@/lib/hosted-storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -81,6 +81,13 @@ export async function PUT(
   body._source = 'hosted';
   // Remove _loadedAt before persisting — it's a client-only field
   delete body._loadedAt;
+
+  // Snapshot the current manifest to history BEFORE overwriting.
+  // Manual saves pass ?backup=force to bypass throttle; autosaves use the
+  // 5-min throttle so continuous typing doesn't flood Blob with snapshots.
+  // Best-effort — backupManifest swallows errors and never blocks the save.
+  const force = request.nextUrl.searchParams.get('backup') === 'force';
+  await backupManifest(deviceId, { force });
 
   // Write manifest to its own blob — completely independent of status
   await putDeviceManifest(deviceId, body);
