@@ -135,6 +135,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
           state.editorLabels === prevState.editorLabels &&
           state.controlGroups === prevState.controlGroups &&
           state.controlContainers === prevState.controlContainers &&
+          state.polishBanners === prevState.polishBanners &&
           state.controlScale === prevState.controlScale &&
           state.zoom === prevState.zoom &&
           state.cleanupGap === prevState.cleanupGap &&
