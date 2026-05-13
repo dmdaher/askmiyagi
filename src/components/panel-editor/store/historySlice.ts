@@ -37,12 +37,38 @@ export interface ControlGroup {
   controlIds: string[];
 }
 
+/**
+ * Polish banner — purely decorative overlay layer (manufacturer name, brand
+ * stripe, etc). Sits below controls (z 5) and above sections (z 1-2). NO
+ * interaction (pointer-events: none in production render), NO tutorial
+ * references, NO panel state. Cosmetic only.
+ */
+export interface PolishBanner {
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  text?: string;                 // optional headline
+  textColor?: string;            // defaults to text-gray-300
+  backgroundColor?: string;      // hex, e.g., '#0a0a14'
+  backgroundOpacity?: number;    // 0..1 — separate from textColor so text stays opaque
+  borderColor?: string;          // optional border, default none
+  borderRadius?: number;         // default 4
+  fontSize?: number;             // default 16
+  align?: 'left' | 'center' | 'right';
+  verticalAlign?: 'top' | 'center' | 'bottom'; // default center
+  zIndex?: number;               // default 5 (above sections, below controls)
+  locked?: boolean;              // prevents accidental drag/resize
+}
+
 export interface ManifestSnapshot {
   sections: Record<string, SectionDef>;
   controls: Record<string, ControlDef>;
   editorLabels?: EditorLabel[];
   controlGroups?: ControlGroup[];
   controlContainers?: ControlContainer[];
+  polishBanners?: PolishBanner[];
   canvasWidth?: number;
   canvasHeight?: number;
   keyboard?: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number; aspectLockMode?: 'auto' | 'manual' } | null;
@@ -116,6 +142,7 @@ function cloneSnapshot(snapshot: ManifestSnapshot): ManifestSnapshot {
       ...c,
       controlIds: [...c.controlIds],
     })) ?? [],
+    polishBanners: snapshot.polishBanners?.map((b) => ({ ...b })) ?? [],
     canvasWidth: snapshot.canvasWidth,
     canvasHeight: snapshot.canvasHeight,
     keyboard: snapshot.keyboard ? { ...snapshot.keyboard } : undefined,
@@ -133,6 +160,7 @@ interface ManifestFields {
   editorLabels: unknown[];
   controlGroups: unknown[];
   controlContainers: unknown[];
+  polishBanners: PolishBanner[];
   hasUserEdited: boolean;
   canvasWidth: number;
   canvasHeight: number;
@@ -158,8 +186,8 @@ export const createHistorySlice: StateCreator<
     if (!get().hasUserEdited) {
       set({ hasUserEdited: true });
     }
-    const { sections, controls, past, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers, guides, scaleBase, scaleCumulativeFactor } = get();
-    const snapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], canvasWidth, canvasHeight, keyboard, guides, scaleBase, scaleCumulativeFactor });
+    const { sections, controls, past, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers, polishBanners, guides, scaleBase, scaleCumulativeFactor } = get();
+    const snapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], polishBanners, canvasWidth, canvasHeight, keyboard, guides, scaleBase, scaleCumulativeFactor });
     const newPast = [...past, snapshot];
     if (newPast.length > MAX_HISTORY) {
       newPast.splice(0, newPast.length - MAX_HISTORY);
@@ -168,10 +196,10 @@ export const createHistorySlice: StateCreator<
   },
 
   undo: () => {
-    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers, guides, scaleBase, scaleCumulativeFactor } = get();
+    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers, polishBanners, guides, scaleBase, scaleCumulativeFactor } = get();
     if (past.length === 0) return;
 
-    const currentSnapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], canvasWidth, canvasHeight, keyboard, guides, scaleBase, scaleCumulativeFactor });
+    const currentSnapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], polishBanners, canvasWidth, canvasHeight, keyboard, guides, scaleBase, scaleCumulativeFactor });
     const previous = past[past.length - 1];
     const restored = cloneSnapshot(previous);
 
@@ -183,6 +211,7 @@ export const createHistorySlice: StateCreator<
       editorLabels: restored.editorLabels ?? [],
       controlGroups: restored.controlGroups ?? [],
       controlContainers: restored.controlContainers ?? [],
+      polishBanners: restored.polishBanners ?? [],
       scaleBase: restored.scaleBase ?? null,
       scaleCumulativeFactor: restored.scaleCumulativeFactor ?? 1.0,
     };
@@ -194,10 +223,10 @@ export const createHistorySlice: StateCreator<
   },
 
   redo: () => {
-    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers, guides, scaleBase, scaleCumulativeFactor } = get();
+    const { past, future, sections, controls, canvasWidth, canvasHeight, keyboard, editorLabels, controlGroups, controlContainers, polishBanners, guides, scaleBase, scaleCumulativeFactor } = get();
     if (future.length === 0) return;
 
-    const currentSnapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], canvasWidth, canvasHeight, keyboard, guides, scaleBase, scaleCumulativeFactor });
+    const currentSnapshot = cloneSnapshot({ sections, controls, editorLabels: editorLabels as EditorLabel[], controlGroups: controlGroups as ControlGroup[], controlContainers: controlContainers as ControlContainer[], polishBanners, canvasWidth, canvasHeight, keyboard, guides, scaleBase, scaleCumulativeFactor });
     const next = future[future.length - 1];
     const restored = cloneSnapshot(next);
 
@@ -209,6 +238,7 @@ export const createHistorySlice: StateCreator<
       editorLabels: restored.editorLabels ?? [],
       controlGroups: restored.controlGroups ?? [],
       controlContainers: restored.controlContainers ?? [],
+      polishBanners: restored.polishBanners ?? [],
       scaleBase: restored.scaleBase ?? null,
       scaleCumulativeFactor: restored.scaleCumulativeFactor ?? 1.0,
     };

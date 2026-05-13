@@ -1473,6 +1473,171 @@ function ContainerProperties({ container }: { container: import('../store/manife
   );
 }
 
+// ─── Polish Banner Properties ───────────────────────────────────────────────
+
+function PolishBannerProperties({ banner }: { banner: import('../store/historySlice').PolishBanner }) {
+  const updatePolishBanner = useEditorStore((s) => s.updatePolishBanner);
+  const deletePolishBanner = useEditorStore((s) => s.deletePolishBanner);
+  const setSelectedBanner = useEditorStore((s) => s.setSelectedBanner);
+  const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="border-b border-gray-800 pb-2">
+        <h3 className="text-sm font-medium text-gray-200">Polish Banner</h3>
+        <p className="text-xs text-gray-500 mt-0.5">Decorative overlay (no tutorial interaction)</p>
+      </div>
+
+      {/* Text */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Text</label>
+        <input
+          type="text"
+          value={banner.text ?? ''}
+          placeholder="(leave empty for no text)"
+          onChange={(e) => updatePolishBanner(banner.id, { text: e.target.value })}
+          onBlur={() => pushSnapshot()}
+          className="h-7 w-full rounded border border-gray-700 bg-gray-900 px-2 text-xs text-gray-300 outline-none focus:border-blue-500 placeholder:text-gray-600"
+        />
+      </div>
+
+      {/* Font size */}
+      <div className="space-y-1">
+        <label className="text-[10px] text-gray-500">Font Size</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min={10}
+            max={72}
+            value={banner.fontSize ?? 16}
+            onChange={(e) => { pushSnapshot(); updatePolishBanner(banner.id, { fontSize: Number(e.target.value) }); }}
+            className="h-1 flex-1 cursor-pointer accent-blue-500"
+          />
+          <span className="text-[10px] text-gray-500 w-8">{banner.fontSize ?? 16}px</span>
+        </div>
+      </div>
+
+      {/* Text color */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Text Color</label>
+        <ColorPickerRow value={banner.textColor} onChange={(c) => { pushSnapshot(); updatePolishBanner(banner.id, { textColor: c }); }} />
+      </div>
+
+      {/* Background color */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Background</label>
+        <ColorPickerRow value={banner.backgroundColor} onChange={(c) => { pushSnapshot(); updatePolishBanner(banner.id, { backgroundColor: c }); }} />
+      </div>
+
+      {/* Background opacity */}
+      <div className="space-y-1">
+        <label className="text-[10px] text-gray-500">Opacity</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={Math.round((banner.backgroundOpacity ?? 1.0) * 100)}
+            onChange={(e) => updatePolishBanner(banner.id, { backgroundOpacity: Number(e.target.value) / 100 })}
+            onMouseUp={() => pushSnapshot()}
+            className="h-1 flex-1 cursor-pointer accent-blue-500"
+          />
+          <span className="text-[10px] text-gray-500 w-8">{Math.round((banner.backgroundOpacity ?? 1.0) * 100)}%</span>
+        </div>
+      </div>
+
+      {/* Alignment (horizontal) */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Text Align</label>
+        <div className="flex gap-1">
+          {(['left', 'center', 'right'] as const).map((a) => (
+            <button
+              key={a}
+              onClick={() => { pushSnapshot(); updatePolishBanner(banner.id, { align: a }); }}
+              className={`flex-1 rounded px-1 py-1 text-[9px] font-medium transition-colors ${
+                (banner.align ?? 'center') === a
+                  ? 'bg-gray-600/30 text-gray-200 border border-gray-500'
+                  : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
+              }`}
+            >
+              {a}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Vertical alignment */}
+      <div className="space-y-1">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Vertical Align</label>
+        <div className="flex gap-1">
+          {(['top', 'center', 'bottom'] as const).map((a) => (
+            <button
+              key={a}
+              onClick={() => { pushSnapshot(); updatePolishBanner(banner.id, { verticalAlign: a }); }}
+              className={`flex-1 rounded px-1 py-1 text-[9px] font-medium transition-colors ${
+                (banner.verticalAlign ?? 'center') === a
+                  ? 'bg-gray-600/30 text-gray-200 border border-gray-500'
+                  : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
+              }`}
+            >
+              {a}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Border radius */}
+      <div className="space-y-1">
+        <label className="text-[10px] text-gray-500">Corner Radius</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min={0}
+            max={20}
+            value={banner.borderRadius ?? 4}
+            onChange={(e) => { pushSnapshot(); updatePolishBanner(banner.id, { borderRadius: Number(e.target.value) }); }}
+            className="h-1 flex-1 cursor-pointer accent-blue-500"
+          />
+          <span className="text-[10px] text-gray-500 w-6">{banner.borderRadius ?? 4}px</span>
+        </div>
+      </div>
+
+      {/* Lock toggle */}
+      <div className="flex items-center justify-between">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">Lock Position</label>
+        <button
+          onClick={() => { pushSnapshot(); updatePolishBanner(banner.id, { locked: !banner.locked }); }}
+          className={`rounded px-2 py-0.5 text-[10px] transition-colors ${
+            banner.locked
+              ? 'bg-amber-900/30 text-amber-300 border border-amber-700/50'
+              : 'bg-gray-800 text-gray-500 border border-gray-700'
+          }`}
+        >
+          {banner.locked ? '🔒 Locked' : 'Unlocked'}
+        </button>
+      </div>
+
+      {/* Geometry */}
+      <div className="h-px bg-gray-800" />
+      <div className="grid grid-cols-4 gap-1">
+        <ContainerNumField label="X" value={banner.x} onCommit={(val) => { pushSnapshot(); updatePolishBanner(banner.id, { x: val }); }} />
+        <ContainerNumField label="Y" value={banner.y} onCommit={(val) => { pushSnapshot(); updatePolishBanner(banner.id, { y: val }); }} />
+        <ContainerNumField label="W" value={banner.w} onCommit={(val) => { pushSnapshot(); updatePolishBanner(banner.id, { w: val }); }} />
+        <ContainerNumField label="H" value={banner.h} onCommit={(val) => { pushSnapshot(); updatePolishBanner(banner.id, { h: val }); }} />
+      </div>
+
+      {/* Delete */}
+      <div className="h-px bg-gray-800" />
+      <button
+        onClick={() => { pushSnapshot(); deletePolishBanner(banner.id); setSelectedBanner(null); }}
+        className="flex h-7 items-center justify-center rounded border border-red-700/30 bg-red-900/10 text-[10px] text-red-400 hover:bg-red-900/20 transition-colors"
+      >
+        Delete Banner
+      </button>
+    </div>
+  );
+}
+
 // ─── Main Properties Panel ──────────────────────────────────────────────────
 
 // ─── Label Properties ────────────────────────────────────────────────────────
@@ -1738,7 +1903,9 @@ function LabelProperties({ label }: { label: any }) {
 export default function PropertiesPanel() {
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
+  const selectedBannerId = useEditorStore((s) => s.selectedBannerId);
   const editorLabels = useEditorStore((s) => s.editorLabels) as any[];
+  const polishBanners = useEditorStore((s) => s.polishBanners);
   const controls = useEditorStore((s) => s.controls);
   const sections = useEditorStore((s) => s.sections);
 
@@ -1772,7 +1939,15 @@ export default function PropertiesPanel() {
   // Render based on selection state
   let content: React.ReactNode;
 
-  if (selectedLabel) {
+  const selectedBanner = useMemo(() => {
+    if (!selectedBannerId) return null;
+    return polishBanners.find((b) => b.id === selectedBannerId) ?? null;
+  }, [selectedBannerId, polishBanners]);
+
+  if (selectedBanner) {
+    // A polish banner is selected — show banner properties
+    content = <PolishBannerProperties banner={selectedBanner} />;
+  } else if (selectedLabel) {
     // A label is selected — show label properties
     content = <LabelProperties label={selectedLabel} />;
   } else if (selectedIds.length === 0) {
