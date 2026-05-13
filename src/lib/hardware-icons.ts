@@ -73,6 +73,12 @@ export const HARDWARE_ICON_SVGS: Record<string, React.ReactNode> = {
   'square-wave': svgIcon('M2 16 L2 8 L8 8 L8 16 L14 16 L14 8 L20 8 L20 16 L22 16'),
   'triangle-wave': svgIcon('M2 16 L6 8 L12 16 L18 8 L22 16'),
   'sawtooth-wave': svgIcon('M2 16 L10 8 L10 16 L18 8 L18 16 L22 12'),
+  // ramp-up: single ramp rising up (formerly named 'sawtooth-cycle').
+  // Renamed 2026-05-12 to match the LED control ID convention (lfo1-ramp-up).
+  'ramp-up': svgIcon('M3 18 L20 6 L20 18'),
+  // Alias: existing manifests still reference 'sawtooth-cycle'. Same path
+  // data as ramp-up; keep both keys so the rename doesn't break older
+  // manifests until they're migrated.
   'sawtooth-cycle': svgIcon('M3 18 L20 6 L20 18'),
   'pulse-wave': svgIcon('M2 16 L2 8 L5 8 L5 16 L14 16 L14 8 L17 8 L17 16 L22 16'),
   'sample-hold': svgIcon('M2 14 L6 14 L6 9 L10 9 L10 16 L14 16 L14 11 L18 11 L18 14 L22 14'),
@@ -99,6 +105,11 @@ export const HARDWARE_ICON_SVGS: Record<string, React.ReactNode> = {
     { d: 'M 5.641764 11.713561 C 493.473639 246.710539 877.381614 246.709883 1157.36569 11.711593', transform: 'matrix(-0.326546, 0.67518, -0.67518, -0.326546, 849.62996, 270.609566)' },
     { d: 'M 10.242608 217.765048 C 223.615099 -55.253907 619.851273 -55.254029 1198.95113 217.76468', transform: 'matrix(-0.366821, -0.654173, 0.654173, -0.366821, 1137.226927, 1134.792074)' },
   ], { viewBox: '300 130 1070 1070' }),
+  // ramp-down: single ramp falling down (mirrors ramp-up). Two segments share
+  // the top-left vertex at (4, 6): one falls straight down to (4, 18), the
+  // other diagonals down-right to (20, 18). Source: straightline_diagonaldown.svg.
+  // Named to match the LED control ID convention (lfo1-ramp-down).
+  'ramp-down': svgIcon('M4 6 L4 18 M4 6 L20 18'),
 
   // ── DJ symbols (CDJ-3000, DDJ-FLX4, XDJ, DJS-1000) ──
   'cue': React.createElement('svg', {
@@ -143,7 +154,7 @@ export function hasIconSvg(key: string): boolean {
 
 /** Get all icon keys organized by category for picker UI */
 export const ICON_CATEGORIES = [
-  { label: 'Waveforms', keys: ['sine-wave', 'square-wave', 'triangle-wave', 'sawtooth-wave', 'sawtooth-cycle', 'pulse-wave', 'sample-hold', 'sample-glide', 'noise'] },
+  { label: 'Waveforms', keys: ['sine-wave', 'square-wave', 'triangle-wave', 'sawtooth-wave', 'ramp-up', 'ramp-down', 'pulse-wave', 'sample-hold', 'sample-glide', 'noise'] },
   { label: 'Curves', keys: ['curve-exp', 'curve-lin', 'curve-log'] },
   { label: 'DJ', keys: ['cue', 'vinyl-mode', 'loop-in', 'loop-out', 'beat-sync', 'slip', 'quantize'] },
   { label: 'Transport', keys: ['play', 'pause', 'play-pause', 'stop', 'record', 'fast-forward', 'rewind', 'skip-forward', 'skip-backward', 'eject'] },
