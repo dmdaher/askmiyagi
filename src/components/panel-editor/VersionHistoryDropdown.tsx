@@ -7,7 +7,10 @@ interface Version {
   timestamp: string;
   sizeBytes: number;
   isCurrent: boolean;
+  source?: 'autosave' | 'pull-from-hosted';
 }
+
+const PAGE_SIZE = 50;
 
 function relativeTime(timestamp: string): string {
   const diff = Date.now() - new Date(timestamp).getTime();
@@ -39,6 +42,9 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
   const [versions, setVersions] = useState<Version[]>([]);
   const [loading, setLoading] = useState(false);
   const [restoring, setRestoring] = useState<string | null>(null);
+  // Pagination: show first PAGE_SIZE entries; "Load more" extends the view.
+  // Resets to PAGE_SIZE every time the dropdown opens.
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -69,6 +75,8 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
 
   const handleToggle = useCallback(() => {
     if (!open) {
+      // Reset pagination + reload on open
+      setVisibleCount(PAGE_SIZE);
       fetchVersions();
     }
     setOpen(!open);
@@ -128,43 +136,59 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
             ) : versions.length === 0 ? (
               <div className="px-3 py-4 text-center text-xs text-gray-500">No versions yet</div>
             ) : (
-              versions.map((v) => (
-                <div
-                  key={v.filename}
-                  className="flex items-center justify-between border-b border-gray-800/50 px-3 py-2 last:border-0"
-                >
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[11px] text-gray-300">
-                      {v.isCurrent ? 'Current' : relativeTime(v.timestamp)}
-                    </span>
-                    <span className="text-[9px] text-gray-500 truncate">
-                      {formatTimestamp(v.timestamp)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    {v.isCurrent ? (
-                      <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-[9px] text-blue-400">
-                        Current
+              <>
+                {versions.slice(0, visibleCount).map((v) => (
+                  <div
+                    key={v.filename}
+                    className="flex items-center justify-between border-b border-gray-800/50 px-3 py-2 last:border-0"
+                  >
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[11px] text-gray-300">
+                        {v.isCurrent ? 'Current' : relativeTime(v.timestamp)}
                       </span>
-                    ) : (
-                      <button
-                        onClick={() => handleRestore(v.filename)}
-                        disabled={restoring !== null}
-                        className="rounded border border-gray-600 bg-gray-800 px-2 py-0.5 text-[10px] text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-30"
-                      >
-                        {restoring === v.filename ? 'Restoring...' : 'Restore'}
-                      </button>
-                    )}
+                      <span className="text-[9px] text-gray-500 truncate">
+                        {formatTimestamp(v.timestamp)}
+                        {v.source === 'pull-from-hosted' && (
+                          <span className="ml-1 text-amber-500/70">· pull</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {v.isCurrent ? (
+                        <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-[9px] text-blue-400">
+                          Current
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handleRestore(v.filename)}
+                          disabled={restoring !== null}
+                          className="rounded border border-gray-600 bg-gray-800 px-2 py-0.5 text-[10px] text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-30"
+                        >
+                          {restoring === v.filename ? 'Restoring...' : 'Restore'}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+                {visibleCount < versions.length && (
+                  <button
+                    onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+                    className="w-full border-b border-gray-800/50 px-3 py-2 text-[10px] text-gray-400 transition-colors hover:bg-white/5 hover:text-gray-200"
+                  >
+                    Load {Math.min(PAGE_SIZE, versions.length - visibleCount)} more
+                    <span className="ml-1 text-gray-600">
+                      ({versions.length - visibleCount} remaining)
+                    </span>
+                  </button>
+                )}
+              </>
             )}
           </div>
 
           {versions.length > 0 && (
             <div className="border-t border-gray-800 px-3 py-1.5">
               <span className="text-[9px] text-gray-600">
-                {versions.length} version{versions.length !== 1 ? 's' : ''} — Cmd+Z undoes restore
+                Showing {Math.min(visibleCount, versions.length)} of {versions.length} — Cmd+Z undoes restore
               </span>
             </div>
           )}
