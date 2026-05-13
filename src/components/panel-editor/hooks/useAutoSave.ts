@@ -12,8 +12,8 @@ export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'conflict';
 
 /** Build the save payload from current store state */
 export function buildSavePayload() {
-  const { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
-  return { sections, controls, editorLabels, controlGroups, controlContainers, canvasWidth, canvasHeight, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard };
+  const { sections, controls, editorLabels, controlGroups, controlContainers, polishBanners, canvasWidth, canvasHeight, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
+  return { sections, controls, editorLabels, controlGroups, controlContainers, polishBanners, canvasWidth, canvasHeight, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard };
 }
 
 /** Get the save URL for this device */
@@ -135,6 +135,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
           state.editorLabels === prevState.editorLabels &&
           state.controlGroups === prevState.controlGroups &&
           state.controlContainers === prevState.controlContainers &&
+          state.polishBanners === prevState.polishBanners &&
           state.controlScale === prevState.controlScale &&
           state.zoom === prevState.zoom &&
           state.cleanupGap === prevState.cleanupGap &&

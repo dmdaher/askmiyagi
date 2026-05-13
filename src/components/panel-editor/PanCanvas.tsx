@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useEditorStore } from './store';
 import SectionFrame from './SectionFrame';
 import ControlLayer from './ControlLayer';
+import PolishBannerLayer from './PolishBannerLayer';
 import GroupLabelNode from './GroupLabelNode';
 import LabelLayer from './LabelLayer';
 import GroupOverlay from './GroupOverlay';
@@ -90,6 +91,7 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       borderRadius: c.borderRadius,
       label: c.label,
     })),
+    polishBanners: (state.polishBanners ?? []).map((b: import('./store/historySlice').PolishBanner) => ({ ...b })),
   };
 }
 
@@ -169,6 +171,9 @@ export default function PanCanvas() {
           {controlContainers.map((c) => (
             <ContainerNode key={c.id} container={c} />
           ))}
+
+          {/* Polish banners — decorative overlay (z=5, above sections + containers, below controls) */}
+          <PolishBannerLayer />
 
           {/* All controls — flat layer above sections, never blocked by overlap */}
           <ControlLayer />

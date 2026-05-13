@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import { computeLabelPosition } from '@/lib/label-position';
-import type { EditorLabel, ControlGroup } from './historySlice';
+import type { EditorLabel, ControlGroup, PolishBanner } from './historySlice';
 import type {
   ManifestControl,
   ManifestSection,
@@ -172,6 +172,7 @@ export interface ControlContainer {
   label?: string;
 }
 
+
 /** Backwards-compatible frame mode reader */
 export function getFrameMode(section: SectionDef): SectionFrameMode {
   if (section.frameMode) return section.frameMode;
@@ -196,6 +197,8 @@ export interface ManifestSlice {
   editorLabels: EditorLabel[];
   controlGroups: ControlGroup[];
   controlContainers: ControlContainer[];
+  polishBanners: PolishBanner[];
+  selectedBannerId: string | null;
   selectedIds: string[];
   lockedIds: string[];
   keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number; aspectLockMode?: 'auto' | 'manual' } | null;
@@ -248,6 +251,13 @@ export interface ManifestSlice {
   updateLabel: (labelId: string, updates: Partial<EditorLabel>) => void;
   deleteLabel: (labelId: string) => void;
   addStandaloneLabel: (x: number, y: number, text?: string) => string;
+  // Polish banner actions
+  addPolishBanner: () => string;
+  updatePolishBanner: (id: string, updates: Partial<PolishBanner>) => void;
+  deletePolishBanner: (id: string) => void;
+  movePolishBanner: (id: string, dx: number, dy: number) => void;
+  resizePolishBanner: (id: string, x: number, y: number, w: number, h: number) => void;
+  setSelectedBanner: (id: string | null) => void;
   /**
    * For a standalone label (controlId === null), set sectionId by computing
    * findNearestSection from the label's center. Returns true if a section
@@ -522,6 +532,8 @@ export const createManifestSlice: StateCreator<
   editorLabels: [],
   controlGroups: [],
   controlContainers: [],
+  polishBanners: [],
+  selectedBannerId: null,
   selectedIds: [],
   lockedIds: [],
   keyboard: null,
@@ -934,6 +946,7 @@ export const createManifestSlice: StateCreator<
       // For raw gatekeeper manifests these are absent → defaults to []/etc.
       controlGroups: (manifestAny as any).controlGroups ?? [],
       controlContainers: (manifestAny as any).controlContainers ?? [],
+      polishBanners: (manifestAny as any).polishBanners ?? [],
       editorLabels: (manifestAny as any).editorLabels ?? [],
       _manifestVersion: computeManifestVersion(manifest),
       hasUserEdited: false,
@@ -1275,7 +1288,7 @@ export const createManifestSlice: StateCreator<
     set({ controls: updated, lockedIds: newLockedIds });
   },
 
-  setSelectedIds: (ids) => set({ selectedIds: ids, selectedLabelId: ids.length > 0 ? null : get().selectedLabelId }),
+  setSelectedIds: (ids) => set({ selectedIds: ids, selectedLabelId: ids.length > 0 ? null : get().selectedLabelId, selectedBannerId: ids.length > 0 ? null : get().selectedBannerId }),
 
   toggleSelected: (id) => {
     const { selectedIds } = get();
@@ -1597,6 +1610,89 @@ export const createManifestSlice: StateCreator<
     get().clearScaleBase();
     set((s) => ({
       editorLabels: (s.editorLabels as EditorLabel[]).filter(l => l.id !== labelId),
+    }));
+  },
+
+  // ─── Polish Banner actions ─────────────────────────────────────────────
+  // Banner is purely cosmetic: no controls, no panel state, no tutorial refs.
+  // Selecting a banner is mutually exclusive with control/label selection.
+  addPolishBanner: () => {
+    get().clearScaleBase();
+    const id = `banner-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const canvasWidth = get().canvasWidth ?? 2680;
+    const newBanner: PolishBanner = {
+      id,
+      x: 0,
+      y: 0,
+      w: canvasWidth,
+      h: 70,
+      text: '',
+      // Defaults match SectionContainer header styling — translucent black bg
+      // + muted gray text (#666 = section header's color). Gives the banner
+      // the same refined "carved into the panel" feel as section headers,
+      // while keeping banner's distinctive size (70 tall × full width).
+      // Contractor can override via Properties (color pickers + opacity slider).
+      textColor: '#666666',
+      backgroundColor: '#000000',
+      backgroundOpacity: 0.15,    // matches rgba(0,0,0,0.15) on SectionContainer header
+      borderRadius: 8,            // matches SectionContainer's rounded-lg
+      fontSize: 16,
+      align: 'center',
+      verticalAlign: 'center',
+      // No explicit zIndex on creation — DOM order puts the banner behind
+      // controls (rendered earlier in JSX tree). Contractor can override via
+      // Properties panel if they want banner ON TOP for a specific layout.
+      locked: false,
+    };
+    set((s) => ({
+      polishBanners: [...s.polishBanners, newBanner],
+      selectedBannerId: id,
+      selectedIds: [],
+      selectedLabelId: null,
+    }));
+    return id;
+  },
+
+  updatePolishBanner: (id, updates) => {
+    set((s) => ({
+      polishBanners: s.polishBanners.map((b) => b.id === id ? { ...b, ...updates } : b),
+    }));
+  },
+
+  deletePolishBanner: (id) => {
+    get().clearScaleBase();
+    set((s) => ({
+      polishBanners: s.polishBanners.filter((b) => b.id !== id),
+      selectedBannerId: s.selectedBannerId === id ? null : s.selectedBannerId,
+    }));
+  },
+
+  movePolishBanner: (id, dx, dy) => {
+    get().clearScaleBase();
+    set((s) => ({
+      polishBanners: s.polishBanners.map((b) => b.id === id
+        ? { ...b, x: Math.round(b.x + dx), y: Math.round(b.y + dy) }
+        : b,
+      ),
+    }));
+  },
+
+  resizePolishBanner: (id, x, y, w, h) => {
+    get().clearScaleBase();
+    set((s) => ({
+      polishBanners: s.polishBanners.map((b) => b.id === id
+        ? { ...b, x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h) }
+        : b,
+      ),
+    }));
+  },
+
+  setSelectedBanner: (id) => {
+    set((s) => ({
+      selectedBannerId: id,
+      // Clear other selections so Properties panel routes cleanly
+      selectedIds: id ? [] : s.selectedIds,
+      selectedLabelId: id ? null : s.selectedLabelId,
     }));
   },
 
@@ -1992,9 +2088,9 @@ export const createManifestSlice: StateCreator<
   setHoveredGroup: (id) => set({ hoveredGroupId: id }),
 
   setSelectedLabel: (id) => {
-    // Selecting a label clears control selection (mutually exclusive).
+    // Selecting a label clears control + banner selection (all mutually exclusive).
     if (id !== null) {
-      set({ selectedLabelId: id, selectedIds: [] });
+      set({ selectedLabelId: id, selectedIds: [], selectedBannerId: null });
     } else {
       set({ selectedLabelId: null });
     }

@@ -369,6 +369,27 @@ export default function EditorToolbar({
         +L
       </button>
 
+      {/* Add polish banner — decorative overlay spanning the panel */}
+      <button
+        onClick={() => {
+          pushSnapshot();
+          const newId = useEditorStore.getState().addPolishBanner();
+          if (typeof document !== 'undefined') {
+            setTimeout(() => {
+              const el = document.querySelector(`[data-banner-id="${newId}"]`);
+              if (el && 'scrollIntoView' in el) {
+                el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+              }
+            }, 50);
+          }
+        }}
+        disabled={previewMode}
+        className={iconBtn}
+        title="Add polish banner (decorative overlay) at top of panel"
+      >
+        +B
+      </button>
+
       {/* Label size (only when labels visible) */}
       {showLabels && (
         <select

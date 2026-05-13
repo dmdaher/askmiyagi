@@ -20,6 +20,12 @@
 export const COLOR_PRESETS = [
   '#d1d5db', // default grey (text-gray-300 baseline — leftmost)
   '#e5e5e5', // white
+  '#888888', // light grey
+  '#666666', // section-header gray (matches SectionContainer header text)
+  '#444444', // mid dark grey
+  '#2a2a2a', // panel-button surface (matches PanelRenderer circle-button default bg)
+  '#1a1a2a', // panel tone dark navy
+  '#000000', // black (useful for translucent banner backgrounds)
   '#f59e0b', // amber
   '#22d3ee', // cyan
   '#22c55e', // green

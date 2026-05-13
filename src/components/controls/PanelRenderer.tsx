@@ -15,6 +15,8 @@ import JogWheelAssembly from './JogWheelAssembly';
 import DirectionSwitch from './DirectionSwitch';
 import JogDisplay from './JogDisplay';
 import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
+import { computeBannerBoxStyle, computeBannerTextStyle } from '@/lib/banner-style';
+import type { PolishBanner } from '@/components/panel-editor/store/historySlice';
 import { PanelState } from '@/types/panel';
 import type { GroupLabel } from '@/types/manifest';
 
@@ -86,6 +88,7 @@ export interface PanelManifest {
     borderRadius?: number;
     label?: string;
   }[];
+  polishBanners?: PolishBanner[];
   keyboard?: {
     keys: number;
     startNote: string;
@@ -488,6 +491,23 @@ export default function PanelRenderer({
             headerLabel={s.headerLabel} />
         );
       })}
+
+      {/* Polish banners — purely decorative overlay (z=5, above sections + containers,
+          below controls). `pointer-events: none` so clicks pass through to controls
+          underneath. Uses the SAME computeBannerBoxStyle as the editor's
+          PolishBannerLayer — guaranteed editor/preview parity by construction. */}
+      {(manifest.polishBanners ?? []).map((banner) => (
+        <div
+          key={banner.id}
+          data-banner-id={banner.id}
+          style={{
+            ...computeBannerBoxStyle(banner),
+            pointerEvents: 'none',
+          }}
+        >
+          {banner.text && <div style={computeBannerTextStyle(banner)}>{banner.text}</div>}
+        </div>
+      ))}
 
       {/* Containers (visual grouping boxes) */}
       {(manifest.controlContainers ?? []).map((c) => {

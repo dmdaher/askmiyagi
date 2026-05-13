@@ -22,6 +22,7 @@ export async function GET(
     timestamp: string;
     sizeBytes: number;
     isCurrent: boolean;
+    source?: 'autosave' | 'pull-from-hosted';
   }> = [];
 
   // Current version
@@ -35,34 +36,69 @@ export async function GET(
     });
   }
 
-  // Backups (sorted newest first)
+  // Helper: parse timestamp from a filename. Handles two patterns:
+  //   - manifest-editor-2026-05-02T16-07-10.json      (regular autosave; in backups/)
+  //   - manifest-editor-backup-2026-05-02T05-20-34-700Z.json  (pull-from-hosted; in pipelineDir/)
+  function parseTimestamp(file: string, fallbackMtime: Date): string {
+    const m1 = file.match(/manifest-editor-(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2})\.json/);
+    if (m1) return m1[1].replace(/T(\d{2})-(\d{2})-(\d{2})/, 'T$1:$2:$3') + 'Z';
+    const m2 = file.match(/manifest-editor-backup-(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3})Z\.json/);
+    if (m2) {
+      // 2026-05-02T05-20-34-700 → 2026-05-02T05:20:34.700Z
+      return m2[1].replace(/T(\d{2})-(\d{2})-(\d{2})-(\d{3})/, 'T$1:$2:$3.$4') + 'Z';
+    }
+    return fallbackMtime.toISOString();
+  }
+
+  // Regular autosave backups (in .pipeline/<id>/backups/). Contractor saves write
+  // here via /api/pipeline/<id>/manifest PUT. Previously limited to 20; removed
+  // the slice so contractors see their full edit history across sessions.
   if (fs.existsSync(backupDir)) {
     const files = fs.readdirSync(backupDir)
-      .filter(f => f.startsWith('manifest-editor-') && f.endsWith('.json'))
-      .sort()
-      .reverse();
-
-    for (const file of files.slice(0, 20)) {
+      .filter(f => f.startsWith('manifest-editor-') && f.endsWith('.json'));
+    for (const file of files) {
       const fullPath = path.join(backupDir, file);
       try {
         const stat = fs.statSync(fullPath);
-        // Parse timestamp from filename: manifest-editor-YYYY-MM-DDTHH-MM-SS.json
-        const tsMatch = file.match(/manifest-editor-(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2})\.json/);
-        const timestamp = tsMatch
-          ? tsMatch[1].replace(/T(\d{2})-(\d{2})-(\d{2})/, 'T$1:$2:$3') + 'Z'
-          : stat.mtime.toISOString();
-
         versions.push({
           filename: file,
-          timestamp,
+          timestamp: parseTimestamp(file, stat.mtime),
           sizeBytes: stat.size,
           isCurrent: false,
+          source: 'autosave',
         });
-      } catch {
-        // Skip unreadable files
-      }
+      } catch { /* skip unreadable */ }
     }
   }
+
+  // Pull-from-hosted backups (in .pipeline/<id>/ parent dir, not in backups/
+  // subfolder). Written by /api/pipeline/<id>/pull-from-hosted route when admin
+  // pulls contractor's edits. These were invisible in the dropdown until now.
+  if (fs.existsSync(pipelineDir)) {
+    const files = fs.readdirSync(pipelineDir)
+      .filter(f => f.startsWith('manifest-editor-backup-') && f.endsWith('.json'));
+    for (const file of files) {
+      const fullPath = path.join(pipelineDir, file);
+      try {
+        const stat = fs.statSync(fullPath);
+        versions.push({
+          filename: file,
+          timestamp: parseTimestamp(file, stat.mtime),
+          sizeBytes: stat.size,
+          isCurrent: false,
+          source: 'pull-from-hosted',
+        });
+      } catch { /* skip unreadable */ }
+    }
+  }
+
+  // Sort newest first by timestamp. Current always at top (its ISO mtime is
+  // freshest by definition).
+  versions.sort((a, b) => {
+    if (a.isCurrent) return -1;
+    if (b.isCurrent) return 1;
+    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+  });
 
   return NextResponse.json({
     versions,
