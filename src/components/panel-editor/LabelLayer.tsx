@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditorStore } from './store';
 import type { EditorLabel } from './store';
-import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
+import SharedLabel from '@/components/panel/SharedLabel';
 
 /**
  * Renders all editorLabels as a flat overlay on the editor canvas.
@@ -165,51 +165,35 @@ export default function LabelLayer() {
               still findable and clickable in the editor (codegen skips them
               entirely in the generated panel). */}
           {editing !== label.id && (
-            <div
-              className={
-                'absolute pointer-events-none select-none' +
-                (recentlyCreatedLabelId === label.id ? ' label-flash-new' : '')
-              }
-              style={{
-                left: label.x,
-                top: label.y,
-                // Figma-style "hug contents" for icon-only labels: the stored
-                // `label.w` (default 60) is meaningful only when text is
-                // present. Icon-only labels render at content width so the
-                // selection outline + drag target hug the icon exactly.
-                width: (label.icon && !label.text) ? undefined : (label.w ?? undefined),
+            <SharedLabel
+              label={{
+                id: label.id,
+                text: label.text,
+                icon: label.icon,
+                x: label.x,
+                y: label.y,
+                w: label.w,
                 fontSize: label.fontSize,
-                // Explicit line-height matches computeLabelPosition's lineH = fontSize + 2.
-                // This keeps computed label height consistent with rendered height,
-                // so 1-line and 2-line labels have identical bottom-to-control spacing.
-                // +2 (not +4) gives tight spacing between lines for multi-line labels.
-                lineHeight: `${label.fontSize + 2}px`,
-                textAlign: label.align,
-                zIndex: dragging === label.id ? 200 : selectedLabel === label.id ? 100 : 60,
-                opacity: label.hidden ? 0.25 : (dragging === label.id ? 0.7 : 1),
-                outline: selectedLabel === label.id
-                  ? '1px solid rgba(59,130,246,0.8)'
-                  : label.hidden ? '1px dashed rgba(251,191,36,0.4)' : 'none',
-                outlineOffset: 2,
-                borderRadius: 2,
-                padding: '1px 3px',
+                align: label.align,
+                color: label.color,
+                hidden: label.hidden,
               }}
-            >
-              <span
-                className={`font-medium uppercase tracking-wider whitespace-nowrap pointer-events-auto cursor-move${label.color ? '' : ' text-gray-300'}`}
-                style={{
-                  padding: '4px 6px',
-                  margin: '-4px -6px',
-                  display: 'inline-block',
-                  minWidth: 16,
-                  minHeight: label.fontSize + 4,
-                  // Apply color override when set; otherwise fall back to text-gray-300 via class
-                  ...(label.color ? { color: label.color } : {}),
-                }}
-                data-label-id={label.id}
-                onMouseDown={(e) => handleMouseDown(e, label)}
-                onDoubleClick={() => handleDoubleClick(label)}
-                onContextMenu={(e) => {
+              opacity={label.hidden ? 0.25 : (dragging === label.id ? 0.7 : 1)}
+              outline={
+                selectedLabel === label.id
+                  ? '1px solid rgba(59,130,246,0.8)'
+                  : label.hidden
+                    ? '1px dashed rgba(251,191,36,0.4)'
+                    : 'none'
+              }
+              zIndex={dragging === label.id ? 200 : selectedLabel === label.id ? 100 : 60}
+              outerClassName={recentlyCreatedLabelId === label.id ? 'label-flash-new' : undefined}
+              innerSpanProps={{
+                'data-label-id': label.id,
+                className: 'pointer-events-auto cursor-move',
+                onMouseDown: (e) => handleMouseDown(e, label),
+                onDoubleClick: () => handleDoubleClick(label),
+                onContextMenu: (e) => {
                   // Right-click on a canvas label opens the same label menu
                   // as right-click in the Layers panel sidebar tree.
                   e.preventDefault();
@@ -223,28 +207,9 @@ export default function LabelLayer() {
                       clientY: e.clientY,
                     },
                   }));
-                }}
-              >
-                {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
-                  // inline-flex + center alignment removes dependence on parent
-                  // line-height for vertical centering — keeps the icon aligned
-                  // identically between editor and preview at any zoom level.
-                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
-                    {HARDWARE_ICON_SVGS[label.icon]}
-                  </span>
-                ) : label.icon && HARDWARE_ICONS[label.icon] ? (
-                  <span style={{ marginRight: label.text ? 3 : 0 }}>{HARDWARE_ICONS[label.icon]}</span>
-                ) : null}
-                {label.text ? label.text.split('\n').map((line, i) => (
-                  <span key={i}>
-                    {i > 0 && <br />}
-                    {line}
-                  </span>
-                )) : !label.icon && (
-                  <span className="text-gray-600 italic" style={{ fontSize: Math.max(label.fontSize - 1, 6) }}>empty</span>
-                )}
-              </span>
-            </div>
+                },
+              }}
+            />
           )}
 
           {/* Inline editor */}
