@@ -1768,3 +1768,238 @@ function computeMedian(values: number[]): number {
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Display Builder validators
+//
+// Run after doPhase5DisplayBuild's invokeAgent returns. Mechanical post-checks
+// that prevent the agent from gaming the system with stub files or
+// cross-device contamination.
+//
+// See plan: docs/plans/2026-04-30-display-builder-agent.md
+// See SOUL: .claude/agents/display-builder.md
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Validates the device-theme.json output from Pass 1 (Style Probe).
+ * Required fields, valid hex colors, displayDimensions present.
+ */
+export function validateDeviceTheme(themeJson: string): ValidationResult {
+  const errors: string[] = [];
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(themeJson);
+  } catch (e) {
+    return { valid: false, errors: [`device-theme.json is not valid JSON: ${(e as Error).message}`] };
+  }
+
+  // Accept either flat (backgroundColor) or new schema (background) — SOUL has both
+  const bg = parsed.background ?? parsed.backgroundColor;
+  const text = parsed.textColor ?? parsed.primary;
+  if (typeof bg !== 'string') errors.push('Missing required field: background/backgroundColor');
+  if (typeof text !== 'string') errors.push('Missing required field: textColor/primary');
+
+  const hexLike = /^(#[0-9a-f]{3,8}|rgba?\([^)]+\)|hsla?\([^)]+\))$/i;
+  for (const [key, val] of Object.entries(parsed)) {
+    if (typeof val === 'string' && (key.toLowerCase().includes('color') || ['background', 'primary', 'secondary', 'danger', 'headerBg', 'borderColor'].includes(key))) {
+      if (!hexLike.test(val)) {
+        errors.push(`${key}: not a valid color value (got "${val}")`);
+      }
+    }
+  }
+
+  if (!parsed.fontFamily) errors.push('Missing fontFamily');
+  if (!parsed.fontSize && !parsed.fontSizes) errors.push('Missing fontSize/fontSizes object');
+
+  return { valid: errors.length === 0, errors };
+}
+
+interface ScreenInventoryEntry {
+  id: string;
+  component: string;
+  description?: string;
+  manualPages?: string;
+  controlsThatOpen?: string[];
+  props?: string[];
+  confidence?: 'high' | 'low';
+}
+
+/**
+ * Validates the screen-inventory.json output.
+ * IDs unique, component names valid, manual page refs non-empty for high-confidence entries.
+ */
+export function validateScreenInventory(inventoryJson: string): ValidationResult {
+  const errors: string[] = [];
+  let parsed: { deviceId?: string; screenTypes?: ScreenInventoryEntry[] };
+  try {
+    parsed = JSON.parse(inventoryJson);
+  } catch (e) {
+    return { valid: false, errors: [`screen-inventory.json is not valid JSON: ${(e as Error).message}`] };
+  }
+
+  if (!parsed.deviceId) errors.push('Missing deviceId field');
+  if (!Array.isArray(parsed.screenTypes)) {
+    return { valid: false, errors: ['screen-inventory.json must contain screenTypes array'] };
+  }
+  if (parsed.screenTypes.length === 0) {
+    errors.push('screen-inventory.json has no screen types');
+  }
+
+  const ids = new Set<string>();
+  const componentNamePattern = /^[A-Z][A-Za-z0-9]*Screen$/;
+
+  parsed.screenTypes.forEach((entry, idx) => {
+    if (!entry.id) {
+      errors.push(`screenTypes[${idx}]: missing id`);
+    } else if (ids.has(entry.id)) {
+      errors.push(`screenTypes[${idx}]: duplicate id "${entry.id}"`);
+    } else {
+      ids.add(entry.id);
+    }
+    if (!entry.component) {
+      errors.push(`screenTypes[${idx}]: missing component`);
+    } else if (!componentNamePattern.test(entry.component)) {
+      errors.push(`screenTypes[${idx}]: component "${entry.component}" doesn't match PascalCase + "Screen" suffix`);
+    }
+    // High-confidence entries must cite the manual; low-confidence stubs are exempt.
+    if (entry.confidence !== 'low' && !entry.manualPages) {
+      errors.push(`screenTypes[${idx}] (${entry.id}): missing manualPages reference`);
+    }
+  });
+
+  // Every device must include a home/idle screen — SOUL rule G3.
+  const hasHome = parsed.screenTypes.some(e => e.id === 'home' || /home|idle|default/i.test(e.id));
+  if (!hasHome) {
+    errors.push('No home/idle screen found — every device must have a default screen');
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Validates the actual TSX screen component files exist + don't reference other devices.
+ *
+ * Anti-anchoring grep: the new device's display directory must not contain
+ * strings matching other known device IDs. Catches the contamination failure
+ * mode where the agent inadvertently copies from src/components/devices/<other>/.
+ *
+ * Caller provides:
+ *   - deviceId — this device, used to exclude its own name from the grep
+ *   - files — Map<relativePath, fileContents> for every file under
+ *             src/components/devices/<deviceId>/display/
+ *   - inventory — parsed screen-inventory.json (use validateScreenInventory first)
+ *
+ * Checks:
+ *   - Every component in inventory has a matching TSX file
+ *   - Each TSX file contains a named export matching its component
+ *   - Each TSX file is at least 30 LOC of substantive JSX (catches stubs that pass size check)
+ *   - No file references any other known device name (anti-anchoring)
+ */
+export function validateDisplayComponents(opts: {
+  deviceId: string;
+  files: Map<string, string>;
+  inventory: ScreenInventoryEntry[];
+  knownOtherDevices?: string[];
+}): ValidationResult {
+  const { deviceId, files, inventory } = opts;
+  // Default exclude list — these are device IDs from existing src/components/devices/*
+  const otherDevices = (opts.knownOtherDevices ?? [
+    'fantom-08', 'fantom-06', 'cdj-3000', 'alphatheta-cdj3000x', 'deepmind-12',
+    'ddj-flx4', 'dj-djs-1000', 'dj-xdj-rx3', 'rc505-mk2',
+  ]).filter(d => d !== deviceId);
+
+  const errors: string[] = [];
+
+  for (const entry of inventory) {
+    // Skip low-confidence stubs — they're allowed to be sparse + tagged TODO
+    if (entry.confidence === 'low') continue;
+
+    const tsxPath = `screens/${entry.component}.tsx`;
+    const content = files.get(tsxPath);
+    if (!content) {
+      errors.push(`Missing TSX file for "${entry.id}" — expected ${tsxPath}`);
+      continue;
+    }
+    // Named export check
+    const exportPattern = new RegExp(`export\\s+(default\\s+)?(function|const|class)\\s+${entry.component}\\b`);
+    if (!exportPattern.test(content)) {
+      errors.push(`${tsxPath}: missing named export "${entry.component}"`);
+    }
+    // Substantive content: count non-blank non-comment lines, must be > 30
+    const substantiveLines = content
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 0 && !l.startsWith('//') && !l.startsWith('*') && !l.startsWith('/*'))
+      .length;
+    if (substantiveLines < 30) {
+      errors.push(`${tsxPath}: only ${substantiveLines} substantive lines (stub-like; agent should mark confidence:'low' or build the real component)`);
+    }
+  }
+
+  // Anti-anchoring grep across all files
+  for (const [relPath, content] of files.entries()) {
+    for (const other of otherDevices) {
+      // Word-boundary match so 'cdj-3000' doesn't match 'cdj-3000x' as a false positive
+      const wordRe = new RegExp(`\\b${other.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      if (wordRe.test(content)) {
+        errors.push(`${relPath}: contains reference to "${other}" — anti-anchoring violation`);
+      }
+    }
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Cross-checks screen-inventory.json against manual-extractor's pass-1-inventory.md
+ * to ensure every screen listed in the extractor's output has a corresponding entry.
+ *
+ * Caller provides:
+ *   - inventory — parsed screen-inventory.json entries
+ *   - pass1Content — raw content of pass-1-inventory.md
+ *
+ * The check is heuristic: it pulls all bullet-style screen names from the markdown
+ * and looks for a matching id or description in the inventory. Low-confidence stubs
+ * count toward coverage (they're explicit placeholders, not fabrications).
+ */
+export function validateInventoryCompleteness(opts: {
+  inventory: ScreenInventoryEntry[];
+  pass1Content: string;
+}): ValidationResult {
+  const errors: string[] = [];
+  const { inventory, pass1Content } = opts;
+
+  // Extract candidate screen names from pass1 — looks for "X screen" patterns
+  // (case-insensitive, tolerates hyphenation and parenthetical clarifications)
+  const screenMentions = new Set<string>();
+  const screenPattern = /(?:^|\W)([A-Z][A-Za-z0-9\- ]{1,30})\s+screen\b/gm;
+  let m;
+  while ((m = screenPattern.exec(pass1Content)) !== null) {
+    const cleaned = m[1].trim().toLowerCase().replace(/\s+/g, '-');
+    if (cleaned.length > 1) screenMentions.add(cleaned);
+  }
+
+  if (screenMentions.size === 0) {
+    // pass-1-inventory.md doesn't follow the expected "X screen" pattern;
+    // we can't validate completeness mechanically. Not an error — just skip.
+    return { valid: true, errors: [] };
+  }
+
+  // For each extracted screen mention, look for a match in inventory ids OR descriptions
+  const missingMentions: string[] = [];
+  for (const mention of screenMentions) {
+    const hit = inventory.some(e => {
+      if (e.id.toLowerCase().includes(mention)) return true;
+      if (mention.includes(e.id.toLowerCase())) return true;
+      if (e.description?.toLowerCase().includes(mention.replace(/-/g, ' '))) return true;
+      return false;
+    });
+    if (!hit) missingMentions.push(mention);
+  }
+
+  if (missingMentions.length > 0) {
+    errors.push(`Manual screens missing from screen-inventory.json: ${missingMentions.join(', ')}`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
