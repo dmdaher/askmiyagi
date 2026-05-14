@@ -176,32 +176,7 @@ export async function backupManifest(
     // endpoint exactly once per backup attempt.
     const initialList = await list({ prefix: historyPrefix(deviceId) });
 
-    // Race-proof per-minute dedup floor.
-    //
-    // CONTEXT: two concurrent PUTs can both call list() before either's copy()
-    // registers, both pass the 5-min throttle, and both write backups in the
-    // same second. We confirmed this in sandbox: 2 parallel PUTs → 2 backups
-    // with identical uploadedAt. Real-world triggers: sendBeacon on tab close
-    // overlapping an autosave, multi-tab editing, retry storms.
-    //
-    // FIX: even if list() is stale, derive a minute-level prefix from current
-    // wall clock and check the existing list for any blob in this minute. If
-    // one exists, skip — at most 1 autosave backup per minute, regardless of
-    // concurrency or list() consistency.
-    if (!force) {
-      // Match `<prefix>/devices/<id>/history/(<source>-)?YYYY-MM-DDTHH-MM`
-      // for any existing blob in the same minute. Source prefix is optional
-      // for backward-compat with pre-source-tag filenames.
-      const now = new Date();
-      const minuteStamp = now.toISOString().slice(0, 16).replace(/[:.]/g, '-');
-      const minuteRe = new RegExp(`${minuteStamp}`);
-      if (initialList.blobs.some(b => minuteRe.test(b.pathname))) {
-        return null; // Already backed up this minute
-      }
-    }
-
-    // Throttle check: if not forced and a recent backup exists, skip.
-    // Belt-and-suspenders alongside the minute-dedup above.
+    // 5-min throttle check: if not forced and a recent backup exists, skip.
     if (!force && initialList.blobs.length > 0) {
       const newest = [...initialList.blobs].sort((a, b) =>
         new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
@@ -212,10 +187,29 @@ export async function backupManifest(
       }
     }
 
+    // Race-proof per-minute dedup at WRITE time, not READ time.
+    //
+    // SANDBOX EVIDENCE: 4 concurrent PUTs all called list() before any copy()
+    // registered. List-based dedup passed for all 4. Each wrote a distinct
+    // ms-precision filename → 4 files with identical uploadedAt second.
+    //
+    // FIX: for autosaves, truncate the filename to MINUTE precision so
+    // concurrent PUTs in the same minute all target the SAME path. With
+    // allowOverwrite=true, last write wins; we end up with exactly ONE
+    // file per minute regardless of concurrency or list() consistency.
+    //
+    // Manual/submit/send/restore (force=true) keep ms precision — they're
+    // deliberate user-driven checkpoints; each one is a distinct intent.
     const meta = await head(manifestPath(deviceId));
-    const isoStamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const isoStamp = force
+      ? new Date().toISOString().replace(/[:.]/g, '-')           // ms precision
+      : new Date().toISOString().slice(0, 16).replace(/[:.]/g, '-'); // minute precision
     const historyPath = `${historyPrefix(deviceId)}${source}-${isoStamp}.json`;
-    await copy(meta.url, historyPath, { access: 'public' });
+    await copy(meta.url, historyPath, {
+      access: 'public',
+      addRandomSuffix: false,
+      allowOverwrite: true, // concurrent autosaves collapse to one file
+    });
 
     // Prune: count is current pre-copy count + 1 (the one we just wrote).
     // We compare to MAX_HISTORY using the pre-copy list — if it was already
