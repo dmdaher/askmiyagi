@@ -1,0 +1,142 @@
+{
+  "deviceId": "cdj-3000",
+  "displayType": "touchscreen",
+  "displaySize": "9-inch color touchscreen",
+  "secondaryDisplay": "on-jog circular LCD",
+  "screenTypes": [
+    {
+      "id": "idle",
+      "component": "IdleScreen",
+      "description": "Default power-on screen with Pioneer DJ branding, no track loaded",
+      "trigger": "Power on, no track loaded",
+      "manualPage": null,
+      "atoms": ["StatusBar"]
+    },
+    {
+      "id": "waveform",
+      "component": "WaveformScreen",
+      "description": "Main playback screen with enlarged and overall waveforms, track info, BPM, tempo, time, hot cue markers, loop markers, beat countdown, and phase meter",
+      "trigger": "Track is loaded and selected from browse screen",
+      "manualPage": 21,
+      "atoms": ["TrackInfo", "Waveform", "StatusBar", "TouchTabs", "PhaseMeter", "BeatSelector", "KeyShiftBar"],
+      "subModes": [
+        {
+          "id": "beat-loop",
+          "description": "Beat loop selector overlay at bottom (1/4 through 32 beat values)",
+          "trigger": "Touch BEAT LOOP tab on waveform screen",
+          "manualPage": 55
+        },
+        {
+          "id": "key-shift",
+          "description": "Key shift bar with -/+ semitone controls and current/target key display",
+          "trigger": "Touch KEY SHIFT tab on waveform screen",
+          "manualPage": 70
+        },
+        {
+          "id": "beat-jump",
+          "description": "Beat jump selector overlay at bottom (1/2 through 4 beat values with direction arrows)",
+          "trigger": "Touch BEAT JUMP tab on waveform screen",
+          "manualPage": 62
+        }
+      ]
+    },
+    {
+      "id": "browse",
+      "component": "BrowseScreen",
+      "description": "Track list browser with category sidebar (TRACK, ARTIST, ALBUM, BPM, KEY, HISTORY), column headers, preview waveforms, and track metadata columns",
+      "trigger": "Press BROWSE, TAG LIST, PLAYLIST, or SEARCH button",
+      "manualPage": 19,
+      "atoms": ["CategorySidebar", "TrackListRow", "StatusBar"]
+    },
+    {
+      "id": "source",
+      "component": "SourceScreen",
+      "description": "Source/device selection screen listing connected USB, SD, and LINK devices with device info panel and MY SETTINGS LOAD button",
+      "trigger": "Press SOURCE button",
+      "manualPage": 18,
+      "atoms": ["StatusBar"]
+    },
+    {
+      "id": "search",
+      "component": "SearchScreen",
+      "description": "Search screen with on-screen QWERTY keyboard, search input field, and filtered track results list",
+      "trigger": "Press SEARCH button while browsing rekordbox library",
+      "manualPage": 36,
+      "atoms": ["TrackListRow", "StatusBar"]
+    },
+    {
+      "id": "track-filter",
+      "component": "TrackFilterScreen",
+      "description": "Track filter editing screen with BPM/KEY tab (BPM stepper, key selector, rating stars, color filter) and MY TAG tab (category columns with selectable tags)",
+      "trigger": "Press and hold TRACK FILTER/EDIT button",
+      "manualPage": 39,
+      "atoms": ["StatusBar"]
+    },
+    {
+      "id": "utility",
+      "component": "UtilityScreen",
+      "description": "System settings screen with category sidebar (DJ SETTING, DISPLAY, PRO DJ LINK, SYSTEM, INFO), settings list with current values, and option radio buttons",
+      "trigger": "Press and hold MENU/UTILITY button",
+      "manualPage": 73,
+      "atoms": ["StatusBar"]
+    },
+    {
+      "id": "shortcut",
+      "component": "ShortcutScreen",
+      "description": "Quick settings screen with 4-quadrant layout: player settings (waveform/phase, hot cue, brightness, quantize, beat jump), device info, waveform color/position settings, and MY SETTINGS load/save",
+      "trigger": "Press SHORTCUT button",
+      "manualPage": 79,
+      "atoms": ["StatusBar"]
+    },
+    {
+      "id": "track-info",
+      "component": "TrackInfoScreen",
+      "description": "Detailed track metadata display with album artwork, title, artist, album, genre, duration, BPM, key, rating, date, bitrate, and comment fields",
+      "trigger": "Touch INFO on browse screen or (i) icon on waveform screen",
+      "manualPage": 20,
+      "atoms": ["StatusBar"]
+    }
+  ],
+  "atomComponents": [
+    {
+      "id": "StatusBar",
+      "description": "Bottom status bar showing player number, time display, tempo, BPM, sync/master status, master tempo indicator, and musical key"
+    },
+    {
+      "id": "Waveform",
+      "description": "SVG waveform renderer supporting overall (full track) and enlarged (zoomed) variants with playhead, hot cue markers, loop regions, beat grid, and cue points"
+    },
+    {
+      "id": "TrackInfo",
+      "description": "Track information bar with device icon, track title, duration, BPM, and key"
+    },
+    {
+      "id": "TouchTabs",
+      "description": "Top-right touch tabs for BEAT LOOP / KEY SHIFT / BEAT JUMP on the waveform screen"
+    },
+    {
+      "id": "PhaseMeter",
+      "description": "Horizontal phase offset meter showing beat/bar deviation from sync master"
+    },
+    {
+      "id": "BeatSelector",
+      "description": "Touchable row of beat value buttons for loop or jump selection with half/double controls"
+    },
+    {
+      "id": "KeyShiftBar",
+      "description": "Key shift control bar with -/+ buttons, current key display, shift amount, and reset button"
+    },
+    {
+      "id": "CategorySidebar",
+      "description": "Left sidebar for browse screen showing category icons (TRACK, ARTIST, ALBUM, etc.) with active highlight"
+    },
+    {
+      "id": "TrackListRow",
+      "description": "Single track row with index number, play indicator, preview waveform, title, artist, BPM, and key columns"
+    },
+    {
+      "id": "JogDisplay",
+      "description": "Circular on-jog display with artwork, track info, SLIP/VINYL/SYNC/MASTER indicators, and rotating playhead"
+    }
+  ]
+}

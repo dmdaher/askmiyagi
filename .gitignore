@@ -76,3 +76,5 @@ docs/**/screenshots/*.jpg
 
 # Prevent stray screenshots in project root
 /*.png
+.pipeline/*/state-backup-*.json
+.pipeline/*/state.json
