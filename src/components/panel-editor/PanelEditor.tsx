@@ -388,8 +388,15 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
               editorLabels: data.editorLabels ?? [],
               controlGroups: data.controlGroups ?? [],
               controlContainers: data.controlContainers ?? [],
+              // polishBanners must be reset on every load. Otherwise:
+              //   1. On refresh, banners saved in Blob get silently dropped because
+              //      setState merges and the store keeps its default [] — banner disappears.
+              //   2. On restore-from-history, banners from the current session linger
+              //      in store even though the restored manifest has different banners.
+              polishBanners: data.polishBanners ?? [],
               selectedIds: [],
               lockedIds: [],
+              selectedBannerId: null,
               keyboard: data.keyboard ?? null,
               _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
               _loadedAt: data._updatedAt ?? data._loadedAt ?? null,
