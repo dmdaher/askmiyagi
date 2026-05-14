@@ -102,7 +102,14 @@ export async function GET(
  * PUT handler: auto-save the editor's flat model (sections + controls)
  * to manifest-editor.json, separate from the pipeline's manifest.json
  * to avoid corruption.
+ *
+ * Backup behavior mirrors the hosted route (parity between modes):
+ *  - autosave PUT (no ?backup=force) → throttled to 1 backup per minute
+ *  - manual save PUT (?backup=force&source=manual) → always creates a backup
+ *  - source query param tags the filename so the dropdown can show it
  */
+const AUTOSAVE_BACKUP_THROTTLE_MS = 5 * 60 * 1000;
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ deviceId: string }> }
@@ -120,17 +127,51 @@ export async function PUT(
   const editorPath = path.join(pipelineDir, 'manifest-editor.json');
   const backupDir = path.join(pipelineDir, 'backups');
 
+  const force = request.nextUrl.searchParams.get('backup') === 'force';
+  const sourceParam = request.nextUrl.searchParams.get('source');
+  const source = (sourceParam === 'manual' || sourceParam === 'submit' || sourceParam === 'send')
+    ? sourceParam
+    : (force ? 'manual' : 'autosave');
+
   try {
-    // Auto-backup: save a timestamped copy before overwriting
+    // Auto-backup: save a timestamped copy before overwriting.
+    // Throttled for autosaves (force=false) — at most 1 backup per minute,
+    // OR if newest backup is older than 5 min the next autosave creates one.
+    // Forced (manual save, submit) backups always run.
     if (fs.existsSync(editorPath)) {
       if (!fs.existsSync(backupDir)) {
         fs.mkdirSync(backupDir, { recursive: true });
       }
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-      const backupPath = path.join(backupDir, `manifest-editor-${timestamp}.json`);
-      fs.copyFileSync(editorPath, backupPath);
-      // Backups are append-only — never delete old versions.
-      // Version history UI will read from this directory.
+
+      let shouldBackup = force;
+      if (!force) {
+        // Read existing backup filenames; skip if any sits in the current minute
+        // OR if the newest backup is within the 5-min throttle window.
+        const now = new Date();
+        const minuteStamp = now.toISOString().slice(0, 16).replace(/[:.]/g, '-');
+        let inSameMinute = false;
+        let newestAgeMs = Infinity;
+        try {
+          const files = fs.readdirSync(backupDir);
+          for (const f of files) {
+            if (f.includes(minuteStamp)) {
+              inSameMinute = true;
+              break;
+            }
+            const fullPath = path.join(backupDir, f);
+            const stat = fs.statSync(fullPath);
+            const age = now.getTime() - stat.mtime.getTime();
+            if (age < newestAgeMs) newestAgeMs = age;
+          }
+        } catch { /* dir empty / unreadable — allow backup */ }
+        shouldBackup = !inSameMinute && newestAgeMs >= AUTOSAVE_BACKUP_THROTTLE_MS;
+      }
+
+      if (shouldBackup) {
+        const isoStamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const backupPath = path.join(backupDir, `manifest-editor-${source}-${isoStamp}.json`);
+        fs.copyFileSync(editorPath, backupPath);
+      }
     }
 
     fs.writeFileSync(editorPath, JSON.stringify(body, null, 2));

@@ -64,10 +64,11 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
 
     setSaveStatus('saving');
     try {
-      // Manual save = explicit checkpoint. Append ?backup=force so the hosted
-      // PUT route creates a history snapshot even if the 5-min autosave
-      // throttle window hasn't elapsed. Local pipeline route ignores the flag.
-      const url = getSaveUrl(deviceId) + (getSaveUrl(deviceId).includes('?') ? '&' : '?') + 'backup=force';
+      // Manual save = explicit checkpoint. Append ?backup=force&source=manual so
+      // the hosted PUT route creates a history snapshot (bypassing throttle) and
+      // tags it as a manual save in version history. Local pipeline route honors
+      // the same params for parity.
+      const url = getSaveUrl(deviceId) + (getSaveUrl(deviceId).includes('?') ? '&' : '?') + 'backup=force&source=manual';
       const res = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

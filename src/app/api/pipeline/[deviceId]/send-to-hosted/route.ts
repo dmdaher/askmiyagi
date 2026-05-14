@@ -46,8 +46,9 @@ export async function POST(
       note = body?.note;
     } catch { /* no body is fine */ }
 
-    // Backup contractor's current manifest before overwriting
-    await backupManifest(deviceId);
+    // Backup contractor's current manifest before overwriting.
+    // Tag source=send so the history dropdown shows the admin-send checkpoint.
+    await backupManifest(deviceId, { source: 'send' });
 
     // Preserve existing events and append sent-to-contractor event
     const existingStatus = await getDeviceStatus(deviceId);

@@ -22,8 +22,16 @@ export async function GET(
     timestamp: string;
     sizeBytes: number;
     isCurrent: boolean;
-    source?: 'autosave' | 'pull-from-hosted';
+    source?: 'autosave' | 'manual' | 'submit' | 'send' | 'restore';
   }> = [];
+
+  // Parse the source tag from a backup filename. New format:
+  //   manifest-editor-<source>-<isostamp>.json
+  // Legacy: manifest-editor-<isostamp>.json (no source) → 'autosave'.
+  function parseSource(file: string): 'autosave' | 'manual' | 'submit' | 'send' | 'restore' {
+    const m = file.match(/^manifest-editor-(autosave|manual|submit|send|restore)-/);
+    return (m?.[1] as 'autosave' | 'manual' | 'submit' | 'send' | 'restore') ?? 'autosave';
+  }
 
   // Current version
   if (fs.existsSync(editorPath)) {
@@ -40,11 +48,15 @@ export async function GET(
   //   - manifest-editor-2026-05-02T16-07-10.json      (regular autosave; in backups/)
   //   - manifest-editor-backup-2026-05-02T05-20-34-700Z.json  (pull-from-hosted; in pipelineDir/)
   function parseTimestamp(file: string, fallbackMtime: Date): string {
+    // New: manifest-editor-<source>-<isostamp>.json
+    const mTagged = file.match(/manifest-editor-(?:autosave|manual|submit|send|restore)-(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2})\.json/);
+    if (mTagged) return mTagged[1].replace(/T(\d{2})-(\d{2})-(\d{2})/, 'T$1:$2:$3') + 'Z';
+    // Legacy: manifest-editor-<isostamp>.json (no source tag)
     const m1 = file.match(/manifest-editor-(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2})\.json/);
     if (m1) return m1[1].replace(/T(\d{2})-(\d{2})-(\d{2})/, 'T$1:$2:$3') + 'Z';
+    // Pull-from-hosted: manifest-editor-backup-<isostampms>Z.json
     const m2 = file.match(/manifest-editor-backup-(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3})Z\.json/);
     if (m2) {
-      // 2026-05-02T05-20-34-700 → 2026-05-02T05:20:34.700Z
       return m2[1].replace(/T(\d{2})-(\d{2})-(\d{2})-(\d{3})/, 'T$1:$2:$3.$4') + 'Z';
     }
     return fallbackMtime.toISOString();
@@ -65,7 +77,7 @@ export async function GET(
           timestamp: parseTimestamp(file, stat.mtime),
           sizeBytes: stat.size,
           isCurrent: false,
-          source: 'autosave',
+          source: parseSource(file),
         });
       } catch { /* skip unreadable */ }
     }
@@ -73,7 +85,8 @@ export async function GET(
 
   // Pull-from-hosted backups (in .pipeline/<id>/ parent dir, not in backups/
   // subfolder). Written by /api/pipeline/<id>/pull-from-hosted route when admin
-  // pulls contractor's edits. These were invisible in the dropdown until now.
+  // pulls contractor's edits. Surface them as 'send' source so the dropdown
+  // shows them with the "Sent by admin" treatment.
   if (fs.existsSync(pipelineDir)) {
     const files = fs.readdirSync(pipelineDir)
       .filter(f => f.startsWith('manifest-editor-backup-') && f.endsWith('.json'));
@@ -86,7 +99,7 @@ export async function GET(
           timestamp: parseTimestamp(file, stat.mtime),
           sizeBytes: stat.size,
           isCurrent: false,
-          source: 'pull-from-hosted',
+          source: 'send',
         });
       } catch { /* skip unreadable */ }
     }

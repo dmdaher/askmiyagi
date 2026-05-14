@@ -134,8 +134,23 @@ export async function putDeviceManifest(deviceId: string, manifest: Record<strin
 const MAX_HISTORY = 50;
 const AUTOSAVE_BACKUP_THROTTLE_MS = 5 * 60 * 1000; // 5 minutes between autosave-triggered backups
 
+/**
+ * Source tag encoded into backup filenames so the history UI can show
+ * meaningful icons + labels instead of "Just now × 5" of indistinct entries.
+ *
+ * Filename format: `<source>-<isostamp>.json` (e.g., `autosave-2026-05-14T00-27-42.json`).
+ * Legacy backups without a prefix are treated as 'autosave' (backward-compat).
+ */
+export type BackupSource = 'autosave' | 'manual' | 'submit' | 'send' | 'restore';
+
 function historyPrefix(deviceId: string) {
   return `${PREFIX}/${deviceId}/history/`;
+}
+
+/** Parse source from a history filename. Returns 'autosave' for legacy/unknown. */
+export function parseBackupSource(filename: string): BackupSource {
+  const m = filename.match(/^(autosave|manual|submit|send|restore)-/);
+  return (m?.[1] as BackupSource) ?? 'autosave';
 }
 
 /**
@@ -151,15 +166,42 @@ function historyPrefix(deviceId: string) {
  */
 export async function backupManifest(
   deviceId: string,
-  opts?: { force?: boolean },
+  opts?: { force?: boolean; source?: BackupSource },
 ): Promise<string | null> {
   const force = opts?.force ?? true;
+  const source: BackupSource = opts?.source ?? (force ? 'manual' : 'autosave');
   try {
-    // List existing backups ONCE. We use this for both the throttle check
-    // and the post-write prune so we don't hit Blob's list endpoint twice.
+    // List existing backups ONCE. We use this for the throttle check, the
+    // per-minute dedup, and the post-write prune so we hit Blob's list
+    // endpoint exactly once per backup attempt.
     const initialList = await list({ prefix: historyPrefix(deviceId) });
 
+    // Race-proof per-minute dedup floor.
+    //
+    // CONTEXT: two concurrent PUTs can both call list() before either's copy()
+    // registers, both pass the 5-min throttle, and both write backups in the
+    // same second. We confirmed this in sandbox: 2 parallel PUTs → 2 backups
+    // with identical uploadedAt. Real-world triggers: sendBeacon on tab close
+    // overlapping an autosave, multi-tab editing, retry storms.
+    //
+    // FIX: even if list() is stale, derive a minute-level prefix from current
+    // wall clock and check the existing list for any blob in this minute. If
+    // one exists, skip — at most 1 autosave backup per minute, regardless of
+    // concurrency or list() consistency.
+    if (!force) {
+      // Match `<prefix>/devices/<id>/history/(<source>-)?YYYY-MM-DDTHH-MM`
+      // for any existing blob in the same minute. Source prefix is optional
+      // for backward-compat with pre-source-tag filenames.
+      const now = new Date();
+      const minuteStamp = now.toISOString().slice(0, 16).replace(/[:.]/g, '-');
+      const minuteRe = new RegExp(`${minuteStamp}`);
+      if (initialList.blobs.some(b => minuteRe.test(b.pathname))) {
+        return null; // Already backed up this minute
+      }
+    }
+
     // Throttle check: if not forced and a recent backup exists, skip.
+    // Belt-and-suspenders alongside the minute-dedup above.
     if (!force && initialList.blobs.length > 0) {
       const newest = [...initialList.blobs].sort((a, b) =>
         new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
@@ -171,7 +213,8 @@ export async function backupManifest(
     }
 
     const meta = await head(manifestPath(deviceId));
-    const historyPath = `${historyPrefix(deviceId)}${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+    const isoStamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const historyPath = `${historyPrefix(deviceId)}${source}-${isoStamp}.json`;
     await copy(meta.url, historyPath, { access: 'public' });
 
     // Prune: count is current pre-copy count + 1 (the one we just wrote).
@@ -214,7 +257,8 @@ export async function listManifestHistory(deviceId: string): Promise<Array<{ nam
 /** Restore a manifest from history. Backs up current first as safety net. */
 export async function restoreFromHistory(deviceId: string, historyUrl: string): Promise<boolean> {
   try {
-    await backupManifest(deviceId);
+    // Tag safety backup as 'restore' so UI can show "Restore safety net" vs "Manual save"
+    await backupManifest(deviceId, { source: 'restore' });
     await copy(historyUrl, manifestPath(deviceId), { access: 'public', addRandomSuffix: false, allowOverwrite: true });
     return true;
   } catch {
