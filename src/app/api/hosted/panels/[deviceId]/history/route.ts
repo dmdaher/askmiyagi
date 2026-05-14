@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { listManifestHistory, restoreFromHistory, getDeviceManifest } from '@/lib/hosted-storage';
+import { listManifestHistory, restoreFromHistory, getDeviceManifest, parseBackupSource } from '@/lib/hosted-storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +24,7 @@ export async function GET(
     timestamp: string;
     sizeBytes: number;
     isCurrent: boolean;
-    source?: 'autosave' | 'pull-from-hosted' | 'admin-send';
+    source?: 'autosave' | 'manual' | 'submit' | 'send' | 'restore';
   }> = [];
 
   // Current manifest (top of list)
@@ -39,7 +39,9 @@ export async function GET(
     });
   }
 
-  // Historical backups (newest first from listManifestHistory)
+  // Historical backups (newest first from listManifestHistory).
+  // Parse source from filename — `<source>-<isostamp>.json` for new backups,
+  // legacy backups without a source prefix default to 'autosave'.
   const history = await listManifestHistory(deviceId);
   for (const entry of history) {
     versions.push({
@@ -47,7 +49,7 @@ export async function GET(
       timestamp: entry.timestamp,
       sizeBytes: entry.sizeBytes,
       isCurrent: false,
-      source: 'autosave',
+      source: parseBackupSource(entry.name),
     });
   }
 

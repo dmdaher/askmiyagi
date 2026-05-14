@@ -32,9 +32,10 @@ export async function PATCH(
     );
   }
 
-  // Backup manifest on contractor submit (creates restore point)
+  // Backup manifest on contractor submit (creates restore point).
+  // Tag source=submit so history dropdown can show the submission checkpoint.
   if (status === 'submitted') {
-    await backupManifest(deviceId);
+    await backupManifest(deviceId, { source: 'submit' });
   }
 
   // Build timeline event

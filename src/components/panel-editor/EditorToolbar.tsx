@@ -22,8 +22,11 @@ function SubmitForReviewButton({ deviceId, disabled }: { deviceId: string; disab
     try {
       // Flush current editor state to Blob BEFORE changing status.
       // Prevents race where submit fires before the auto-save debounce.
-      // backup=force ensures the submitted state gets its own history snapshot.
-      const flushRes = await fetch(`/api/hosted/panels/${deviceId}?backup=force`, {
+      //
+      // Intentionally does NOT pass ?backup=force — the submit checkpoint
+      // backup is created by the PATCH status handler with source='submit'.
+      // Forcing a backup here would create two entries per submit action.
+      const flushRes = await fetch(`/api/hosted/panels/${deviceId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(buildSavePayload()),

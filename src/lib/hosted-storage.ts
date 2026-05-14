@@ -134,8 +134,23 @@ export async function putDeviceManifest(deviceId: string, manifest: Record<strin
 const MAX_HISTORY = 50;
 const AUTOSAVE_BACKUP_THROTTLE_MS = 5 * 60 * 1000; // 5 minutes between autosave-triggered backups
 
+/**
+ * Source tag encoded into backup filenames so the history UI can show
+ * meaningful icons + labels instead of "Just now × 5" of indistinct entries.
+ *
+ * Filename format: `<source>-<isostamp>.json` (e.g., `autosave-2026-05-14T00-27-42.json`).
+ * Legacy backups without a prefix are treated as 'autosave' (backward-compat).
+ */
+export type BackupSource = 'autosave' | 'manual' | 'submit' | 'send' | 'restore';
+
 function historyPrefix(deviceId: string) {
   return `${PREFIX}/${deviceId}/history/`;
+}
+
+/** Parse source from a history filename. Returns 'autosave' for legacy/unknown. */
+export function parseBackupSource(filename: string): BackupSource {
+  const m = filename.match(/^(autosave|manual|submit|send|restore)-/);
+  return (m?.[1] as BackupSource) ?? 'autosave';
 }
 
 /**
@@ -151,15 +166,17 @@ function historyPrefix(deviceId: string) {
  */
 export async function backupManifest(
   deviceId: string,
-  opts?: { force?: boolean },
+  opts?: { force?: boolean; source?: BackupSource },
 ): Promise<string | null> {
   const force = opts?.force ?? true;
+  const source: BackupSource = opts?.source ?? (force ? 'manual' : 'autosave');
   try {
-    // List existing backups ONCE. We use this for both the throttle check
-    // and the post-write prune so we don't hit Blob's list endpoint twice.
+    // List existing backups ONCE. We use this for the throttle check, the
+    // per-minute dedup, and the post-write prune so we hit Blob's list
+    // endpoint exactly once per backup attempt.
     const initialList = await list({ prefix: historyPrefix(deviceId) });
 
-    // Throttle check: if not forced and a recent backup exists, skip.
+    // 5-min throttle check: if not forced and a recent backup exists, skip.
     if (!force && initialList.blobs.length > 0) {
       const newest = [...initialList.blobs].sort((a, b) =>
         new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
@@ -170,9 +187,29 @@ export async function backupManifest(
       }
     }
 
+    // Race-proof per-minute dedup at WRITE time, not READ time.
+    //
+    // SANDBOX EVIDENCE: 4 concurrent PUTs all called list() before any copy()
+    // registered. List-based dedup passed for all 4. Each wrote a distinct
+    // ms-precision filename → 4 files with identical uploadedAt second.
+    //
+    // FIX: for autosaves, truncate the filename to MINUTE precision so
+    // concurrent PUTs in the same minute all target the SAME path. With
+    // allowOverwrite=true, last write wins; we end up with exactly ONE
+    // file per minute regardless of concurrency or list() consistency.
+    //
+    // Manual/submit/send/restore (force=true) keep ms precision — they're
+    // deliberate user-driven checkpoints; each one is a distinct intent.
     const meta = await head(manifestPath(deviceId));
-    const historyPath = `${historyPrefix(deviceId)}${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
-    await copy(meta.url, historyPath, { access: 'public' });
+    const isoStamp = force
+      ? new Date().toISOString().replace(/[:.]/g, '-')           // ms precision
+      : new Date().toISOString().slice(0, 16).replace(/[:.]/g, '-'); // minute precision
+    const historyPath = `${historyPrefix(deviceId)}${source}-${isoStamp}.json`;
+    await copy(meta.url, historyPath, {
+      access: 'public',
+      addRandomSuffix: false,
+      allowOverwrite: true, // concurrent autosaves collapse to one file
+    });
 
     // Prune: count is current pre-copy count + 1 (the one we just wrote).
     // We compare to MAX_HISTORY using the pre-copy list — if it was already
@@ -214,7 +251,8 @@ export async function listManifestHistory(deviceId: string): Promise<Array<{ nam
 /** Restore a manifest from history. Backs up current first as safety net. */
 export async function restoreFromHistory(deviceId: string, historyUrl: string): Promise<boolean> {
   try {
-    await backupManifest(deviceId);
+    // Tag safety backup as 'restore' so UI can show "Restore safety net" vs "Manual save"
+    await backupManifest(deviceId, { source: 'restore' });
     await copy(historyUrl, manifestPath(deviceId), { access: 'public', addRandomSuffix: false, allowOverwrite: true });
     return true;
   } catch {

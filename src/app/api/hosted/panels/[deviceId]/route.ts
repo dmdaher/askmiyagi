@@ -84,10 +84,19 @@ export async function PUT(
 
   // Snapshot the current manifest to history BEFORE overwriting.
   // Manual saves pass ?backup=force to bypass throttle; autosaves use the
-  // 5-min throttle so continuous typing doesn't flood Blob with snapshots.
-  // Best-effort — backupManifest swallows errors and never blocks the save.
+  // 5-min throttle + per-minute dedup floor so continuous typing doesn't
+  // flood Blob. Best-effort — backupManifest swallows errors and never
+  // blocks the save.
+  //
+  // Source tag (?source=manual|submit|autosave|send) controls the icon
+  // and label shown in the history dropdown. Submit for Review passes
+  // source=submit so the contractor can spot their submission checkpoint.
   const force = request.nextUrl.searchParams.get('backup') === 'force';
-  await backupManifest(deviceId, { force });
+  const sourceParam = request.nextUrl.searchParams.get('source');
+  const source = (sourceParam === 'manual' || sourceParam === 'submit' || sourceParam === 'send')
+    ? sourceParam
+    : (force ? 'manual' : 'autosave');
+  await backupManifest(deviceId, { force, source });
 
   // Write manifest to its own blob — completely independent of status
   await putDeviceManifest(deviceId, body);

@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { isHosted } from '@/lib/env';
+import {
+  groupVersions,
+  relativeTime,
+  relativeTimeRange,
+  type Version,
+  type GroupedEntry,
+  type BackupSource,
+} from './version-history/groupVersions';
 
-interface Version {
-  filename: string;
-  timestamp: string;
-  sizeBytes: number;
-  isCurrent: boolean;
-  source?: 'autosave' | 'pull-from-hosted' | 'admin-send';
-}
+const PAGE_SIZE = 50;
 
 /**
  * Picks the version API base for this device.
@@ -19,8 +21,8 @@ interface Version {
  * - Local admin/sandbox mode → /api/pipeline/<id>/versions
  *   GET lists filesystem backups; POST /versions/restore { filename } restores.
  *
- * The two endpoints return the same shape ({ versions, total }) and accept
- * the same restore payload ({ filename }) so this dropdown is mode-agnostic.
+ * Both endpoints return the same shape ({ versions, total }) and accept the
+ * same restore payload ({ filename }), so this dropdown is mode-agnostic.
  */
 function getVersionEndpoints(deviceId: string) {
   const useHosted = isHosted || deviceId.startsWith('sandbox-');
@@ -36,41 +38,48 @@ function getVersionEndpoints(deviceId: string) {
   };
 }
 
-const PAGE_SIZE = 50;
-
-function relativeTime(timestamp: string): string {
-  const diff = Date.now() - new Date(timestamp).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
-
-function formatTimestamp(timestamp: string): string {
-  try {
-    return new Date(timestamp).toLocaleString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-  } catch {
-    return timestamp;
-  }
-}
+/**
+ * Source → visual treatment for discrete entries.
+ *
+ * Manual / Submit / Send / Restore each get a distinct accent color +
+ * label so the contractor can scan history at a glance.
+ */
+const SOURCE_PRESENTATION: Record<
+  Exclude<BackupSource, 'autosave'>,
+  { label: string; chipClass: string; iconClass: string }
+> = {
+  manual: {
+    label: 'Saved',
+    chipClass: 'bg-amber-500/15 text-amber-300 border border-amber-500/30',
+    iconClass: 'text-amber-400',
+  },
+  submit: {
+    label: 'Submitted for review',
+    chipClass: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30',
+    iconClass: 'text-emerald-400',
+  },
+  send: {
+    // From contractor's perspective: this snapshot is YOUR work just before
+    // the admin sent a fresh manifest that overwrote it. Restoring this entry
+    // brings back your pre-overwrite state.
+    label: 'Before admin update',
+    chipClass: 'bg-blue-500/15 text-blue-300 border border-blue-500/30',
+    iconClass: 'text-blue-400',
+  },
+  restore: {
+    label: 'Pre-restore snapshot',
+    chipClass: 'bg-gray-500/15 text-gray-300 border border-gray-500/30',
+    iconClass: 'text-gray-400',
+  },
+};
 
 export default function VersionHistoryDropdown({ deviceId, onRestore }: { deviceId: string; onRestore?: () => void }) {
   const [open, setOpen] = useState(false);
   const [versions, setVersions] = useState<Version[]>([]);
   const [loading, setLoading] = useState(false);
   const [restoring, setRestoring] = useState<string | null>(null);
-  // Pagination: show first PAGE_SIZE entries; "Load more" extends the view.
-  // Resets to PAGE_SIZE every time the dropdown opens.
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -102,8 +111,8 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
 
   const handleToggle = useCallback(() => {
     if (!open) {
-      // Reset pagination + reload on open
       setVisibleCount(PAGE_SIZE);
+      setExpandedGroups(new Set());
       fetchVersions();
     }
     setOpen(!open);
@@ -119,27 +128,31 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename }),
       });
-
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         console.error('Restore failed:', body.error);
         setRestoring(null);
         return;
       }
-
       setOpen(false);
-
-      // Trigger PanelEditor to reload from disk/blob (which now has the
-      // restored data). Goes through the normal fetch → load cycle, avoiding
-      // React hooks errors from direct setState with dramatically different data.
-      if (onRestore) {
-        onRestore();
-      }
+      if (onRestore) onRestore();
     } catch (err) {
       console.error('Restore error:', err);
     }
     setRestoring(null);
   }, [deviceId, onRestore]);
+
+  // Apply pagination on raw versions, then group what's visible.
+  // Current entry is always shown; pagination applies to historical entries only.
+  const grouped = useMemo<GroupedEntry[]>(() => {
+    const current = versions.find(v => v.isCurrent);
+    const history = versions.filter(v => !v.isCurrent).slice(0, visibleCount);
+    const sliced = current ? [current, ...history] : history;
+    return groupVersions(sliced);
+  }, [versions, visibleCount]);
+
+  const historicalCount = versions.filter(v => !v.isCurrent).length;
+  const hasMore = visibleCount < historicalCount;
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -152,72 +165,149 @@ export default function VersionHistoryDropdown({ deviceId, onRestore }: { device
       </button>
 
       {open && (
-        <div className="absolute right-0 top-8 z-50 w-72 rounded-lg border border-gray-700 bg-[#0d0d1a] shadow-xl">
+        <div className="absolute right-0 top-8 z-50 w-80 rounded-lg border border-gray-700 bg-[#0d0d1a] shadow-xl">
           <div className="border-b border-gray-800 px-3 py-2">
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
               Version History
             </span>
           </div>
 
-          <div className="max-h-64 overflow-y-auto">
+          <div className="max-h-80 overflow-y-auto">
             {loading ? (
-              <div className="px-3 py-4 text-center text-xs text-gray-500">Loading...</div>
-            ) : versions.length === 0 ? (
+              <div className="px-3 py-4 text-center text-xs text-gray-500">Loading…</div>
+            ) : grouped.length === 0 ? (
               <div className="px-3 py-4 text-center text-xs text-gray-500">No versions yet</div>
             ) : (
-              <>
-                {versions.slice(0, visibleCount).map((v) => (
-                  <div
-                    key={v.filename}
-                    className="flex items-center justify-between border-b border-gray-800/50 px-3 py-2 last:border-0"
-                  >
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[11px] text-gray-300">
-                        {v.isCurrent ? 'Current' : relativeTime(v.timestamp)}
-                      </span>
-                      <span className="text-[9px] text-gray-500 truncate">
-                        {formatTimestamp(v.timestamp)}
-                        {v.source === 'pull-from-hosted' && (
-                          <span className="ml-1 text-amber-500/70">· pull</span>
-                        )}
+              grouped.map((entry, idx) => {
+                if (entry.type === 'day-separator') {
+                  return (
+                    <div
+                      key={`day-${idx}-${entry.dayLabel}`}
+                      className="border-b border-gray-800/50 bg-gray-900/40 px-3 py-1"
+                    >
+                      <span className="text-[9px] font-semibold uppercase tracking-wider text-gray-500">
+                        {entry.dayLabel}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      {v.isCurrent ? (
-                        <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-[9px] text-blue-400">
-                          Current
+                  );
+                }
+
+                if (entry.type === 'current') {
+                  return (
+                    <div
+                      key="current"
+                      className="flex items-center justify-between border-b border-gray-800/50 bg-blue-500/5 px-3 py-2"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-[10px] text-blue-400">●</span>
+                        <span className="text-[11px] text-gray-200">Current</span>
+                      </div>
+                      <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-[9px] text-blue-400">
+                        Live
+                      </span>
+                    </div>
+                  );
+                }
+
+                if (entry.type === 'discrete') {
+                  const pres = SOURCE_PRESENTATION[entry.source];
+                  return (
+                    <div
+                      key={entry.entry.filename}
+                      className="flex items-center justify-between border-b border-gray-800/50 px-3 py-2 last:border-0"
+                    >
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <span className={`text-[11px] ${pres.iconClass}`} aria-hidden>◆</span>
+                        <div className="flex flex-col min-w-0">
+                          <span className={`inline-block max-w-fit rounded px-1.5 py-0 text-[9px] ${pres.chipClass}`}>
+                            {pres.label}
+                          </span>
+                          <span className="text-[10px] text-gray-500 mt-0.5">
+                            {relativeTime(entry.entry.timestamp)}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleRestore(entry.entry.filename)}
+                        disabled={restoring !== null}
+                        className="rounded border border-gray-600 bg-gray-800 px-2 py-0.5 text-[10px] text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-30"
+                      >
+                        {restoring === entry.entry.filename ? '…' : 'Restore'}
+                      </button>
+                    </div>
+                  );
+                }
+
+                // autosave-group
+                const groupKey = `group-${entry.firstTimestamp}-${entry.lastTimestamp}`;
+                const isExpanded = expandedGroups.has(groupKey);
+                const count = entry.entries.length;
+                return (
+                  <div key={groupKey} className="border-b border-gray-800/50 last:border-0">
+                    <button
+                      onClick={() => {
+                        setExpandedGroups(prev => {
+                          const next = new Set(prev);
+                          if (next.has(groupKey)) next.delete(groupKey);
+                          else next.add(groupKey);
+                          return next;
+                        });
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2 transition-colors hover:bg-white/5"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className={`inline-block w-3 text-center text-[9px] text-gray-500 transition-transform ${isExpanded ? 'rotate-90' : ''}`} aria-hidden>▶</span>
+                        <span className="text-[11px] text-gray-400">
+                          {count} {count === 1 ? 'autosave' : 'autosaves'}
                         </span>
-                      ) : (
-                        <button
-                          onClick={() => handleRestore(v.filename)}
-                          disabled={restoring !== null}
-                          className="rounded border border-gray-600 bg-gray-800 px-2 py-0.5 text-[10px] text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-30"
-                        >
-                          {restoring === v.filename ? 'Restoring...' : 'Restore'}
-                        </button>
-                      )}
-                    </div>
+                      </div>
+                      <span className="text-[10px] text-gray-500">
+                        {relativeTimeRange(entry.firstTimestamp, entry.lastTimestamp)}
+                      </span>
+                    </button>
+                    {isExpanded && (
+                      <div className="bg-black/20 border-t border-gray-800/30">
+                        {entry.entries.map(v => (
+                          <div
+                            key={v.filename}
+                            className="flex items-center justify-between border-b border-gray-800/20 px-6 py-1.5 last:border-0"
+                          >
+                            <span className="text-[10px] text-gray-500">
+                              {relativeTime(v.timestamp)}
+                            </span>
+                            <button
+                              onClick={() => handleRestore(v.filename)}
+                              disabled={restoring !== null}
+                              className="rounded border border-gray-700 bg-gray-800/60 px-2 py-0.5 text-[10px] text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200 disabled:opacity-30"
+                            >
+                              {restoring === v.filename ? '…' : 'Restore'}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                ))}
-                {visibleCount < versions.length && (
-                  <button
-                    onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-                    className="w-full border-b border-gray-800/50 px-3 py-2 text-[10px] text-gray-400 transition-colors hover:bg-white/5 hover:text-gray-200"
-                  >
-                    Load {Math.min(PAGE_SIZE, versions.length - visibleCount)} more
-                    <span className="ml-1 text-gray-600">
-                      ({versions.length - visibleCount} remaining)
-                    </span>
-                  </button>
-                )}
-              </>
+                );
+              })
+            )}
+
+            {hasMore && (
+              <button
+                onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+                className="w-full border-b border-gray-800/50 px-3 py-2 text-[10px] text-gray-400 transition-colors hover:bg-white/5 hover:text-gray-200"
+              >
+                Load {Math.min(PAGE_SIZE, historicalCount - visibleCount)} more
+                <span className="ml-1 text-gray-600">
+                  ({historicalCount - visibleCount} remaining)
+                </span>
+              </button>
             )}
           </div>
 
-          {versions.length > 0 && (
+          {grouped.length > 0 && (
             <div className="border-t border-gray-800 px-3 py-1.5">
               <span className="text-[9px] text-gray-600">
-                Showing {Math.min(visibleCount, versions.length)} of {versions.length} — Cmd+Z undoes restore
+                Showing {Math.min(visibleCount, historicalCount)} of {historicalCount} · Cmd+Z undoes restore
               </span>
             </div>
           )}
