@@ -2361,6 +2361,104 @@ Create: device-theme.json, atoms/, screens/, DisplayScreen.tsx dispatcher, scree
   updateBurnRate(state, deviceId);
   updateSubscription(state, displayResult.rateLimitEvents);
 
+  // ─── Post-checks: mechanical validation of agent output ──────────────────
+  // The agent's checkpoint score is informational. These validators are the
+  // hard compiler that catches stub files, missing screens, malformed JSON,
+  // and cross-device contamination. Failure here halts the phase.
+  const displayDir = path.join(worktreeCwd, 'src', 'components', 'devices', deviceId, 'display');
+  const themePath = path.join(displayDir, 'device-theme.json');
+  const inventoryPath = path.join(displayDir, 'screen-inventory.json');
+  const pass1Path = path.join(agentPath(deviceId, 'manual-extractor'), 'sieve', 'pass-1-inventory.md');
+
+  const postCheckErrors: string[] = [];
+
+  // 1. Theme JSON
+  if (!fs.existsSync(themePath)) {
+    postCheckErrors.push(`Missing ${themePath}`);
+  } else {
+    const themeContent = fs.readFileSync(themePath, 'utf-8');
+    const themeResult = validators.validateDeviceTheme(themeContent);
+    if (!themeResult.valid) {
+      postCheckErrors.push(...themeResult.errors.map(e => `device-theme.json: ${e}`));
+    }
+  }
+
+  // 2. Inventory JSON + parse for downstream checks
+  let inventoryEntries: Array<{ id: string; component: string; confidence?: 'high' | 'low'; description?: string; manualPages?: string }> = [];
+  if (!fs.existsSync(inventoryPath)) {
+    postCheckErrors.push(`Missing ${inventoryPath}`);
+  } else {
+    const inventoryContent = fs.readFileSync(inventoryPath, 'utf-8');
+    const inventoryResult = validators.validateScreenInventory(inventoryContent);
+    if (!inventoryResult.valid) {
+      postCheckErrors.push(...inventoryResult.errors.map(e => `screen-inventory.json: ${e}`));
+    } else {
+      try {
+        const parsed = JSON.parse(inventoryContent);
+        inventoryEntries = parsed.screenTypes ?? [];
+      } catch { /* validateScreenInventory already caught this */ }
+    }
+  }
+
+  // 3. Component files — TSX existence, named exports, substantive content, anti-anchoring grep
+  if (fs.existsSync(displayDir) && inventoryEntries.length > 0) {
+    const files = new Map<string, string>();
+    const collectFiles = (dir: string, prefix: string) => {
+      if (!fs.existsSync(dir)) return;
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          collectFiles(fullPath, prefix ? `${prefix}/${entry.name}` : entry.name);
+        } else if (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts')) {
+          const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+          files.set(rel, fs.readFileSync(fullPath, 'utf-8'));
+        }
+      }
+    };
+    collectFiles(displayDir, '');
+
+    const componentResult = validators.validateDisplayComponents({
+      deviceId,
+      files,
+      inventory: inventoryEntries,
+    });
+    if (!componentResult.valid) {
+      postCheckErrors.push(...componentResult.errors.map(e => `display components: ${e}`));
+    }
+  }
+
+  // 4. Completeness check against manual-extractor's screen list
+  if (fs.existsSync(pass1Path) && inventoryEntries.length > 0) {
+    const pass1Content = fs.readFileSync(pass1Path, 'utf-8');
+    const completenessResult = validators.validateInventoryCompleteness({
+      inventory: inventoryEntries,
+      pass1Content,
+    });
+    if (!completenessResult.valid) {
+      postCheckErrors.push(...completenessResult.errors.map(e => `inventory completeness: ${e}`));
+    }
+  }
+
+  if (postCheckErrors.length > 0) {
+    appendLog(deviceId, {
+      level: 'error',
+      message: `Phase 5-X post-check failed (${postCheckErrors.length} error${postCheckErrors.length > 1 ? 's' : ''})`,
+      detail: postCheckErrors.slice(0, 10).join('\n'),
+    });
+    completePhase(state, 'phase-5-display-build', null, false);
+    createEscalation(
+      state,
+      'display-builder-post-check',
+      `Display Builder output failed validation: ${postCheckErrors[0]}${postCheckErrors.length > 1 ? ` (+${postCheckErrors.length - 1} more)` : ''}`,
+    );
+    sendNotification('Miyagi Pipeline', `Display Builder validation failed for ${state.deviceName}`);
+    return;
+  }
+
+  appendLog(deviceId, {
+    level: 'info',
+    message: `Phase 5-X post-check passed (${inventoryEntries.length} screens validated, no contamination detected)`,
+  });
   completePhase(state, 'phase-5-display-build', null, true);
   advancePhase(state, worktreeCwd);
 }
