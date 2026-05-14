@@ -2495,23 +2495,87 @@ function parseSectionsFromGatekeeper(): SectionStatus[] {
   }
 }
 
-function parseBatchesFromAuditor() {
+/**
+ * Parse tutorial batches from the manual-extractor's Pass 4 output.
+ *
+ * The batches live in:
+ *   .pipeline/<id>/agents/manual-extractor/sieve/pass-4-batches.md
+ *
+ * Format is a markdown table:
+ *   | Batch | Tutorials              | Count | ...
+ *   |-------|------------------------|-------|...
+ *   | A     | T01, T02, T15, T21     | 4     | ...
+ *   | B     | T03, T19, T22, T23     | 4     | ...
+ *
+ * Previous implementation read from coverage-auditor's checkpoint with a
+ * regex that expected `batch X: T01, T02` colon-separated format — neither
+ * the file nor the format matched reality, so it silently returned []
+ * for every device. Result: every tutorial-build ran with 0 batches.
+ */
+function parseBatchesFromExtractor() {
+  const batchesPath = path.join(
+    paths().agent('manual-extractor').wtDir,
+    'sieve',
+    'pass-4-batches.md',
+  );
+
+  if (!fs.existsSync(batchesPath)) {
+    appendLog(deviceId, {
+      level: 'warn',
+      message: `Batches file missing at ${batchesPath} — tutorial-build will have 0 batches`,
+    });
+    return [];
+  }
+
   try {
-    const checkpointPath = paths().agent('coverage-auditor').wtCheckpoint;
-    const content = fs.readFileSync(checkpointPath, 'utf-8');
+    const content = fs.readFileSync(batchesPath, 'utf-8');
     const batches: { batchId: string; tutorials: string[] }[] = [];
-    const batchPattern = /batch[- ]?(\w+).*?:\s*(.+)/gi;
+
+    // Match markdown table rows like: | A | T01, T02, T15, T21 | 4 | ...
+    // - Must start with `|` and a single letter/number batch ID
+    // - Tutorials cell contains one or more T<digits> tokens, comma-separated
+    // - Stops at the next `|`
+    const rowPattern = /^\|\s*([A-Z0-9][A-Z0-9-]*)\s*\|\s*(T\d+(?:\s*,\s*T\d+)*)\s*\|/gim;
+    const seen = new Set<string>();
     let match;
-    while ((match = batchPattern.exec(content)) !== null) {
+    while ((match = rowPattern.exec(content)) !== null) {
       const batchId = `batch-${match[1].toLowerCase()}`;
+      // Skip the header row's separator (which doesn't have T-tokens anyway)
+      // and the "Total" summary row (e.g., `| **Total** | **T01–T23** | ...`)
+      if (seen.has(batchId)) continue;
       const tutorials = match[2].split(',').map((t) => t.trim()).filter(Boolean);
-      if (tutorials.length > 0) batches.push({ batchId, tutorials });
+      if (tutorials.length === 0) continue;
+      seen.add(batchId);
+      batches.push({ batchId, tutorials });
     }
-    return batches.map((b) => ({ ...b, status: 'pending' as const, builderScore: null, reviewerVerdict: null }));
-  } catch {
+
+    if (batches.length === 0) {
+      appendLog(deviceId, {
+        level: 'warn',
+        message: `Found batches file at ${batchesPath} but parsed 0 batches. ` +
+                 `Expected markdown table rows like '| A | T01, T02 | ...'`,
+      });
+    }
+
+    return batches.map((b) => ({
+      ...b,
+      status: 'pending' as const,
+      builderScore: null,
+      reviewerVerdict: null,
+    }));
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    appendLog(deviceId, {
+      level: 'error',
+      message: `Failed to parse batches: ${msg}`,
+    });
     return [];
   }
 }
+
+// Backward-compat alias — internal callers still use the old name.
+// Removable once all references are migrated.
+const parseBatchesFromAuditor = parseBatchesFromExtractor;
 
 function findPdfsInDir(dir: string): string[] {
   try {
