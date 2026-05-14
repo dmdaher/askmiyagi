@@ -1,0 +1,4351 @@
+{
+  "device": "deepmind-12",
+  "mode": "editor",
+  "viewport": {
+    "width": 1800,
+    "height": 1200
+  },
+  "zoom": 1,
+  "panelDimensions": {
+    "width": 2680,
+    "height": 699
+  },
+  "capturedAt": "2026-05-14T16:25:51.048Z",
+  "elements": {
+    "label:label-volume-knob": {
+      "id": "label-volume-knob",
+      "kind": "label",
+      "rect": {
+        "left": 127.25,
+        "top": 649,
+        "width": 49.5,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 133.25,
+        "top": 653,
+        "width": 37.5,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "VOLUME"
+    },
+    "label:label-portamento-slider": {
+      "id": "label-portamento-slider",
+      "kind": "label",
+      "rect": {
+        "left": 195,
+        "top": 649,
+        "width": 73.89,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 201,
+        "top": 653,
+        "width": 61.89,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "PORTAMENTO"
+    },
+    "label:label-oct-up": {
+      "id": "label-oct-up",
+      "kind": "label",
+      "rect": {
+        "left": 65.02,
+        "top": 668,
+        "width": 45.95,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 71.02,
+        "top": 672,
+        "width": 33.95,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "OCT UP"
+    },
+    "label:label-oct-down": {
+      "id": "label-oct-down",
+      "kind": "label",
+      "rect": {
+        "left": 266.13,
+        "top": 668,
+        "width": 61.73,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 272.13,
+        "top": 672,
+        "width": 49.73,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "OCT DOWN"
+    },
+    "label:label-pitch-wheel": {
+      "id": "label-pitch-wheel",
+      "kind": "label",
+      "rect": {
+        "left": 132.38,
+        "top": 827,
+        "width": 39.25,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 138.38,
+        "top": 831,
+        "width": 27.25,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "PITCH"
+    },
+    "label:label-mod-wheel": {
+      "id": "label-mod-wheel",
+      "kind": "label",
+      "rect": {
+        "left": 195,
+        "top": 827,
+        "width": 66.98,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 201,
+        "top": 831,
+        "width": 54.98,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "MOD WHEEL"
+    },
+    "label:label-arp-chord": {
+      "id": "label-arp-chord",
+      "kind": "label",
+      "rect": {
+        "left": 132.84,
+        "top": 268,
+        "width": 44.3,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 138.84,
+        "top": 272,
+        "width": 32.3,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "CHORD"
+    },
+    "label:label-arp-pchord": {
+      "id": "label-arp-pchord",
+      "kind": "label",
+      "rect": {
+        "left": 132.84,
+        "top": 355,
+        "width": 44.3,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 143.45,
+        "top": 359,
+        "width": 23.08,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "POLY CHORD"
+    },
+    "label:label-arp-on-off": {
+      "id": "label-arp-on-off",
+      "kind": "label",
+      "rect": {
+        "left": 132.05,
+        "top": 459,
+        "width": 45.89,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 138.05,
+        "top": 463,
+        "width": 33.89,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "ON/OFF"
+    },
+    "label:label-arp-tap-hold": {
+      "id": "label-arp-tap-hold",
+      "kind": "label",
+      "rect": {
+        "left": 193.52,
+        "top": 459,
+        "width": 56.97,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 199.52,
+        "top": 463,
+        "width": 44.97,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "TAP/HOLD"
+    },
+    "label:label-lfo1-edit": {
+      "id": "label-lfo1-edit",
+      "kind": "label",
+      "rect": {
+        "left": 380.72,
+        "top": 459,
+        "width": 32.55,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 386.72,
+        "top": 463,
+        "width": 20.55,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "EDIT"
+    },
+    "label:label-lfo1-rate": {
+      "id": "label-lfo1-rate",
+      "kind": "label",
+      "rect": {
+        "left": 348.67,
+        "top": 258,
+        "width": 34.64,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 354.67,
+        "top": 262,
+        "width": 22.64,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "RATE"
+    },
+    "label:label-lfo1-waveform-leds": {
+      "id": "label-lfo1-waveform-leds",
+      "kind": "label",
+      "rect": {
+        "left": 434,
+        "top": 1478,
+        "width": 88.81,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 440,
+        "top": 1482,
+        "width": 76.81,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "left",
+        "zIndex": "auto"
+      },
+      "text": "LFO WAVEFORMS"
+    },
+    "label:label-lfo1-delay-time": {
+      "id": "label-lfo1-delay-time",
+      "kind": "label",
+      "rect": {
+        "left": 410.66,
+        "top": 258,
+        "width": 40.67,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 416.66,
+        "top": 262,
+        "width": 28.67,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "DELAY TIME"
+    },
+    "label:label-lfo2-edit": {
+      "id": "label-lfo2-edit",
+      "kind": "label",
+      "rect": {
+        "left": 496.72,
+        "top": 459,
+        "width": 32.55,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 502.72,
+        "top": 463,
+        "width": 20.55,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "EDIT"
+    },
+    "label:label-lfo2-rate": {
+      "id": "label-lfo2-rate",
+      "kind": "label",
+      "rect": {
+        "left": 464.67,
+        "top": 258,
+        "width": 34.64,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 470.67,
+        "top": 262,
+        "width": 22.64,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "RATE"
+    },
+    "label:label-lfo2-waveform-leds": {
+      "id": "label-lfo2-waveform-leds",
+      "kind": "label",
+      "rect": {
+        "left": 522,
+        "top": 1029,
+        "width": 106.19,
+        "height": 20
+      },
+      "innerRect": {
+        "left": 528,
+        "top": 1033,
+        "width": 94.19,
+        "height": 12
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "10px",
+        "lineHeight": "12px",
+        "textAlign": "left",
+        "zIndex": "auto"
+      },
+      "text": "LFO WAVEFORMS"
+    },
+    "label:label-lfo2-delay-time": {
+      "id": "label-lfo2-delay-time",
+      "kind": "label",
+      "rect": {
+        "left": 526.66,
+        "top": 258,
+        "width": 40.67,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 532.66,
+        "top": 262,
+        "width": 28.67,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "DELAY TIME"
+    },
+    "label:label-osc1-pitch-mod": {
+      "id": "label-osc1-pitch-mod",
+      "kind": "label",
+      "rect": {
+        "left": 585.38,
+        "top": 258,
+        "width": 39.25,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 591.38,
+        "top": 262,
+        "width": 27.25,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "PITCH MOD"
+    },
+    "label:label-osc1-pwm": {
+      "id": "label-osc1-pwm",
+      "kind": "label",
+      "rect": {
+        "left": 651.03,
+        "top": 258,
+        "width": 33.94,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 657.03,
+        "top": 262,
+        "width": 21.94,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "PWM"
+    },
+    "label:label-osc2-pitch-mod": {
+      "id": "label-osc2-pitch-mod",
+      "kind": "label",
+      "rect": {
+        "left": 718.38,
+        "top": 258,
+        "width": 39.25,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 724.38,
+        "top": 262,
+        "width": 27.25,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "PITCH MOD"
+    },
+    "label:label-osc2-tone-mod": {
+      "id": "label-osc2-tone-mod",
+      "kind": "label",
+      "rect": {
+        "left": 784.8,
+        "top": 258,
+        "width": 36.41,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 790.8,
+        "top": 262,
+        "width": 24.41,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "TONE MOD"
+    },
+    "label:label-osc2-pitch": {
+      "id": "label-osc2-pitch",
+      "kind": "label",
+      "rect": {
+        "left": 848.38,
+        "top": 258,
+        "width": 39.25,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 854.38,
+        "top": 262,
+        "width": 27.25,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "PITCH"
+    },
+    "label:label-osc2-level": {
+      "id": "label-osc2-level",
+      "kind": "label",
+      "rect": {
+        "left": 913.27,
+        "top": 258,
+        "width": 39.45,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 919.27,
+        "top": 262,
+        "width": 27.45,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "LEVEL"
+    },
+    "label:label-noise-level": {
+      "id": "label-noise-level",
+      "kind": "label",
+      "rect": {
+        "left": 981.22,
+        "top": 258,
+        "width": 39.56,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 987.22,
+        "top": 262,
+        "width": 27.56,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "NOISE LEVEL"
+    },
+    "label:label-osc-edit": {
+      "id": "label-osc-edit",
+      "kind": "label",
+      "rect": {
+        "left": 820.72,
+        "top": 459,
+        "width": 32.55,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 826.72,
+        "top": 463,
+        "width": 20.55,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "EDIT"
+    },
+    "label:label-data-fader": {
+      "id": "label-data-fader",
+      "kind": "label",
+      "rect": {
+        "left": 1644.2,
+        "top": 258,
+        "width": 41.58,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 1653.5,
+        "top": 262,
+        "width": 22.97,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "DATA ENTRY"
+    },
+    "label:label-mod-button": {
+      "id": "label-mod-button",
+      "kind": "label",
+      "rect": {
+        "left": 1648.5,
+        "top": 459,
+        "width": 32.98,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1654.5,
+        "top": 463,
+        "width": 20.98,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "MOD"
+    },
+    "label:label-menu-prog": {
+      "id": "label-menu-prog",
+      "kind": "label",
+      "rect": {
+        "left": 1054.41,
+        "top": 459,
+        "width": 37.17,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1060.41,
+        "top": 463,
+        "width": 25.17,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "PROG"
+    },
+    "label:label-menu-fx": {
+      "id": "label-menu-fx",
+      "kind": "label",
+      "rect": {
+        "left": 1121.28,
+        "top": 459,
+        "width": 23.44,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1127.28,
+        "top": 463,
+        "width": 11.44,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "FX"
+    },
+    "label:label-menu-global": {
+      "id": "label-menu-global",
+      "kind": "label",
+      "rect": {
+        "left": 1169.11,
+        "top": 459,
+        "width": 47.78,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1175.11,
+        "top": 463,
+        "width": 35.78,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "GLOBAL"
+    },
+    "label:label-menu-compare": {
+      "id": "label-menu-compare",
+      "kind": "label",
+      "rect": {
+        "left": 1225.06,
+        "top": 459,
+        "width": 55.88,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1231.06,
+        "top": 463,
+        "width": 43.88,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "COMPARE"
+    },
+    "label:label-menu-write": {
+      "id": "label-menu-write",
+      "kind": "label",
+      "rect": {
+        "left": 1292.75,
+        "top": 459,
+        "width": 40.48,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1298.75,
+        "top": 463,
+        "width": 28.48,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "WRITE"
+    },
+    "label:label-nav-up": {
+      "id": "label-nav-up",
+      "kind": "label",
+      "rect": {
+        "left": 1478.81,
+        "top": 231,
+        "width": 24.36,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1484.81,
+        "top": 235,
+        "width": 12.36,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "UP"
+    },
+    "label:label-nav-down": {
+      "id": "label-nav-down",
+      "kind": "label",
+      "rect": {
+        "left": 1470.92,
+        "top": 457,
+        "width": 40.14,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1476.92,
+        "top": 461,
+        "width": 28.14,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "DOWN"
+    },
+    "label:label-nav-yes": {
+      "id": "label-nav-yes",
+      "kind": "label",
+      "rect": {
+        "left": 1567.94,
+        "top": 319,
+        "width": 38.13,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1573.94,
+        "top": 323,
+        "width": 26.13,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "+/YES"
+    },
+    "label:label-nav-no": {
+      "id": "label-nav-no",
+      "kind": "label",
+      "rect": {
+        "left": 1380.5,
+        "top": 319,
+        "width": 32.98,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1386.5,
+        "top": 323,
+        "width": 20.98,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "-/NO"
+    },
+    "label:label-poly-unison-detune": {
+      "id": "label-poly-unison-detune",
+      "kind": "label",
+      "rect": {
+        "left": 1740.84,
+        "top": 258,
+        "width": 48.3,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 1747.33,
+        "top": 262,
+        "width": 35.31,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "UNISON DETUNE"
+    },
+    "label:label-poly-edit": {
+      "id": "label-poly-edit",
+      "kind": "label",
+      "rect": {
+        "left": 1748.72,
+        "top": 459,
+        "width": 32.55,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1754.72,
+        "top": 463,
+        "width": 20.55,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "EDIT"
+    },
+    "label:label-vcf-freq": {
+      "id": "label-vcf-freq",
+      "kind": "label",
+      "rect": {
+        "left": 1836.27,
+        "top": 258,
+        "width": 35.45,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1842.27,
+        "top": 262,
+        "width": 23.45,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "FREQ"
+    },
+    "label:label-vcf-res": {
+      "id": "label-vcf-res",
+      "kind": "label",
+      "rect": {
+        "left": 1904.39,
+        "top": 258,
+        "width": 29.2,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1910.39,
+        "top": 262,
+        "width": 17.2,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "RES"
+    },
+    "label:label-vcf-env": {
+      "id": "label-vcf-env",
+      "kind": "label",
+      "rect": {
+        "left": 1972.91,
+        "top": 258,
+        "width": 30.19,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1978.91,
+        "top": 262,
+        "width": 18.19,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "ENV"
+    },
+    "label:label-vcf-lfo": {
+      "id": "label-vcf-lfo",
+      "kind": "label",
+      "rect": {
+        "left": 2037.34,
+        "top": 258,
+        "width": 29.3,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2043.34,
+        "top": 262,
+        "width": 17.3,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "LFO"
+    },
+    "label:label-vcf-kybd": {
+      "id": "label-vcf-kybd",
+      "kind": "label",
+      "rect": {
+        "left": 2098.78,
+        "top": 258,
+        "width": 36.44,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2104.78,
+        "top": 262,
+        "width": 24.44,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "KYBD"
+    },
+    "label:label-vcf-2pole": {
+      "id": "label-vcf-2pole",
+      "kind": "label",
+      "rect": {
+        "left": 1831.38,
+        "top": 459,
+        "width": 45.23,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1837.38,
+        "top": 463,
+        "width": 33.23,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "2-POLE"
+    },
+    "label:label-vcf-invert": {
+      "id": "label-vcf-invert",
+      "kind": "label",
+      "rect": {
+        "left": 1965.63,
+        "top": 459,
+        "width": 44.75,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1971.63,
+        "top": 463,
+        "width": 32.75,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "INVERT"
+    },
+    "label:label-vcf-edit": {
+      "id": "label-vcf-edit",
+      "kind": "label",
+      "rect": {
+        "left": 1902.72,
+        "top": 459,
+        "width": 32.55,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 1908.72,
+        "top": 463,
+        "width": 20.55,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "EDIT"
+    },
+    "label:label-vca-level": {
+      "id": "label-vca-level",
+      "kind": "label",
+      "rect": {
+        "left": 2197.27,
+        "top": 258,
+        "width": 39.45,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2203.27,
+        "top": 262,
+        "width": 27.45,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "LEVEL"
+    },
+    "label:label-vca-edit": {
+      "id": "label-vca-edit",
+      "kind": "label",
+      "rect": {
+        "left": 2200.72,
+        "top": 459,
+        "width": 32.55,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2206.72,
+        "top": 463,
+        "width": 20.55,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "EDIT"
+    },
+    "label:label-hpf-freq": {
+      "id": "label-hpf-freq",
+      "kind": "label",
+      "rect": {
+        "left": 2289.27,
+        "top": 258,
+        "width": 35.45,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2295.27,
+        "top": 262,
+        "width": 23.45,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "FREQ"
+    },
+    "label:label-hpf-boost": {
+      "id": "label-hpf-boost",
+      "kind": "label",
+      "rect": {
+        "left": 2285.42,
+        "top": 459,
+        "width": 43.16,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2291.42,
+        "top": 463,
+        "width": 31.16,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "BOOST"
+    },
+    "label:label-env-attack": {
+      "id": "label-env-attack",
+      "kind": "label",
+      "rect": {
+        "left": 2388.92,
+        "top": 258,
+        "width": 18.16,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2394.92,
+        "top": 262,
+        "width": 6.16,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "A"
+    },
+    "label:label-env-decay": {
+      "id": "label-env-decay",
+      "kind": "label",
+      "rect": {
+        "left": 2453.75,
+        "top": 258,
+        "width": 18.48,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2459.75,
+        "top": 262,
+        "width": 6.48,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "D"
+    },
+    "label:label-env-sustain": {
+      "id": "label-env-sustain",
+      "kind": "label",
+      "rect": {
+        "left": 2519.09,
+        "top": 258,
+        "width": 17.81,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2525.09,
+        "top": 262,
+        "width": 5.81,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "S"
+    },
+    "label:label-env-release": {
+      "id": "label-env-release",
+      "kind": "label",
+      "rect": {
+        "left": 2584.02,
+        "top": 258,
+        "width": 17.95,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2590.02,
+        "top": 262,
+        "width": 5.95,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "R"
+    },
+    "label:label-env-curve-leds": {
+      "id": "label-env-curve-leds",
+      "kind": "label",
+      "rect": {
+        "left": 2036,
+        "top": 1020,
+        "width": 56.34,
+        "height": 20
+      },
+      "innerRect": {
+        "left": 2042,
+        "top": 1024,
+        "width": 44.34,
+        "height": 12
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "10px",
+        "lineHeight": "12px",
+        "textAlign": "left",
+        "zIndex": "auto"
+      },
+      "text": "CURVES"
+    },
+    "label:label-env-vca-sel": {
+      "id": "label-env-vca-sel",
+      "kind": "label",
+      "rect": {
+        "left": 2412.83,
+        "top": 459,
+        "width": 30.33,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2418.83,
+        "top": 463,
+        "width": 18.33,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "VCA"
+    },
+    "label:label-env-vcf-sel": {
+      "id": "label-env-vcf-sel",
+      "kind": "label",
+      "rect": {
+        "left": 2480.2,
+        "top": 459,
+        "width": 29.59,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2486.2,
+        "top": 463,
+        "width": 17.59,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "VCF"
+    },
+    "label:label-env-mod-sel": {
+      "id": "label-env-mod-sel",
+      "kind": "label",
+      "rect": {
+        "left": 2545.5,
+        "top": 459,
+        "width": 32.98,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2551.5,
+        "top": 463,
+        "width": 20.98,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "MOD"
+    },
+    "label:label-env-curves": {
+      "id": "label-env-curves",
+      "kind": "label",
+      "rect": {
+        "left": 2622.92,
+        "top": 459,
+        "width": 48.16,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2628.92,
+        "top": 463,
+        "width": 36.16,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "CURVES"
+    },
+    "label:label-arp-rate": {
+      "id": "label-arp-rate",
+      "kind": "label",
+      "rect": {
+        "left": 203.67,
+        "top": 258,
+        "width": 34.64,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 209.67,
+        "top": 262,
+        "width": 22.64,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "RATE"
+    },
+    "label:label-arp-gate-time": {
+      "id": "label-arp-gate-time",
+      "kind": "label",
+      "rect": {
+        "left": 268.41,
+        "top": 258,
+        "width": 35.19,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 274.41,
+        "top": 262,
+        "width": 23.19,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "GATE TIME"
+    },
+    "label:label-arp-edit": {
+      "id": "label-arp-edit",
+      "kind": "label",
+      "rect": {
+        "left": 270.72,
+        "top": 459,
+        "width": 32.55,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 276.72,
+        "top": 463,
+        "width": 20.55,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "EDIT"
+    },
+    "label:label-voices-leds": {
+      "id": "label-voices-leds",
+      "kind": "label",
+      "rect": {
+        "left": 2222.77,
+        "top": 508,
+        "width": 16.45,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2228.77,
+        "top": 512,
+        "width": 4.45,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "1"
+    },
+    "label:label-standalone-1777700314057": {
+      "id": "label-standalone-1777700314057",
+      "kind": "label",
+      "rect": {
+        "left": 1038,
+        "top": 516,
+        "width": 270,
+        "height": 20
+      },
+      "innerRect": {
+        "left": 1044,
+        "top": 520,
+        "width": 258,
+        "height": 12
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "10px",
+        "lineHeight": "12px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "ANALOG 12- VOICE POLYPHONIC SYNTHESIZER"
+    },
+    "label:label-osc-sync": {
+      "id": "label-osc-sync",
+      "kind": "label",
+      "rect": {
+        "left": 719.64,
+        "top": 459,
+        "width": 36.7,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 725.64,
+        "top": 463,
+        "width": 24.7,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "SYNC"
+    },
+    "label:label-standalone-1778016922795-q3fodc": {
+      "id": "label-standalone-1778016922795-q3fodc",
+      "kind": "label",
+      "rect": {
+        "left": 635,
+        "top": 459,
+        "width": 24,
+        "height": 20
+      },
+      "innerRect": {
+        "left": 641,
+        "top": 463,
+        "width": 12,
+        "height": 12
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "label:label-standalone-1778022427184-viok2j": {
+      "id": "label-standalone-1778022427184-viok2j",
+      "kind": "label",
+      "rect": {
+        "left": 619.86,
+        "top": 232,
+        "width": 38.27,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 625.86,
+        "top": 236,
+        "width": 26.27,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "OSC 1"
+    },
+    "label:label-standalone-1778022454917-hu4gd3": {
+      "id": "label-standalone-1778022454917-hu4gd3",
+      "kind": "label",
+      "rect": {
+        "left": 815.31,
+        "top": 232,
+        "width": 39.36,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 821.31,
+        "top": 236,
+        "width": 27.36,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "OSC 2"
+    },
+    "label:label-standalone-1778038552514-vjfyoz": {
+      "id": "label-standalone-1778038552514-vjfyoz",
+      "kind": "label",
+      "rect": {
+        "left": 2158.36,
+        "top": 516,
+        "width": 45.28,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 2164.36,
+        "top": 520,
+        "width": 33.28,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "VOICES"
+    },
+    "label:label-standalone-1778041209092-t7jlsh": {
+      "id": "label-standalone-1778041209092-t7jlsh",
+      "kind": "label",
+      "rect": {
+        "left": 57.31,
+        "top": 516,
+        "width": 47.36,
+        "height": 18
+      },
+      "innerRect": {
+        "left": 63.31,
+        "top": 520,
+        "width": 35.36,
+        "height": 10
+      },
+      "computed": {
+        "position": "static",
+        "display": "inline-block",
+        "padding": "4px 6px",
+        "margin": "-4px -6px",
+        "border": "0px solid oklch(0.872 0.01 258.338)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "8px",
+        "lineHeight": "10px",
+        "textAlign": "center",
+        "zIndex": "auto"
+      },
+      "text": "OCTAVE"
+    },
+    "control:arp-chord": {
+      "id": "arp-chord",
+      "kind": "control",
+      "rect": {
+        "left": 134,
+        "top": 288,
+        "width": 41,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:arp-edit": {
+      "id": "arp-edit",
+      "kind": "control",
+      "rect": {
+        "left": 266,
+        "top": 477,
+        "width": 41,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:arp-gate-time": {
+      "id": "arp-gate-time",
+      "kind": "control",
+      "rect": {
+        "left": 278,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 286,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:arp-on-off": {
+      "id": "arp-on-off",
+      "kind": "control",
+      "rect": {
+        "left": 134,
+        "top": 477,
+        "width": 41,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:arp-pchord": {
+      "id": "arp-pchord",
+      "kind": "control",
+      "rect": {
+        "left": 134,
+        "top": 382,
+        "width": 41,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:arp-rate": {
+      "id": "arp-rate",
+      "kind": "control",
+      "rect": {
+        "left": 213,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 221,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:arp-tap-hold": {
+      "id": "arp-tap-hold",
+      "kind": "control",
+      "rect": {
+        "left": 201,
+        "top": 477,
+        "width": 41,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:data-encoder": {
+      "id": "data-encoder",
+      "kind": "control",
+      "rect": {
+        "left": 1434,
+        "top": 291,
+        "width": 116,
+        "height": 116
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:data-fader": {
+      "id": "data-fader",
+      "kind": "control",
+      "rect": {
+        "left": 1657,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 1665,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-attack": {
+      "id": "env-attack",
+      "kind": "control",
+      "rect": {
+        "left": 2390,
+        "top": 287,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 2398,
+        "top": 454,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-curve-leds": {
+      "id": "env-curve-leds",
+      "kind": "control",
+      "rect": {
+        "left": 1998,
+        "top": 919,
+        "width": 35,
+        "height": 220
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-curves": {
+      "id": "env-curves",
+      "kind": "control",
+      "rect": {
+        "left": 2627,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-decay": {
+      "id": "env-decay",
+      "kind": "control",
+      "rect": {
+        "left": 2455,
+        "top": 287,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 2463,
+        "top": 454,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-mod-sel": {
+      "id": "env-mod-sel",
+      "kind": "control",
+      "rect": {
+        "left": 2542,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-release": {
+      "id": "env-release",
+      "kind": "control",
+      "rect": {
+        "left": 2585,
+        "top": 287,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 2593,
+        "top": 454,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-sustain": {
+      "id": "env-sustain",
+      "kind": "control",
+      "rect": {
+        "left": 2520,
+        "top": 287,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 2528,
+        "top": 454,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-vca-sel": {
+      "id": "env-vca-sel",
+      "kind": "control",
+      "rect": {
+        "left": 2408,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:env-vcf-sel": {
+      "id": "env-vcf-sel",
+      "kind": "control",
+      "rect": {
+        "left": 2475,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:hpf-boost": {
+      "id": "hpf-boost",
+      "kind": "control",
+      "rect": {
+        "left": 2287,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:hpf-freq": {
+      "id": "hpf-freq",
+      "kind": "control",
+      "rect": {
+        "left": 2299,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 2307,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:lcd-display": {
+      "id": "lcd-display",
+      "kind": "control",
+      "rect": {
+        "left": 1057,
+        "top": 241,
+        "width": 288,
+        "height": 208
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "00:32.4-02:15.8"
+    },
+    "control:lfo1-delay-time": {
+      "id": "lfo1-delay-time",
+      "kind": "control",
+      "rect": {
+        "left": 423,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 431,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:lfo1-edit": {
+      "id": "lfo1-edit",
+      "kind": "control",
+      "rect": {
+        "left": 376,
+        "top": 477,
+        "width": 41,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:lfo1-rate": {
+      "id": "lfo1-rate",
+      "kind": "control",
+      "rect": {
+        "left": 358,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 366,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:lfo1-waveform-leds": {
+      "id": "lfo1-waveform-leds",
+      "kind": "control",
+      "rect": {
+        "left": 521,
+        "top": 912,
+        "width": 35,
+        "height": 35
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:lfo2-delay-time": {
+      "id": "lfo2-delay-time",
+      "kind": "control",
+      "rect": {
+        "left": 539,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 547,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:lfo2-edit": {
+      "id": "lfo2-edit",
+      "kind": "control",
+      "rect": {
+        "left": 492,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:lfo2-rate": {
+      "id": "lfo2-rate",
+      "kind": "control",
+      "rect": {
+        "left": 474,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 482,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:lfo2-waveform-leds": {
+      "id": "lfo2-waveform-leds",
+      "kind": "control",
+      "rect": {
+        "left": 484,
+        "top": 928,
+        "width": 16,
+        "height": 41
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:menu-compare": {
+      "id": "menu-compare",
+      "kind": "control",
+      "rect": {
+        "left": 1233,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:menu-fx": {
+      "id": "menu-fx",
+      "kind": "control",
+      "rect": {
+        "left": 1113,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:menu-global": {
+      "id": "menu-global",
+      "kind": "control",
+      "rect": {
+        "left": 1173,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:menu-prog": {
+      "id": "menu-prog",
+      "kind": "control",
+      "rect": {
+        "left": 1053,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:menu-write": {
+      "id": "menu-write",
+      "kind": "control",
+      "rect": {
+        "left": 1293,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:mod-button": {
+      "id": "mod-button",
+      "kind": "control",
+      "rect": {
+        "left": 1645,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:mod-wheel": {
+      "id": "mod-wheel",
+      "kind": "control",
+      "rect": {
+        "left": 216,
+        "top": 685,
+        "width": 24,
+        "height": 144
+      },
+      "innerRect": {
+        "left": 228,
+        "top": 829,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:nav-down": {
+      "id": "nav-down",
+      "kind": "control",
+      "rect": {
+        "left": 1471,
+        "top": 427,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:nav-no": {
+      "id": "nav-no",
+      "kind": "control",
+      "rect": {
+        "left": 1377,
+        "top": 336,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:nav-up": {
+      "id": "nav-up",
+      "kind": "control",
+      "rect": {
+        "left": 1471,
+        "top": 247,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:nav-yes": {
+      "id": "nav-yes",
+      "kind": "control",
+      "rect": {
+        "left": 1567,
+        "top": 336,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:noise-level": {
+      "id": "noise-level",
+      "kind": "control",
+      "rect": {
+        "left": 993,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 1001,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:oct-down": {
+      "id": "oct-down",
+      "kind": "control",
+      "rect": {
+        "left": 277,
+        "top": 638,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:oct-up": {
+      "id": "oct-up",
+      "kind": "control",
+      "rect": {
+        "left": 68,
+        "top": 638,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:octave-leds": {
+      "id": "octave-leds",
+      "kind": "control",
+      "rect": {
+        "left": 133,
+        "top": 854,
+        "width": 20,
+        "height": 20
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc-edit": {
+      "id": "osc-edit",
+      "kind": "control",
+      "rect": {
+        "left": 817,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc-sync": {
+      "id": "osc-sync",
+      "kind": "control",
+      "rect": {
+        "left": 718,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc1-pitch-mod": {
+      "id": "osc1-pitch-mod",
+      "kind": "control",
+      "rect": {
+        "left": 597,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 605,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc1-pwm": {
+      "id": "osc1-pwm",
+      "kind": "control",
+      "rect": {
+        "left": 660,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 668,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc1-sawtooth": {
+      "id": "osc1-sawtooth",
+      "kind": "control",
+      "rect": {
+        "left": 648,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc1-square": {
+      "id": "osc1-square",
+      "kind": "control",
+      "rect": {
+        "left": 585,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": {
+        "left": 586,
+        "top": 492,
+        "width": 38,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc2-level": {
+      "id": "osc2-level",
+      "kind": "control",
+      "rect": {
+        "left": 925,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 933,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc2-pitch": {
+      "id": "osc2-pitch",
+      "kind": "control",
+      "rect": {
+        "left": 860,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 868,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc2-pitch-mod": {
+      "id": "osc2-pitch-mod",
+      "kind": "control",
+      "rect": {
+        "left": 730,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 738,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:osc2-tone-mod": {
+      "id": "osc2-tone-mod",
+      "kind": "control",
+      "rect": {
+        "left": 795,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 803,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:pitch-wheel": {
+      "id": "pitch-wheel",
+      "kind": "control",
+      "rect": {
+        "left": 140,
+        "top": 685,
+        "width": 24,
+        "height": 144
+      },
+      "innerRect": {
+        "left": 152,
+        "top": 829,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:poly-edit": {
+      "id": "poly-edit",
+      "kind": "control",
+      "rect": {
+        "left": 1745,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:poly-unison-detune": {
+      "id": "poly-unison-detune",
+      "kind": "control",
+      "rect": {
+        "left": 1757,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 1765,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:portamento-slider": {
+      "id": "portamento-slider",
+      "kind": "control",
+      "rect": {
+        "left": 202,
+        "top": 593,
+        "width": 52,
+        "height": 56
+      },
+      "innerRect": {
+        "left": 228,
+        "top": 649,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vca-edit": {
+      "id": "vca-edit",
+      "kind": "control",
+      "rect": {
+        "left": 2197,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vca-level": {
+      "id": "vca-level",
+      "kind": "control",
+      "rect": {
+        "left": 2209,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 2217,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vcf-2pole": {
+      "id": "vcf-2pole",
+      "kind": "control",
+      "rect": {
+        "left": 1834,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vcf-edit": {
+      "id": "vcf-edit",
+      "kind": "control",
+      "rect": {
+        "left": 1899,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vcf-env": {
+      "id": "vcf-env",
+      "kind": "control",
+      "rect": {
+        "left": 1980,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 1988,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vcf-freq": {
+      "id": "vcf-freq",
+      "kind": "control",
+      "rect": {
+        "left": 1846,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 1854,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vcf-invert": {
+      "id": "vcf-invert",
+      "kind": "control",
+      "rect": {
+        "left": 1968,
+        "top": 477,
+        "width": 40,
+        "height": 30
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vcf-kybd": {
+      "id": "vcf-kybd",
+      "kind": "control",
+      "rect": {
+        "left": 2109,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 2117,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vcf-lfo": {
+      "id": "vcf-lfo",
+      "kind": "control",
+      "rect": {
+        "left": 2044,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 2052,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:vcf-res": {
+      "id": "vcf-res",
+      "kind": "control",
+      "rect": {
+        "left": 1911,
+        "top": 288,
+        "width": 16,
+        "height": 167
+      },
+      "innerRect": {
+        "left": 1919,
+        "top": 455,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:voices-leds": {
+      "id": "voices-leds",
+      "kind": "control",
+      "rect": {
+        "left": 2208,
+        "top": 524,
+        "width": 45,
+        "height": 16
+      },
+      "innerRect": null,
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "control:volume-knob": {
+      "id": "volume-knob",
+      "kind": "control",
+      "rect": {
+        "left": 126,
+        "top": 593,
+        "width": 52,
+        "height": 56
+      },
+      "innerRect": {
+        "left": 152,
+        "top": 649,
+        "width": 0,
+        "height": 0
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": ""
+    },
+    "section:display-center": {
+      "id": "display-center",
+      "kind": "section",
+      "rect": {
+        "left": 1047,
+        "top": 194,
+        "width": 666,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 1055,
+        "top": 200,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮display-center13"
+    },
+    "section:osc-1-2": {
+      "id": "osc-1-2",
+      "kind": "section",
+      "rect": {
+        "left": 575,
+        "top": 194,
+        "width": 470,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 583,
+        "top": 200,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮OSC 1&211"
+    },
+    "section:vcf": {
+      "id": "vcf",
+      "kind": "section",
+      "rect": {
+        "left": 1814,
+        "top": 193,
+        "width": 358,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 1822,
+        "top": 199,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮VCF8"
+    },
+    "section:envelopes": {
+      "id": "envelopes",
+      "kind": "section",
+      "rect": {
+        "left": 2355,
+        "top": 187,
+        "width": 342,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 2363,
+        "top": 193,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮ENVELOPES9"
+    },
+    "section:arp-seq": {
+      "id": "arp-seq",
+      "kind": "section",
+      "rect": {
+        "left": 103,
+        "top": 192,
+        "width": 230,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 111,
+        "top": 198,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮ARP / SEQ7"
+    },
+    "section:lfo1": {
+      "id": "lfo1",
+      "kind": "section",
+      "rect": {
+        "left": 338,
+        "top": 194,
+        "width": 114,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 346,
+        "top": 200,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮LFO14"
+    },
+    "section:lfo2": {
+      "id": "lfo2",
+      "kind": "section",
+      "rect": {
+        "left": 457,
+        "top": 194,
+        "width": 114,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 465,
+        "top": 200,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮LFO24"
+    },
+    "section:poly": {
+      "id": "poly",
+      "kind": "section",
+      "rect": {
+        "left": 1718,
+        "top": 193,
+        "width": 90,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 1726,
+        "top": 199,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮POLY2"
+    },
+    "section:vca": {
+      "id": "vca",
+      "kind": "section",
+      "rect": {
+        "left": 2177,
+        "top": 194,
+        "width": 86,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 2185,
+        "top": 200,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮VCA2"
+    },
+    "section:hpf": {
+      "id": "hpf",
+      "kind": "section",
+      "rect": {
+        "left": 2267,
+        "top": 194,
+        "width": 82,
+        "height": 28
+      },
+      "innerRect": {
+        "left": 2275,
+        "top": 200,
+        "width": 8.22,
+        "height": 15
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px 8px",
+        "margin": "0px",
+        "border": "",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "⋮⋮HPF2"
+    }
+  }
+}

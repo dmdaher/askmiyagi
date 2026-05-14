@@ -14,7 +14,8 @@ import TouchDisplay from './TouchDisplay';
 import JogWheelAssembly from './JogWheelAssembly';
 import DirectionSwitch from './DirectionSwitch';
 import JogDisplay from './JogDisplay';
-import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
+import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import SharedLabel from '@/components/panel/SharedLabel';
 import { computeBannerBoxStyle, computeBannerTextStyle } from '@/lib/banner-style';
 import type { PolishBanner } from '@/components/panel-editor/store/historySlice';
 import { PanelState } from '@/types/panel';
@@ -596,54 +597,26 @@ export default function PanelRenderer({
         );
       })}
 
-      {/* Floating labels */}
+      {/* Floating labels — shared with editor's LabelLayer via SharedLabel
+          so pixel positioning is identical between modes. Contractor sees
+          exact preview match for label drift. */}
       {(manifest.editorLabels ?? []).filter(l => !l.hidden).map((label) => (
-        <div key={label.id} data-label-id={label.id} className="absolute pointer-events-none"
-          style={{
-            left: label.x, top: label.y,
-            // Figma-style "hug contents" for icon-only labels: when there's
-            // no text, the stored width is meaningless and visually wasteful.
-            // Matches the editor's LabelLayer behavior.
-            width: (label.icon && !label.text) ? 'auto' : (label.w ?? 'auto'),
-            textAlign: (label.align ?? 'center') as any,
+        <SharedLabel
+          key={label.id}
+          label={{
+            id: label.id,
+            text: label.text,
+            icon: label.icon,
+            x: label.x,
+            y: label.y,
+            w: label.w,
             fontSize: label.fontSize,
-            lineHeight: `${label.lineHeight ?? label.fontSize + 2}px`,
-            // Match editor's LabelLayer outer-div padding (LabelLayer.tsx:181).
-            // Without this, preview's outer box is 6 px narrower than editor's
-            // (3 px on each side), shifting the visually-centered icon left by
-            // ~3 px at zoom 1.0 (and ~2-3 px at zoom 0.8). Visible as the
-            // "icon shifts left at the LFO1/LFO2 bridge" bug.
-            padding: '1px 3px',
-            borderRadius: 2,
-          }}>
-          {/* Unify icon + text label tone — default text-gray-300. When the
-              EditorLabel has a `color` override set via Properties Panel,
-              use it. Mirrors LabelLayer (editor view). */}
-          <span
-            className={`font-medium uppercase tracking-wider whitespace-nowrap${(label as { color?: string }).color ? '' : ' text-gray-300'}`}
-            style={{
-              // Parity with editor's LabelLayer inner span (minWidth + minHeight).
-              // Without these, short or empty labels jitter in width/height when
-              // toggling between editor and preview.
-              display: 'inline-block',
-              minWidth: 16,
-              minHeight: label.fontSize + 4,
-              ...((label as { color?: string }).color ? { color: (label as { color?: string }).color } : {}),
-            }}
-          >
-            {label.icon && HARDWARE_ICON_SVGS[label.icon] ? (
-              // inline-flex + center alignment removes dependence on parent
-              // line-height for vertical centering — keeps the icon aligned
-              // identically between editor and preview at any zoom level.
-              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: label.fontSize + 4, height: label.fontSize + 4, verticalAlign: 'middle', marginRight: label.text ? 3 : 0 }}>
-                {HARDWARE_ICON_SVGS[label.icon]}
-              </span>
-            ) : label.icon && HARDWARE_ICONS[label.icon] ? (
-              <span style={{ marginRight: label.text ? 3 : 0 }}>{HARDWARE_ICONS[label.icon]}</span>
-            ) : null}
-            {label.text && renderLabelText(label.text)}
-          </span>
-        </div>
+            align: label.align as 'left' | 'center' | 'right' | undefined,
+            lineHeight: label.lineHeight,
+            color: (label as { color?: string }).color,
+          }}
+          innerSpanProps={{ 'data-label-id': label.id }}
+        />
       ))}
     </PanelShell>
   );
