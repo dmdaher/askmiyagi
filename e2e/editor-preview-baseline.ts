@@ -235,15 +235,16 @@ function diffBaselines(before: ModeBaseline, after: ModeBaseline): DriftEntry[] 
     // between page loads; 0.1px filters that.
     //
     // In CI on Linux, chromium glyph hinting differs from macOS — *centered*
-    // text labels (e.g., "VOLUME", "OCT UP") can shift up to ~1.0-1.2px on the
+    // text labels (e.g., "VOLUME", "OCT UP") can shift up to ~1.0-1.1px on the
     // X axis when the rendered text width is even/odd-pixel different from the
     // captured baseline. That's not a real bug; the label is still centered on
-    // the control. Bump CI tolerance to 1.5px to absorb this without missing
-    // genuine drift (which is always ≥5px in practice).
+    // the control. 1.2px tolerance absorbs this with a small safety margin
+    // (max observed: 1.01px on "PITCH") while still catching any genuine
+    // drift, which has always been ≥5px in practice.
     //
     // Computed-style diffs are NOT subject to this tolerance — they're exact
     // string comparisons and a real CSS change should fail CI.
-    const SUBPX = process.env.CI === 'true' ? 1.5 : 0.1;
+    const SUBPX = process.env.CI === 'true' ? 1.2 : 0.1;
     const anyDrift = Math.abs(dxRect) > SUBPX || Math.abs(dyRect) > SUBPX ||
                      Math.abs(dwRect) > SUBPX || Math.abs(dhRect) > SUBPX ||
                      (dxInner !== null && Math.abs(dxInner) > SUBPX) ||
