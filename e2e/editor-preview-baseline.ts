@@ -20,6 +20,11 @@
  *   # Compare current state against baseline (run AFTER refactor)
  *   npx tsx e2e/editor-preview-baseline.ts --verify
  *
+ *   # Re-measure current state and print per-kind drift summary
+ *   # (does not compare against stored baseline — answers "where does
+ *   # editor and preview disagree RIGHT NOW, by category?")
+ *   npx tsx e2e/editor-preview-baseline.ts --report
+ *
  *   # Test specific device only
  *   npx tsx e2e/editor-preview-baseline.ts --capture --device fantom-06
  */
@@ -228,8 +233,10 @@ function diffBaselines(before: ModeBaseline, after: ModeBaseline): DriftEntry[] 
     // Only include in drift list if something actually changed beyond sub-pixel
     // browser layout noise. Text glyph anti-aliasing can shift inner rects by
     // ~0.01-0.05px between page loads even when nothing rendered differently.
-    // 0.1px threshold filters that noise while still catching real drift.
-    const SUBPX = 0.1;
+    // 0.1px threshold filters that noise locally (macOS↔macOS). In CI on Linux,
+    // chromium font rendering drifts 0.2-0.4px from the macOS-captured baseline
+    // even when nothing changed — so bump tolerance to 0.5px under CI.
+    const SUBPX = process.env.CI === 'true' ? 0.5 : 0.1;
     const anyDrift = Math.abs(dxRect) > SUBPX || Math.abs(dyRect) > SUBPX ||
                      Math.abs(dwRect) > SUBPX || Math.abs(dhRect) > SUBPX ||
                      (dxInner !== null && Math.abs(dxInner) > SUBPX) ||
@@ -242,7 +249,117 @@ function diffBaselines(before: ModeBaseline, after: ModeBaseline): DriftEntry[] 
   return drift;
 }
 
-async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify') {
+interface KindStats {
+  kind: string;
+  editorCount: number;
+  previewCount: number;
+  driftCount: number;
+  meanAbsDx: number;
+  meanAbsDy: number;
+  maxAbsDx: number;
+  maxAbsDy: number;
+  worstKey: string;
+  worstText: string;
+}
+
+function elementCountByKind(b: ModeBaseline): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const m of Object.values(b.elements)) {
+    counts[m.kind] = (counts[m.kind] ?? 0) + 1;
+  }
+  return counts;
+}
+
+function summarizeByKind(editor: ModeBaseline, preview: ModeBaseline, drift: DriftEntry[]): KindStats[] {
+  const editorCounts = elementCountByKind(editor);
+  const previewCounts = elementCountByKind(preview);
+  const allKinds = new Set<string>([
+    ...Object.keys(editorCounts),
+    ...Object.keys(previewCounts),
+  ]);
+  const stats: KindStats[] = [];
+  for (const kind of allKinds) {
+    const kindDrift = drift.filter(d => d.kind === kind);
+    // Entries marked "MISSING in new run" have NaN dx/dy — exclude from numeric
+    // stats. They're still counted in driftCount and reported via the missing-
+    // elements section above the table.
+    const measurable = kindDrift.filter(d => !Number.isNaN(d.dxRect) && !Number.isNaN(d.dyRect));
+    let sumDx = 0, sumDy = 0, maxDx = 0, maxDy = 0;
+    let worstKey = '', worstText = '', worstAbs = 0;
+    for (const d of measurable) {
+      const adx = Math.abs(d.dxRect);
+      const ady = Math.abs(d.dyRect);
+      sumDx += adx;
+      sumDy += ady;
+      if (adx > maxDx) maxDx = adx;
+      if (ady > maxDy) maxDy = ady;
+      const combined = Math.max(adx, ady);
+      if (combined > worstAbs) {
+        worstAbs = combined;
+        worstKey = d.key;
+        worstText = d.text;
+      }
+    }
+    stats.push({
+      kind,
+      editorCount: editorCounts[kind] ?? 0,
+      previewCount: previewCounts[kind] ?? 0,
+      driftCount: kindDrift.length,
+      meanAbsDx: measurable.length ? sumDx / measurable.length : 0,
+      meanAbsDy: measurable.length ? sumDy / measurable.length : 0,
+      maxAbsDx: maxDx,
+      maxAbsDy: maxDy,
+      worstKey,
+      worstText,
+    });
+  }
+  stats.sort((a, b) => b.maxAbsDx + b.maxAbsDy - (a.maxAbsDx + a.maxAbsDy));
+  return stats;
+}
+
+function printKindTable(stats: KindStats[]) {
+  console.log('');
+  console.log('  kind     ed  pv  drift  mean|dx|  mean|dy|  max|dx|  max|dy|  worst');
+  console.log('  -------  --  --  -----  --------  --------  -------  -------  ------------------------------');
+  for (const s of stats) {
+    const ed = String(s.editorCount).padStart(3);
+    const pv = String(s.previewCount).padStart(3);
+    const dc = String(s.driftCount).padStart(5);
+    const fmt = (n: number) => n.toFixed(2).padStart(8);
+    const fmt2 = (n: number) => n.toFixed(2).padStart(7);
+    const worst = s.driftCount > 0
+      ? `${s.worstKey} "${s.worstText.slice(0, 18)}"`
+      : '—';
+    console.log(`  ${s.kind.padEnd(7)}  ${ed}  ${pv}  ${dc}  ${fmt(s.meanAbsDx)}  ${fmt(s.meanAbsDy)}  ${fmt2(s.maxAbsDx)}  ${fmt2(s.maxAbsDy)}  ${worst}`);
+  }
+}
+
+function printMissingElements(editor: ModeBaseline, preview: ModeBaseline) {
+  const inEditorOnly: string[] = [];
+  const inPreviewOnly: string[] = [];
+  for (const key of Object.keys(editor.elements)) {
+    if (!(key in preview.elements)) inEditorOnly.push(key);
+  }
+  for (const key of Object.keys(preview.elements)) {
+    if (!(key in editor.elements)) inPreviewOnly.push(key);
+  }
+  if (inEditorOnly.length === 0 && inPreviewOnly.length === 0) {
+    console.log('  ✓ all elements measured in both modes');
+    return;
+  }
+  if (inEditorOnly.length > 0) {
+    console.log(`  ⚠ ${inEditorOnly.length} element(s) in EDITOR but not PREVIEW (preview missing data-*-id):`);
+    for (const k of inEditorOnly.slice(0, 10)) console.log(`      ${k}`);
+    if (inEditorOnly.length > 10) console.log(`      … and ${inEditorOnly.length - 10} more`);
+  }
+  if (inPreviewOnly.length > 0) {
+    console.log(`  ⚠ ${inPreviewOnly.length} element(s) in PREVIEW but not EDITOR (editor missing data-*-id):`);
+    for (const k of inPreviewOnly.slice(0, 10)) console.log(`      ${k}`);
+    if (inPreviewOnly.length > 10) console.log(`      … and ${inPreviewOnly.length - 10} more`);
+  }
+}
+
+async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify' | 'report') {
   await setUpPage(page, deviceId);
 
   console.log(`  → measuring EDITOR mode`);
@@ -265,6 +382,15 @@ async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify
     // Also report editor↔preview drift in the baseline (this is what we'll fix)
     const epDrift = diffBaselines(editor, preview);
     console.log(`  → editor↔preview drift in baseline: ${epDrift.length} of ${Object.keys(editor.elements).length} elements drift`);
+  } else if (mode === 'report') {
+    // Fresh measurement — print per-kind drift table and missing-element audit.
+    // Does NOT compare against stored baselines; answers "where do editor and
+    // preview disagree RIGHT NOW, by category?"
+    const drift = diffBaselines(editor, preview);
+    console.log(`  → editor↔preview drift: ${drift.length} of ${Object.keys(editor.elements).length} editor elements`);
+    printMissingElements(editor, preview);
+    printKindTable(summarizeByKind(editor, preview, drift));
+    return { editorDrift: 0, previewDrift: drift.length, editorChanged: 0 };
   } else if (mode === 'verify') {
     // Load baselines from disk
     if (!fs.existsSync(editorPath)) {
@@ -302,7 +428,10 @@ async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify
 
 async function main() {
   const args = new Set(process.argv.slice(2));
-  const mode: 'capture' | 'verify' = args.has('--verify') ? 'verify' : 'capture';
+  const mode: 'capture' | 'verify' | 'report' =
+    args.has('--report') ? 'report' :
+    args.has('--verify') ? 'verify' :
+    'capture';
   const deviceFilter = process.argv.find((_, i) => process.argv[i - 1] === '--device');
   const devices = deviceFilter ? DEVICES.filter(d => d.id === deviceFilter) : DEVICES;
 
@@ -335,6 +464,8 @@ async function main() {
   console.log('');
   if (mode === 'capture') {
     console.log('Baseline captured. Now refactor + run with --verify.');
+  } else if (mode === 'report') {
+    console.log('Per-kind drift report complete. Use this to prioritize Shared* extractions.');
   } else {
     console.log('\n=== FINAL VERDICT ===');
     if (totalEditorChange === 0) {

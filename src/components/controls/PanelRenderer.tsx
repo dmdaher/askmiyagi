@@ -460,6 +460,7 @@ export default function PanelRenderer({
           return s.headerLabel ? (
             <div
               key={s.id}
+              data-section-id={s.id}
               style={{
                 position: 'absolute',
                 left: s.x,

@@ -18,6 +18,18 @@
 
 set -e
 
+# Block iCloud duplicate files (" 2.<ext>" or trailing " 2") from being pushed
+# even if force-staged past .gitignore. Catches the macOS sync-conflict pattern
+# that pollutes the working tree.
+DUPES=$(git diff --cached --name-only --diff-filter=A 2>/dev/null | grep -E ' 2(\.[a-zA-Z]+)?$' || true)
+if [ -n "$DUPES" ]; then
+  echo "✗ Refusing push — iCloud duplicate files staged:"
+  echo "$DUPES" | sed 's/^/  /'
+  echo ""
+  echo "If you really need to commit one, rename to drop the ' 2' suffix."
+  exit 1
+fi
+
 echo "Running git health check before push..."
 npm run --silent check-git-health
 
