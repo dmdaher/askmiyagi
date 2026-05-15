@@ -85,7 +85,11 @@ interface ModeBaseline {
 }
 
 async function setUpPage(page: Page, deviceId: string) {
-  await page.goto(`${BASE}/admin/${deviceId}/editor`, { waitUntil: 'load', timeout: 90_000 });
+  // ?nosave=true disables the editor's auto-save subscriber so this drift
+  // script can't corrupt contractor data by triggering a save with
+  // mid-hydration state. MANDATORY for any Playwright editor load —
+  // see CLAUDE.md "Playwright + Editor Safety" section.
+  await page.goto(`${BASE}/admin/${deviceId}/editor?nosave=true`, { waitUntil: 'load', timeout: 90_000 });
   await page.waitForSelector('[data-control-id]', { timeout: 60_000 });
   await page.waitForTimeout(2000);
 

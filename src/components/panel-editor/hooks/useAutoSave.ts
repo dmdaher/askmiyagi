@@ -131,6 +131,20 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       }
     }
 
+    // GUARDRAIL: ?nosave=true URL param disables auto-save entirely.
+    // For Playwright scripts that load the editor for read-only inspection,
+    // tests that should never write back, or any diagnostic tool that needs
+    // to interact with the editor without risking contractor data loss.
+    //
+    // Without this, calling setState({ zoom }) or similar from a Playwright
+    // script triggers an auto-save with the CURRENT store state — which may
+    // be stale (mid-hydration) and overwrite newer contractor work.
+    // Observed 2026-05-15: ~270 lines of fantom-06 contractor data lost
+    // during a session of drift-script Playwright runs.
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('nosave') === 'true') {
+      return;
+    }
+
     // Subscribe to store changes for auto-save
     const unsubSave = useEditorStore.subscribe(
       (state, prevState) => {
@@ -142,16 +156,26 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
           state.controlContainers === prevState.controlContainers &&
           state.polishBanners === prevState.polishBanners &&
           state.controlScale === prevState.controlScale &&
-          state.zoom === prevState.zoom &&
           state.cleanupGap === prevState.cleanupGap &&
           state.panelScale === prevState.panelScale &&
           state.keyboard === prevState.keyboard
         ) {
+          // NOTE: `zoom` is intentionally NOT in the change-detection list
+          // above OR the canvasChanged check below. Zoom is editor view
+          // state — it's how the contractor's screen is currently rendered,
+          // not what gets shipped to production. Including it caused real
+          // bugs:
+          //   1. Playwright scripts that set zoom for measurement triggered
+          //      auto-saves with mid-hydration state.
+          //   2. A contractor zooming the editor while data was loading
+          //      from Blob would write stale state back, corrupting the
+          //      authoritative copy.
+          // Zoom persistence (so a refresh keeps the contractor's preferred
+          // view) belongs in localStorage, not the manifest.
           return;
         }
 
         const canvasChanged = state.controlScale !== prevState.controlScale ||
-          state.zoom !== prevState.zoom ||
           state.cleanupGap !== prevState.cleanupGap ||
           state.panelScale !== prevState.panelScale ||
           state.keyboard !== prevState.keyboard;
