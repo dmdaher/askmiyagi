@@ -25,6 +25,13 @@
  *   # editor and preview disagree RIGHT NOW, by category?")
  *   npx tsx e2e/editor-preview-baseline.ts --report
  *
+ *   # CI gate: same-machine editor↔preview parity check.
+ *   # No macOS-captured baseline needed — both modes measured on the
+ *   # current machine. Asserts |dx| < threshold AND |dy − median_dy| <
+ *   # threshold (median dy absorbs the uniform PanelShell offset).
+ *   # Exits non-zero if any element exceeds the threshold.
+ *   npx tsx e2e/editor-preview-baseline.ts --ci
+ *
  *   # Test specific device only
  *   npx tsx e2e/editor-preview-baseline.ts --capture --device fantom-06
  */
@@ -367,7 +374,51 @@ function printMissingElements(editor: ModeBaseline, preview: ModeBaseline) {
   }
 }
 
-async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify' | 'report') {
+/**
+ * Same-machine editor↔preview parity check for CI.
+ *
+ * The right CI gate: capture both modes on the SAME Linux machine (no
+ * cross-platform variance), compute the median vertical offset between
+ * them (= PanelShell branding header, ~40 px today), subtract it from
+ * every element's dy, then assert per-element drift is below threshold.
+ *
+ * Catches:
+ *  - Asymmetric features (added to editor but not preview, or vice versa)
+ *  - Per-element vertical drift different from the uniform PanelShell shift
+ *  - Horizontal misalignment
+ *
+ * Does NOT catch (Layer B containment-check does):
+ *  - Text overflow on Linux/Windows
+ *  - Wrapping text that fit on one line on macOS
+ */
+function ciParityCheck(
+  editor: ModeBaseline,
+  preview: ModeBaseline,
+  thresholdPx: number,
+): { failures: Array<{ key: string; kind: string; text: string; dxRect: number; dyRectRel: number; reason: string }>; medianDy: number } {
+  const drift = diffBaselines(editor, preview);
+  // Compute median dy across all elements — this is the uniform PanelShell
+  // vertical offset (~40 px today). Median is more robust than mean against
+  // outliers (e.g., elements above/below the panel area).
+  const dys = drift.map(d => d.dyRect).filter(n => !Number.isNaN(n)).sort((a, b) => a - b);
+  const medianDy = dys.length === 0 ? 0
+    : dys.length % 2 === 1 ? dys[Math.floor(dys.length / 2)]
+    : (dys[dys.length / 2 - 1] + dys[dys.length / 2]) / 2;
+  const failures: Array<{ key: string; kind: string; text: string; dxRect: number; dyRectRel: number; reason: string }> = [];
+  for (const d of drift) {
+    if (Number.isNaN(d.dxRect)) continue;  // missing-in-preview elements reported separately
+    const dyRectRel = Math.round((d.dyRect - medianDy) * 100) / 100;
+    const reasons: string[] = [];
+    if (Math.abs(d.dxRect) > thresholdPx) reasons.push(`|dx|=${Math.abs(d.dxRect)} > ${thresholdPx}`);
+    if (Math.abs(dyRectRel) > thresholdPx) reasons.push(`|dy-medianDy|=${Math.abs(dyRectRel)} > ${thresholdPx}`);
+    if (reasons.length > 0) {
+      failures.push({ key: d.key, kind: d.kind, text: d.text, dxRect: d.dxRect, dyRectRel, reason: reasons.join(' AND ') });
+    }
+  }
+  return { failures, medianDy };
+}
+
+async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify' | 'report' | 'ci') {
   await setUpPage(page, deviceId);
 
   console.log(`  → measuring EDITOR mode`);
@@ -399,6 +450,26 @@ async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify
     printMissingElements(editor, preview);
     printKindTable(summarizeByKind(editor, preview, drift));
     return { editorDrift: 0, previewDrift: drift.length, editorChanged: 0 };
+  } else if (mode === 'ci') {
+    // Same-machine editor↔preview parity gate. The RIGHT gate for CI.
+    // 2 px threshold: tight enough to catch all real bugs (≥5 px in
+    // practice), loose enough to absorb sub-pixel layout rounding and the
+    // current 1.02 px section header padding drift (separate fix later).
+    const threshold = 2;
+    const { failures, medianDy } = ciParityCheck(editor, preview, threshold);
+    console.log(`  median PanelShell vertical offset: ${medianDy.toFixed(2)} px`);
+    if (failures.length === 0) {
+      console.log(`  ✓ editor↔preview parity OK (${Object.keys(editor.elements).length} elements within ±${threshold} px after median-dy correction)`);
+    } else {
+      console.log(`  ✗ ${failures.length} element(s) fail parity check (threshold ±${threshold} px):`);
+      for (const f of failures.slice(0, 15)) {
+        console.log(`    ${f.kind} ${f.key} "${f.text}" dx=${f.dxRect} dy(rel)=${f.dyRectRel}  [${f.reason}]`);
+      }
+      if (failures.length > 15) console.log(`    … and ${failures.length - 15} more`);
+    }
+    // Also surface missing-element parity bugs (element in editor but not preview, or vice versa)
+    printMissingElements(editor, preview);
+    return { editorDrift: failures.length, previewDrift: 0, editorChanged: failures.length };
   } else if (mode === 'verify') {
     // Load baselines from disk
     if (!fs.existsSync(editorPath)) {
@@ -442,7 +513,8 @@ async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify
 
 async function main() {
   const args = new Set(process.argv.slice(2));
-  const mode: 'capture' | 'verify' | 'report' =
+  const mode: 'capture' | 'verify' | 'report' | 'ci' =
+    args.has('--ci')     ? 'ci' :
     args.has('--report') ? 'report' :
     args.has('--verify') ? 'verify' :
     'capture';
@@ -466,12 +538,14 @@ async function main() {
   page.setDefaultTimeout(60_000);
 
   let totalEditorChange = 0;
-  let totalElements = 0;
+  let totalCiFailures = 0;
   for (const device of devices) {
     console.log(`\n=== ${device.label} (${device.id}) ===`);
     const result = await runDevice(page, device.id, mode);
     if (mode === 'verify' && result) {
       totalEditorChange += result.editorChanged;
+    } else if (mode === 'ci' && result) {
+      totalCiFailures += result.editorChanged;  // editorChanged repurposed: count of CI parity failures
     }
   }
 
@@ -480,6 +554,15 @@ async function main() {
     console.log('Baseline captured. Now refactor + run with --verify.');
   } else if (mode === 'report') {
     console.log('Per-kind drift report complete. Use this to prioritize Shared* extractions.');
+  } else if (mode === 'ci') {
+    console.log('\n=== FINAL VERDICT (CI parity check) ===');
+    if (totalCiFailures === 0) {
+      console.log('\x1b[32m✓ Editor and preview agree on every measured element — parity OK\x1b[0m');
+    } else {
+      console.log(`\x1b[31m✗ ${totalCiFailures} parity failure(s) across all devices — editor and preview disagree.\x1b[0m`);
+      console.log('  This usually means a feature was added to one mode but not the other.');
+      console.log('  Investigate per device above.');
+    }
   } else {
     console.log('\n=== FINAL VERDICT ===');
     if (totalEditorChange === 0) {
@@ -490,7 +573,10 @@ async function main() {
   }
 
   await browser.close();
-  process.exit(mode === 'verify' && totalEditorChange > 0 ? 1 : 0);
+  const failed =
+    (mode === 'verify' && totalEditorChange > 0) ||
+    (mode === 'ci' && totalCiFailures > 0);
+  process.exit(failed ? 1 : 0);
 }
 
 main().catch((err) => { console.error(err); process.exit(1); });

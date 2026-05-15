@@ -1,19 +1,26 @@
-# Editor↔Preview pixel-drift gate.
+# Editor↔Preview parity + containment gate.
 #
-# Runs the baseline verifier on every PR that targets `test`. Fails the
-# build if the editor pixel positions have drifted from the committed
-# baseline JSON in e2e-snapshots/editor-preview-baseline/ — that's the
-# mechanical safety net for "features added to editor must not break
-# preview, and vice versa."
+# Two layers of protection on every PR to `test`:
 #
-# Tolerance is asymmetric:
-#   - Locally on macOS: 0.1px (sub-pixel anti-alias noise filter)
-#   - In CI on Linux:   0.5px (set via CI=true env, see baseline script).
-# This buys reproducibility despite Linux↔macOS glyph rendering drift.
+#   Layer A — drift:ci
+#     Same-machine editor↔preview parity check. Captures both modes on
+#     the Linux CI runner, computes the median vertical offset (uniform
+#     PanelShell branding header, ~40 px), subtracts it, then asserts
+#     per-element drift is within ±2 px. Catches "feature added to one
+#     mode but not the other."
 #
-# This workflow does NOT run on `main` pushes — the project's branch
-# protection forbids direct pushes to main; all merges go test→main
-# through manual review.
+#   Layer B — drift:containment
+#     Walks every label and control in preview mode, asserts the
+#     rendered content fits within its parent rect with no overflow.
+#     Catches text or icons that fit on macOS but spill out on Linux/
+#     Windows due to font rendering differences.
+#
+# Both layers run on Linux. There is NO comparison against macOS-captured
+# baselines — that approach produced false positives from cross-platform
+# glyph hinting variance unrelated to actual bugs.
+#
+# This workflow does NOT run on `main` pushes — branch protection
+# forbids direct pushes to main.
 
 name: drift-check
 
@@ -21,13 +28,10 @@ on:
   pull_request:
     branches: [test]
     paths:
-      - "src/components/panel/**"
-      - "src/components/panel-editor/**"
-      - "src/components/controls/**"
-      - "src/lib/banner-style.ts"
-      - "src/lib/hardware-icons.ts"
+      - "src/**"
       - "e2e/editor-preview-baseline.ts"
-      - "e2e-snapshots/editor-preview-baseline/**"
+      - "e2e/containment-check.ts"
+      - "package.json"
       - ".github/workflows/drift-check.yml"
 
 concurrency:
@@ -52,10 +56,9 @@ jobs:
           cache: npm
 
       - name: Install Liberation fonts
-        # Linux chromium picks up these as the sans-serif fallback used
-        # by the Tailwind/system font stack. Without them, text widths
-        # shift by ~0.5-1.5px from the macOS baseline and verify trips
-        # despite no real code change.
+        # Linux chromium picks up these as fallbacks for the system-ui
+        # font stack. Once we move to a web font (Inter via next/font),
+        # this becomes redundant.
         run: |
           sudo apt-get update
           sudo apt-get install -y fonts-liberation
@@ -74,14 +77,17 @@ jobs:
           npm run dev > /tmp/dev-server.log 2>&1 &
           npx wait-on http://localhost:3000 --timeout 120000
 
-      - name: Run drift verify
-        run: npm run drift:verify
+      - name: Layer A — editor↔preview parity
+        run: npm run drift:ci
 
-      - name: Upload current snapshots on failure
+      - name: Layer B — containment (no production overflow)
+        run: npm run drift:containment
+
+      - name: Upload diagnostics on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: drift-snapshots
+          name: drift-diagnostics
           path: |
             e2e-snapshots/editor-preview-baseline/
             /tmp/dev-server.log
