@@ -232,6 +232,25 @@ export default function EditorToolbar({
         </div>
       )}
 
+      {/* Preview-mode badge — prominent + animated so it's unmistakable
+          that the editor is in preview state. Replaces the 40-px banner
+          that used to push the canvas down by that amount; this badge
+          adds zero layout-shift to the canvas itself. */}
+      {previewMode && (
+        <div
+          className="flex items-center gap-1.5 rounded border border-amber-400 bg-amber-500/25 px-2 py-0.5 mr-0.5 flex-shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.4)]"
+          title="You are viewing the panel in production preview mode — edit controls are disabled. Click 'Exit Preview' on the right to return."
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-200 whitespace-nowrap">
+            Preview Mode
+          </span>
+        </div>
+      )}
+
       {/* Undo / Redo */}
       <button onClick={undo} disabled={past.length === 0} className={iconBtn} title="Undo (Cmd+Z)">
         <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.5 2L1 5.5 4.5 9V6.5C8.5 6.5 11 8 12.5 11c-1-3.5-3.5-6-8-6.5V2z" /></svg>
