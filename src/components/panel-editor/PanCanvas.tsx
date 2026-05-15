@@ -107,6 +107,7 @@ export default function PanCanvas() {
   const controlContainers = useEditorStore((s) => s.controlContainers);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const previewMode = useEditorStore((s) => s.previewMode);
+  const showHiddenSections = useEditorStore((s) => s.showHiddenSections);
 
   // Sort sections by area: largest first (rendered at bottom), smallest last (on top).
   const sectionEntries = Object.values(sections).sort(
@@ -161,15 +162,20 @@ export default function PanCanvas() {
           <DragSelectRect />
 
           {/* Section frames — visual boxes + banners only (no child controls).
-              IMPORTANT: hidden sections still render in editor mode as a
-              faint ghost outline so the contractor can re-select them and
-              change their mode. Without this, hiding a section makes it
-              unreachable. The 'hidden' state only suppresses rendering in
-              PREVIEW (PanelRenderer); the editor must always provide
-              affordances to manipulate every section. */}
-          {sectionEntries.map((section, index) => (
-            <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
-          ))}
+              Hidden sections render as a faint ghost outline by default so
+              contractor can re-select them. When showHiddenSections is OFF
+              (toolbar toggle), they're fully suppressed from the editor —
+              contractor must use the Layers panel to reach them.
+              PREVIEW always omits hidden sections regardless. */}
+          {sectionEntries
+            .filter((section) => {
+              if (showHiddenSections) return true;
+              const mode = section.frameMode ?? (section.hidden ? 'hidden' : 'full');
+              return mode !== 'hidden';
+            })
+            .map((section, index) => (
+              <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
+            ))}
 
           {/* Visual containers — between sections and controls (z=2-4) */}
           {controlContainers.map((c) => (

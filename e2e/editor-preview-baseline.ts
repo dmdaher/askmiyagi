@@ -91,7 +91,15 @@ async function setUpPage(page: Page, deviceId: string) {
   // see CLAUDE.md "Playwright + Editor Safety" section.
   await page.goto(`${BASE}/admin/${deviceId}/editor?nosave=true`, { waitUntil: 'load', timeout: 90_000 });
   await page.waitForSelector('[data-control-id]', { timeout: 60_000 });
-  await page.waitForTimeout(2000);
+
+  // Replace the previous fixed 2000ms sleep with semantic waits:
+  //   - networkidle: all manifest fetches + font file requests settle
+  //   - document.fonts.ready: Inter (and any other webfont) glyphs available
+  // These are both fast when they would have been instantly OK anyway and
+  // safe when they wouldn't have been. Net win: ~1.5s typical, up to ~2s
+  // on cold loads.
+  await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
+  await page.evaluate(() => document.fonts.ready);
 
   // Lock zoom to 1.0 and snapGrid to 1 for deterministic positioning
   await page.evaluate(() => {
@@ -102,7 +110,9 @@ async function setUpPage(page: Page, deviceId: string) {
       win.useEditorStore.setState({ zoom: 1, panX: 0, panY: 0, snapGrid: 1, showLabels: true });
     }
   });
-  await page.waitForTimeout(500);
+  // Wait for React to flush the state update + repaint. requestAnimationFrame
+  // twice covers the queued render + layout commit pipeline.
+  await page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
 }
 
 async function measureElements(page: Page): Promise<Record<string, ElementMeasurement>> {
@@ -155,12 +165,25 @@ async function measureElements(page: Page): Promise<Record<string, ElementMeasur
   return result;
 }
 
-async function captureMode(page: Page, deviceId: string, mode: 'editor' | 'preview'): Promise<ModeBaseline> {
-  // If switching to preview, click the toggle. If switching back, click again.
+async function captureMode(
+  page: Page,
+  deviceId: string,
+  mode: 'editor' | 'preview',
+  options: { captureScreenshot?: boolean } = {},
+): Promise<ModeBaseline> {
+  const { captureScreenshot = true } = options;
+
+  // If switching to preview, click the toggle and wait for PanelRenderer
+  // to mount. PanelShell's `rounded-2xl` class is unique to preview-mode
+  // panel chrome, so we can wait for that instead of a fixed sleep.
   if (mode === 'preview') {
     const previewBtn = page.locator('button:has-text("Preview")').first();
     await previewBtn.click();
-    await page.waitForTimeout(2000);
+    await page.waitForSelector('.rounded-2xl', { timeout: 10_000 });
+    // Two RAF frames for any final layout settling
+    await page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
+    // Ensure preview fonts are loaded (Inter etc.) for accurate text measurement
+    await page.evaluate(() => document.fonts.ready);
   }
 
   const elements = await measureElements(page);
@@ -178,11 +201,18 @@ async function captureMode(page: Page, deviceId: string, mode: 'editor' | 'previ
     };
   });
 
-  fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
-  await page.screenshot({
-    path: path.join(SNAPSHOT_DIR, `${deviceId}-${mode}.png`),
-    fullPage: false,
-  });
+  // Screenshots are diagnostic artifacts useful for --capture (writes the
+  // reference PNG for human review) and --report (visual evidence of the
+  // per-kind summary). For --ci and --verify modes, we have the JSON
+  // measurement which is the actual gate signal — screenshots just slow
+  // the run. Caller opts out via captureScreenshot:false.
+  if (captureScreenshot) {
+    fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
+    await page.screenshot({
+      path: path.join(SNAPSHOT_DIR, `${deviceId}-${mode}.png`),
+      fullPage: false,
+    });
+  }
 
   return {
     device: deviceId,
@@ -425,11 +455,17 @@ function ciParityCheck(
 async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify' | 'report' | 'ci') {
   await setUpPage(page, deviceId);
 
+  // Screenshots are useful for --capture (reference PNG written next to
+  // the JSON baseline) and --report (visual evidence). Skip them in
+  // --ci and --verify where the JSON measurement is the gate signal —
+  // saves ~0.5s per device.
+  const captureScreenshot = mode === 'capture' || mode === 'report';
+
   console.log(`  → measuring EDITOR mode`);
-  const editor = await captureMode(page, deviceId, 'editor');
+  const editor = await captureMode(page, deviceId, 'editor', { captureScreenshot });
 
   console.log(`  → measuring PREVIEW mode`);
-  const preview = await captureMode(page, deviceId, 'preview');
+  const preview = await captureMode(page, deviceId, 'preview', { captureScreenshot });
 
   fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
   const editorPath = path.join(SNAPSHOT_DIR, `${deviceId}-editor.json`);
@@ -530,27 +566,54 @@ async function main() {
   console.log('');
 
   const browser = await chromium.launch({ headless: true });
-  const ctx = await browser.newContext({
-    viewport: { width: 1800, height: 1200 },
-    deviceScaleFactor: 1,
-  });
-  await ctx.addCookies([{
-    name: 'admin_access', value: ADMIN_PASSWORD,
-    domain: 'localhost', path: '/', sameSite: 'Lax' as const,
-  }]);
-  const page = await ctx.newPage();
-  page.setDefaultTimeout(60_000);
+
+  // Parallelization: one browser, N contexts (each with its own cookies/page).
+  // Cheaper than N browsers; isolates state per device so simultaneous loads
+  // don't share Zustand stores or other globals.
+  //
+  // --capture runs sequentially because writing baseline PNGs/JSON to disk
+  // benefits from deterministic ordering (easier to compare git diffs of
+  // baselines), and that mode is rare (run before refactors).
+  //
+  // Set DRIFT_SERIAL=1 to force sequential execution — useful when
+  // debugging or on memory-constrained CI runners.
+  const runSequential = mode === 'capture' || process.env.DRIFT_SERIAL === '1';
 
   let totalEditorChange = 0;
   let totalCiFailures = 0;
-  for (const device of devices) {
-    console.log(`\n=== ${device.label} (${device.id}) ===`);
-    const result = await runDevice(page, device.id, mode);
-    if (mode === 'verify' && result) {
-      totalEditorChange += result.editorChanged;
-    } else if (mode === 'ci' && result) {
-      totalCiFailures += result.editorChanged;  // editorChanged repurposed: count of CI parity failures
+
+  const runOne = async (device: typeof devices[number]): Promise<void> => {
+    const ctx = await browser.newContext({
+      viewport: { width: 1800, height: 1200 },
+      deviceScaleFactor: 1,
+    });
+    await ctx.addCookies([{
+      name: 'admin_access', value: ADMIN_PASSWORD,
+      domain: 'localhost', path: '/', sameSite: 'Lax' as const,
+    }]);
+    const page = await ctx.newPage();
+    page.setDefaultTimeout(60_000);
+    try {
+      console.log(`\n=== ${device.label} (${device.id}) ===`);
+      const result = await runDevice(page, device.id, mode);
+      if (mode === 'verify' && result) {
+        totalEditorChange += result.editorChanged;
+      } else if (mode === 'ci' && result) {
+        totalCiFailures += result.editorChanged;  // count of CI parity failures
+      }
+    } finally {
+      await ctx.close();
     }
+  };
+
+  if (runSequential) {
+    for (const device of devices) {
+      await runOne(device);
+    }
+  } else {
+    // Parallel mode — typical speedup 2-3× on a warm dev server, less on
+    // cold compile. Failures still report per-device above the verdict.
+    await Promise.all(devices.map(runOne));
   }
 
   console.log('');

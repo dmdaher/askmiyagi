@@ -162,6 +162,8 @@ export default function EditorToolbar({
   const controlScale = useEditorStore((s) => s.controlScale);
   const showLabels = useEditorStore((s) => s.showLabels);
   const toggleLabels = useEditorStore((s) => s.toggleLabels);
+  const showHiddenSections = useEditorStore((s) => s.showHiddenSections);
+  const toggleHiddenSections = useEditorStore((s) => s.toggleHiddenSections);
   const past = useEditorStore((s) => s.past);
   const future = useEditorStore((s) => s.future);
 
@@ -290,6 +292,20 @@ export default function EditorToolbar({
       </div>
 
       <button onClick={toggleLabels} className={toggleBtn(showLabels)} title="Labels (T)" disabled={previewMode}>Labels</button>
+
+      {/* Hidden-section ghost visibility — when off, hidden sections vanish
+          from the editor (use Layers panel to find them). When on, they
+          render as faint amber ghost frames so contractor can re-select. */}
+      <button
+        onClick={toggleHiddenSections}
+        className={toggleBtn(showHiddenSections)}
+        title={showHiddenSections
+          ? 'Hidden sections are visible as ghost frames — click to hide them from the editor'
+          : 'Hidden sections are suppressed — click to show ghost frames'}
+        disabled={previewMode}
+      >
+        Hidden
+      </button>
 
       {/* Add standalone label */}
       <button
