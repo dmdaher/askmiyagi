@@ -13,7 +13,12 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  /* Inter is loaded via next/font in layout.tsx and exposed as the
+     --font-sans CSS variable on <html>. The fallback chain catches the
+     brief moment before the font file loads. After load, every platform
+     renders the same .woff2 file — no more SF Pro on macOS vs Segoe UI
+     on Windows vs Cantarell on Linux divergence. */
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
 * {
