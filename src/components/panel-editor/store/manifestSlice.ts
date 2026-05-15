@@ -578,7 +578,8 @@ interface CanvasFields {
   scaleCumulativeFactor: number;
   /** Snap-grid (1|2|4|8|16|32). Exposed to manifestSlice so moveLabel /
    *  moveControl can snap label positions to the grid — see Phase 8 fix
-   *  for the linked-label drift bug at snapGrid=1. */
+   *  for the linked-label drift bug at snapGrid=1. Source-of-truth in
+   *  canvasSlice; this is the read-only surface via the composed store. */
   snapGrid: number;
   setScaleBase: (base: ScaleBase | null) => void;
   setScaleCumulativeFactor: (factor: number) => void;
@@ -1035,14 +1036,22 @@ export const createManifestSlice: StateCreator<
     get().clearScaleBase();
     const ctrl = get().controls[id];
     if (!ctrl || ctrl.locked) return;
+    // Snap linked-label follow to the editor's snap-grid (matches the rule
+    // applied by Rnd.dragGrid on controls and by LabelLayer's standalone
+    // drag handler). The previous implementation used integer rounding
+    // only (Math.round(l.x + dx)), which let labels drift off-grid as
+    // soon as controls moved. See Phase 8 of the selection refactor plan
+    // and the user-reported bug at snapGrid=1.
+    const snap = get().snapGrid;
     set((s) => ({
       controls: {
         ...s.controls,
         [id]: { ...ctrl, x: ctrl.x + dx, y: ctrl.y + dy },
       },
-      // Move linked labels with the control
       editorLabels: (s.editorLabels as EditorLabel[]).map(l =>
-        l.controlId === id ? { ...l, x: Math.round(l.x + dx), y: Math.round(l.y + dy) } : l
+        l.controlId === id
+          ? { ...l, x: Math.round((l.x + dx) / snap) * snap, y: Math.round((l.y + dy) / snap) * snap }
+          : l
       ),
     }));
   },
