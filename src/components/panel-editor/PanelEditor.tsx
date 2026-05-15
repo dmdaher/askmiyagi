@@ -173,24 +173,21 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
         </div>
       )}
 
-      {/* Preview mode banner */}
-      {previewMode && (
-        <div className="flex h-10 items-center justify-between border-b border-amber-700/40 bg-amber-900/20 px-4">
-          <span className="text-sm text-amber-300 truncate">
-            {buildStatus === 'approved' && exportMessage
-              ? `✓ ${exportMessage}`
-              : buildStatus === 'approved'
-                ? '✓ Panel exported'
-                : 'Preview Mode — clean panel view (click Preview to exit)'}
+      {/* Export-approval banner — only on the (rare) build-status approved case.
+          The "Preview Mode" indicator itself lives in the toolbar (no layout
+          shift). This banner appears briefly after an export or admin approval
+          to surface the confirmation message; users dismiss via Back to Editor. */}
+      {previewMode && buildStatus === 'approved' && (
+        <div className="flex h-10 items-center justify-between border-b border-emerald-700/40 bg-emerald-900/20 px-4">
+          <span className="text-sm text-emerald-300 truncate">
+            {exportMessage ? `✓ ${exportMessage}` : '✓ Panel exported'}
           </span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => { setPreviewMode(false); setBuildStatus('idle'); setExportMessage(null); }}
-              className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
-            >
-              Back to Editor
-              </button>
-          </div>
+          <button
+            onClick={() => { setPreviewMode(false); setBuildStatus('idle'); setExportMessage(null); }}
+            className="rounded border border-gray-600 bg-gray-800 px-3 py-1 text-xs text-gray-300 transition-colors hover:bg-gray-700"
+          >
+            Back to Editor
+          </button>
         </div>
       )}
 
