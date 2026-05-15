@@ -1,23 +1,24 @@
-# Editor↔Preview parity + containment gate.
+# Editor↔Preview parity gate.
 #
-# Two layers of protection on every PR to `test`:
+# One focused check on every PR to `test`:
 #
-#   Layer A — drift:ci
-#     Same-machine editor↔preview parity check. Captures both modes on
-#     the Linux CI runner, computes the median vertical offset (uniform
-#     PanelShell branding header, ~40 px), subtracts it, then asserts
-#     per-element drift is within ±2 px. Catches "feature added to one
-#     mode but not the other."
+#   drift:ci — same-machine editor↔preview parity
+#     Captures editor and preview on the same Linux CI runner, computes
+#     the median vertical offset (uniform PanelShell branding header,
+#     ~40 px today), subtracts it, then asserts per-element drift is
+#     within ±2 px. Catches "feature added to one mode but not the
+#     other" — the SharedLabel-class bug.
 #
-#   Layer B — drift:containment
-#     Walks every label and control in preview mode, asserts the
-#     rendered content fits within its parent rect with no overflow.
-#     Catches text or icons that fit on macOS but spill out on Linux/
-#     Windows due to font rendering differences.
+# Runs on Linux. NOT compared against macOS-captured baselines (which
+# would fail on cross-platform glyph hinting variance unrelated to real
+# bugs).
 #
-# Both layers run on Linux. There is NO comparison against macOS-captured
-# baselines — that approach produced false positives from cross-platform
-# glyph hinting variance unrelated to actual bugs.
+# A separate containment check (`npm run drift:containment`) is
+# available as a local tool but not enforced in CI — it surfaces
+# "stored width < natural text width" cases that are mathematically
+# true but not user-visible problems in practice. Re-enable here only
+# if a real production overflow bug surfaces from cross-platform
+# rendering.
 #
 # This workflow does NOT run on `main` pushes — branch protection
 # forbids direct pushes to main.
