@@ -145,39 +145,22 @@ function SectionProperties({ section }: { section: SectionDef }) {
         <p className="text-xs text-gray-500 mt-0.5">{section.id}</p>
       </div>
 
-      {/* Header label — toggle + editable text */}
+      {/* Section label — text input. The On/Off button used to live
+          here but became redundant once Frame Mode added 'body-only'
+          and 'hidden' options (those control visibility; this input
+          controls the text). Leave the input empty to clear the label. */}
       <div className="space-y-1">
-        <div className="flex items-center justify-between">
-          <label className="text-[10px] uppercase tracking-wide text-gray-500">
-            Section Label
-          </label>
-          <button
-            onClick={() => {
-              pushSnapshot();
-              setSectionLabel(
-                section.id,
-                section.headerLabel ? null : section.id.toUpperCase(),
-              );
-            }}
-            className={`text-[9px] px-1.5 py-0.5 rounded transition-colors ${
-              section.headerLabel
-                ? 'bg-blue-600/30 text-blue-300 border border-blue-600'
-                : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
-            }`}
-          >
-            {section.headerLabel ? 'On' : 'Off'}
-          </button>
-        </div>
-        {section.headerLabel !== null && section.headerLabel !== undefined && (
-          <input
-            type="text"
-            value={section.headerLabel}
-            onChange={(e) => setSectionLabel(section.id, e.target.value || null)}
-            onBlur={() => { pushSnapshot(); }}
-            className="w-full h-6 rounded border border-gray-700 bg-gray-900 px-2 text-[10px] text-gray-300 outline-none focus:border-blue-500"
-            placeholder="Section label text"
-          />
-        )}
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">
+          Section Label
+        </label>
+        <input
+          type="text"
+          value={section.headerLabel ?? ''}
+          onChange={(e) => setSectionLabel(section.id, e.target.value || null)}
+          onBlur={() => { pushSnapshot(); }}
+          className="w-full h-6 rounded border border-gray-700 bg-gray-900 px-2 text-[10px] text-gray-300 outline-none focus:border-blue-500"
+          placeholder="Section label text"
+        />
       </div>
 
       {/* Section frame mode */}
@@ -186,7 +169,12 @@ function SectionProperties({ section }: { section: SectionDef }) {
           Frame Mode
         </label>
         <div className="flex gap-1">
-          {([['full', 'Full'], ['header-only', 'Title Only'], ['hidden', 'Hidden']] as const).map(([mode, label]) => {
+          {([
+            ['full', 'Full'],
+            ['header-only', 'Title Only'],
+            ['body-only', 'Body Only'],
+            ['hidden', 'Hidden'],
+          ] as const).map(([mode, label]) => {
             const currentMode = section.frameMode ?? (section.hidden ? 'hidden' : 'full');
             const isActive = currentMode === mode;
             return (
@@ -200,15 +188,54 @@ function SectionProperties({ section }: { section: SectionDef }) {
                   isActive
                     ? mode === 'hidden' ? 'bg-amber-600/30 text-amber-300 border border-amber-600'
                       : mode === 'header-only' ? 'bg-blue-600/30 text-blue-300 border border-blue-600'
+                      : mode === 'body-only' ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-600'
                       : 'bg-gray-600/30 text-gray-200 border border-gray-500'
                     : 'bg-gray-800 text-gray-500 border border-gray-700 hover:text-gray-300'
                 }`}
+                title={
+                  mode === 'full' ? 'Full frame: border + header strip with title'
+                    : mode === 'header-only' ? 'Just the title text — no frame body'
+                    : mode === 'body-only' ? 'Frame body visible — no title strip'
+                    : 'Hidden — section invisible (controls still render)'
+                }
               >
                 {label}
               </button>
             );
           })}
         </div>
+
+        {/* Title banner backdrop toggle — only meaningful for frame modes
+            that show a title (Full, Title Only). When off, the title text
+            renders without the dark banner background, useful for cleaner
+            layouts when the section body already provides visual grouping. */}
+        {(() => {
+          const currentMode = section.frameMode ?? (section.hidden ? 'hidden' : 'full');
+          const titleVisible = currentMode === 'full' || currentMode === 'header-only';
+          if (!titleVisible) return null;
+          const showBanner = section.showTitleBanner !== false;
+          return (
+            <label className="flex items-center gap-2 pt-1 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={showBanner}
+                onChange={(e) => {
+                  pushSnapshot();
+                  useEditorStore.getState().updateSection(section.id, {
+                    showTitleBanner: e.target.checked,
+                  });
+                }}
+                className="h-3 w-3 rounded border-gray-700 bg-gray-800 accent-blue-500"
+              />
+              <span className="text-[10px] text-gray-400">
+                Title banner backdrop
+                <span className="text-[9px] text-gray-600 ml-1">
+                  (dark strip behind title)
+                </span>
+              </span>
+            </label>
+          );
+        })()}
       </div>
 
       {/* Divider */}

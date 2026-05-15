@@ -37,6 +37,7 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       headerLabel: s.headerLabel ?? undefined,
       hidden: s.hidden,
       frameMode: s.frameMode,
+      showTitleBanner: s.showTitleBanner,
       x: s.x,
       y: s.y,
       w: s.w,
@@ -159,11 +160,14 @@ export default function PanCanvas() {
           {/* Drag-select rubber band (behind sections, above grid) */}
           <DragSelectRect />
 
-          {/* Section frames — visual boxes + banners only (no child controls) */}
-          {sectionEntries.filter((s) => {
-            const mode = s.frameMode ?? (s.hidden ? 'hidden' : 'full');
-            return mode !== 'hidden';
-          }).map((section, index) => (
+          {/* Section frames — visual boxes + banners only (no child controls).
+              IMPORTANT: hidden sections still render in editor mode as a
+              faint ghost outline so the contractor can re-select them and
+              change their mode. Without this, hiding a section makes it
+              unreachable. The 'hidden' state only suppresses rendering in
+              PREVIEW (PanelRenderer); the editor must always provide
+              affordances to manipulate every section. */}
+          {sectionEntries.map((section, index) => (
             <SectionFrame key={section.id} sectionId={section.id} zIndex={index + 1} />
           ))}
 
