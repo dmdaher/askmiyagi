@@ -1,19 +1,26 @@
 # ONBOARD — First-Time Session Setup
 
-Read all required documentation in the correct order based on your task. This is MANDATORY before writing any code. The docs contain hard-won lessons from 8 batches and 59 tutorials. Skipping them means repeating solved mistakes.
+Read these files in this order at the start of any new work session. Files 1 and 3 are auto-loaded by Claude Code; files 2, 4, and 5 must be read explicitly. The docs contain hard-won lessons from 8 batches and 60 tutorials. Skipping them means repeating solved mistakes.
 
 **Trigger:** Starting any new work session on this project.
 
 ---
 
-## Step 0: Read Session Context
+## Step 0: Canonical Reading Order
 
-Check for previous session state:
-- Read `memory/MEMORY.md` — project state, key patterns, quick reference
-- Read `memory/last-session.md` (if exists) — what was done, where we left off, next steps
-- Read `memory/context-checkpoints.md` (if exists) — mid-session state snapshots
+| Order | File | What it provides |
+|-------|------|------------------|
+| 1 | `CLAUDE.md` (project root) | Rules, git branching, safety, pipeline hard rules — **auto-loaded** |
+| 2 | `docs/ARCHITECTURE.md` | End-to-end system overview, directory structure, data flow, tech stack |
+| 3 | `memory/MEMORY.md` | Index of all memory files, current state, active workstreams — **auto-loaded** |
+| 4 | `memory/last-session.md` | What was just done, saved plans, what to pick up next |
+| 5 | `memory/project_editor_complete_features.md` | Full editor feature inventory (read if doing editor work) |
 
-These files are in: `/Users/devin/.claude/projects/-Users-devin-Documents-Fun---Stuff-Music-Music-Studio-askmiyagi/memory/`
+Memory files live at: `/Users/devin/.claude/projects/-Users-devin-Documents-Fun---Stuff-Music-Music-Studio-askmiyagi/memory/`
+
+Also check (if relevant):
+- `memory/context-checkpoints.md` — mid-session state snapshots
+- Saved plan files in `.claude/plans/` referenced by `last-session.md`
 
 ---
 
@@ -23,15 +30,15 @@ Ask the user what they're working on, then follow the correct reading path:
 
 ### Path A: Given manuals for a NEW instrument
 
-**This is the primary workflow.** You are building a complete digital twin.
+**This is the primary workflow.** You are building a complete digital twin via the pipeline runner.
 
 Read in this EXACT order:
-1. `docs/new-instrument-playbook.md` — The 7-phase end-to-end pipeline (Phases 0-7: gather materials → full manual read → screen catalog → panel design → core implementation → screens → tutorials → validation)
-2. `docs/quality-gates.md` — The evidence standard enforced at every phase (5 gates, 40 questions)
-3. `tasks/lessons.md` — 19 correction patterns (mistakes to avoid)
-4. `CLAUDE.md` — Project instructions, architecture, conventions, control ID naming
+1. `CLAUDE.md` — Pipeline hard rules, agent orchestration, full split architecture, control ID naming
+2. `docs/ARCHITECTURE.md` — Pipeline phases, directory layout, two-tier panel system
+3. `docs/quality-gates.md` — The evidence standard enforced at every phase (5 gates, 40 questions)
+4. `tasks/lessons.md` — Correction patterns from prior builds
 
-**Then execute** Phases 0-5 of the playbook before touching tutorials.
+**Then start the pipeline** from `/admin` dashboard (NOT terminal). The runner spawns each phase as a `claude -p` subprocess. Pipeline pauses at the layout-engine phase for contractor editing — admin sends manifest+photos to Vercel Blob, contractor positions controls, admin reviews and approves.
 
 **Key facts you must know:**
 - Panel dimensions: 2700x580px (Fantom 08 reference)
@@ -45,9 +52,10 @@ Read in this EXACT order:
 ### Path B: Adding TUTORIALS to an existing instrument
 
 Read in this EXACT order:
-1. `memory/tutorial-batch-playbook.md` — Full batch execution process (skills chain, TDD cycle, constraints, review patterns)
+1. `CLAUDE.md` — Tutorial conventions, panel state rules, control ID naming
 2. `docs/quality-gates.md` — Evidence standards (especially PRE-BUILD + CROSS-REFERENCE gates)
 3. `tasks/lessons.md` — 19 correction patterns
+4. `src/data/tutorials/fantom-08/split-keyboard-zones.ts` — Canonical tutorial example (study end-to-end)
 
 **Key facts you must know:**
 - Batch size: 3-5 tutorials grouped by manual chapter
@@ -106,7 +114,7 @@ Before writing any code, confirm you can answer:
 - Where are source materials? (iCloud mirror: `/Users/devin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Fun & Stuff/Music/Music Studio/`)
 - What quality gates apply? (PRE-BUILD, POST-BUILD, CORRECTION, CROSS-REFERENCE, SELF-IMPROVEMENT)
 - What's the canonical tutorial example? (`split-keyboard-zones.ts`)
-- How many tutorials exist? (59 across 10 categories, 100% manual coverage)
+- How many tutorials exist? (60 across 10 categories, 100% manual coverage)
 - What's the current test count baseline? (675+)
 
 ---
