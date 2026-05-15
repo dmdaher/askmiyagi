@@ -65,6 +65,42 @@ Always check, validate, and confirm before acting. Measure twice, cut once.
 
 ---
 
+## Playwright + Editor Safety (NON-NEGOTIABLE)
+
+**Loading `/admin/<deviceId>/editor` or `/editor/<deviceId>` from a
+Playwright/browser-automation script can corrupt contractor data via the
+editor's auto-save subscriber.** Any change to the editor store —
+including `setState({ zoom })` to lock zoom for measurement — can fire
+the auto-save with whatever's in the store right then, potentially
+mid-hydration. Observed 2026-05-15: a session of drift-script Playwright
+runs lost ~270 lines of fantom-06 contractor data.
+
+The same risk applies in hosted mode: a script loading
+`/editor/<deviceId>` could overwrite the contractor's authoritative
+Vercel Blob copy.
+
+### Required practice for any script that loads the editor
+
+1. **Use `?nosave=true`**. `useAutoSave` short-circuits when set:
+   ```ts
+   await page.goto(`http://localhost:3000/admin/${dev}/editor?nosave=true`, ...);
+   ```
+2. **Back up contractor data BEFORE the session**:
+   ```bash
+   TS=$(date +%s); cp .pipeline/<dev>/manifest-editor.json /tmp/<dev>-$TS.bak
+   ```
+3. **Never load `/editor/<deviceId>` (hosted)** from a script without
+   `?nosave=true` AND explicit user authorization. Hosted writes Blob.
+4. **Recovery**:
+   - Local: restore from `/tmp/<dev>-*.bak`
+   - Hosted: admin Version History (50-version Blob history)
+
+The root-cause fix (zoom removed from auto-save trigger) is in
+`useAutoSave.ts`. `?nosave=true` is the belt-and-suspenders for any
+future state change that might slip into the trigger list.
+
+---
+
 ## Change Impact Checklist (MANDATORY for non-trivial changes)
 
 Before writing code that touches rendering, manifest schema, store, pipeline, contractor data, or any shared component, **state your answers to all six** out loud so the user can review:
