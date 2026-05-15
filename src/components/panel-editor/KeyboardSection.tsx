@@ -5,6 +5,7 @@ import { Rnd } from 'react-rnd';
 import { useEditorStore } from './store';
 import Keyboard from '@/components/controls/Keyboard';
 import { computeKeyboardLayout, KEY_ASPECT } from '@/lib/keyboard-layout';
+import { computeKeyboardOverlaps } from '@/lib/keyboard-overlap';
 
 /**
  * Draggable/resizable keyboard section in the editor.
@@ -45,6 +46,11 @@ export default function KeyboardSection() {
   const snapGrid = useEditorStore((s) => s.snapGrid);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const controls = useEditorStore((s) => s.controls);
+  // `controlScale` shrinks every control's RENDERED width/height (not position)
+  // — e.g., on fantom-06 it's 0.3 so a stored 100×100 pad visually renders 30×30.
+  // The overlap detector must compare VISIBLE rects, not stored rects, otherwise
+  // it flags phantom overlaps that the contractor can't see on the canvas.
+  const controlScale = useEditorStore((s) => s.controlScale ?? 1);
 
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [bannerCollapsed, setBannerCollapsed] = useState(false);
@@ -140,37 +146,17 @@ export default function KeyboardSection() {
   // Earlier checks were missing the lower-Y bound: a control ENTIRELY BELOW
   // the keyboard (y > canvasHeight) matched `cBottom > keyboardTop` and got
   // false-flagged as overlap. The fix: also require `cTop < keyboardBottom`.
-  const overlappingControls: { id: string; label: string; overlapPx: number }[] = [];
-  let lowestControlBottom = 0;
-  const keyboardLeft = x;
-  const keyboardRight = x + w;
-  const keyboardTop = y;
-  const keyboardBottom = y + h; // keyboard fills from y to canvas bottom
-  for (const id in controls) {
-    const c = controls[id];
-    if (!c) continue;
-    const cTop = c.y ?? 0;
-    const cBottom = cTop + (c.h ?? 0);
-    if (cBottom > lowestControlBottom) lowestControlBottom = cBottom;
-    // Y-axis overlap: rectangles intersect when control's bottom crosses
-    // INTO the keyboard AND control's top is above the keyboard's bottom.
-    // OVERLAP_WARN_PX gives a small tolerance on each edge.
-    const yOverlapsKeyboard =
-      cBottom > keyboardTop + OVERLAP_WARN_PX &&
-      cTop < keyboardBottom - OVERLAP_WARN_PX;
-    if (!yOverlapsKeyboard) continue;
-    // X-axis overlap: control's box and keyboard's box intersect horizontally
-    const cLeft = c.x ?? 0;
-    const cRight = cLeft + (c.w ?? 0);
-    const xOverlaps = cRight > keyboardLeft && cLeft < keyboardRight;
-    if (!xOverlaps) continue;
-    // Report depth as how far the control crosses INTO the keyboard from
-    // either edge — clamped to keyboard height for sanity.
-    const overlapPx = Math.min(cBottom, keyboardBottom) - Math.max(cTop, keyboardTop);
-    overlappingControls.push({ id, label: c.label || id, overlapPx });
-  }
-  // Sort by overlap depth (worst offenders first)
-  overlappingControls.sort((a, b) => b.overlapPx - a.overlapPx);
+  const { overlaps: overlappingControls, lowestControlBottom } = computeKeyboardOverlaps(
+    Object.fromEntries(
+      Object.entries(controls).map(([id, c]) => [
+        id,
+        { id, label: c.label, x: c.x ?? 0, y: c.y ?? 0, w: c.w ?? 0, h: c.h ?? 0 },
+      ]),
+    ),
+    { left: x, top: y, right: x + w, bottom: y + h },
+    controlScale,
+    OVERLAP_WARN_PX,
+  );
   const overlapCount = overlappingControls.length;
   const gapAboveKeyboard = lowestControlBottom > 0 ? y - lowestControlBottom : 0;
   const hasOverlap = overlapCount > 0;

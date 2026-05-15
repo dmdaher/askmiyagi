@@ -291,6 +291,7 @@ function renderControl(
         const topActive = ledOn !== false;
         return (
           <div className="flex flex-col rounded overflow-hidden"
+            data-control-id={control.id}
             style={{ width: w, height: h, border: '1px solid #333' }}>
             <div className="flex flex-1 items-center justify-center py-0.5 px-1"
               style={{ backgroundColor: topActive ? '#0a2e1a' : '#1a1a2a', borderBottom: '1px solid #333' }}>
@@ -310,6 +311,7 @@ function renderControl(
       if (control.ledVariant === 'bar') {
         return (
           <div className="flex flex-col items-center justify-center gap-1 rounded"
+            data-control-id={control.id}
             style={{ backgroundColor: '#1a1a2a', padding: 4 }}>
             <div className="rounded-sm" style={{
               width: Math.max(w - 8, 16), height: 6,
@@ -333,7 +335,7 @@ function renderControl(
       const ledIsOn = ledOn === true;
       const dotColor = ledIsOn ? ledColor : '#333';
       return (
-        <div className="flex items-center justify-center" style={{ width: w, height: h }}>
+        <div className="flex items-center justify-center" data-control-id={control.id} style={{ width: w, height: h }}>
           <div className="rounded-full flex-shrink-0" style={{
             width: Math.min(w, h) * 0.7,
             height: Math.min(w, h) * 0.7,
@@ -460,6 +462,7 @@ export default function PanelRenderer({
           return s.headerLabel ? (
             <div
               key={s.id}
+              data-section-id={s.id}
               style={{
                 position: 'absolute',
                 left: s.x,

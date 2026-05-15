@@ -13,7 +13,13 @@
     "test:watch": "vitest",
     "check-git-health": "tsx scripts/check-git-health.ts",
     "install-hooks": "bash scripts/install-git-hooks.sh",
-    "regression:layers": "tsx e2e/regression-layers-panel-many-labels.ts"
+    "prepare": "bash scripts/install-git-hooks.sh",
+    "regression:layers": "tsx e2e/regression-layers-panel-many-labels.ts",
+    "drift:capture": "tsx e2e/editor-preview-baseline.ts --capture",
+    "drift:verify": "tsx e2e/editor-preview-baseline.ts --verify",
+    "drift:report": "tsx e2e/editor-preview-baseline.ts --report",
+    "drift:ci": "tsx e2e/editor-preview-baseline.ts --ci",
+    "drift:containment": "tsx e2e/containment-check.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
