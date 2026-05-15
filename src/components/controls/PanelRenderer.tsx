@@ -67,7 +67,8 @@ interface ManifestSection {
   id: string;
   headerLabel?: string;
   hidden?: boolean;
-  frameMode?: 'full' | 'header-only' | 'hidden';
+  frameMode?: 'full' | 'header-only' | 'body-only' | 'hidden';
+  showTitleBanner?: boolean;
   x: number;
   y: number;
   w: number;
@@ -456,9 +457,14 @@ export default function PanelRenderer({
       {(manifest.editorSections ?? []).map((s) => {
         const mode = s.frameMode ?? (s.hidden ? 'hidden' : 'full');
         if (mode === 'hidden') return null;
+        // Whether to render the dark banner backdrop behind the title.
+        // Defaults to true (current behavior); contractor can switch
+        // off via Properties Panel for a cleaner look.
+        const showBanner = s.showTitleBanner !== false;
         if (mode === 'header-only') {
-          // Floating title only — no container background
-          // Section coords are in pixels (same as SectionContainer), no scale needed
+          // Floating title only — no container body. Optional banner
+          // backdrop sits behind the text when showBanner is true,
+          // matching the Full-mode header strip's background.
           return s.headerLabel ? (
             <div
               key={s.id}
@@ -474,6 +480,8 @@ export default function PanelRenderer({
                 paddingLeft: 8,
                 pointerEvents: 'none',
                 zIndex: 0,
+                backgroundColor: showBanner ? 'rgba(0,0,0,0.15)' : 'transparent',
+                borderRadius: showBanner ? 4 : undefined,
               }}
             >
               <span style={{
@@ -488,11 +496,23 @@ export default function PanelRenderer({
             </div>
           ) : null;
         }
-        // Full mode — render SectionContainer
+        // body-only: render the SectionContainer frame but pass no
+        // headerLabel — frame body visible, title strip hidden. Editor
+        // and preview must render this identically; SectionContainer's
+        // own logic handles a missing headerLabel.
+        if (mode === 'body-only') {
+          return (
+            <SectionContainer key={s.id} id={s.id}
+              x={s.x} y={s.y} w={s.w} h={s.h} />
+          );
+        }
+        // Full mode — render SectionContainer with header.
+        // showTitleBanner controls the banner backdrop behind the title.
         return (
           <SectionContainer key={s.id} id={s.id}
             x={s.x} y={s.y} w={s.w} h={s.h}
-            headerLabel={s.headerLabel} />
+            headerLabel={s.headerLabel}
+            showTitleBanner={showBanner} />
         );
       })}
 

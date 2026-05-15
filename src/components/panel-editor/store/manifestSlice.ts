@@ -153,10 +153,32 @@ export interface SectionDef {
   widthPercent?: number;
   complexity?: string;
   hidden?: boolean; // Legacy — use frameMode instead
-  frameMode?: 'full' | 'header-only' | 'hidden';
+  frameMode?: SectionFrameMode;
+  /**
+   * Show the dark banner strip behind the title text (only relevant when
+   * frameMode is 'full' or 'header-only'). When false, title text shows
+   * without the polished darker background — useful when the contractor
+   * wants a cleaner look or the section background already provides
+   * enough visual grouping.
+   * Defaults to `true` (current behavior). Per-section color
+   * customization of the banner is queued under the themes/skins plan
+   * (docs/plans/2026-04-27-themes-skins-design.md).
+   */
+  showTitleBanner?: boolean;
 }
 
-export type SectionFrameMode = 'full' | 'header-only' | 'hidden';
+/**
+ * How a section's chrome renders:
+ *   - 'full'         — frame box + header strip with title
+ *   - 'header-only'  — title floating above an invisible box
+ *   - 'body-only'    — frame box visible, header strip hidden (no title)
+ *   - 'hidden'       — entire section chrome invisible (controls still render)
+ *
+ * Backward-compatible: existing manifests use 'full' | 'header-only' | 'hidden';
+ * 'body-only' is additive and falls back to 'full' rendering if a legacy
+ * consumer doesn't recognize it.
+ */
+export type SectionFrameMode = 'full' | 'header-only' | 'body-only' | 'hidden';
 
 export type ContainerStyle = 'recessed' | 'raised' | 'outlined' | 'filled';
 

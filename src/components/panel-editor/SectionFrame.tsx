@@ -75,6 +75,46 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
 
   const mode = getFrameMode(section);
 
+  // body-only mode: section frame box visible (for visual grouping of
+  // controls), no header strip or title — whole section surface acts as
+  // a drag handle for repositioning. Resize handles still appear on
+  // hover/selection.
+  if (mode === 'body-only') {
+    return (
+      <Rnd
+        position={{ x: section.x, y: section.y }}
+        size={{ width: section.w, height: section.h }}
+        scale={zoom}
+        dragGrid={[snapGrid, snapGrid]}
+        resizeGrid={[snapGrid, snapGrid]}
+        dragHandleClassName="section-drag-handle"
+        onDragStop={handleDragStop}
+        onResizeStop={handleResizeStop}
+        enableResizing
+        style={{
+          border: isSelected
+            ? '2px solid rgba(59,130,246,0.8)'
+            : '1px solid rgba(255,255,255,0.1)',
+          borderRadius: 4,
+          backgroundColor: isSelected
+            ? 'rgba(59,130,246,0.06)'
+            : 'rgba(255,255,255,0.02)',
+          transition: 'border-color 0.15s, background-color 0.15s',
+          zIndex: isSelected ? 100 : focusedSectionId === sectionId ? 99 : zIndex,
+        }}
+        className="hover:border-white/20"
+        onClick={handleClick}
+      >
+        {/* Drag handle covers the entire section body (no header strip).
+            data-section-id stays on this element for drift verifier parity. */}
+        <div
+          data-section-id={sectionId}
+          className="section-drag-handle w-full h-full cursor-grab active:cursor-grabbing"
+        />
+      </Rnd>
+    );
+  }
+
   // Header-only mode: just a floating header bar, no body/border
   if (mode === 'header-only') {
     return (

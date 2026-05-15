@@ -37,6 +37,7 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       headerLabel: s.headerLabel ?? undefined,
       hidden: s.hidden,
       frameMode: s.frameMode,
+      showTitleBanner: s.showTitleBanner,
       x: s.x,
       y: s.y,
       w: s.w,

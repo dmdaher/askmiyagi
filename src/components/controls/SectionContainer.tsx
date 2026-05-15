@@ -10,6 +10,9 @@ interface SectionContainerProps {
   w: number;
   h: number;
   headerLabel?: string;
+  /** When false, title text shows without the dark banner backdrop.
+   *  Defaults to true (current behavior). */
+  showTitleBanner?: boolean;
   children?: ReactNode;
 }
 
@@ -20,6 +23,7 @@ export default function SectionContainer({
   w,
   h,
   headerLabel,
+  showTitleBanner = true,
   children,
 }: SectionContainerProps) {
   return (
@@ -41,7 +45,13 @@ export default function SectionContainer({
       {headerLabel && (
         <div
           className="absolute top-0 left-0 right-0 flex items-center px-2 pointer-events-none"
-          style={{ height: 20, backgroundColor: 'rgba(0,0,0,0.15)', borderRadius: '8px 8px 0 0' }}
+          style={{
+            height: 20,
+            // Banner background only when showTitleBanner is true.
+            // When false, the title text floats on the section body.
+            backgroundColor: showTitleBanner ? 'rgba(0,0,0,0.15)' : 'transparent',
+            borderRadius: '8px 8px 0 0',
+          }}
         >
           <span
             className="text-[8px] font-medium uppercase truncate"

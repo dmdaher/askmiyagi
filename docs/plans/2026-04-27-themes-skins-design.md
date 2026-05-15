@@ -189,6 +189,24 @@ Skip for v1. A device-level palette is sufficient. Per-archetype tinting (transp
 
 These are tracked as separate fixes. When they're done, v2 skins can use per-section accents.
 
+### Per-Section Color Overrides (v2)
+
+Beyond archetype-driven tinting, contractors should be able to set a
+custom color on any individual section's title banner / body
+independently of the active theme. Schema additions for `SectionDef`:
+- `headerColor?: string` — overrides the theme's `sectionHeaderBg`
+- `bodyColor?: string` — overrides the theme's `sectionBg`
+
+The override layer composes with themes: theme sets defaults via CSS
+variables; element-level overrides win when present. This is the
+"every element is colorable" pattern the user requested 2026-05-15 —
+applied to sections first, then the same pattern extends to controls,
+labels, banners, etc. in subsequent v2 iterations.
+
+Implementation note: a small precursor toggle (`showTitleBanner: boolean`
+on SectionDef) shipped in PR #127 alongside the body-only frame mode
+— that's the visibility binary, with full coloring queued here.
+
 ### Data Model Gaps to Fix Before Skins
 
 | Gap | Impact | Fix |
