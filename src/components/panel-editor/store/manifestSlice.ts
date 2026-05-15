@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import { computeLabelPosition } from '@/lib/label-position';
 import type { EditorLabel, ControlGroup, PolishBanner } from './historySlice';
+import type { SelectableId } from './selection-types';
 import type {
   ManifestControl,
   ManifestSection,
@@ -234,6 +235,17 @@ export interface ManifestSlice {
   hoveredGroupId: string | null;
   selectedLabelId: string | null;
 
+  /**
+   * Unified Figma-style selection. Prefixed-ID array (e.g. `'control:cutoff'`,
+   * `'label:lbl-12'`). MS1: additive — coexists with selectedIds/selectedLabelId
+   * etc., not yet read by any consumer. Subsequent commits wire it into
+   * DragSelectRect, click handlers, and keyboard shortcuts.
+   *
+   * See `selection-types.ts` for helpers (formatSelectableId,
+   * parseSelectableId, selectionOfType, etc.).
+   */
+  selection: SelectableId[];
+
   // Actions
   loadFromManifest: (manifest: MasterManifestInput) => void;
   moveControl: (id: string, dx: number, dy: number) => void;
@@ -251,6 +263,11 @@ export interface ManifestSlice {
   setLockMode: (ids: string[], mode: 'unlocked' | 'size-locked' | 'fully-locked') => void;
   setSelectedIds: (ids: string[]) => void;
   toggleSelected: (id: string) => void;
+  /**
+   * Replace the unified selection set. MS1 surface only; further actions
+   * (toggleSelection, addToSelection, removeFromSelection) ship in MS2.
+   */
+  setSelection: (selection: SelectableId[]) => void;
   setFocusedSection: (id: string | null) => void;
   addControl: (sectionId: string, type: string, label: string) => void;
   setAllLabelFontSize: (size: number | undefined) => void;
@@ -565,6 +582,7 @@ export const createManifestSlice: StateCreator<
   focusedSectionId: null,
   hoveredGroupId: null,
   selectedLabelId: null,
+  selection: [],
 
   // ── Actions ─────────────────────────────────────────────────────────────
 
@@ -1311,6 +1329,8 @@ export const createManifestSlice: StateCreator<
   },
 
   setSelectedIds: (ids) => set({ selectedIds: ids, selectedLabelId: ids.length > 0 ? null : get().selectedLabelId, selectedBannerId: ids.length > 0 ? null : get().selectedBannerId }),
+
+  setSelection: (selection) => set({ selection }),
 
   toggleSelected: (id) => {
     const { selectedIds } = get();
