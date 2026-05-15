@@ -1,0 +1,88 @@
+# Editor↔Preview pixel-drift gate.
+#
+# Runs the baseline verifier on every PR that targets `test`. Fails the
+# build if the editor pixel positions have drifted from the committed
+# baseline JSON in e2e-snapshots/editor-preview-baseline/ — that's the
+# mechanical safety net for "features added to editor must not break
+# preview, and vice versa."
+#
+# Tolerance is asymmetric:
+#   - Locally on macOS: 0.1px (sub-pixel anti-alias noise filter)
+#   - In CI on Linux:   0.5px (set via CI=true env, see baseline script).
+# This buys reproducibility despite Linux↔macOS glyph rendering drift.
+#
+# This workflow does NOT run on `main` pushes — the project's branch
+# protection forbids direct pushes to main; all merges go test→main
+# through manual review.
+
+name: drift-check
+
+on:
+  pull_request:
+    branches: [test]
+    paths:
+      - "src/components/panel/**"
+      - "src/components/panel-editor/**"
+      - "src/components/controls/**"
+      - "src/lib/banner-style.ts"
+      - "src/lib/hardware-icons.ts"
+      - "e2e/editor-preview-baseline.ts"
+      - "e2e-snapshots/editor-preview-baseline/**"
+      - ".github/workflows/drift-check.yml"
+
+concurrency:
+  group: drift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+      ADMIN_PASSWORD: miyagi2026
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Liberation fonts
+        # Linux chromium picks up these as the sans-serif fallback used
+        # by the Tailwind/system font stack. Without them, text widths
+        # shift by ~0.5-1.5px from the macOS baseline and verify trips
+        # despite no real code change.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-liberation
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build (type-check + compile)
+        run: npm run build
+
+      - name: Start dev server
+        run: |
+          npm run dev > /tmp/dev-server.log 2>&1 &
+          npx wait-on http://localhost:3000 --timeout 120000
+
+      - name: Run drift verify
+        run: npm run drift:verify
+
+      - name: Upload current snapshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-snapshots
+          path: |
+            e2e-snapshots/editor-preview-baseline/
+            /tmp/dev-server.log
+          retention-days: 7

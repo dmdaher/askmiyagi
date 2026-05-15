@@ -82,6 +82,16 @@ Verify layout **topology** (horizontal vs vertical, which components are adjacen
 
 > **Origin:** ENVELOPES section had buttons in a vertical column when hardware has them in a horizontal row. Survived 5+ QA iterations because agents were polishing spacing on a wrong layout.
 
+### Editor ↔ Preview Parity (single-path rule)
+The editor and preview must render pixel-identical output for every primitive
+on the panel. Adding a feature to one and not the other is a bug. **Before
+touching any panel rendering**, read `docs/architecture/editor-preview-unification.md`:
+it documents the shared-component pattern (`SharedLabel`, etc.), which
+primitive lives where, and the `drift:report` / `drift:verify` workflow that
+gates this in CI.
+
+If you're tempted to edit `PanelRenderer.tsx` and `LabelLayer.tsx`/`SectionFrame.tsx` together for the same visual change — stop and extract a `SharedX` shared core instead.
+
 ---
 
 ## Admin UX & Pipeline Resilience

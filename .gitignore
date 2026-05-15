@@ -78,3 +78,36 @@ docs/**/screenshots/*.jpg
 /*.png
 .pipeline/*/state-backup-*.json
 .pipeline/*/state.json
+
+# ─── iCloud duplicate files ─────────────────────────────────────────────
+# macOS/iCloud Drive renames sync-conflicted files by appending " 2" before
+# the extension (e.g., "foo.ts" → "foo 2.ts"). These pollute the working
+# tree and `git status`. Pattern is tuned for that exact convention; if you
+# legitimately need a file like "Phase 2.md", use `git add -f` to override.
+* 2.ts
+* 2.tsx
+* 2.js
+* 2.jsx
+* 2.mjs
+* 2.cjs
+* 2.json
+* 2.md
+* 2.mdx
+* 2.png
+* 2.jpg
+* 2.jpeg
+* 2.gif
+* 2.svg
+* 2.log
+* 2.yml
+* 2.yaml
+* 2.txt
+* 2.sh
+* 2.css
+# Extensionless dupes too (e.g., ".githooks/pre-push 2", build artifacts).
+* 2
+
+# ─── Manifest editor backups (per-device runtime artifacts) ─────────────
+# Created by the editor's auto-save throttle. Rotated on disk; not source.
+.pipeline/*/manifest-editor-backup-*.json
+.pipeline/*/manifest-editor-backup-pre-*.json
