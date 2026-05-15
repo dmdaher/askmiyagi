@@ -88,42 +88,68 @@ async function findViolations(page: Page, deviceId: string): Promise<Containment
      * need to show all content vs what's actually visible. Differences
      * indicate true visual overflow that the user sees.
      */
-    const checkElement = (el, kind, id) => {
-      const rect = el.getBoundingClientRect();
-      const text = (el.textContent || '').trim().slice(0, 40);
-
-      // Unintended wrap: text that should fit on one line takes multiple.
-      // For labels, whiteSpace: nowrap is set in SharedLabel — wrap means
-      // either we removed the rule or the font is so wide that wrap was
-      // forced. Either way it's a bug.
-      if (el.scrollHeight > el.clientHeight + 1) {
+    /**
+     * Choose the right measurement strategy per kind.
+     *
+     * LABELS (SharedLabel):
+     *   - data-label-id is on the INNER span, which has inline-block +
+     *     whiteSpace: nowrap + padding/margin: 4px/6px/-4px/-6px (negative
+     *     margin extends click target beyond visual bounds).
+     *   - The inner span's scrollWidth = clientWidth always (auto-grows
+     *     to content), so it can't detect width overflow.
+     *   - The OUTER wrapper has explicit width: label.w from the manifest.
+     *     scrollWidth > clientWidth on the OUTER correctly catches text
+     *     wider than the manifest-stored label width.
+     *   - But scrollHeight > clientHeight on the OUTER reports a uniform
+     *     3 px diff caused by the negative-margin pattern (NOT real
+     *     wrap). So we skip height checks for labels — width overflow
+     *     is the cross-platform UX concern that matters anyway.
+     *
+     * CONTROLS:
+     *   - data-control-id is directly on the visible control box.
+     *   - Both scroll/client diffs are reliable here.
+     */
+    const checkWidthOverflow = (target, kind, id) => {
+      if (target.scrollWidth > target.clientWidth + 1) {
+        const rect = target.getBoundingClientRect();
         out.push({
-          kind, id, text,
-          reason: 'text wraps to multiple lines (scrollHeight ' + el.scrollHeight + ' > clientHeight ' + el.clientHeight + ')',
+          kind, id,
+          text: (target.textContent || '').trim().slice(0, 40),
+          reason: 'text wider than element (scrollWidth ' + target.scrollWidth + ' > clientWidth ' + target.clientWidth + ')',
           contentRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
           parentRect: { left: 0, top: 0, width: 0, height: 0 },
-          overflowPx: el.scrollHeight - el.clientHeight,
-        });
-      }
-      // Horizontal text overflow: the rendered text width exceeds the
-      // visible box width. Catches "label was 38 px on macOS, 42 px on
-      // Linux, but stored width is 40."
-      if (el.scrollWidth > el.clientWidth + 1) {
-        out.push({
-          kind, id, text,
-          reason: 'text wider than element (scrollWidth ' + el.scrollWidth + ' > clientWidth ' + el.clientWidth + ')',
-          contentRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
-          parentRect: { left: 0, top: 0, width: 0, height: 0 },
-          overflowPx: el.scrollWidth - el.clientWidth,
+          overflowPx: target.scrollWidth - target.clientWidth,
         });
       }
     };
 
-    for (const el of document.querySelectorAll('[data-label-id]')) {
-      checkElement(el, 'label', el.dataset.labelId);
+    const checkHeightOverflow = (target, kind, id) => {
+      if (target.scrollHeight > target.clientHeight + 1) {
+        const rect = target.getBoundingClientRect();
+        out.push({
+          kind, id,
+          text: (target.textContent || '').trim().slice(0, 40),
+          reason: 'text wraps to multiple lines (scrollHeight ' + target.scrollHeight + ' > clientHeight ' + target.clientHeight + ')',
+          contentRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+          parentRect: { left: 0, top: 0, width: 0, height: 0 },
+          overflowPx: target.scrollHeight - target.clientHeight,
+        });
+      }
+    };
+
+    for (const innerSpan of document.querySelectorAll('[data-label-id]')) {
+      // For labels: measure outer wrapper for width (real overflow concern).
+      // Skip height check — SharedLabel's negative-margin pattern makes
+      // scrollHeight-clientHeight a uniform 3 px artifact unrelated to
+      // wrap. Real wrap detection on labels would need a different
+      // approach (e.g., line-counting) — out of scope here.
+      const outer = innerSpan.parentElement;
+      if (outer) checkWidthOverflow(outer, 'label', innerSpan.dataset.labelId);
     }
-    for (const el of document.querySelectorAll('[data-control-id]')) {
-      checkElement(el, 'control', el.dataset.controlId);
+    for (const ctrl of document.querySelectorAll('[data-control-id]')) {
+      // Controls: both width and height checks are meaningful.
+      checkWidthOverflow(ctrl, 'control', ctrl.dataset.controlId);
+      checkHeightOverflow(ctrl, 'control', ctrl.dataset.controlId);
     }
     return out;
   })()`) as Omit<ContainmentViolation, 'device'>[];
