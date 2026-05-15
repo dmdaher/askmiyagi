@@ -65,6 +65,23 @@ Always check, validate, and confirm before acting. Measure twice, cut once.
 
 ---
 
+## Change Impact Checklist (MANDATORY for non-trivial changes)
+
+Before writing code that touches rendering, manifest schema, store, pipeline, contractor data, or any shared component, **state your answers to all six** out loud so the user can review:
+
+1. **Architecture impact** — what coupling does this create or remove? Does it change a shared component or render path?
+2. **Manifest impact** — does this read or write `.pipeline/*/manifest*.json` or `src/data/manifests/*.json`? Schema change?
+3. **Blob impact** — does this read or write Vercel Blob (hosted manifest, history, status, photos)?
+4. **Editor / preview impact** — could any pixel position shift in either mode? `npm run drift:capture` BEFORE the change; `npm run drift:verify` after — editor drift must be 0.
+5. **Before/after backups** — for any `.pipeline/` or `src/data/manifests/` file I might disturb: `cp <file> /tmp/<file>-$(date +%s).bak` BEFORE acting. Never `git checkout --` these without a backup.
+6. **Verification plan** — what test proves correctness? (`drift:verify`, unit test, manual smoke in `/admin/<dev>/editor`?)
+
+Trivial changes (typo, comment-only, docs-only) skip this. When in doubt, run the checklist.
+
+Full walkthrough + examples: `.claude/commands/impact-check.md` (also invocable via `/impact-check`).
+
+---
+
 ## Visual Constraints
 
 ### Containment Veto
