@@ -37,6 +37,11 @@ export interface CanvasSlice {
   showPhoto: boolean;
   showLayers: boolean;
   showLabels: boolean;
+  /** When true, frameMode='hidden' sections render as a faint ghost
+   *  frame in the editor (so contractor can reach + change them). When
+   *  false, hidden sections are fully suppressed from the editor view
+   *  too — use the Layers panel to re-select them. Defaults to true. */
+  showHiddenSections: boolean;
   controlScale: number; // 0.3-1.0 — visual scale for controls in editor (positioning mode)
   photoMode: 'overlay' | 'side-by-side';
   photoOpacity: number;
@@ -80,6 +85,7 @@ export interface CanvasSlice {
   setPan: (x: number, y: number) => void;
   setSnapGrid: (g: SnapGrid) => void;
   toggleGrid: () => void;
+  toggleHiddenSections: () => void;
   togglePhoto: () => void;
   toggleLayers: () => void;
   toggleLabels: () => void;
@@ -130,6 +136,7 @@ export const createCanvasSlice: StateCreator<
   panY: 0,
   snapGrid: 4,
   showGrid: true,
+  showHiddenSections: true,
   showPhoto: false,
   showLayers: false, // Start collapsed for maximum canvas space
   showLabels: true, // Labels visible by default
@@ -159,6 +166,7 @@ export const createCanvasSlice: StateCreator<
   setSnapGrid: (g) => set({ snapGrid: g }),
 
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
+  toggleHiddenSections: () => set((s) => ({ showHiddenSections: !s.showHiddenSections })),
   toggleLayers: () => set((s) => ({ showLayers: !s.showLayers })),
   toggleLabels: () => set((s) => ({ showLabels: !s.showLabels })),
   setControlScale: (s) => set({ controlScale: Math.max(0.2, Math.min(2, s)) }),
