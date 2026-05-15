@@ -75,6 +75,58 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
 
   const mode = getFrameMode(section);
 
+  // Hidden mode (editor only): the section renders invisibly in preview,
+  // but in the editor we show a faint ghost outline so the contractor can
+  // still click + select it to change its mode back. Without this branch,
+  // hiding a section makes it permanently unreachable from the canvas.
+  // Tutorial: hover → barely visible; selected → blue outline like other modes.
+  if (mode === 'hidden') {
+    return (
+      <Rnd
+        position={{ x: section.x, y: section.y }}
+        size={{ width: section.w, height: section.h }}
+        scale={zoom}
+        dragGrid={[snapGrid, snapGrid]}
+        resizeGrid={[snapGrid, snapGrid]}
+        dragHandleClassName="section-drag-handle"
+        onDragStop={handleDragStop}
+        onResizeStop={handleResizeStop}
+        enableResizing
+        style={{
+          border: isSelected
+            ? '2px solid rgba(59,130,246,0.8)'
+            : '1px dashed rgba(251,191,36,0.35)',  // amber-dashed = "hidden"
+          borderRadius: 4,
+          backgroundColor: isSelected
+            ? 'rgba(59,130,246,0.06)'
+            : 'transparent',
+          opacity: isSelected ? 1 : 0.5,
+          transition: 'border-color 0.15s, background-color 0.15s, opacity 0.15s',
+          zIndex: isSelected ? 100 : focusedSectionId === sectionId ? 99 : zIndex,
+        }}
+        className="hover:opacity-100"
+        onClick={handleClick}
+      >
+        <div
+          data-section-id={sectionId}
+          className="section-drag-handle w-full h-full cursor-grab active:cursor-grabbing flex items-start"
+        >
+          {/* Small amber "Hidden" pill so contractor knows what they're looking at */}
+          <span
+            className="ml-2 mt-1 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[8px] font-medium uppercase tracking-wider pointer-events-none"
+            style={{
+              backgroundColor: 'rgba(251,191,36,0.18)',
+              border: '1px solid rgba(251,191,36,0.5)',
+              color: '#fcd34d',
+            }}
+          >
+            ◌ Hidden — {section.headerLabel ?? sectionId}
+          </span>
+        </div>
+      </Rnd>
+    );
+  }
+
   // body-only mode: section frame box visible (for visual grouping of
   // controls), no header strip or title — whole section surface acts as
   // a drag handle for repositioning. Resize handles still appear on
