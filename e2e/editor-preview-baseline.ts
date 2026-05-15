@@ -231,12 +231,19 @@ function diffBaselines(before: ModeBaseline, after: ModeBaseline): DriftEntry[] 
     }
 
     // Only include in drift list if something actually changed beyond sub-pixel
-    // browser layout noise. Text glyph anti-aliasing can shift inner rects by
-    // ~0.01-0.05px between page loads even when nothing rendered differently.
-    // 0.1px threshold filters that noise locally (macOS↔macOS). In CI on Linux,
-    // chromium font rendering drifts 0.2-0.4px from the macOS-captured baseline
-    // even when nothing changed — so bump tolerance to 0.5px under CI.
-    const SUBPX = process.env.CI === 'true' ? 0.5 : 0.1;
+    // browser layout noise. Locally (macOS↔macOS) text glyphs shift ~0.01-0.05px
+    // between page loads; 0.1px filters that.
+    //
+    // In CI on Linux, chromium glyph hinting differs from macOS — *centered*
+    // text labels (e.g., "VOLUME", "OCT UP") can shift up to ~1.0-1.2px on the
+    // X axis when the rendered text width is even/odd-pixel different from the
+    // captured baseline. That's not a real bug; the label is still centered on
+    // the control. Bump CI tolerance to 1.5px to absorb this without missing
+    // genuine drift (which is always ≥5px in practice).
+    //
+    // Computed-style diffs are NOT subject to this tolerance — they're exact
+    // string comparisons and a real CSS change should fail CI.
+    const SUBPX = process.env.CI === 'true' ? 1.5 : 0.1;
     const anyDrift = Math.abs(dxRect) > SUBPX || Math.abs(dyRect) > SUBPX ||
                      Math.abs(dwRect) > SUBPX || Math.abs(dhRect) > SUBPX ||
                      (dxInner !== null && Math.abs(dxInner) > SUBPX) ||
