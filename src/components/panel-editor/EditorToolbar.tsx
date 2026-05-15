@@ -304,7 +304,7 @@ export default function EditorToolbar({
           : 'Hidden sections are suppressed — click to show ghost frames'}
         disabled={previewMode}
       >
-        Hidden
+        Hide Section
       </button>
 
       {/* Add standalone label */}
