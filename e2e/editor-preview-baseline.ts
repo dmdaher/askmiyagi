@@ -414,11 +414,17 @@ async function runDevice(page: Page, deviceId: string, mode: 'capture' | 'verify
 
     console.log(`  ${editorChange.length === 0 ? '✓' : '✗'} editor changes from baseline: ${editorChange.length}`);
     if (editorChange.length > 0) {
-      console.log(`    First 5 changes:`);
+      console.log(`    First 5 changes (all drift dimensions):`);
       for (const e of editorChange.slice(0, 5)) {
-        console.log(`      ${e.kind} ${e.key} "${e.text}" dx=${e.dxRect} dy=${e.dyRect}`);
+        const innerStr = e.dxInner !== null
+          ? ` dxIn=${e.dxInner} dyIn=${e.dyInner}`
+          : '';
+        console.log(
+          `      ${e.kind} ${e.key} "${e.text}"\n` +
+          `        dx=${e.dxRect} dy=${e.dyRect} dw=${e.dwRect} dh=${e.dhRect}${innerStr}`,
+        );
         if (e.computedDiff.length > 0) {
-          for (const c of e.computedDiff.slice(0, 2)) console.log(`        styles: ${c}`);
+          for (const c of e.computedDiff.slice(0, 3)) console.log(`        styles: ${c}`);
         }
       }
     }
