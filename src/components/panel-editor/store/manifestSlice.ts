@@ -315,7 +315,21 @@ export interface ManifestSlice {
   createGroup: (name: string) => void;
   ungroupControls: () => void;
   setHoveredGroup: (id: string | null) => void;
-  setSelectedLabel: (id: string | null) => void;
+  /**
+   * Select a label.
+   *
+   * Default (additive=false): mutually exclusive with control/banner
+   * selection — clears `selectedIds` and `selectedBannerId`.
+   *
+   * additive=true: preserves existing `selectedIds` so a contractor can
+   * shift-click a label after selecting controls (Figma-style cross-type
+   * multi-select). Symmetric with `toggleSelected` on controls, which
+   * already preserves `selectedLabelId`.
+   *
+   * Passing `null` always just clears the label selection (no additive
+   * variant needed — clearing IS the safe default).
+   */
+  setSelectedLabel: (id: string | null, opts?: { additive?: boolean }) => void;
   bringToFront: () => void;
   sendToBack: () => void;
   bringForward: () => void;
@@ -2129,10 +2143,17 @@ export const createManifestSlice: StateCreator<
 
   setHoveredGroup: (id) => set({ hoveredGroupId: id }),
 
-  setSelectedLabel: (id) => {
-    // Selecting a label clears control + banner selection (all mutually exclusive).
+  setSelectedLabel: (id, opts) => {
+    // Default: label selection is mutually exclusive with control/banner.
+    // additive: preserve existing controls so cross-type multi-select works
+    // (shift-clicking a label after picking controls — symmetric with
+    // toggleSelected on the control side).
     if (id !== null) {
-      set({ selectedLabelId: id, selectedIds: [], selectedBannerId: null });
+      if (opts?.additive) {
+        set({ selectedLabelId: id, selectedBannerId: null });
+      } else {
+        set({ selectedLabelId: id, selectedIds: [], selectedBannerId: null });
+      }
     } else {
       set({ selectedLabelId: null });
     }

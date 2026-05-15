@@ -93,7 +93,11 @@ export default function LabelLayer() {
       setSelectedIds([label.controlId]);
       return;
     }
-    setSelectedLabel(label.id);
+    // Shift / Cmd / Ctrl-click: additive — preserve any existing control
+    // selection so cross-type multi-select works in BOTH orders. Symmetric
+    // with toggleSelected on the control side. See e2e/multi-select-order
+    // for the asymmetry this fixes (control→label was clearing controls).
+    setSelectedLabel(label.id, { additive: e.shiftKey || e.metaKey || e.ctrlKey });
     setDragging(label.id);
     dragStart.current = {
       x: e.clientX,
@@ -193,6 +197,15 @@ export default function LabelLayer() {
                 className: 'pointer-events-auto cursor-move',
                 onMouseDown: (e) => handleMouseDown(e, label),
                 onDoubleClick: () => handleDoubleClick(label),
+                // Stop the click event from bubbling to the underlying
+                // ControlNode. Without this, shift-clicking a label that
+                // sits on top of a selected control fires ControlNode's
+                // onClick → toggleSelected → removes the control from
+                // selection. e.stopPropagation() on mousedown does NOT
+                // block the click phase — click is a separate event in
+                // the React synthetic chain. See e2e/multi-select-order
+                // scenario [4] for the repro.
+                onClick: (e) => { e.stopPropagation(); },
                 onContextMenu: (e) => {
                   // Right-click on a canvas label opens the same label menu
                   // as right-click in the Layers panel sidebar tree.
