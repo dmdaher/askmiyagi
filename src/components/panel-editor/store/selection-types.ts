@@ -97,3 +97,121 @@ export function selectionTypes(selection: ReadonlyArray<SelectableId>): Set<Sele
   }
   return out;
 }
+
+// ---------------------------------------------------------------------------
+// Phase 6a — typed selector helpers that mirror the legacy single-slot
+// fields' semantics exactly. Each one derives its value from the unified
+// `selection` array. Callers that previously read `selectedIds` /
+// `selectedLabelId` / `selectedBannerId` can migrate to these helpers and
+// get identical behavior, even before the legacy fields are deleted.
+//
+// Critical: each helper preserves the EXACT contract of its legacy field.
+//   - selectedControlIds = selectedIds (controls + sections, "mixed bag")
+//   - selectedLabelIdFromSelection = selectedLabelId (single label id OR null)
+//   - selectedBannerIdFromSelection = selectedBannerId (single banner id OR null)
+//
+// The legacy fields' tricky parts:
+//   - selectedIds includes BOTH controls and sections (per setSelectedIds
+//     mirror logic in manifestSlice — sections present as 'section:' prefix
+//     in unified). So selectedControlIds returns control AND section ids.
+//   - selectedLabelId is null when 0 OR 2+ labels are in selection (multi-
+//     label is not representable in the single-slot field). We mirror that.
+//   - selectedBannerId is null when 0 OR 2+ banners are in selection.
+// ---------------------------------------------------------------------------
+
+/**
+ * Derive `selectedIds` (controls + sections) from the unified selection.
+ * Matches the legacy `selectedIds` field's "mixed bag" contract exactly.
+ */
+export function selectedControlIds(selection: ReadonlyArray<SelectableId>): string[] {
+  const out: string[] = [];
+  for (const sid of selection) {
+    if (sid.startsWith('control:')) out.push(sid.slice('control:'.length));
+    else if (sid.startsWith('section:')) out.push(sid.slice('section:'.length));
+  }
+  return out;
+}
+
+/**
+ * Derive `selectedLabelId` from the unified selection.
+ * Returns the label id only when EXACTLY one label is selected — matches
+ * the legacy single-slot semantics. Multi-label selection returns null,
+ * just like the legacy field would.
+ */
+export function selectedLabelIdFromSelection(
+  selection: ReadonlyArray<SelectableId>,
+): string | null {
+  const labelIds = selectionOfType(selection, 'label');
+  return labelIds.length === 1 ? labelIds[0] : null;
+}
+
+/**
+ * Derive `selectedBannerId` from the unified selection.
+ * Returns the banner id only when EXACTLY one banner is selected.
+ */
+export function selectedBannerIdFromSelection(
+  selection: ReadonlyArray<SelectableId>,
+): string | null {
+  const bannerIds = selectionOfType(selection, 'banner');
+  return bannerIds.length === 1 ? bannerIds[0] : null;
+}
+
+/**
+ * Derive a single selected section id from the unified selection.
+ * Returns null when 0 or 2+ sections are selected.
+ */
+export function selectedSectionIdFromSelection(
+  selection: ReadonlyArray<SelectableId>,
+): string | null {
+  const sectionIds = selectionOfType(selection, 'section');
+  return sectionIds.length === 1 ? sectionIds[0] : null;
+}
+
+/**
+ * Quick "is this entity selected?" check by raw id. Convenience over
+ * `selection.includes(\`control:${id}\`)` because most consumers know
+ * which type they're asking about.
+ */
+export function isControlSelected(
+  selection: ReadonlyArray<SelectableId>,
+  controlId: string,
+): boolean {
+  return selection.includes(`control:${controlId}` as SelectableId);
+}
+
+export function isLabelSelected(
+  selection: ReadonlyArray<SelectableId>,
+  labelId: string,
+): boolean {
+  return selection.includes(`label:${labelId}` as SelectableId);
+}
+
+export function isSectionSelected(
+  selection: ReadonlyArray<SelectableId>,
+  sectionId: string,
+): boolean {
+  return selection.includes(`section:${sectionId}` as SelectableId);
+}
+
+export function isBannerSelected(
+  selection: ReadonlyArray<SelectableId>,
+  bannerId: string,
+): boolean {
+  return selection.includes(`banner:${bannerId}` as SelectableId);
+}
+
+/**
+ * Selection size counted per type. Useful for the routing logic in
+ * PropertiesPanel and any consumer that needs a "what's selected?"
+ * summary without the full breakdown.
+ */
+export function selectionCounts(
+  selection: ReadonlyArray<SelectableId>,
+): { control: number; label: number; section: number; banner: number; container: number; groupLabel: number; total: number } {
+  const counts = { control: 0, label: 0, section: 0, banner: 0, container: 0, groupLabel: 0, total: selection.length };
+  for (const sid of selection) {
+    const parsed = parseSelectableId(sid);
+    if (parsed) counts[parsed.type]++;
+  }
+  return counts;
+}
