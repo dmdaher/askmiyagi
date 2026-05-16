@@ -842,6 +842,7 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
   const normalizeLabelSpacing = useEditorStore((s) => s.normalizeLabelSpacing);
   const setLabelPosition = useEditorStore((s) => s.setLabelPosition);
   const editorLabels = useEditorStore((s) => s.editorLabels) as any[];
+  const updateLabel = useEditorStore((s) => s.updateLabel);
 
   const ids = useMemo(() => controls.map((c) => c.id), [controls]);
 
@@ -1024,7 +1025,31 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
         onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
-        onColorChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelColor', val || undefined); }}
+        onColorChange={(val) => {
+          // Position-aware color routing, matching SingleControlProperties:
+          //   - 'on-button' labels → write to control.labelColor (PanelButton
+          //     renders inline using this).
+          //   - External labels (above/below/etc) → the visible label is the
+          //     linked editorLabel rendered by LabelLayer. Write to
+          //     editorLabel.color or the picker appears to do nothing.
+          // Without this per-control split, multi-select + color pick wrote
+          // ONLY to control.labelColor, leaving external labels grey
+          // (user-reported regression vs single-control flow).
+          pushSnapshot();
+          const next = val || undefined;
+          for (const c of controls) {
+            if (c.labelPosition === 'on-button') {
+              updateControlProp([c.id], 'labelColor', next);
+            } else {
+              const linked = editorLabels.find((l) => l.controlId === c.id);
+              if (linked) {
+                updateLabel(linked.id, { color: next });
+              } else {
+                updateControlProp([c.id], 'labelColor', next);
+              }
+            }
+          }
+        }}
       />
 
       <div className="h-px bg-gray-800" />
