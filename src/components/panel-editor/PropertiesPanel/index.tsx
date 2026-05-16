@@ -9,6 +9,11 @@ import GeometryFields from './GeometryFields';
 import ColorPickerRow from './ColorPickerRow';
 import MixedSelectionPanel from './MixedSelectionPanel';
 import {
+  selectedControlIds,
+  selectedLabelIdFromSelection,
+  selectedBannerIdFromSelection,
+} from '../store/selection-types';
+import {
   AlignLeftIcon,
   AlignCenterHIcon,
   AlignRightIcon,
@@ -1979,10 +1984,15 @@ function LabelProperties({ label }: { label: any }) {
 }
 
 export default function PropertiesPanel() {
-  const selectedIds = useEditorStore((s) => s.selectedIds);
-  const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
-  const selectedBannerId = useEditorStore((s) => s.selectedBannerId);
+  // Phase 6b — all three legacy slots derived from the unified selection.
+  // Routing logic below keeps its previous semantics by construction:
+  //   - selectedIds  = control + section ids (legacy mixed bag)
+  //   - selectedLabelId = single label id OR null (multi-label → null)
+  //   - selectedBannerId = single banner id OR null
   const selection = useEditorStore((s) => s.selection);
+  const selectedIds = useMemo(() => selectedControlIds(selection), [selection]);
+  const selectedLabelId = useMemo(() => selectedLabelIdFromSelection(selection), [selection]);
+  const selectedBannerId = useMemo(() => selectedBannerIdFromSelection(selection), [selection]);
   const editorLabels = useEditorStore((s) => s.editorLabels) as any[];
   const polishBanners = useEditorStore((s) => s.polishBanners);
   const controls = useEditorStore((s) => s.controls);

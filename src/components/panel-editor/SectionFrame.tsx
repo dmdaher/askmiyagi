@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { useEditorStore } from './store';
 import { getFrameMode } from './store/manifestSlice';
+import { isSectionSelected } from './store/selection-types';
 
 interface SectionFrameProps {
   sectionId: string;
@@ -12,7 +13,7 @@ interface SectionFrameProps {
 
 export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProps) {
   const section = useEditorStore((s) => s.sections[sectionId]);
-  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selection = useEditorStore((s) => s.selection);
   const focusedSectionId = useEditorStore((s) => s.focusedSectionId);
   const zoom = useEditorStore((s) => s.zoom);
   const snapGrid = useEditorStore((s) => s.snapGrid);
@@ -22,7 +23,8 @@ export default function SectionFrame({ sectionId, zIndex = 1 }: SectionFrameProp
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
 
-  const isSelected = selectedIds.includes(sectionId);
+  // Phase 6b — sections are tracked via 'section:' prefix in unified selection.
+  const isSelected = isSectionSelected(selection, sectionId);
 
   const sx = section?.x ?? 0;
   const sy = section?.y ?? 0;

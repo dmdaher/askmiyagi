@@ -9,7 +9,7 @@ function resetStore() {
       c: { id: 'c', x: 60, y: 80, w: 40, h: 30, sectionId: 's1', label: 'C', type: 'button', labelPosition: 'above', locked: false },
       locked: { id: 'locked', x: 200, y: 200, w: 40, h: 30, sectionId: 's1', label: 'L', type: 'button', labelPosition: 'above', locked: true },
     },
-    selectedIds: ['a', 'b', 'c'],
+    selection: ['control:a', 'control:b', 'control:c'] as any,
     lockedIds: ['locked'],
     controlGroups: [],
   } as any);
@@ -75,7 +75,7 @@ describe('alignControls', () => {
   });
 
   it('skips locked controls', () => {
-    useEditorStore.setState({ selectedIds: ['a', 'b', 'c', 'locked'] });
+    useEditorStore.setState({ selection: ['control:a', 'control:b', 'control:c', 'control:locked'] as any });
     useEditorStore.getState().alignControls('left');
     const { controls } = useEditorStore.getState();
     // a, b, c aligned; locked unchanged
@@ -86,7 +86,7 @@ describe('alignControls', () => {
   });
 
   it('no-ops with < 2 selected', () => {
-    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.setState({ selection: ['control:a'] as any });
     useEditorStore.getState().alignControls('left');
     const { controls } = useEditorStore.getState();
     expect(controls.a.x).toBe(10); // unchanged
@@ -127,7 +127,7 @@ describe('alignControls', () => {
         b: { id: 'b', x: 100, y: 102, w: 40, h: 30, sectionId: 's1', label: 'B', type: 'button', labelPosition: 'above', locked: false },
         c: { id: 'c', x: 200, y: 98, w: 40, h: 30, sectionId: 's1', label: 'C', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['a', 'b', 'c'],
+      selection: ['control:a', 'control:b', 'control:c'] as any,
       lockedIds: [],
       editorLabels: [
         { id: 'la', controlId: 'a', text: 'ZONE 1', x: 5, y: 85, w: 40, fontSize: 8, align: 'center' },
@@ -162,7 +162,7 @@ describe('alignControls', () => {
         b: { id: 'b', x: 105, y: 50, w: 40, h: 30, sectionId: 's1', label: 'B', type: 'button', labelPosition: 'above', locked: false },
         c: { id: 'c', x: 95, y: 90, w: 40, h: 30, sectionId: 's1', label: 'C', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['a', 'b', 'c'],
+      selection: ['control:a', 'control:b', 'control:c'] as any,
       lockedIds: [],
       editorLabels: [
         { id: 'la', controlId: 'a', text: 'CTRL', x: 95, y: 0, w: 40, fontSize: 8, align: 'center' },
@@ -195,7 +195,7 @@ describe('alignControls', () => {
         b: { id: 'b', x: 100, y: 35, w: 40, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
         c: { id: 'c', x: 100, y: 100, w: 40, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['a', 'b', 'c'],
+      selection: ['control:a', 'control:b', 'control:c'] as any,
       lockedIds: [],
       editorLabels: [
         // Each label 15px above its control
@@ -251,7 +251,7 @@ describe('distributeWithGap', () => {
   });
 
   it('works with 2 controls', () => {
-    useEditorStore.setState({ selectedIds: ['a', 'b'] } as any);
+    useEditorStore.setState({ selection: ['control:a', 'control:b'] as any } as any);
     useEditorStore.getState().distributeWithGap('horizontal', 20);
     const { controls } = useEditorStore.getState();
     expect(controls.a.x).toBe(10);   // anchor
@@ -267,7 +267,7 @@ describe('distributeWithGap', () => {
   });
 
   it('skips locked controls', () => {
-    useEditorStore.setState({ selectedIds: ['a', 'locked'] } as any);
+    useEditorStore.setState({ selection: ['control:a', 'control:locked'] as any } as any);
     useEditorStore.getState().distributeWithGap('horizontal', 10);
     expect(useEditorStore.getState().controls.locked.x).toBe(200); // unchanged
   });
@@ -288,7 +288,7 @@ describe('alignColumns', () => {
         b2: { id: 'b2', x: 130, y: 200, w: 80, h: 40, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
         b3: { id: 'b3', x: 250, y: 200, w: 80, h: 40, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['k1', 'k2', 'k3', 'b1', 'b2', 'b3'],
+      selection: ['control:k1', 'control:k2', 'control:k3', 'control:b1', 'control:b2', 'control:b3'] as any,
       lockedIds: [],
       editorLabels: [],
     } as any);
@@ -318,7 +318,7 @@ describe('alignColumns', () => {
         r3a: { id: 'r3a', x: 20, y: 200, w: 50, h: 30, sectionId: 's1', label: '', type: 'slider', labelPosition: 'above', locked: false },
         r3b: { id: 'r3b', x: 110, y: 200, w: 50, h: 30, sectionId: 's1', label: '', type: 'slider', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['r1a', 'r1b', 'r2a', 'r2b', 'r3a', 'r3b'],
+      selection: ['control:r1a', 'control:r1b', 'control:r2a', 'control:r2b', 'control:r3a', 'control:r3b'] as any,
       lockedIds: [],
       editorLabels: [],
     } as any);
@@ -343,7 +343,7 @@ describe('alignColumns', () => {
         b: { id: 'b', x: 100, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
         c: { id: 'c', x: 200, y: 105, w: 50, h: 30, sectionId: 's1', label: '', type: 'knob', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['a', 'b', 'c'],
+      selection: ['control:a', 'control:b', 'control:c'] as any,
       lockedIds: [],
       editorLabels: [],
     } as any);
@@ -365,7 +365,7 @@ describe('alignColumns', () => {
         b1: { id: 'b1', x: 5, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
         b2: { id: 'b2', x: 105, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['k1', 'k2', 'k3', 'b1', 'b2'],
+      selection: ['control:k1', 'control:k2', 'control:k3', 'control:b1', 'control:b2'] as any,
       lockedIds: [],
       editorLabels: [],
     } as any);
@@ -385,7 +385,7 @@ describe('alignColumns', () => {
         b1: { id: 'b1', x: 5, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: true },
         b2: { id: 'b2', x: 105, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['k1', 'k2', 'b1', 'b2'],
+      selection: ['control:k1', 'control:k2', 'control:b1', 'control:b2'] as any,
       lockedIds: ['b1'],
       editorLabels: [],
     } as any);
@@ -413,7 +413,7 @@ describe('alignRows', () => {
         c2r2: { id: 'c2r2', x: 100, y: 105, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
         c2r3: { id: 'c2r3', x: 100, y: 195, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['c1r1', 'c1r2', 'c1r3', 'c2r1', 'c2r2', 'c2r3'],
+      selection: ['control:c1r1', 'control:c1r2', 'control:c1r3', 'control:c2r1', 'control:c2r2', 'control:c2r3'] as any,
       lockedIds: [],
       editorLabels: [],
     } as any);
@@ -439,7 +439,7 @@ describe('alignRows', () => {
         b: { id: 'b', x: 105, y: 50, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
         c: { id: 'c', x: 95, y: 100, w: 50, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['a', 'b', 'c'],
+      selection: ['control:a', 'control:b', 'control:c'] as any,
       lockedIds: [],
       editorLabels: [],
     } as any);
@@ -464,7 +464,7 @@ describe('normalizeLabelSpacing', () => {
         b: { id: 'b', x: 100, y: 200, w: 40, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
         c: { id: 'c', x: 100, y: 300, w: 40, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['a', 'b', 'c'],
+      selection: ['control:a', 'control:b', 'control:c'] as any,
       lockedIds: [],
       editorLabels: [
         // label height with fontSize=8, 1 line = 8 * 1 * 1.2 = 9.6
@@ -500,7 +500,7 @@ describe('normalizeLabelSpacing', () => {
         c: { id: 'c', x: 100, y: 300, w: 40, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
         d: { id: 'd', x: 100, y: 400, w: 40, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['a', 'b', 'c', 'd'],
+      selection: ['control:a', 'control:b', 'control:c', 'control:d'] as any,
       lockedIds: [],
       editorLabels: [
         // 1-line labels (height = 9.6)
@@ -536,7 +536,7 @@ describe('normalizeLabelSpacing', () => {
       controls: {
         a: { id: 'a', x: 100, y: 100, w: 40, h: 30, sectionId: 's1', label: '', type: 'button', labelPosition: 'above', locked: false },
       },
-      selectedIds: ['a'],
+      selection: ['control:a'] as any,
       lockedIds: [],
       editorLabels: [
         { id: 'la', controlId: 'a', text: 'A', x: 100, y: 85, w: 40, fontSize: 8, align: 'center' },
@@ -582,7 +582,7 @@ describe('distributeControls', () => {
   });
 
   it('no-ops with < 3 selected (need anchors + interior)', () => {
-    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.setState({ selection: ['control:a', 'control:b'] as any });
     useEditorStore.getState().distributeControls('horizontal');
     const { controls } = useEditorStore.getState();
     expect(controls.a.x).toBe(10);
@@ -608,7 +608,7 @@ describe('createGroup', () => {
     // Create first group with a, b, c
     useEditorStore.getState().createGroup('Group 1');
     // Select a and b, group them separately
-    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.setState({ selection: ['control:a', 'control:b'] as any });
     useEditorStore.getState().createGroup('Group 2');
     const { controlGroups } = useEditorStore.getState();
     // Group 1 should only have c left — but since c alone < 2, group 1 dissolves
@@ -620,11 +620,11 @@ describe('createGroup', () => {
 
   it('dissolves groups that drop below 2 members', () => {
     // Create group with a, b
-    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.setState({ selection: ['control:a', 'control:b'] as any });
     useEditorStore.getState().createGroup('Small Group');
     expect(useEditorStore.getState().controlGroups).toHaveLength(1);
     // Now re-group a with c — b is alone, Small Group dissolves
-    useEditorStore.setState({ selectedIds: ['a', 'c'] });
+    useEditorStore.setState({ selection: ['control:a', 'control:c'] as any });
     useEditorStore.getState().createGroup('New Group');
     const { controlGroups } = useEditorStore.getState();
     expect(controlGroups).toHaveLength(1);
@@ -632,7 +632,7 @@ describe('createGroup', () => {
   });
 
   it('no-ops with < 2 selected', () => {
-    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.setState({ selection: ['control:a'] as any });
     useEditorStore.getState().createGroup('Solo');
     expect(useEditorStore.getState().controlGroups).toHaveLength(0);
   });
@@ -647,7 +647,7 @@ describe('ungroupControls', () => {
     useEditorStore.getState().createGroup('Doomed Group');
     expect(useEditorStore.getState().controlGroups).toHaveLength(1);
     // Select just one member
-    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.setState({ selection: ['control:a'] as any });
     useEditorStore.getState().ungroupControls();
     expect(useEditorStore.getState().controlGroups).toHaveLength(0);
   });
@@ -655,7 +655,7 @@ describe('ungroupControls', () => {
   it('preserves control positions after ungrouping', () => {
     useEditorStore.getState().createGroup('Group');
     const before = { ...useEditorStore.getState().controls };
-    useEditorStore.setState({ selectedIds: ['b'] });
+    useEditorStore.setState({ selection: ['control:b'] as any });
     useEditorStore.getState().ungroupControls();
     const after = useEditorStore.getState().controls;
     expect(after.a.x).toBe(before.a.x);
@@ -688,7 +688,7 @@ describe('deleteSelected — control deletion policy (no-op)', () => {
     const group = useEditorStore.getState().controlGroups[0];
     expect(group.controlIds).toContain('a');
 
-    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.setState({ selection: ['control:a'] as any });
     useEditorStore.getState().deleteSelected();
 
     const groups = useEditorStore.getState().controlGroups;
@@ -700,11 +700,11 @@ describe('deleteSelected — control deletion policy (no-op)', () => {
   });
 
   it('preserves the group when called with all its members', () => {
-    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.setState({ selection: ['control:a', 'control:b'] as any });
     useEditorStore.getState().createGroup('SmallGroup');
     expect(useEditorStore.getState().controlGroups).toHaveLength(1);
 
-    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.setState({ selection: ['control:a', 'control:b'] as any });
     useEditorStore.getState().deleteSelected();
     // Group stays — deleteSelected didn't delete the controls
     expect(useEditorStore.getState().controlGroups).toHaveLength(1);

@@ -2,11 +2,13 @@
 
 import { useEditorStore } from './store';
 import type { ControlGroup } from './store/historySlice';
+import { selectedControlIds } from './store/selection-types';
 
 export default function GroupOverlay() {
   const controlGroups = useEditorStore((s) => s.controlGroups) as ControlGroup[];
   const controls = useEditorStore((s) => s.controls);
-  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selection = useEditorStore((s) => s.selection);
+  const selectedIds = selectedControlIds(selection);
   const controlScale = useEditorStore((s) => s.controlScale);
   const hoveredGroupId = useEditorStore((s) => s.hoveredGroupId);
 

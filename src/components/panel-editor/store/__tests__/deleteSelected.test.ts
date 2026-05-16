@@ -32,7 +32,7 @@ function resetStore() {
       { id: 'lbl-b', controlId: 'b', text: 'B-label', x: 60, y: 50, w: 40, fontSize: 8, align: 'center', hidden: false },
     ],
     controlGroups: [],
-    selectedIds: [],
+    selection: [] as any,
     lockedIds: [],
   } as any);
 }
@@ -41,7 +41,7 @@ describe('deleteSelected — control deletion policy (no-op)', () => {
   beforeEach(resetStore);
 
   it('does NOT delete controls when called with selected controls', () => {
-    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.setState({ selection: ['control:a'] as any });
     useEditorStore.getState().deleteSelected();
     const { controls } = useEditorStore.getState();
     expect(controls.a).toBeDefined();
@@ -50,14 +50,14 @@ describe('deleteSelected — control deletion policy (no-op)', () => {
   });
 
   it('preserves section.childIds unchanged', () => {
-    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.setState({ selection: ['control:a', 'control:b'] as any });
     useEditorStore.getState().deleteSelected();
     const { sections } = useEditorStore.getState();
     expect(sections.s1.childIds).toEqual(['a', 'b', 'c']);
   });
 
   it('preserves controlContainers entirely (containers untouched)', () => {
-    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.setState({ selection: ['control:a'] as any });
     useEditorStore.getState().deleteSelected();
     const { controlContainers } = useEditorStore.getState();
     expect(controlContainers).toHaveLength(2);
@@ -65,7 +65,7 @@ describe('deleteSelected — control deletion policy (no-op)', () => {
   });
 
   it('preserves linked labels — they belong to controls that stay', () => {
-    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.setState({ selection: ['control:a'] as any });
     useEditorStore.getState().deleteSelected();
     const { editorLabels } = useEditorStore.getState();
     expect(editorLabels.find((l) => l.id === 'lbl-a')).toBeDefined();

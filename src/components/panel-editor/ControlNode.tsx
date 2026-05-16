@@ -5,6 +5,7 @@ import { Rnd } from 'react-rnd';
 import { useEditorStore } from './store';
 import type { ControlDef } from './store';
 import type { ControlGroup } from './store/historySlice';
+import { isControlSelected, selectedControlIds } from './store/selection-types';
 import PanelButton from '@/components/controls/PanelButton';
 import Knob from '@/components/controls/Knob';
 import Slider from '@/components/controls/Slider';
@@ -445,7 +446,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
 export default function ControlNode({ controlId, sectionId }: ControlNodeProps) {
   const control = useEditorStore((s) => s.controls[controlId]);
   const allControls = useEditorStore((s) => s.controls);
-  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selection = useEditorStore((s) => s.selection);
   const [shiftHeld, setShiftHeld] = useState(false);
 
   useEffect(() => {
@@ -472,7 +473,12 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   const controlGroups = useEditorStore((s) => s.controlGroups) as ControlGroup[];
   const isGrouped = controlGroups.some((g) => g.controlIds.includes(controlId));
 
-  const isSelected = selectedIds.includes(controlId);
+  // Phase 6b — derived from unified selection. selectedIds was the legacy
+  // mixed bag (controls + sections); for ControlNode's purposes we only
+  // care about whether THIS control is selected and how many controls are
+  // selected total (for multi-drag detection).
+  const selectedIds = selectedControlIds(selection);
+  const isSelected = isControlSelected(selection, controlId);
   const isMultiSelected = isSelected && selectedIds.length > 1;
 
   // ── Inline label editing (component-local state) ──────────────────────────
@@ -516,7 +522,11 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
 
       if (isCrossTypeMulti) {
         // Cross-type multi-drag (e.g., 1 control + 2 labels selected).
-        // moveSelection handles the snapshot internally.
+        // Caller is responsible for the snapshot — moveSelection no longer
+        // snapshots internally (would create N snapshots per drag on the
+        // LabelLayer mousemove path; user-reported "undo needs many
+        // presses" bug). ONE snapshot here = ONE undo step for the drag.
+        pushSnapshot();
         useEditorStore.getState().moveSelection(dx, dy);
       } else if (isMultiSelected) {
         // Legacy all-controls multi-drag — preserves existing behavior
@@ -611,7 +621,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       } else if (e.shiftKey) {
         // Shift+click: add to selection at the group level
         // If control is in a group, add whole group. Otherwise toggle individual.
-        const current = store.selectedIds;
+        const current = selectedControlIds(store.selection);
         if (group) {
           // Check if all members of this group are already selected
           const allIn = group.controlIds.every((id) => current.includes(id));

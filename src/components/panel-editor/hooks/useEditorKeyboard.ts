@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useEditorStore } from '../store';
+import { selectedControlIds } from '../store/selection-types';
 
 /**
  * Global keyboard shortcuts for the panel editor.
@@ -100,7 +101,8 @@ export function useEditorKeyboard() {
 
       // ── Group: Cmd/Ctrl+G ────────────────────────────────────────────────
       if (isMod && !e.shiftKey && e.key === 'g') {
-        const selectedIds = store.selectedIds;
+        // Phase 6b — derived from unified selection.
+        const selectedIds = selectedControlIds(store.selection);
         if (selectedIds.length >= 2) {
           e.preventDefault();
           store.pushSnapshot();

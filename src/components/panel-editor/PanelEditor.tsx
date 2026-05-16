@@ -391,9 +391,9 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
               //   2. On restore-from-history, banners from the current session linger
               //      in store even though the restored manifest has different banners.
               polishBanners: data.polishBanners ?? [],
-              selectedIds: [],
+              // Phase 6c — clear unified selection on load (legacy fields removed).
+              selection: [],
               lockedIds: [],
-              selectedBannerId: null,
               keyboard: data.keyboard ?? null,
               _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
               _loadedAt: data._updatedAt ?? data._loadedAt ?? null,

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useZoomPan } from './hooks/useZoomPan';
 import { useEditorStore } from './store';
+import { selectedControlIds } from './store/selection-types';
 import { isHosted } from '@/lib/env';
 import PanCanvas from './PanCanvas';
 import Ruler, { RULER_THICKNESS } from './Ruler';
@@ -124,7 +125,8 @@ function CanvasWithRulers({ readOnly, onPointerDown, onPointerMove, onPointerUp 
   const zoom = useEditorStore((s) => s.zoom);
   const panX = useEditorStore((s) => s.panX);
   const panY = useEditorStore((s) => s.panY);
-  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selection = useEditorStore((s) => s.selection);
+  const selectedIds = selectedControlIds(selection);
   const controls = useEditorStore((s) => s.controls);
   const controlScale = useEditorStore((s) => s.controlScale);
   const snapGrid = useEditorStore((s) => s.snapGrid);
