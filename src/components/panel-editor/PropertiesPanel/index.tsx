@@ -7,6 +7,7 @@ import ControlTypeSelector from './ControlTypeSelector';
 import LabelEditor from './LabelEditor';
 import GeometryFields from './GeometryFields';
 import ColorPickerRow from './ColorPickerRow';
+import MixedSelectionPanel from './MixedSelectionPanel';
 import {
   AlignLeftIcon,
   AlignCenterHIcon,
@@ -1956,10 +1957,27 @@ export default function PropertiesPanel() {
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
   const selectedBannerId = useEditorStore((s) => s.selectedBannerId);
+  const selection = useEditorStore((s) => s.selection);
   const editorLabels = useEditorStore((s) => s.editorLabels) as any[];
   const polishBanners = useEditorStore((s) => s.polishBanners);
   const controls = useEditorStore((s) => s.controls);
   const sections = useEditorStore((s) => s.sections);
+
+  // Phase 5 — mixed-type detection. When the unified selection contains
+  // entries of 2+ distinct prefixes (e.g. control + label, or banner +
+  // section), no single-type form fits. Route to MixedSelectionPanel
+  // which shows a count breakdown + safe universal actions.
+  const isMixedSelection = useMemo(() => {
+    const distinct = new Set<string>();
+    for (const sid of selection) {
+      const colon = sid.indexOf(':');
+      if (colon > 0) {
+        distinct.add(sid.slice(0, colon));
+        if (distinct.size > 1) return true;
+      }
+    }
+    return false;
+  }, [selection]);
 
   // Determine what's selected
   const selectedControls = useMemo(
@@ -1996,7 +2014,14 @@ export default function PropertiesPanel() {
     return polishBanners.find((b) => b.id === selectedBannerId) ?? null;
   }, [selectedBannerId, polishBanners]);
 
-  if (selectedBanner) {
+  if (isMixedSelection) {
+    // Phase 5 — multiple distinct entity types selected. Routes BEFORE
+    // single-type forms because legacy fields (selectedLabelId etc.)
+    // may still be populated for the single-of-each-type case and
+    // would otherwise fall into a single-type branch and hide the
+    // multi-type reality from the contractor.
+    content = <MixedSelectionPanel />;
+  } else if (selectedBanner) {
     // A polish banner is selected — show banner properties
     content = <PolishBannerProperties banner={selectedBanner} />;
   } else if (selectedLabel) {
