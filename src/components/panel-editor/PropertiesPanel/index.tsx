@@ -2002,6 +2002,9 @@ export default function PropertiesPanel() {
   // entries of 2+ distinct prefixes (e.g. control + label, or banner +
   // section), no single-type form fits. Route to MixedSelectionPanel
   // which shows a count breakdown + safe universal actions.
+  // Phase 7 — ALSO route 2+ standalone labels (single-type) to the same
+  // panel so contractors can access Align/Distribute on label-only
+  // selections (previously fell through to "Unknown selection").
   const isMixedSelection = useMemo(() => {
     const distinct = new Set<string>();
     for (const sid of selection) {
@@ -2012,6 +2015,18 @@ export default function PropertiesPanel() {
       }
     }
     return false;
+  }, [selection]);
+
+  // Phase 7 — 2+ same-type labels with no controls. The MixedSelectionPanel
+  // handles this case too (Align/Distribute work without an anchor).
+  const isMultiLabelOnly = useMemo(() => {
+    if (selection.length < 2) return false;
+    let labelCount = 0;
+    for (const sid of selection) {
+      if (sid.startsWith('label:')) labelCount++;
+      else return false; // any non-label entry → not pure-label-multi
+    }
+    return labelCount >= 2;
   }, [selection]);
 
   // Determine what's selected
@@ -2049,12 +2064,9 @@ export default function PropertiesPanel() {
     return polishBanners.find((b) => b.id === selectedBannerId) ?? null;
   }, [selectedBannerId, polishBanners]);
 
-  if (isMixedSelection) {
-    // Phase 5 — multiple distinct entity types selected. Routes BEFORE
-    // single-type forms because legacy fields (selectedLabelId etc.)
-    // may still be populated for the single-of-each-type case and
-    // would otherwise fall into a single-type branch and hide the
-    // multi-type reality from the contractor.
+  if (isMixedSelection || isMultiLabelOnly) {
+    // Phase 5 — multiple distinct entity types selected.
+    // Phase 7 — OR 2+ same-type labels (gives them Align/Distribute UI).
     content = <MixedSelectionPanel />;
   } else if (selectedBanner) {
     // A polish banner is selected — show banner properties
