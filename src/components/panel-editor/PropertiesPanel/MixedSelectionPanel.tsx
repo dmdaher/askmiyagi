@@ -113,10 +113,23 @@ export default function MixedSelectionPanel() {
   const protectedCount = total - deletableCount;
 
   // Phase 7 — what can align/distribute?
-  // Align needs 2+ alignable entities total (controls + standalone labels).
-  // Auto-anchor active when controls present alongside standalone labels.
-  const alignableCount = counts.controls + counts.standaloneLabels;
-  const canAlign = alignableCount >= 2;
+  //
+  // Align needs:
+  //   - at least 1 STANDALONE label (the only thing that can move), AND
+  //   - at least one ANCHOR present (control or linked label) OR
+  //     another standalone label for bbox-style alignment among labels.
+  //
+  // Linked labels count as anchors (they contribute their position to
+  // the target edge but don't move themselves). User-asked: "when I
+  // select one standalone + one linked label, why is align disabled?"
+  // The fix is to count linked labels in the anchor pool.
+  const hasMovable = counts.standaloneLabels >= 1;
+  const hasAnchor = counts.controls > 0 || counts.linkedLabels > 0;
+  const canAlign = hasMovable && (hasAnchor || counts.standaloneLabels >= 2);
+  // Hint shows "labels move to control" only when CONTROLS specifically
+  // anchor (linked-label anchoring is a more subtle case the hint doesn't
+  // need to spell out — the "linked label acts as anchor" indicator below
+  // covers it).
   const hasAnchorControls = counts.controls > 0 && counts.standaloneLabels > 0;
   const canDistribute = counts.standaloneLabels >= 3;
   const linkedSkipped = counts.linkedLabels;
