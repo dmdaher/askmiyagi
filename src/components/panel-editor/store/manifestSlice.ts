@@ -2209,6 +2209,10 @@ export const createManifestSlice: StateCreator<
     get().clearScaleBase();
     const { selection, controls, editorLabels } = get();
     const labels = editorLabels as EditorLabel[];
+    // Phase 7 fix — controls render at `controlScale`; align math must use
+    // the VISIBLE rect, not the bbox. Without this, align-bottom puts
+    // standalone labels far below the visible knob on fantom-06.
+    const controlScale = (get() as any).controlScale ?? 1;
 
     const plan = planAlignment(
       {
@@ -2218,10 +2222,11 @@ export const createManifestSlice: StateCreator<
           id: l.id,
           x: l.x,
           y: l.y,
-          w: l.w ?? 50, // EditorLabel.w is optional; 50px is the default seen on add
-          h: l.fontSize ?? 12, // labels' "height" for align math = fontSize
+          w: l.w ?? 50,
+          h: l.fontSize ?? 12, // align math uses fontSize as label height
           controlId: l.controlId ?? null,
         })),
+        controlScale,
       },
       mode,
       opts,

@@ -38,6 +38,20 @@ export interface AlignInput {
   controls: Record<string, Rect & { locked?: boolean }>;
   /** Labels — must include `controlId` so we can filter linked vs standalone. */
   editorLabels: ReadonlyArray<Rect & { id: string; controlId?: string | null }>;
+  /**
+   * Phase 7 fix: control RENDER scale (default 1). Controls are drawn at
+   * `control.w * controlScale × control.h * controlScale`. Their bbox in
+   * the store can be much larger than the visible footprint (e.g., a
+   * fantom-06 knob has h=333 in the store but renders at 333 × 0.3 ≈ 100px
+   * — the rest of the bbox is empty space reserved for the linked label).
+   *
+   * For alignment to feel correct visually, edges must be computed from
+   * the VISIBLE rect, not the bbox. Without this, align-bottom puts
+   * standalone labels at the bottom of the bbox (well past the visible
+   * control). User-reported as "labels go way too far down past the
+   * control" on fantom-06 common section.
+   */
+  controlScale?: number;
 }
 
 export interface AlignDryRun {
@@ -65,7 +79,7 @@ export function planAlignment(
   mode: AlignMode,
   opts: { anchor?: AnchorMode } = {},
 ): AlignDryRun {
-  const { selection, controls, editorLabels } = input;
+  const { selection, controls, editorLabels, controlScale = 1 } = input;
 
   // Partition selection by type.
   const selectedCtrlIds = selectedControlIds(selection);
@@ -86,10 +100,32 @@ export function planAlignment(
     (id) => controls[id] && !controls[id].locked,
   );
 
+  // Phase 7 fix: scale control bbox to its VISIBLE rect for align math.
+  // Controls render at `controlScale` of their store bbox; the rest of the
+  // bbox is reserved label/icon space. Aligning to bbox edges puts standalone
+  // labels past the visible control.
+  const controlToVisibleRect = (id: string): Rect => {
+    const c = controls[id];
+    return { x: c.x, y: c.y, w: c.w * controlScale, h: c.h * controlScale };
+  };
+
+  // Phase 7 — linked labels in selection contribute to the anchor edge.
+  // They can't be MOVED (would break the link with their parent control)
+  // but their position naturally encodes "where labels go for this
+  // control" — so using them as anchor rects lets the contractor align
+  // other labels to match the linked label's edge. User-asked: "doesn't
+  // allow alignment with linked labels."
+  const linkedLabelRects: Rect[] = linkedLabelIds
+    .map((id) => labelById.get(id))
+    .filter((l): l is NonNullable<typeof l> => !!l)
+    .map((l) => ({ x: l.x, y: l.y, w: l.w, h: l.h }));
+
   // Decide anchor mode.
   const hasAnchorControls = movableSelectedCtrls.length > 0;
+  const hasLinkedAnchors = linkedLabelRects.length > 0;
+  const hasAnchors = hasAnchorControls || hasLinkedAnchors;
   const resolvedAnchor: AnchorMode =
-    opts.anchor === 'bbox' ? 'bbox' : hasAnchorControls ? 'auto' : 'bbox';
+    opts.anchor === 'bbox' ? 'bbox' : hasAnchors ? 'auto' : 'bbox';
 
   // Compute target edge / midline.
   let target: number | null = null;
@@ -97,22 +133,39 @@ export function planAlignment(
   let movableControlIds: string[] = [];
 
   if (resolvedAnchor === 'auto') {
-    // Controls anchor; labels follow. Controls don't move.
-    const anchorRects = movableSelectedCtrls.map((id) => controls[id]);
+    // Controls + linked labels anchor; standalone labels follow.
+    // Controls and linked labels don't move.
+    const anchorRects: Rect[] = [
+      ...movableSelectedCtrls.map(controlToVisibleRect),
+      ...linkedLabelRects,
+    ];
+    if (anchorRects.length === 0) {
+      return {
+        movableLabelIds: [],
+        movableControlIds: [],
+        linkedLabelIds,
+        resolvedAnchor,
+        target: null,
+        hasAnchorControls,
+      };
+    }
     target = edgeFor(anchorRects, mode);
-    // Standalone labels move; controls stay put.
     movableControlIds = []; // explicit
   } else {
     // Bbox: everything in selection contributes to the anchor edge.
-    // Includes controls + standalone labels (NOT linked labels — those skip).
+    // Includes controls (visible rect) + standalone labels. Linked labels
+    // STILL skipped from movement (they belong to their control) but
+    // their visible rect contributes to the bbox so the result feels
+    // intuitive.
     const allRects: Rect[] = [
-      ...movableSelectedCtrls.map((id) => controls[id]),
+      ...movableSelectedCtrls.map(controlToVisibleRect),
       ...standaloneLabelIds
         .map((id) => labelById.get(id))
-        .filter((l): l is NonNullable<typeof l> => !!l),
+        .filter((l): l is NonNullable<typeof l> => !!l)
+        .map((l) => ({ x: l.x, y: l.y, w: l.w, h: l.h })),
+      ...linkedLabelRects,
     ];
     if (allRects.length < 2) {
-      // Nothing meaningful to align.
       return {
         movableLabelIds: [],
         movableControlIds: [],

@@ -148,11 +148,15 @@ export default function MixedSelectionPanel() {
           will actually do (which would otherwise be invisible behavior). */}
       {hasAnchorControls && (
         <div
-          className="rounded border border-blue-900/40 bg-blue-950/30 px-2 py-1.5 text-[10px] text-blue-200"
+          className="rounded border border-blue-900/40 bg-blue-950/30 px-2 py-1.5 text-[10px] text-blue-200 leading-relaxed"
           data-testid="mixed-selection-anchor-hint"
         >
-          Aligning labels to selected control{counts.controls > 1 ? 's' : ''}.{' '}
-          <span className="text-blue-400/70">Shift+click for bbox.</span>
+          <div>
+            Default: labels move to match the control{counts.controls > 1 ? 's' : ''}; control{counts.controls > 1 ? 's' : ''} stay{counts.controls > 1 ? '' : 's'} in place.
+          </div>
+          <div className="mt-1 text-blue-400/80">
+            Hold <span className="font-semibold text-blue-200">Shift</span> while pressing an align button to move the control{counts.controls > 1 ? 's' : ''} too (align everything as one group).
+          </div>
         </div>
       )}
 
@@ -230,7 +234,7 @@ export default function MixedSelectionPanel() {
             className="mt-2 text-[10px] text-gray-500"
             data-testid="mixed-selection-linked-skipped"
           >
-            {linkedSkipped} linked label{linkedSkipped > 1 ? 's' : ''} skipped — they follow their control.
+            {linkedSkipped} linked label{linkedSkipped > 1 ? 's' : ''} act{linkedSkipped > 1 ? '' : 's'} as anchor but won{'’'}t move (linked labels follow their control).
           </div>
         )}
       </div>

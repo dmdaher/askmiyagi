@@ -114,12 +114,13 @@ describe('planAlignment — explicit bbox mode (Shift+Align)', () => {
   });
 });
 
-describe('planAlignment — linked labels are skipped', () => {
-  it('linked label in selection is surfaced via linkedLabelIds, not moved', () => {
+describe('planAlignment — linked labels anchor but never move', () => {
+  it('linked label in selection: anchors the alignment but is not moved', () => {
     const input: AlignInput = {
       selection: ['control:c1', 'label:linked', 'label:standalone'] as SelectableId[],
       controls: { c1: { x: 100, y: 50, w: 40, h: 30 } },
       editorLabels: [
+        // Linked label at y=200 — should anchor (control top is 50, linked top is 200)
         lbl('linked', 200, 200, 50, 12, 'someOtherCtrl'),
         lbl('standalone', 0, 100, 50, 12, null),
       ],
@@ -127,9 +128,11 @@ describe('planAlignment — linked labels are skipped', () => {
     const plan = planAlignment(input, 'top');
     expect(plan.linkedLabelIds).toEqual(['linked']);
     expect(plan.movableLabelIds).toEqual(['standalone']);
+    // Anchor edge = min(control.y=50, linked.y=200) = 50 (control wins for top)
+    expect(plan.target).toBe(50);
   });
 
-  it('only linked labels selected → no-op (target null, no movables)', () => {
+  it('only linked labels selected → linked labels anchor; standalone has nothing to align', () => {
     const input: AlignInput = {
       selection: ['label:linkedA', 'label:linkedB'] as SelectableId[],
       controls: {},
@@ -139,9 +142,63 @@ describe('planAlignment — linked labels are skipped', () => {
       ],
     };
     const plan = planAlignment(input, 'top');
-    expect(plan.movableLabelIds).toEqual([]);
+    expect(plan.movableLabelIds).toEqual([]); // no standalone to move
     expect(plan.linkedLabelIds).toEqual(['linkedA', 'linkedB']);
-    expect(plan.target).toBeNull();
+    // resolvedAnchor is 'auto' (linked labels DO act as anchors now), target
+    // resolves to topmost linked (y=50) but no movables.
+    expect(plan.resolvedAnchor).toBe('auto');
+  });
+
+  it('1 linked label + 2 standalone: standalone align to linked label (user-asked behavior)', () => {
+    const input: AlignInput = {
+      selection: ['label:linked', 'label:a', 'label:b'] as SelectableId[],
+      controls: {},
+      editorLabels: [
+        lbl('linked', 100, 200, 50, 12, 'c1'),  // anchor
+        lbl('a', 0, 50, 50, 12, null),           // will move
+        lbl('b', 200, 80, 50, 12, null),         // will move
+      ],
+    };
+    const plan = planAlignment(input, 'top');
+    expect(plan.target).toBe(200); // linked label's y = anchor target
+    expect(plan.movableLabelIds).toEqual(['a', 'b']);
+    expect(plan.movableControlIds).toEqual([]);
+  });
+});
+
+describe('planAlignment — controlScale (visible vs bbox)', () => {
+  it('controlScale=0.3: align-bottom uses VISIBLE rect (control.h * 0.3), not bbox', () => {
+    const input: AlignInput = {
+      selection: ['control:c1', 'label:l1'] as SelectableId[],
+      controls: { c1: { x: 100, y: 50, w: 100, h: 300 } }, // tall bbox
+      editorLabels: [lbl('l1', 0, 500, 50, 12)],
+      controlScale: 0.3,
+    };
+    const plan = planAlignment(input, 'bottom');
+    // visible bottom = 50 + 300*0.3 = 50 + 90 = 140 (NOT 50 + 300 = 350)
+    expect(plan.target).toBe(140);
+  });
+
+  it('controlScale=1 (default): align-bottom uses full bbox', () => {
+    const input: AlignInput = {
+      selection: ['control:c1', 'label:l1'] as SelectableId[],
+      controls: { c1: { x: 100, y: 50, w: 100, h: 300 } },
+      editorLabels: [lbl('l1', 0, 500, 50, 12)],
+      // no controlScale → defaults to 1
+    };
+    const plan = planAlignment(input, 'bottom');
+    expect(plan.target).toBe(350); // 50 + 300
+  });
+
+  it('controlScale=0.3: align-right uses visible width', () => {
+    const input: AlignInput = {
+      selection: ['control:c1', 'label:l1'] as SelectableId[],
+      controls: { c1: { x: 100, y: 50, w: 200, h: 50 } },
+      editorLabels: [lbl('l1', 0, 50)],
+      controlScale: 0.3,
+    };
+    const plan = planAlignment(input, 'right');
+    expect(plan.target).toBe(160); // 100 + 200*0.3 = 160
   });
 });
 
