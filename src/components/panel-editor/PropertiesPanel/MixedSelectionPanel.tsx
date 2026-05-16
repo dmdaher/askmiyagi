@@ -123,12 +123,15 @@ export default function MixedSelectionPanel() {
 
   const handleAlign = (
     mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom',
-  ) => (e: React.MouseEvent) => {
-    // Phase 7 — Shift+Click forces bbox mode (Figma-style), overriding
-    // the auto-anchor. Default is anchor='auto' which means controls
-    // anchor when present, bbox otherwise.
-    const anchor = e.shiftKey ? 'bbox' : 'auto';
-    alignSelection(mode, { anchor });
+  ) => () => {
+    // Phase 7 — single mode: auto-anchor. Controls and linked labels in
+    // selection anchor the alignment; standalone labels move to match.
+    // The previous Shift+Click bbox-mode escape hatch was removed as
+    // un-discoverable UI debt — contractor workflow is anchor-only by
+    // design (controls are hardware-positioned and shouldn't move from
+    // an align operation). The action still accepts opts.anchor='bbox'
+    // for any future programmatic use.
+    alignSelection(mode);
   };
 
   return (
@@ -151,12 +154,7 @@ export default function MixedSelectionPanel() {
           className="rounded border border-blue-900/40 bg-blue-950/30 px-2 py-1.5 text-[10px] text-blue-200 leading-relaxed"
           data-testid="mixed-selection-anchor-hint"
         >
-          <div>
-            Default: labels move to match the control{counts.controls > 1 ? 's' : ''}; control{counts.controls > 1 ? 's' : ''} stay{counts.controls > 1 ? '' : 's'} in place.
-          </div>
-          <div className="mt-1 text-blue-400/80">
-            Hold <span className="font-semibold text-blue-200">Shift</span> while pressing an align button to move the control{counts.controls > 1 ? 's' : ''} too (align everything as one group).
-          </div>
+          Labels move to match the selected control{counts.controls > 1 ? 's' : ''}; control{counts.controls > 1 ? 's' : ''} stay{counts.controls > 1 ? '' : 's'} in place.
         </div>
       )}
 
@@ -171,7 +169,7 @@ export default function MixedSelectionPanel() {
             className={alignBtnClass}
             onClick={handleAlign('left')}
             disabled={!canAlign}
-            title="Align left edges (hold Shift for bbox mode)"
+            title="Align left edges"
             data-testid="align-left"
           >
             ⊢
