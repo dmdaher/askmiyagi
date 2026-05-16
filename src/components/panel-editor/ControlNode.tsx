@@ -522,7 +522,11 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
 
       if (isCrossTypeMulti) {
         // Cross-type multi-drag (e.g., 1 control + 2 labels selected).
-        // moveSelection handles the snapshot internally.
+        // Caller is responsible for the snapshot — moveSelection no longer
+        // snapshots internally (would create N snapshots per drag on the
+        // LabelLayer mousemove path; user-reported "undo needs many
+        // presses" bug). ONE snapshot here = ONE undo step for the drag.
+        pushSnapshot();
         useEditorStore.getState().moveSelection(dx, dy);
       } else if (isMultiSelected) {
         // Legacy all-controls multi-drag — preserves existing behavior

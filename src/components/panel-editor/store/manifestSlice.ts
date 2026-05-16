@@ -1542,9 +1542,12 @@ export const createManifestSlice: StateCreator<
   moveSelection: (dx, dy) => {
     const sel = get().selection;
     if (sel.length === 0) return;
-    // Capture one snapshot for the whole group move so undo restores
-    // pre-move state in one step (not N steps, one per entity).
-    get().pushSnapshot();
+    // NOTE: pushSnapshot is the CALLER's responsibility (at drag-start, not
+    // per-frame). LabelLayer's drag handler invokes moveSelection on EVERY
+    // mousemove event (~60Hz) — pushing a snapshot inside this action would
+    // create 60+ snapshots per drag, requiring 60+ Cmd+Z presses to undo
+    // one logical action. ControlNode and LabelLayer each push exactly one
+    // snapshot at drag-start; we just dispatch the per-type moves here.
 
     // Pre-compute: which CONTROL ids are in selection. Linked labels
     // whose parent is in this set should NOT be moved separately —

@@ -436,9 +436,7 @@ async function main() {
     }, t8);
 
     const sel8 = await page.evaluate(() => (window as any).useEditorStore.getState().selection);
-    const legacySelIds8 = await page.evaluate(() => (window as any).useEditorStore.getState().selectedIds);
     console.log(`    unified selection: [${sel8.join(', ')}]`);
-    console.log(`    legacy selectedIds: [${legacySelIds8.join(', ')}]`);
 
     const before8 = await readStore(page);
     const cBefore = before8.controls[t8.ctrlId];
@@ -467,6 +465,50 @@ async function main() {
     }
   } else {
     console.log('  (skipped — no standalone label or all controls have linked labels)');
+  }
+
+  // ── Scenario 9: ONE drag = ONE undo (user-reported regression)
+  // Tests the contract directly: moveSelection() called multiple times
+  // (simulating per-mousemove invocations during a drag) must NOT add
+  // snapshots — that's the caller's responsibility at drag-start.
+  // Pre-fix: each moveSelection() pushed a snapshot → N snapshots per
+  // drag → N undo presses to revert. Post-fix: zero internal snapshots.
+  console.log('\n[9] moveSelection no longer snapshots internally (drag = ONE undo)');
+  const t9 = await page.evaluate(() => {
+    const s = (window as any).useEditorStore.getState();
+    const ctrls = Object.values(s.controls) as any[];
+    const labels = (s.editorLabels || []) as any[];
+    const standalone = labels.filter((l) => !l.controlId);
+    let label = standalone[0];
+    if (!label && typeof s.addStandaloneLabel === 'function') {
+      const id = s.addStandaloneLabel(60, 60, 'UNDO_TEST');
+      label = (window as any).useEditorStore.getState().editorLabels.find((l: any) => l.id === id);
+    }
+    if (!label || !ctrls[0]) return null;
+
+    // Set up selection
+    s.clearSelection();
+    s.setSelection([`control:${ctrls[0].id}`, `label:${label.id}`]);
+
+    // CAPTURE: snapshot count before any "drag"
+    const pastBefore = (window as any).useEditorStore.getState().past?.length ?? 0;
+
+    // SIMULATE a drag's per-frame moveSelection calls (what LabelLayer does)
+    for (let i = 0; i < 20; i++) {
+      (window as any).useEditorStore.getState().moveSelection(1, 0);
+    }
+
+    // CAPTURE: snapshot count after 20 per-frame calls
+    const pastAfter = (window as any).useEditorStore.getState().past?.length ?? 0;
+
+    return { pastBefore, pastAfter, delta: pastAfter - pastBefore };
+  });
+  if (t9) {
+    console.log(`    past.length before 20 moveSelection calls: ${t9.pastBefore}`);
+    console.log(`    past.length after  20 moveSelection calls: ${t9.pastAfter}`);
+    check('moveSelection adds ZERO snapshots when called per-frame', t9.delta === 0, `delta=${t9.delta} (was 20+ pre-fix)`);
+  } else {
+    console.log('  (skipped — could not set up test fixture)');
   }
 
   console.log(`\n=== Result: ${pass} pass, ${fail} fail ===`);
