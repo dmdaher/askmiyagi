@@ -1440,11 +1440,11 @@ export const createManifestSlice: StateCreator<
     // → label stays put." The drag handler routed through the legacy
     // controls-only mover because `selection` had no control entries.)
     const state = get();
-    const next: SelectableId[] = ids.map((id) => {
-      if (state.sections[id]) return `section:${id}`;
+    const next: SelectableId[] = ids.map((id): SelectableId => {
+      if (state.sections[id]) return `section:${id}` as SelectableId;
       // Default to control prefix — matches the dominant caller
       // (ControlNode plain-click + shift-click).
-      return `control:${id}`;
+      return `control:${id}` as SelectableId;
     });
     set({
       selectedIds: ids,
@@ -1741,13 +1741,17 @@ export const createManifestSlice: StateCreator<
   },
 
   toggleSelected: (id) => {
-    const { selectedIds } = get();
-    const idx = selectedIds.indexOf(id);
-    if (idx >= 0) {
-      set({ selectedIds: selectedIds.filter((sid) => sid !== id) });
-    } else {
-      set({ selectedIds: [...selectedIds, id] });
-    }
+    // Route through the unified toggleSelection so legacy selectedIds AND
+    // unified `selection` both update. Previously this only wrote to
+    // selectedIds, causing the order-flip bug: select label → shift-click
+    // control → drag control. The unified `selection` still held only
+    // [label:X], the control wasn't visible to the drag handler, and the
+    // label got left behind.
+    //
+    // Prefer control: prefix because every caller of toggleSelected is a
+    // ControlNode shift-click. Sections use a different writer path.
+    const ctrlSid = `control:${id}` as SelectableId;
+    get().toggleSelection(ctrlSid);
   },
 
   setFocusedSection: (id) => set({ focusedSectionId: id }),

@@ -409,6 +409,66 @@ async function main() {
     check('control entry PRESENT in unified selection (the new mirror)', finalSel.includes(`control:${t7.ctrlId}`), `selection=[${finalSel.join(',')}]`);
   }
 
+  // ── Scenario 8: user-reported bug — select LABEL first, then shift-click
+  // a control, then drag the control. Order should not matter; the label
+  // should follow. Today this fails because toggleSelected (the shift-
+  // click-on-control writer) only updates legacy selectedIds and never
+  // touches the unified `selection` array. Fix: route toggleSelected
+  // through the unified toggleSelection.
+  console.log('\n[8] order-flip: setSelection([label:X]) → toggleSelected(ctrlA) → drag ctrlA — both move');
+  await page.evaluate(() => (window as any).useEditorStore.getState().clearSelection());
+  const t8 = await page.evaluate(() => {
+    const s = (window as any).useEditorStore.getState();
+    const ctrls = Object.values(s.controls) as any[];
+    const labels = (s.editorLabels || []) as any[];
+    const standalone = labels.filter((l) => !l.controlId);
+    const ctrl = ctrls.find((c) => !labels.some((l) => l.controlId === c.id)) ?? ctrls[0];
+    return { ctrlId: ctrl?.id, labelId: standalone[0]?.id };
+  });
+  if (t8.ctrlId && t8.labelId) {
+    // Exercise EXACTLY the paths the user's click sequence hits:
+    //   1. plain click on standalone label → setSelection(['label:X'])
+    //   2. shift-click on control → toggleSelected(controlId)
+    await page.evaluate(({ ctrlId, labelId }) => {
+      const s = (window as any).useEditorStore.getState();
+      s.setSelection([`label:${labelId}`]);
+      s.toggleSelected(ctrlId);
+    }, t8);
+
+    const sel8 = await page.evaluate(() => (window as any).useEditorStore.getState().selection);
+    const legacySelIds8 = await page.evaluate(() => (window as any).useEditorStore.getState().selectedIds);
+    console.log(`    unified selection: [${sel8.join(', ')}]`);
+    console.log(`    legacy selectedIds: [${legacySelIds8.join(', ')}]`);
+
+    const before8 = await readStore(page);
+    const cBefore = before8.controls[t8.ctrlId];
+    const lBefore = before8.editorLabels.find((l: any) => l.id === t8.labelId)!;
+    console.log(`    before: ctrl=(${cBefore.x},${cBefore.y}) lbl=(${lBefore.x},${lBefore.y})`);
+
+    const cEl = page.locator(`[data-control-id="${t8.ctrlId}"]`).first();
+    const cBox = await cEl.boundingBox();
+    if (cBox) {
+      await page.mouse.move(cBox.x + 5, cBox.y + 5);
+      await page.mouse.down();
+      await page.mouse.move(cBox.x + 25, cBox.y + 15, { steps: 3 });
+      await page.mouse.move(cBox.x + 45, cBox.y + 25, { steps: 3 });
+      await page.mouse.up();
+      await page.waitForTimeout(300);
+
+      const after8 = await readStore(page);
+      const cAfter = after8.controls[t8.ctrlId];
+      const lAfter = after8.editorLabels.find((l: any) => l.id === t8.labelId)!;
+      console.log(`    after:  ctrl=(${cAfter.x},${cAfter.y}) lbl=(${lAfter.x},${lAfter.y})`);
+
+      const cDx = cAfter.x - cBefore.x;
+      const lDx = lAfter.x - lBefore.x;
+      check('control moved (dragged)', cDx !== 0, `dx=${cDx}`);
+      check('LABEL moved with control (order-flip bug fix)', Math.abs(lDx - cDx) < 2, `ctrl dx=${cDx} lbl dx=${lDx}`);
+    }
+  } else {
+    console.log('  (skipped — no standalone label or all controls have linked labels)');
+  }
+
   console.log(`\n=== Result: ${pass} pass, ${fail} fail ===`);
   await browser.close();
   process.exit(fail > 0 ? 1 : 0);
