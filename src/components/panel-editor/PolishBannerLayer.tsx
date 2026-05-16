@@ -3,6 +3,7 @@
 import { useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { useEditorStore } from './store';
+import { selectedBannerIdFromSelection } from './store/selection-types';
 import { computeBannerBoxStyle, computeBannerTextStyle } from '@/lib/banner-style';
 
 /**
@@ -16,7 +17,10 @@ import { computeBannerBoxStyle, computeBannerTextStyle } from '@/lib/banner-styl
  */
 export default function PolishBannerLayer() {
   const polishBanners = useEditorStore((s) => s.polishBanners);
-  const selectedBannerId = useEditorStore((s) => s.selectedBannerId);
+  // Phase 6b — derive from unified selection. Matches legacy single-slot
+  // semantics: returns banner id only when exactly one banner is in selection.
+  const selection = useEditorStore((s) => s.selection);
+  const selectedBannerId = selectedBannerIdFromSelection(selection);
   const zoom = useEditorStore((s) => s.zoom);
   const snapGrid = useEditorStore((s) => s.snapGrid);
   const movePolishBanner = useEditorStore((s) => s.movePolishBanner);

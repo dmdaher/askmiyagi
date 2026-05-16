@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditorStore } from './store';
 import type { EditorLabel } from './store';
+import { selectedLabelIdFromSelection } from './store/selection-types';
 import SharedLabel from '@/components/panel/SharedLabel';
 
 /**
@@ -20,14 +21,13 @@ export default function LabelLayer() {
   const deleteLabel = useEditorStore((s) => s.deleteLabel);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const zoom = useEditorStore((s) => s.zoom);
-  const selectedLabel = useEditorStore((s) => s.selectedLabelId);
   const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
-  // Phase 3 (label-multi-select wiring): read the unified selection set
-  // and the new primitive actions. Shift-click on a label adds it to
-  // `selection`, supporting BOTH standalone and linked labels (no
-  // selectedLabelId clearing — multi-label is a first-class state now).
+  // Phase 6b — unified selection is the single source of truth. The
+  // legacy selectedLabelId is derived locally so the outline logic below
+  // keeps the same "exactly-one-label" semantic.
   const selection = useEditorStore((s) => s.selection);
+  const selectedLabel = selectedLabelIdFromSelection(selection);
   const setSelection = useEditorStore((s) => s.setSelection);
   // toggleSelection uses get() internally so it always sees fresh state —
   // avoids the stale-closure bug where useCallback captures `selection`
