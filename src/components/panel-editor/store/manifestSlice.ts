@@ -1429,18 +1429,30 @@ export const createManifestSlice: StateCreator<
     set({ controls: updated, lockedIds: newLockedIds });
   },
 
-  setSelectedIds: (ids) => set({
-    selectedIds: ids,
-    selectedLabelId: ids.length > 0 ? null : get().selectedLabelId,
-    selectedBannerId: ids.length > 0 ? null : get().selectedBannerId,
-    // Phase 2+3 sync: setSelectedIds is the REPLACE path used by every
-    // entity's plain-click handler (controls, sections, etc.). Clear the
-    // unified `selection` array so previously-selected labels/banners
-    // deselect when the user clicks a different entity. Without this,
-    // LabelLayer's outline check (selection.includes('label:id')) keeps
-    // the label outlined forever — the user-reported bug.
-    selection: [],
-  }),
+  setSelectedIds: (ids) => {
+    // Mirror the legacy ids into the unified `selection` array with proper
+    // prefixes inferred from the manifest. Without this mirror, the
+    // unified selection drifts whenever shift-click on a control uses the
+    // legacy setSelectedIds path: `selection` ends up empty/stale, and a
+    // subsequent label toggle leaves the controls invisible to the
+    // drag/operations layer — label gets left behind on multi-drag.
+    // (User-reported: "multi-select 2 controls + 1 standalone label, drag
+    // → label stays put." The drag handler routed through the legacy
+    // controls-only mover because `selection` had no control entries.)
+    const state = get();
+    const next: SelectableId[] = ids.map((id) => {
+      if (state.sections[id]) return `section:${id}`;
+      // Default to control prefix — matches the dominant caller
+      // (ControlNode plain-click + shift-click).
+      return `control:${id}`;
+    });
+    set({
+      selectedIds: ids,
+      selectedLabelId: ids.length > 0 ? null : state.selectedLabelId,
+      selectedBannerId: ids.length > 0 ? null : state.selectedBannerId,
+      selection: next,
+    });
+  },
 
   /**
    * Replace the unified selection set + sync legacy fields.

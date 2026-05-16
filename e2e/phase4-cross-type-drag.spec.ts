@@ -310,6 +310,105 @@ async function main() {
     console.log('  (skipped — not enough entities)');
   }
 
+  // ── Scenario 6: user-reported regression — multi-select via the legacy
+  // setSelectedIds path (i.e. shift-click on a 2nd control), THEN add a
+  // standalone label via toggleSelection, THEN drag a control. Label
+  // must move with the controls. This is the exact path the user hit
+  // in the browser that scenario [5] didn't cover (scenario [5] sets
+  // selection via setSelection() directly, bypassing the legacy path).
+  console.log('\n[6] legacy-path: setSelectedIds([A,B]) → toggleSelection(label:X) → drag A — all 3 move');
+  await page.evaluate(() => (window as any).useEditorStore.getState().clearSelection());
+  const t6 = await page.evaluate(() => {
+    const s = (window as any).useEditorStore.getState();
+    const ctrls = Object.values(s.controls) as any[];
+    const labels = (s.editorLabels || []) as any[];
+    const standalone = labels.filter((l) => !l.controlId);
+    // Pick 2 controls NOT linked to our chosen label, and 1 standalone label
+    const labelId = standalone[0]?.id;
+    const candidates = ctrls.filter((c) => c.id !== labelId);
+    return {
+      ctrlA: candidates[0]?.id,
+      ctrlB: candidates[1]?.id,
+      labelX: labelId,
+    };
+  });
+  if (t6.ctrlA && t6.ctrlB && t6.labelX) {
+    // Exercise the SAME paths the browser uses:
+    //   1. setSelectedIds([A]) — plain click on control A
+    //   2. setSelectedIds([A, B]) — shift-click on control B
+    //   3. toggleSelection('label:X') — shift-click on label
+    await page.evaluate(({ a, b, lbl }) => {
+      const s = (window as any).useEditorStore.getState();
+      s.setSelectedIds([a]);
+      s.setSelectedIds([a, b]);
+      s.toggleSelection(`label:${lbl}`);
+    }, { a: t6.ctrlA, b: t6.ctrlB, lbl: t6.labelX });
+
+    const sel6 = await page.evaluate(() => (window as any).useEditorStore.getState().selection);
+    console.log(`    unified selection after multi-select: [${sel6.join(', ')}]`);
+
+    const before6 = await readStore(page);
+    const aBefore = before6.controls[t6.ctrlA];
+    const bBefore = before6.controls[t6.ctrlB];
+    const lblBefore = before6.editorLabels.find((l: any) => l.id === t6.labelX)!;
+    console.log(`    before: A=(${aBefore.x},${aBefore.y}) B=(${bBefore.x},${bBefore.y}) lbl=(${lblBefore.x},${lblBefore.y})`);
+
+    const aEl = page.locator(`[data-control-id="${t6.ctrlA}"]`).first();
+    const aBox = await aEl.boundingBox();
+    if (aBox) {
+      await page.mouse.move(aBox.x + 5, aBox.y + 5);
+      await page.mouse.down();
+      await page.mouse.move(aBox.x + 25, aBox.y + 15, { steps: 3 });
+      await page.mouse.move(aBox.x + 45, aBox.y + 25, { steps: 3 });
+      await page.mouse.up();
+      await page.waitForTimeout(300);
+
+      const after6 = await readStore(page);
+      const aAfter = after6.controls[t6.ctrlA];
+      const bAfter = after6.controls[t6.ctrlB];
+      const lblAfter = after6.editorLabels.find((l: any) => l.id === t6.labelX)!;
+      console.log(`    after:  A=(${aAfter.x},${aAfter.y}) B=(${bAfter.x},${bAfter.y}) lbl=(${lblAfter.x},${lblAfter.y})`);
+
+      const aDx = aAfter.x - aBefore.x;
+      const bDx = bAfter.x - bBefore.x;
+      const lblDx = lblAfter.x - lblBefore.x;
+      check('control A moved (dragged)', aDx !== 0, `dx=${aDx}`);
+      check('control B moved with A', Math.abs(bDx - aDx) < 2, `A dx=${aDx} B dx=${bDx}`);
+      check('LABEL moved with controls (the regression fix)', Math.abs(lblDx - aDx) < 2, `A dx=${aDx} lbl dx=${lblDx}`);
+    }
+  } else {
+    console.log('  (skipped — manifest has no standalone label)');
+  }
+
+  // ── Scenario 7: regression check — clicking a control AFTER selecting
+  // a label must clear the label's outline. This is the original bug
+  // that setSelectedIds: selection=[] was added to fix; verify our new
+  // mirror-not-wipe behavior still clears label entries from selection.
+  console.log('\n[7] regression: select label → click control → label outline must clear');
+  await page.evaluate(() => (window as any).useEditorStore.getState().clearSelection());
+  const t7 = await page.evaluate(() => {
+    const s = (window as any).useEditorStore.getState();
+    const ctrl = Object.values(s.controls)[0] as any;
+    const lbl = (s.editorLabels || []).find((l: any) => !l.controlId) ?? (s.editorLabels || [])[0];
+    return { ctrlId: ctrl?.id, labelId: lbl?.id };
+  });
+  if (t7.ctrlId && t7.labelId) {
+    await page.evaluate(({ labelId }) => {
+      (window as any).useEditorStore.getState().setSelection([`label:${labelId}`]);
+    }, t7);
+    const midSel = await page.evaluate(() => (window as any).useEditorStore.getState().selection);
+    check('label is selected (precondition)', midSel.includes(`label:${t7.labelId}`), `selection=[${midSel.join(',')}]`);
+
+    // Now simulate plain-click on a control via legacy path
+    await page.evaluate(({ ctrlId }) => {
+      (window as any).useEditorStore.getState().setSelectedIds([ctrlId]);
+    }, t7);
+
+    const finalSel = await page.evaluate(() => (window as any).useEditorStore.getState().selection);
+    check('label entry CLEARED from unified selection', !finalSel.includes(`label:${t7.labelId}`), `selection=[${finalSel.join(',')}]`);
+    check('control entry PRESENT in unified selection (the new mirror)', finalSel.includes(`control:${t7.ctrlId}`), `selection=[${finalSel.join(',')}]`);
+  }
+
   console.log(`\n=== Result: ${pass} pass, ${fail} fail ===`);
   await browser.close();
   process.exit(fail > 0 ? 1 : 0);
