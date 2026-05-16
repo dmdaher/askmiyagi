@@ -622,14 +622,53 @@ IMPORTANT: At minimum, you need a top-down view. The Diagram Parser CANNOT run w
     }
 
     // ── Copy manuals and photos to centralized input/ directory ──────────
+    // `state.manualPaths` is worktree-relative after the agent downloads
+    // (set at line 547 above). Resolving against worktreeCwd (not the main
+    // repo's process.cwd()) is essential — otherwise the source path
+    // doesn't exist, fs.existsSync returns false, and the copy silently
+    // skips. That's the dj-xdj-rr / minimoog preflight bug: manuals
+    // downloaded to the worktree's `docs/` dir never made it to durable
+    // storage at `.pipeline/<id>/input/manuals/`, then worktree cleanup
+    // erased them.
+    //
+    // Secondary fix: after the copy succeeds, rewrite `state.manualPaths`
+    // to point at the durable location. Subsequent phases find the manual
+    // via the runner's `copyPipelineToWorktree` re-stage (line 196), which
+    // mirrors `.pipeline/<id>/input/` into each new worktree.
     const pfPaths = paths();
     fs.mkdirSync(pfPaths.manualsDir, { recursive: true });
+    const durableManualPaths: string[] = [];
     for (const manualPath of state.manualPaths) {
-      const absSource = path.resolve(manualPath);
+      const absSource = path.resolve(worktreeCwd, manualPath);
       if (fs.existsSync(absSource)) {
         const cleanName = path.basename(manualPath);
-        fs.copyFileSync(absSource, path.join(pfPaths.manualsDir, cleanName));
+        const durableAbsDest = path.join(pfPaths.manualsDir, cleanName);
+        fs.copyFileSync(absSource, durableAbsDest);
+        durableManualPaths.push(path.relative(process.cwd(), durableAbsDest));
+        appendLog(deviceId, { level: 'info', agent: 'preflight', message: `Manual staged to durable storage: ${cleanName}` });
+      } else {
+        appendLog(deviceId, { level: 'warn', agent: 'preflight', message: `Manual source not found at ${absSource} — durable copy skipped (downstream phases may fail to find this manual)` });
       }
+    }
+    // Defensive safety net: scan worktreeCwd/docs/<vendor>/<device>/ for
+    // any PDFs the agent put there that aren't in state.manualPaths
+    // (handles future agents that write to slightly different paths or
+    // bonus manuals not enumerated in manualPaths). Migrate them too so
+    // nothing gets lost during worktree cleanup.
+    const fallbackPdfs = findPdfsInDir(outputDir).filter(
+      (p) => !state.manualPaths.some((mp) => path.basename(mp) === path.basename(p))
+    );
+    for (const fbPath of fallbackPdfs) {
+      const cleanName = path.basename(fbPath);
+      const durableAbsDest = path.join(pfPaths.manualsDir, cleanName);
+      if (!fs.existsSync(durableAbsDest)) {
+        fs.copyFileSync(fbPath, durableAbsDest);
+        durableManualPaths.push(path.relative(process.cwd(), durableAbsDest));
+        appendLog(deviceId, { level: 'info', agent: 'preflight', message: `Migrated stray PDF to durable storage: ${cleanName}` });
+      }
+    }
+    if (durableManualPaths.length > 0) {
+      state.manualPaths = durableManualPaths;
     }
 
     fs.mkdirSync(pfPaths.photosDir, { recursive: true });
