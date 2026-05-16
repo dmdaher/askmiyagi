@@ -3,6 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEditorStore } from './store';
 import type { ControlGroup, EditorLabel } from './store/historySlice';
+import {
+  isControlSelected,
+  isSectionSelected,
+  selectedLabelIdFromSelection,
+  selectedControlIds,
+} from './store/selection-types';
 
 /** Truncate a string to maxLen characters, adding ellipsis if needed */
 function truncate(str: string, maxLen: number): string {
@@ -31,8 +37,11 @@ function scrollToControlInCanvas(controlId: string): void {
 // ─── Label row (used for linked labels under controls AND for standalone labels) ──
 
 function LabelRow({ label, indent = false }: { label: EditorLabel; indent?: boolean }) {
-  const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
+  const selection = useEditorStore((s) => s.selection);
   const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
+  // Phase 6b — derive single-label id from unified selection to match the
+  // legacy selectedLabelId contract (null when 0 or 2+ labels).
+  const selectedLabelId = selectedLabelIdFromSelection(selection);
   const isSelected = selectedLabelId === label.id;
 
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -72,13 +81,13 @@ function LabelRow({ label, indent = false }: { label: EditorLabel; indent?: bool
 
 function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; linkedLabels?: EditorLabel[] }) {
   const control = useEditorStore((s) => s.controls[controlId]);
-  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selection = useEditorStore((s) => s.selection);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const toggleSelected = useEditorStore((s) => s.toggleSelected);
   const canvasWidth = useEditorStore((s) => s.canvasWidth);
   const canvasHeight = useEditorStore((s) => s.canvasHeight);
 
-  const isSelected = selectedIds.includes(controlId);
+  const isSelected = isControlSelected(selection, controlId);
   const itemRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -160,7 +169,7 @@ function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; link
 // ─── Group item (collapsible, violet accent) ────────────────────────────────
 
 function GroupItem({ group, sectionChildIds, labelsByControlId }: { group: ControlGroup; sectionChildIds: string[]; labelsByControlId: Map<string, EditorLabel[]> }) {
-  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selection = useEditorStore((s) => s.selection);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const setHoveredGroup = useEditorStore((s) => s.setHoveredGroup);
 
@@ -172,8 +181,10 @@ function GroupItem({ group, sectionChildIds, labelsByControlId }: { group: Contr
     [group.controlIds, sectionChildIds],
   );
 
-  const allSelected = memberIds.length > 0 && memberIds.every((id) => selectedIds.includes(id));
-  const hasSelectedChild = memberIds.some((id) => selectedIds.includes(id));
+  // Phase 6b — derive from unified selection. isControlSelected matches the
+  // legacy selectedIds.includes(id) contract for control entries.
+  const allSelected = memberIds.length > 0 && memberIds.every((id) => isControlSelected(selection, id));
+  const hasSelectedChild = memberIds.some((id) => isControlSelected(selection, id));
 
   // Auto-expand when a member is selected on canvas
   useEffect(() => {
@@ -189,12 +200,12 @@ function GroupItem({ group, sectionChildIds, labelsByControlId }: { group: Contr
       e.stopPropagation();
       if (e.shiftKey) {
         // Shift+click: ADD group members to current selection
-        const current = useEditorStore.getState().selectedIds;
+        const current = selectedControlIds(useEditorStore.getState().selection);
         const combined = [...new Set([...current, ...childIds])];
         setSelectedIds(combined);
       } else if (e.metaKey) {
         // Cmd+click: TOGGLE group members in/out of selection
-        const current = useEditorStore.getState().selectedIds;
+        const current = selectedControlIds(useEditorStore.getState().selection);
         const groupSet = new Set(childIds);
         const allIn = childIds.every(id => current.includes(id));
         if (allIn) {
@@ -301,16 +312,19 @@ function SectionItem({
   const controls = useEditorStore((s) => s.controls);
   const canvasWidth = useEditorStore((s) => s.canvasWidth);
   const canvasHeight = useEditorStore((s) => s.canvasHeight);
-  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selection = useEditorStore((s) => s.selection);
   const focusedSectionId = useEditorStore((s) => s.focusedSectionId);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const setFocusedSection = useEditorStore((s) => s.setFocusedSection);
   const controlGroups = useEditorStore((s) => s.controlGroups) as ControlGroup[];
 
   const [expanded, setExpanded] = useState(false);
-  const isSelected = selectedIds.includes(sectionId);
+  // Phase 6b — section row uses isSectionSelected (matches legacy
+  // selectedIds.includes(sectionId) since sections live in the unified
+  // selection as 'section:' prefix).
+  const isSelected = isSectionSelected(selection, sectionId);
   // Also highlight section if any of its children are selected
-  const hasSelectedChild = section?.childIds.some((id) => selectedIds.includes(id)) ?? false;
+  const hasSelectedChild = section?.childIds.some((id) => isControlSelected(selection, id)) ?? false;
   // A6.1 follow-up: bubble out-of-bounds badge up to the section header so
   // the contractor sees something is wrong without needing to expand.
   const hasOutOfBoundsChild = section?.childIds.some((id) => {
@@ -506,8 +520,11 @@ export default function LayersPanel() {
   const controlGroups = useEditorStore((s) => s.controlGroups) as ControlGroup[];
   const controlContainers = useEditorStore((s) => s.controlContainers);
   const editorLabels = useEditorStore((s) => s.editorLabels);
-  const selectedIds = useEditorStore((s) => s.selectedIds);
-  const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
+  const selection = useEditorStore((s) => s.selection);
+  // Phase 6b — derive both legacy slot values from unified selection so
+  // the panel layout below keeps its exact previous routing semantics.
+  const selectedIds = useMemo(() => selectedControlIds(selection), [selection]);
+  const selectedLabelId = selectedLabelIdFromSelection(selection);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
   const showLayers = useEditorStore((s) => s.showLayers);
