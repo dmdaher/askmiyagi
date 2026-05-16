@@ -504,12 +504,27 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       // Ignore zero-movement clicks (not actual drags)
       if (dx === 0 && dy === 0) return;
 
-      // Snapshot BEFORE mutation so undo restores the previous state
-      pushSnapshot();
-      if (isMultiSelected) {
-        // Move all selected (non-locked) controls by the same delta
+      // Phase 4 — cross-type drag. When the unified selection contains
+      // non-control entries (labels, banners) AND this control is one of
+      // them, route through moveSelection so the whole group moves in
+      // lockstep. moveSelection takes its own snapshot, so skip the
+      // outer pushSnapshot to avoid double-undo entries.
+      const sel = useEditorStore.getState().selection;
+      const ctrlSid = `control:${controlId}` as const;
+      const hasNonControl = sel.some((s) => !s.startsWith('control:'));
+      const isCrossTypeMulti = sel.length > 1 && sel.includes(ctrlSid) && hasNonControl;
+
+      if (isCrossTypeMulti) {
+        // Cross-type multi-drag (e.g., 1 control + 2 labels selected).
+        // moveSelection handles the snapshot internally.
+        useEditorStore.getState().moveSelection(dx, dy);
+      } else if (isMultiSelected) {
+        // Legacy all-controls multi-drag — preserves existing behavior
+        // and the tested 27-test alignment regression baseline.
+        pushSnapshot();
         moveSelectedControls(dx, dy);
       } else {
+        pushSnapshot();
         moveControl(controlId, dx, dy);
       }
     },

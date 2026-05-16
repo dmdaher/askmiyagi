@@ -152,7 +152,20 @@ export default function LabelLayer() {
       const dx = Math.round(rawDx / snap) * snap;
       const dy = Math.round(rawDy / snap) * snap;
       if (dx === 0 && dy === 0) return;
-      moveLabel(label.id, dx, dy);
+
+      // Phase 4 — entity-agnostic drag. When 2+ entities are selected
+      // and this label is one of them, drag the WHOLE selection in
+      // lockstep via moveSelection. When this label is the only thing
+      // selected (or selection.length === 1), fall back to the
+      // single-entity moveLabel path.
+      const sel = useEditorStore.getState().selection;
+      const labelSid = `label:${label.id}` as const;
+      const isMultiDrag = sel.length > 1 && sel.includes(labelSid);
+      if (isMultiDrag) {
+        useEditorStore.getState().moveSelection(dx, dy);
+      } else {
+        moveLabel(label.id, dx, dy);
+      }
       dragStart.current.x += dx * zoom;
       dragStart.current.y += dy * zoom;
     };
