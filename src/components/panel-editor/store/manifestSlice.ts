@@ -1581,6 +1581,22 @@ export const createManifestSlice: StateCreator<
     // Capture one snapshot for the whole group move so undo restores
     // pre-move state in one step (not N steps, one per entity).
     get().pushSnapshot();
+
+    // Pre-compute: which CONTROL ids are in selection. Linked labels
+    // whose parent is in this set should NOT be moved separately —
+    // moveControl's linked-label follow already carries them. Without
+    // this guard, the linked label gets moved TWICE per moveSelection
+    // call (once via moveControl, once via moveLabel) and drifts 2x as
+    // fast as the rest of the selection. Caught by Phase 4 e2e
+    // scenario [1] (mixed control + linked-label + standalone).
+    const controlIdsInSel = new Set<string>();
+    for (const sid of sel) {
+      if (sid.startsWith('control:')) {
+        controlIdsInSel.add(sid.slice('control:'.length));
+      }
+    }
+    const labels = get().editorLabels as EditorLabel[];
+
     for (const sid of sel) {
       const colon = sid.indexOf(':');
       if (colon <= 0) continue;
@@ -1590,9 +1606,16 @@ export const createManifestSlice: StateCreator<
         case 'control':
           get().moveControl(id, dx, dy);
           break;
-        case 'label':
+        case 'label': {
+          const lbl = labels.find((l) => l.id === id);
+          if (lbl?.controlId && controlIdsInSel.has(lbl.controlId)) {
+            // Parent control is also in selection — skip; moveControl
+            // already moved this linked label.
+            continue;
+          }
           get().moveLabel(id, dx, dy);
           break;
+        }
         case 'section':
           get().moveSection(id, dx, dy);
           break;

@@ -120,16 +120,25 @@ export default function LabelLayer() {
     // break during the phased migration.
     const isMulti = e.shiftKey || e.metaKey || e.ctrlKey;
     const labelSid = `label:${label.id}` as const;
+    // Figma-style: if user plain-clicks a label that's ALREADY in the
+    // multi-selection, preserve the selection so the drag can move all
+    // selected entities together. Only replace when clicking an
+    // unselected label (single-select intent). Shift/Cmd always toggles.
+    const currentSel = useEditorStore.getState().selection;
+    const alreadyInSelection = currentSel.includes(labelSid);
     if (isMulti) {
       // toggleSelection reads state fresh via get() — safe against
       // useCallback stale-closure on the `selection` value.
       toggleSelection(labelSid);
-    } else {
-      // Plain click: replace selection with just this label.
-      // Legacy callers that read selectedLabelId still see the right
+    } else if (!alreadyInSelection) {
+      // Plain click on an UN-selected label: replace selection with it.
+      // Legacy callers reading selectedLabelId still see the right
       // single-selection state (synced by setSelection).
       setSelection([labelSid]);
     }
+    // else: plain click on already-selected label → preserve current
+    // multi-selection, fall through to drag setup. moveSelection will
+    // then drag everything in lockstep.
     setDragging(label.id);
     dragStart.current = {
       x: e.clientX,
