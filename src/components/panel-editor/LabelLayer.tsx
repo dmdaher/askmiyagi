@@ -142,8 +142,13 @@ export default function LabelLayer() {
       if (!dragStart.current) return;
       const rawDx = (me.clientX - dragStart.current.x) / zoom;
       const rawDy = (me.clientY - dragStart.current.y) / zoom;
-      // Snap to grid — same grid as controls
-      const snap = snapGrid ?? 1;
+      // Read snapGrid FRESH from the store on every mousemove. The
+      // useCallback that wraps this handler captures the snapGrid value
+      // from the render where the user first touched the label —
+      // changing snap-grid mid-session (via the toolbar) wouldn't take
+      // effect until the next render. Stale-closure bug surfaced in the
+      // user-reported "labels don't follow snap to grid" complaint.
+      const snap = useEditorStore.getState().snapGrid ?? 1;
       const dx = Math.round(rawDx / snap) * snap;
       const dy = Math.round(rawDy / snap) * snap;
       if (dx === 0 && dy === 0) return;
