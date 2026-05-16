@@ -38,8 +38,7 @@ describe('findNearestSection (via addStandaloneLabel)', () => {
       editorLabels: [],
       controlGroups: [],
       controlContainers: [],
-      selectedIds: [],
-      selectedLabelId: null,
+      selection: [] as any,
       snapGrid: 1,
     });
   });
@@ -82,8 +81,7 @@ describe('moveSection drift fix — standalone labels follow their section', () 
       editorLabels: [],
       controlGroups: [],
       controlContainers: [],
-      selectedIds: [],
-      selectedLabelId: null,
+      selection: [] as any,
     });
   });
 
@@ -156,8 +154,7 @@ describe('moveLabel recomputes sectionId on drag', () => {
       editorLabels: [],
       controlGroups: [],
       controlContainers: [],
-      selectedIds: [],
-      selectedLabelId: null,
+      selection: [] as any,
     });
   });
 

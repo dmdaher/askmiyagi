@@ -78,7 +78,7 @@ function seedStore() {
     ],
     canvasWidth: 1000,
     canvasHeight: 800,
-    selectedIds: [],
+    selection: [] as any,
     lockedIds: [],
     keyboard: null,
     past: [],
@@ -280,7 +280,7 @@ describe('clearScaleBase — every mutating action invalidates the base', () => 
   });
 
   it('alignControls clears scaleBase', () => {
-    useEditorStore.setState({ selectedIds: ['ctrl-a', 'ctrl-b'] });
+    useEditorStore.setState({ selection: ['control:ctrl-a', 'control:ctrl-b'] as any });
     useEditorStore.getState().alignControls('left');
     expect(useEditorStore.getState().scaleBase).toBeNull();
   });

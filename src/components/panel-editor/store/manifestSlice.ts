@@ -3,6 +3,7 @@ import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import { computeLabelPosition } from '@/lib/label-position';
 import type { EditorLabel, ControlGroup, PolishBanner } from './historySlice';
 import type { SelectableId } from './selection-types';
+import { selectedControlIds } from './selection-types';
 import type {
   ManifestControl,
   ManifestSection,
@@ -221,8 +222,8 @@ export interface ManifestSlice {
   controlGroups: ControlGroup[];
   controlContainers: ControlContainer[];
   polishBanners: PolishBanner[];
-  selectedBannerId: string | null;
-  selectedIds: string[];
+  // Phase 6c — legacy selectedBannerId, selectedIds, selectedLabelId fields
+  // removed. Use `selection` + the typed selector helpers in selection-types.ts.
   lockedIds: string[];
   keyboard: { keys: number; startNote: string; panelHeightPercent: number; leftPercent?: number; widthPercent?: number; aspectLockMode?: 'auto' | 'manual' } | null;
   _manifestVersion: string | null;
@@ -233,7 +234,6 @@ export interface ManifestSlice {
   hasUserEdited: boolean;
   focusedSectionId: string | null;
   hoveredGroupId: string | null;
-  selectedLabelId: string | null;
 
   /**
    * Unified Figma-style selection. Prefixed-ID array (e.g. `'control:cutoff'`,
@@ -640,8 +640,7 @@ export const createManifestSlice: StateCreator<
   controlGroups: [],
   controlContainers: [],
   polishBanners: [],
-  selectedBannerId: null,
-  selectedIds: [],
+  // Phase 6c — legacy single-slot selection fields removed; only `selection` remains.
   lockedIds: [],
   keyboard: null,
   _manifestVersion: null,
@@ -649,7 +648,6 @@ export const createManifestSlice: StateCreator<
   hasUserEdited: false,
   focusedSectionId: null,
   hoveredGroupId: null,
-  selectedLabelId: null,
   selection: [],
 
   // ── Actions ─────────────────────────────────────────────────────────────
@@ -1046,7 +1044,7 @@ export const createManifestSlice: StateCreator<
       groupLabels: manifest.groupLabels ?? [],
       sections,
       controls,
-      selectedIds: [],
+      selection: [],
       lockedIds: [],
       keyboard: manifestAny.keyboard ?? null,
       // Defensive restore of editor-only extras when present in payload
@@ -1190,7 +1188,9 @@ export const createManifestSlice: StateCreator<
 
   moveSelectedControls: (dx, dy) => {
     get().clearScaleBase();
-    const { selectedIds, lockedIds, controls } = get();
+    // Phase 6c — derive selected control ids from unified selection.
+    const { selection, lockedIds, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     const lockedSet = new Set(lockedIds);
     const updated = { ...controls };
     const movedIds = new Set<string>();
@@ -1250,7 +1250,9 @@ export const createManifestSlice: StateCreator<
 
   duplicateSelected: () => {
     get().clearScaleBase();
-    const { selectedIds, controls, sections } = get();
+    // Phase 6c — derive selected control ids from unified selection.
+    const { selection, controls, sections } = get();
+    const selectedIds = selectedControlIds(selection);
     if (selectedIds.length === 0) return;
 
     const updatedControls = { ...controls };
@@ -1286,7 +1288,8 @@ export const createManifestSlice: StateCreator<
     set({
       controls: updatedControls,
       sections: updatedSections,
-      selectedIds: newIds,
+      // Phase 6c — write to unified selection. Duplicates get selected.
+      selection: newIds.map((id) => `control:${id}` as SelectableId),
     });
   },
 
@@ -1317,11 +1320,13 @@ export const createManifestSlice: StateCreator<
    */
   _legacyDeleteSelected_DEPRECATED: () => {
     get().clearScaleBase();
-    const { selectedIds, controls, sections } = get();
+    // Phase 6c — derive selected control ids from unified selection.
+    const { selection, controls, sections } = get();
+    const selectedIds = selectedControlIds(selection);
     if (selectedIds.length === 0) return;
 
     // Skip fully locked controls — they can't be deleted
-    const deletable = selectedIds.filter(id => !controls[id]?.locked);
+    const deletable = selectedIds.filter((id: string) => !controls[id]?.locked);
     if (deletable.length === 0) return;
 
     const deleteSet = new Set(deletable);
@@ -1368,7 +1373,7 @@ export const createManifestSlice: StateCreator<
     set({
       controls: updatedControls,
       sections: updatedSections,
-      selectedIds: [],
+      selection: [],
       lockedIds,
       editorLabels: updatedLabels,
       controlGroups: updatedGroups,
@@ -1430,28 +1435,16 @@ export const createManifestSlice: StateCreator<
   },
 
   setSelectedIds: (ids) => {
-    // Mirror the legacy ids into the unified `selection` array with proper
-    // prefixes inferred from the manifest. Without this mirror, the
-    // unified selection drifts whenever shift-click on a control uses the
-    // legacy setSelectedIds path: `selection` ends up empty/stale, and a
-    // subsequent label toggle leaves the controls invisible to the
-    // drag/operations layer — label gets left behind on multi-drag.
-    // (User-reported: "multi-select 2 controls + 1 standalone label, drag
-    // → label stays put." The drag handler routed through the legacy
-    // controls-only mover because `selection` had no control entries.)
+    // Phase 6c — writes directly to the unified `selection` array. The
+    // 'control:'/'section:' prefix is inferred from the manifest so this
+    // sugar wrapper preserves the legacy mixed-bag contract (controls +
+    // sections in one list). Used by every entity's plain-click handler.
     const state = get();
     const next: SelectableId[] = ids.map((id): SelectableId => {
       if (state.sections[id]) return `section:${id}` as SelectableId;
-      // Default to control prefix — matches the dominant caller
-      // (ControlNode plain-click + shift-click).
       return `control:${id}` as SelectableId;
     });
-    set({
-      selectedIds: ids,
-      selectedLabelId: ids.length > 0 ? null : state.selectedLabelId,
-      selectedBannerId: ids.length > 0 ? null : state.selectedBannerId,
-      selection: next,
-    });
+    set({ selection: next });
   },
 
   /**
@@ -1471,24 +1464,11 @@ export const createManifestSlice: StateCreator<
    * consumers that read the new `selection` array directly.
    */
   setSelection: (selection) => {
-    const controlIds: string[] = [];
-    const labelIds: string[] = [];
-    let bannerId: string | null = null;
-    for (const sid of selection) {
-      const colon = sid.indexOf(':');
-      if (colon <= 0) continue;
-      const type = sid.slice(0, colon);
-      const id = sid.slice(colon + 1);
-      if (type === 'control' || type === 'section') controlIds.push(id);
-      else if (type === 'label') labelIds.push(id);
-      else if (type === 'banner') bannerId = id;
-    }
-    set({
-      selection,
-      selectedIds: controlIds,
-      selectedLabelId: labelIds.length === 1 ? labelIds[0] : null,
-      selectedBannerId: bannerId,
-    });
+    // Phase 6c — single source of truth: just write to `selection`. Legacy
+    // single-slot fields are derived on read via the helpers in
+    // selection-types.ts (selectedControlIds, selectedLabelIdFromSelection,
+    // selectedBannerIdFromSelection).
+    set({ selection });
   },
 
   /**
@@ -1507,6 +1487,8 @@ export const createManifestSlice: StateCreator<
    * to `selection` AND to selectedLabelId, without touching selectedIds.
    */
   addToSelection: (ids) => {
+    // Phase 6c — additive write to unified selection only. Idempotent;
+    // duplicates ignored. Legacy fields are no longer separate state.
     const current = get().selection;
     const existingSet = new Set(current);
     const nextSelection = [...current];
@@ -1516,37 +1498,7 @@ export const createManifestSlice: StateCreator<
         existingSet.add(sid);
       }
     }
-    // Sync legacy fields ADDITIVELY (preserve, never strip)
-    const { selectedIds, selectedLabelId, selectedBannerId } = get();
-    let nextSelectedIds = selectedIds;
-    let nextSelectedLabelId = selectedLabelId;
-    let nextSelectedBannerId = selectedBannerId;
-    for (const sid of ids) {
-      const colon = sid.indexOf(':');
-      if (colon <= 0) continue;
-      const type = sid.slice(0, colon);
-      const id = sid.slice(colon + 1);
-      if (type === 'control' || type === 'section') {
-        if (!nextSelectedIds.includes(id)) nextSelectedIds = [...nextSelectedIds, id];
-      } else if (type === 'label') {
-        // Multi-label is a NEW state legacy can't represent. If selection
-        // now contains exactly one label, set selectedLabelId to it;
-        // otherwise null. The label-count check uses the new selection
-        // (after this add), not the legacy field.
-        const labelCount = nextSelection.filter((s) => s.startsWith('label:')).length;
-        nextSelectedLabelId = labelCount === 1
-          ? nextSelection.find((s) => s.startsWith('label:'))!.slice('label:'.length)
-          : null;
-      } else if (type === 'banner') {
-        nextSelectedBannerId = id;
-      }
-    }
-    set({
-      selection: nextSelection,
-      selectedIds: nextSelectedIds,
-      selectedLabelId: nextSelectedLabelId,
-      selectedBannerId: nextSelectedBannerId,
-    });
+    set({ selection: nextSelection });
   },
 
   /**
@@ -1555,31 +1507,11 @@ export const createManifestSlice: StateCreator<
    * removed entry contributed; doesn't touch unrelated legacy state.
    */
   removeFromSelection: (ids) => {
+    // Phase 6c — single source of truth: just filter the unified selection.
+    // Legacy field derivation now happens on read via the helpers.
     const toRemove = new Set(ids);
     const nextSelection = get().selection.filter((sid) => !toRemove.has(sid));
-    // Compute legacy fields from the remaining unified selection state,
-    // but only for the types being removed. Other legacy fields
-    // (controls touched only via legacy setSelectedIds) stay intact.
-    let { selectedIds, selectedLabelId, selectedBannerId } = get();
-    for (const sid of ids) {
-      const colon = sid.indexOf(':');
-      if (colon <= 0) continue;
-      const type = sid.slice(0, colon);
-      const id = sid.slice(colon + 1);
-      if (type === 'control' || type === 'section') {
-        selectedIds = selectedIds.filter((cid) => cid !== id);
-      } else if (type === 'label') {
-        // After removal: if 0 or 2+ labels remain in unified selection,
-        // selectedLabelId is null. If exactly 1, it's that one.
-        const remainingLabels = nextSelection.filter((s) => s.startsWith('label:'));
-        selectedLabelId = remainingLabels.length === 1
-          ? remainingLabels[0].slice('label:'.length)
-          : null;
-      } else if (type === 'banner') {
-        selectedBannerId = null;
-      }
-    }
-    set({ selection: nextSelection, selectedIds, selectedLabelId, selectedBannerId });
+    set({ selection: nextSelection });
   },
 
   /** Toggle one entry — adds if absent, removes if present. */
@@ -1592,14 +1524,9 @@ export const createManifestSlice: StateCreator<
     }
   },
 
-  /** Clear unified selection + all legacy single-slots. */
+  /** Clear unified selection. */
   clearSelection: () => {
-    set({
-      selection: [],
-      selectedIds: [],
-      selectedLabelId: null,
-      selectedBannerId: null,
-    });
+    set({ selection: [] });
   },
 
   /**
@@ -1726,6 +1653,7 @@ export const createManifestSlice: StateCreator<
     // Clear unified selection AND just the now-stale entries from legacy
     // slots. Don't touch selectedIds (controls stay alive) so any
     // controls in the selection remain visible-as-selected after delete.
+    // Phase 6c — single source of truth: filter unified selection.
     set({
       selection: get().selection.filter((sid) => {
         const colon = sid.indexOf(':');
@@ -1735,8 +1663,6 @@ export const createManifestSlice: StateCreator<
         if (type === 'banner' && bannerIds.includes(id)) return false;
         return true;
       }),
-      selectedLabelId: get().selectedLabelId && standaloneLabelIds.includes(get().selectedLabelId!) ? null : get().selectedLabelId,
-      selectedBannerId: get().selectedBannerId && bannerIds.includes(get().selectedBannerId!) ? null : get().selectedBannerId,
     });
   },
 
@@ -2104,9 +2030,8 @@ export const createManifestSlice: StateCreator<
     };
     set((s) => ({
       polishBanners: [...s.polishBanners, newBanner],
-      selectedBannerId: id,
-      selectedIds: [],
-      selectedLabelId: null,
+      // Phase 6c — single source of truth: select just the new banner.
+      selection: [`banner:${id}` as SelectableId],
     }));
     return id;
   },
@@ -2121,7 +2046,8 @@ export const createManifestSlice: StateCreator<
     get().clearScaleBase();
     set((s) => ({
       polishBanners: s.polishBanners.filter((b) => b.id !== id),
-      selectedBannerId: s.selectedBannerId === id ? null : s.selectedBannerId,
+      // Phase 6c — remove just this banner entry from unified selection.
+      selection: s.selection.filter((sid) => sid !== `banner:${id}`),
     }));
   },
 
@@ -2146,14 +2072,14 @@ export const createManifestSlice: StateCreator<
   },
 
   setSelectedBanner: (id) => {
+    // Phase 6c — single source of truth: write directly to selection.
+    // Selecting a banner replaces the entire selection (mutually exclusive
+    // with controls/labels at the legacy single-slot level). Deselecting
+    // (id === null) clears only banner entries, preserving any other.
     set((s) => ({
-      selectedBannerId: id,
-      // Clear other selections so Properties panel routes cleanly
-      selectedIds: id ? [] : s.selectedIds,
-      selectedLabelId: id ? null : s.selectedLabelId,
-      // Phase 2+3: also clear unified `selection` so visual outlines on
-      // labels/controls deselect when the banner takes focus.
-      selection: id ? [`banner:${id}` as SelectableId] : s.selection.filter((sid) => !sid.startsWith('banner:')),
+      selection: id
+        ? [`banner:${id}` as SelectableId]
+        : s.selection.filter((sid) => !sid.startsWith('banner:')),
     }));
   },
 
@@ -2180,17 +2106,18 @@ export const createManifestSlice: StateCreator<
     };
     set((s) => ({
       editorLabels: [...(s.editorLabels as EditorLabel[]), newLabel],
-      selectedLabelId: id,
-      selectedIds: [],
+      // Phase 6c — single source of truth: select just the new label.
+      selection: [`label:${id}` as SelectableId],
     }));
     return id;
   },
 
   alignControls: (mode) => {
     get().clearScaleBase();
-    const { selectedIds, lockedIds, controls } = get();
+    const { selection, lockedIds, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     const lockedSet = new Set(lockedIds);
-    const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
+    const movable = selectedIds.filter((id: string) => controls[id] && !lockedSet.has(id));
     if (movable.length < 2) return;
 
     const ctrls = movable.map(id => controls[id]);
@@ -2254,9 +2181,10 @@ export const createManifestSlice: StateCreator<
 
   distributeControls: (axis) => {
     get().clearScaleBase();
-    const { selectedIds, lockedIds, controls } = get();
+    const { selection, lockedIds, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     const lockedSet = new Set(lockedIds);
-    const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
+    const movable = selectedIds.filter((id: string) => controls[id] && !lockedSet.has(id));
     if (movable.length < 3) return;
 
     const isH = axis === 'horizontal';
@@ -2313,9 +2241,10 @@ export const createManifestSlice: StateCreator<
 
   distributeWithGap: (axis, gap) => {
     get().clearScaleBase();
-    const { selectedIds, lockedIds, controls } = get();
+    const { selection, lockedIds, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     const lockedSet = new Set(lockedIds);
-    const movable = selectedIds.filter(id => controls[id] && !lockedSet.has(id));
+    const movable = selectedIds.filter((id: string) => controls[id] && !lockedSet.has(id));
     if (movable.length < 2) return;
 
     const isH = axis === 'horizontal';
@@ -2349,11 +2278,12 @@ export const createManifestSlice: StateCreator<
 
   alignColumns: () => {
     get().clearScaleBase();
-    const { selectedIds, lockedIds, controls } = get();
+    const { selection, lockedIds, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     const lockedSet = new Set(lockedIds);
     const movable = selectedIds
-      .map((id) => controls[id])
-      .filter((c): c is ControlDef => !!c && !lockedSet.has(c.id));
+      .map((id: string) => controls[id])
+      .filter((c: ControlDef | undefined): c is ControlDef => !!c && !lockedSet.has(c.id));
     if (movable.length < 2) return;
 
     // Cluster selected controls into rows by Y position
@@ -2390,11 +2320,12 @@ export const createManifestSlice: StateCreator<
 
   alignRows: () => {
     get().clearScaleBase();
-    const { selectedIds, lockedIds, controls } = get();
+    const { selection, lockedIds, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     const lockedSet = new Set(lockedIds);
     const movable = selectedIds
-      .map((id) => controls[id])
-      .filter((c): c is ControlDef => !!c && !lockedSet.has(c.id));
+      .map((id: string) => controls[id])
+      .filter((c: ControlDef | undefined): c is ControlDef => !!c && !lockedSet.has(c.id));
     if (movable.length < 2) return;
 
     // Cluster into columns by X position
@@ -2430,7 +2361,8 @@ export const createManifestSlice: StateCreator<
 
   normalizeLabelSpacing: () => {
     get().clearScaleBase();
-    const { selectedIds, controls, editorLabels } = get();
+    const { selection, controls, editorLabels } = get();
+    const selectedIds = selectedControlIds(selection);
     const labels = editorLabels as EditorLabel[];
     const controlScale = (get() as any).controlScale ?? 1;
     const selectedSet = new Set(selectedIds);
@@ -2510,7 +2442,8 @@ export const createManifestSlice: StateCreator<
   },
 
   createGroup: (name) => {
-    const { selectedIds, controlGroups } = get();
+    const { selection, controlGroups } = get();
+    const selectedIds = selectedControlIds(selection);
     if (selectedIds.length < 2) return;
 
     const selectedSet = new Set(selectedIds);
@@ -2535,7 +2468,8 @@ export const createManifestSlice: StateCreator<
   },
 
   ungroupControls: () => {
-    const { selectedIds, controlGroups } = get();
+    const { selection, controlGroups } = get();
+    const selectedIds = selectedControlIds(selection);
     const selectedSet = new Set(selectedIds);
 
     // Remove any group that contains any selected control
@@ -2549,40 +2483,26 @@ export const createManifestSlice: StateCreator<
   setHoveredGroup: (id) => set({ hoveredGroupId: id }),
 
   setSelectedLabel: (id, opts) => {
-    // Default: label selection is mutually exclusive with control/banner.
-    // additive: preserve existing controls so cross-type multi-select works
-    // (shift-clicking a label after picking controls — symmetric with
-    // toggleSelected on the control side).
+    // Phase 6c — single source of truth: write directly to unified selection.
+    //   - id !== null + additive=true: append the label entry (preserve rest)
+    //   - id !== null + additive=false: replace selection with just this label
+    //   - id === null: drop all label entries from selection
     if (id !== null) {
       if (opts?.additive) {
-        // Additive: keep existing selectedIds; add this label to the
-        // unified selection without clearing anything else.
         const sid = `label:${id}` as SelectableId;
         const next = get().selection.includes(sid) ? get().selection : [...get().selection, sid];
-        set({ selectedLabelId: id, selectedBannerId: null, selection: next });
+        set({ selection: next });
       } else {
-        // Replace: clear everything else (selectedIds, banner, unified
-        // selection) and select just this label.
-        set({
-          selectedLabelId: id,
-          selectedIds: [],
-          selectedBannerId: null,
-          selection: [`label:${id}` as SelectableId],
-        });
+        set({ selection: [`label:${id}` as SelectableId] });
       }
     } else {
-      // Deselect the label slot. Also drop label entries from the unified
-      // selection so a programmatic setSelectedLabel(null) cleanly clears
-      // the visual outline driven by `selection.includes('label:...')`.
-      set({
-        selectedLabelId: null,
-        selection: get().selection.filter((sid) => !sid.startsWith('label:')),
-      });
+      set({ selection: get().selection.filter((sid) => !sid.startsWith('label:')) });
     }
   },
 
   bringToFront: () => {
-    const { selectedIds, controls } = get();
+    const { selection, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     if (selectedIds.length === 0) return;
     const allOrders = Object.values(controls).map(c => c.zOrder ?? 0);
     const maxOrder = allOrders.length > 0 ? Math.max(...allOrders) : 0;
@@ -2595,7 +2515,8 @@ export const createManifestSlice: StateCreator<
   },
 
   sendToBack: () => {
-    const { selectedIds, controls } = get();
+    const { selection, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     if (selectedIds.length === 0) return;
     const allOrders = Object.values(controls).map(c => c.zOrder ?? 0);
     const minOrder = allOrders.length > 0 ? Math.min(...allOrders) : 0;
@@ -2608,7 +2529,8 @@ export const createManifestSlice: StateCreator<
   },
 
   bringForward: () => {
-    const { selectedIds, controls } = get();
+    const { selection, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     if (selectedIds.length === 0) return;
     const updated = { ...controls };
     for (const id of selectedIds) {
@@ -2619,7 +2541,8 @@ export const createManifestSlice: StateCreator<
   },
 
   sendBackward: () => {
-    const { selectedIds, controls } = get();
+    const { selection, controls } = get();
+    const selectedIds = selectedControlIds(selection);
     if (selectedIds.length === 0) return;
     const updated = { ...controls };
     for (const id of selectedIds) {
