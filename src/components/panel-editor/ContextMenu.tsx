@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useEditorStore } from './store';
+import { selectedControlIds } from './store/selection-types';
 
 interface MenuState {
   controlId: string;
@@ -112,7 +113,9 @@ export default function ContextMenu() {
 
   const handleGroup = useCallback(() => {
     const store = useEditorStore.getState();
-    if (store.selectedIds.length >= 2) {
+    // Phase 6b — derive control-id list from unified selection.
+    const ids = selectedControlIds(store.selection);
+    if (ids.length >= 2) {
       store.pushSnapshot();
       store.createGroup(`Group ${(store.controlGroups as unknown[]).length + 1}`);
     }
@@ -135,7 +138,8 @@ export default function ContextMenu() {
 
   const handleWrapInContainer = useCallback(() => {
     const store = useEditorStore.getState();
-    const ids = store.selectedIds;
+    // Phase 6b — derive from unified selection.
+    const ids = selectedControlIds(store.selection);
     if (ids.length < 2) return;
     const ctrls = ids.map(id => store.controls[id]).filter(Boolean);
     if (ctrls.length < 2) return;
@@ -291,7 +295,7 @@ export default function ContextMenu() {
   const isLocked = control.locked;
   const isResizeLocked = control.resizeLocked;
   const lockLabel = isLocked ? 'Unlock' : isResizeLocked ? 'Lock Fully' : 'Lock Size';
-  const selectedCount = useEditorStore.getState().selectedIds.length;
+  const selectedCount = selectedControlIds(useEditorStore.getState().selection).length;
 
   // Clamp menu position so it doesn't overflow the viewport.
   // Anchor near the click but ensure the entire menu fits — leave at least

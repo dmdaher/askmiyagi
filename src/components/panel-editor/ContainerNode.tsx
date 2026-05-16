@@ -4,6 +4,7 @@ import { useCallback, useRef } from 'react';
 import { Rnd } from 'react-rnd';
 import { useEditorStore } from './store';
 import type { ControlContainer } from './store';
+import { isControlSelected } from './store/selection-types';
 
 const CONTAINER_STYLES: Record<string, React.CSSProperties> = {
   recessed: {
@@ -33,14 +34,17 @@ interface ContainerNodeProps {
 export default function ContainerNode({ container }: ContainerNodeProps) {
   const zoom = useEditorStore((s) => s.zoom);
   const snapGrid = useEditorStore((s) => s.snapGrid);
-  const selectedIds = useEditorStore((s) => s.selectedIds);
+  const selection = useEditorStore((s) => s.selection);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const moveContainer = useEditorStore((s) => s.moveContainer);
   const resizeContainer = useEditorStore((s) => s.resizeContainer);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const recentlyCreatedContainerId = useEditorStore((s) => s.recentlyCreatedContainerId);
 
-  const isSelected = selectedIds.includes(container.id);
+  // Phase 6b — containers go through setSelectedIds which mirrors with
+  // control: prefix (see setSelectedIds in manifestSlice). isControlSelected
+  // matches the legacy selectedIds.includes(id) contract for these.
+  const isSelected = isControlSelected(selection, container.id);
   const isJustCreated = recentlyCreatedContainerId === container.id;
   const dragStartRef = useRef({ x: 0, y: 0 });
 
