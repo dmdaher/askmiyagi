@@ -286,6 +286,32 @@ export interface ManifestSlice {
   toggleSelection: (id: SelectableId) => void;
   /** Clear the unified selection (and all legacy slots in sync). */
   clearSelection: () => void;
+
+  /**
+   * Move every entity in the unified `selection` by the same (dx, dy).
+   * Entity-agnostic: dispatches to the appropriate per-type mover
+   * (`moveControl`, `moveLabel`, `moveSection`, `movePolishBanner`)
+   * based on each entry's type prefix. Used by:
+   *   - Rnd drag on a selected control when multiple entities are
+   *     selected (drags all of them in lockstep)
+   *   - LabelLayer drag handler when multiple labels are selected
+   *   - Arrow-key nudge in useEditorKeyboard
+   *
+   * Sections and containers participate too. Locked controls are
+   * skipped by their own movers (moveControl returns early on locked).
+   */
+  moveSelection: (dx: number, dy: number) => void;
+
+  /**
+   * Delete every entity in the unified `selection`. Cross-type:
+   * controls go through `deleteSelected` (which handles cross-
+   * reference cleanup — section.childIds, controlGroups, linked
+   * labels), labels go through `deleteLabel`, banners through
+   * `deletePolishBanner`. Sections are NOT deleted by this path —
+   * section deletion has more complex child-handling and stays on
+   * its own explicit action. Clears `selection` after.
+   */
+  deleteSelection: () => void;
   setFocusedSection: (id: string | null) => void;
   addControl: (sectionId: string, type: string, label: string) => void;
   setAllLabelFontSize: (size: number | undefined) => void;
@@ -584,6 +610,11 @@ interface CanvasFields {
   setScaleBase: (base: ScaleBase | null) => void;
   setScaleCumulativeFactor: (factor: number) => void;
   clearScaleBase: () => void;
+  /** Snapshot the current manifest state into undo history. Lives in
+   *  historySlice; exposed here so cross-slice actions (Phase 4
+   *  moveSelection, deleteSelection) can batch one snapshot before
+   *  multi-entity mutations. */
+  pushSnapshot: () => void;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────
@@ -1532,6 +1563,90 @@ export const createManifestSlice: StateCreator<
       selectedLabelId: null,
       selectedBannerId: null,
     });
+  },
+
+  /**
+   * Phase 4 — entity-agnostic move. Dispatches to per-type movers by
+   * prefix. Order is type-deterministic but the visual result is
+   * order-independent because each mover applies the same dx/dy.
+   *
+   * Locked controls are short-circuited inside `moveControl`. Sections
+   * also move (their children stay put in world coordinates per
+   * existing `moveSection` semantics — that's the section behavior
+   * users expect).
+   */
+  moveSelection: (dx, dy) => {
+    const sel = get().selection;
+    if (sel.length === 0) return;
+    // Capture one snapshot for the whole group move so undo restores
+    // pre-move state in one step (not N steps, one per entity).
+    get().pushSnapshot();
+    for (const sid of sel) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      switch (type) {
+        case 'control':
+          get().moveControl(id, dx, dy);
+          break;
+        case 'label':
+          get().moveLabel(id, dx, dy);
+          break;
+        case 'section':
+          get().moveSection(id, dx, dy);
+          break;
+        case 'banner':
+          get().movePolishBanner(id, dx, dy);
+          break;
+        // container, groupLabel: not yet wired — out of scope for Phase 4
+      }
+    }
+  },
+
+  /**
+   * Phase 4 — entity-agnostic delete. Controls go through the existing
+   * `deleteSelected` (which handles `section.childIds`, `controlGroups`
+   * member cleanup, linked-label cascade). Labels and banners use
+   * their own per-type delete actions. Selection is cleared after.
+   *
+   * Sections are intentionally excluded: section deletion needs an
+   * explicit user confirmation + child-controls-handling decision
+   * (move to parent? delete with section?). Keep that on its own
+   * action.
+   */
+  deleteSelection: () => {
+    const sel = get().selection;
+    if (sel.length === 0) return;
+    // One snapshot for the whole batch — undo restores everything.
+    get().pushSnapshot();
+
+    const labelIds: string[] = [];
+    const bannerIds: string[] = [];
+    for (const sid of sel) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      if (type === 'label') labelIds.push(id);
+      else if (type === 'banner') bannerIds.push(id);
+      // controls are handled by deleteSelected via the synced selectedIds
+    }
+
+    // Delete labels first (so linked-label cleanup in deleteSelected
+    // doesn't double-delete the same id).
+    for (const lid of labelIds) get().deleteLabel(lid);
+    for (const bid of bannerIds) get().deletePolishBanner(bid);
+
+    // deleteSelected reads selectedIds (controls + sections in legacy
+    // bag); our selection-sync already populated it. The existing
+    // implementation handles cross-reference cleanup for controls and
+    // skips fully-locked ones.
+    if (get().selectedIds.length > 0) {
+      get().deleteSelected();
+    }
+
+    get().clearSelection();
   },
 
   toggleSelected: (id) => {
