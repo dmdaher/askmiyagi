@@ -25,7 +25,10 @@ function makeSection(id: string, x: number, y: number, w: number, h: number): Se
 
 describe('findNearestSection (via addStandaloneLabel)', () => {
   beforeEach(() => {
-    // Reset store to a known state with two non-overlapping sections
+    // Reset store to a known state with two non-overlapping sections.
+    // snapGrid=1 so moveLabel's snap-to-grid logic is a no-op (this
+    // test suite is about section assignment, not snap behavior — the
+    // Phase 8 snap-grid tests cover the snap math separately).
     useEditorStore.setState({
       sections: {
         'sec-a': makeSection('sec-a', 0, 0, 200, 100),
@@ -37,6 +40,7 @@ describe('findNearestSection (via addStandaloneLabel)', () => {
       controlContainers: [],
       selectedIds: [],
       selectedLabelId: null,
+      snapGrid: 1,
     });
   });
 

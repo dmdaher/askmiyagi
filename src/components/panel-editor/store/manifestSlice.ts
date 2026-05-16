@@ -576,6 +576,10 @@ interface CanvasFields {
   guides: { id: string; orientation: 'horizontal' | 'vertical'; position: number }[];
   scaleBase: ScaleBase | null;
   scaleCumulativeFactor: number;
+  /** Snap-grid (1|2|4|8|16|32). Exposed to manifestSlice so moveLabel /
+   *  moveControl can snap label positions to the grid — see Phase 8 fix
+   *  for the linked-label drift bug at snapGrid=1. */
+  snapGrid: number;
   setScaleBase: (base: ScaleBase | null) => void;
   setScaleCumulativeFactor: (factor: number) => void;
   clearScaleBase: () => void;
@@ -1410,25 +1414,95 @@ export const createManifestSlice: StateCreator<
     });
   },
 
-  /** Add to the unified selection. Idempotent — duplicates ignored. */
+  /**
+   * Add to the unified selection. Idempotent — duplicates ignored.
+   *
+   * Critical: this does NOT go through `setSelection` (which has REPLACE
+   * semantics — it derives legacy fields purely from the new selection
+   * array). Instead, addToSelection PRESERVES existing legacy state and
+   * only adds the new entries' effects.
+   *
+   * Why: when the user has selectedIds=[ctrl1] (set via the legacy
+   * setSelectedIds path, with NO control entries in `selection`), then
+   * shift-clicks a label, naive setSelection(['label:l1']) would see
+   * "selection has no controls" and CLEAR selectedIds, deselecting the
+   * control. That's the user-reported bug. The fix is to add the label
+   * to `selection` AND to selectedLabelId, without touching selectedIds.
+   */
   addToSelection: (ids) => {
     const current = get().selection;
-    const existing = new Set(current);
-    const next = [...current];
+    const existingSet = new Set(current);
+    const nextSelection = [...current];
     for (const sid of ids) {
-      if (!existing.has(sid)) {
-        next.push(sid);
-        existing.add(sid);
+      if (!existingSet.has(sid)) {
+        nextSelection.push(sid);
+        existingSet.add(sid);
       }
     }
-    get().setSelection(next);
+    // Sync legacy fields ADDITIVELY (preserve, never strip)
+    const { selectedIds, selectedLabelId, selectedBannerId } = get();
+    let nextSelectedIds = selectedIds;
+    let nextSelectedLabelId = selectedLabelId;
+    let nextSelectedBannerId = selectedBannerId;
+    for (const sid of ids) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      if (type === 'control' || type === 'section') {
+        if (!nextSelectedIds.includes(id)) nextSelectedIds = [...nextSelectedIds, id];
+      } else if (type === 'label') {
+        // Multi-label is a NEW state legacy can't represent. If selection
+        // now contains exactly one label, set selectedLabelId to it;
+        // otherwise null. The label-count check uses the new selection
+        // (after this add), not the legacy field.
+        const labelCount = nextSelection.filter((s) => s.startsWith('label:')).length;
+        nextSelectedLabelId = labelCount === 1
+          ? nextSelection.find((s) => s.startsWith('label:'))!.slice('label:'.length)
+          : null;
+      } else if (type === 'banner') {
+        nextSelectedBannerId = id;
+      }
+    }
+    set({
+      selection: nextSelection,
+      selectedIds: nextSelectedIds,
+      selectedLabelId: nextSelectedLabelId,
+      selectedBannerId: nextSelectedBannerId,
+    });
   },
 
-  /** Remove entries from the unified selection. */
+  /**
+   * Remove entries from the unified selection. Mirrors addToSelection's
+   * additive semantics: only strips the legacy field state that the
+   * removed entry contributed; doesn't touch unrelated legacy state.
+   */
   removeFromSelection: (ids) => {
     const toRemove = new Set(ids);
-    const next = get().selection.filter((sid) => !toRemove.has(sid));
-    get().setSelection(next);
+    const nextSelection = get().selection.filter((sid) => !toRemove.has(sid));
+    // Compute legacy fields from the remaining unified selection state,
+    // but only for the types being removed. Other legacy fields
+    // (controls touched only via legacy setSelectedIds) stay intact.
+    let { selectedIds, selectedLabelId, selectedBannerId } = get();
+    for (const sid of ids) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      if (type === 'control' || type === 'section') {
+        selectedIds = selectedIds.filter((cid) => cid !== id);
+      } else if (type === 'label') {
+        // After removal: if 0 or 2+ labels remain in unified selection,
+        // selectedLabelId is null. If exactly 1, it's that one.
+        const remainingLabels = nextSelection.filter((s) => s.startsWith('label:'));
+        selectedLabelId = remainingLabels.length === 1
+          ? remainingLabels[0].slice('label:'.length)
+          : null;
+      } else if (type === 'banner') {
+        selectedBannerId = null;
+      }
+    }
+    set({ selection: nextSelection, selectedIds, selectedLabelId, selectedBannerId });
   },
 
   /** Toggle one entry — adds if absent, removes if present. */
@@ -1716,16 +1790,20 @@ export const createManifestSlice: StateCreator<
 
   moveLabel: (labelId, dx, dy) => {
     get().clearScaleBase();
-    // Round to integers — invariant: label positions are always integer.
-    // This lets us detect non-integer positions as "broken data" for auto-repair.
-    // For standalone labels, recompute sectionId from new position so the
-    // Layers-panel tree reflects the drag (cross-boundary moves reassign).
+    // Snap final position to snapGrid — NOT just the delta. The drag
+    // handler in LabelLayer already snaps the delta, but if the label
+    // started off-grid (e.g., from computeLabelPosition rounding to
+    // integer when it created the label), only snapping the delta
+    // perpetuates the off-grid offset forever. Snapping the final
+    // position realigns to the grid on every move — same logic as
+    // Phase 8 applied to linked-label follow in moveControl.
     const sections = get().sections;
+    const snap = get().snapGrid;
     set((s) => ({
       editorLabels: (s.editorLabels as EditorLabel[]).map(l => {
         if (l.id !== labelId) return l;
-        const nx = Math.round(l.x + dx);
-        const ny = Math.round(l.y + dy);
+        const nx = Math.round((l.x + dx) / snap) * snap;
+        const ny = Math.round((l.y + dy) / snap) * snap;
         // Linked labels keep their (unused) sectionId untouched —
         // they derive section from their control, not from this field.
         if (l.controlId) return { ...l, x: nx, y: ny };
