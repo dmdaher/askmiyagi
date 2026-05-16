@@ -1291,6 +1291,31 @@ export const createManifestSlice: StateCreator<
   },
 
   deleteSelected: () => {
+    // Policy: pipeline-generated CONTROLS are never deletable. The
+    // contractor's job is to position controls, not remint their IDs.
+    // Tutorial control-ref drift would catch deletes via pre-push, but
+    // we'd rather prevent at source than after-the-fact. Only decorative
+    // entities (standalone labels, polish banners, containers) plus
+    // linked labels-via-control-delete are deletable, and the
+    // control-delete path itself is now blocked.
+    //
+    // Concretely: deleteSelected used to delete the controls in
+    // `selectedIds`. Now it's a no-op for controls. Standalone labels
+    // are deleted via `deleteLabel` directly; banners via
+    // `deletePolishBanner`; containers via `deleteContainer`. This
+    // action stays in the codebase (referenced by ContextMenu's "Delete"
+    // entry) but does nothing — the menu entry is also hidden for
+    // controls (see ContextMenu changes).
+    return;
+  },
+
+  /**
+   * Legacy controls-only delete kept for reference but no-op'd above.
+   * The original implementation is preserved for any rare admin
+   * scenarios that need bulk-control-delete (e.g., a script that
+   * manually wires it up). Not exposed via UI anywhere.
+   */
+  _legacyDeleteSelected_DEPRECATED: () => {
     get().clearScaleBase();
     const { selectedIds, controls, sections } = get();
     if (selectedIds.length === 0) return;
@@ -1597,7 +1622,12 @@ export const createManifestSlice: StateCreator<
     }
     const labels = get().editorLabels as EditorLabel[];
 
+    // Defensive dedupe: selection should never contain duplicates by design,
+    // but if a caller ever sets a duplicate the entity would move 2x.
+    const seen = new Set<string>();
     for (const sid of sel) {
+      if (seen.has(sid)) continue;
+      seen.add(sid);
       const colon = sid.indexOf(':');
       if (colon <= 0) continue;
       const type = sid.slice(0, colon);
@@ -1641,35 +1671,61 @@ export const createManifestSlice: StateCreator<
   deleteSelection: () => {
     const sel = get().selection;
     if (sel.length === 0) return;
-    // One snapshot for the whole batch — undo restores everything.
-    get().pushSnapshot();
 
-    const labelIds: string[] = [];
+    // Policy (user-explicit): the contractor editor only allows
+    // deletion of DECORATIVE / user-created entities. Pipeline-
+    // generated controls, linked labels (owned by a control), and
+    // sections are NEVER deletable here. Allow-list:
+    //   ✓ standalone labels (controlId === null)
+    //   ✓ polish banners
+    //   ✓ containers (handled by deleteContainer separately, not here)
+    // Everything else in `selection` is silently skipped.
+    const labels = get().editorLabels as EditorLabel[];
+    const standaloneLabelIds: string[] = [];
     const bannerIds: string[] = [];
     for (const sid of sel) {
       const colon = sid.indexOf(':');
       if (colon <= 0) continue;
       const type = sid.slice(0, colon);
       const id = sid.slice(colon + 1);
-      if (type === 'label') labelIds.push(id);
-      else if (type === 'banner') bannerIds.push(id);
-      // controls are handled by deleteSelected via the synced selectedIds
+      if (type === 'label') {
+        const lbl = labels.find((l) => l.id === id);
+        // Linked labels (those with controlId) belong to a control and
+        // can only be removed by removing their control — but we don't
+        // allow that either, so they stay.
+        if (lbl && !lbl.controlId) standaloneLabelIds.push(id);
+      } else if (type === 'banner') {
+        bannerIds.push(id);
+      }
+      // type === 'control' | 'section' | 'container' | 'groupLabel':
+      // intentionally not deletable through this path.
     }
 
-    // Delete labels first (so linked-label cleanup in deleteSelected
-    // doesn't double-delete the same id).
-    for (const lid of labelIds) get().deleteLabel(lid);
+    if (standaloneLabelIds.length === 0 && bannerIds.length === 0) {
+      // Nothing deletable in selection — early-out without snapshotting.
+      return;
+    }
+
+    // One snapshot for the whole batch — undo restores everything.
+    get().pushSnapshot();
+    for (const lid of standaloneLabelIds) get().deleteLabel(lid);
     for (const bid of bannerIds) get().deletePolishBanner(bid);
 
-    // deleteSelected reads selectedIds (controls + sections in legacy
-    // bag); our selection-sync already populated it. The existing
-    // implementation handles cross-reference cleanup for controls and
-    // skips fully-locked ones.
-    if (get().selectedIds.length > 0) {
-      get().deleteSelected();
-    }
-
-    get().clearSelection();
+    // Clear unified selection AND just the now-stale entries from legacy
+    // slots. Don't touch selectedIds (controls stay alive) so any
+    // controls in the selection remain visible-as-selected after delete.
+    set({
+      selection: get().selection.filter((sid) => {
+        const colon = sid.indexOf(':');
+        const type = colon > 0 ? sid.slice(0, colon) : '';
+        const id = colon > 0 ? sid.slice(colon + 1) : '';
+        if (type === 'label' && standaloneLabelIds.includes(id)) return false;
+        if (type === 'banner' && bannerIds.includes(id)) return false;
+        return true;
+      }),
+      selectedLabelId: get().selectedLabelId && standaloneLabelIds.includes(get().selectedLabelId!) ? null : get().selectedLabelId,
+      selectedBannerId: get().selectedBannerId && bannerIds.includes(get().selectedBannerId!) ? null : get().selectedBannerId,
+    });
   },
 
   toggleSelected: (id) => {

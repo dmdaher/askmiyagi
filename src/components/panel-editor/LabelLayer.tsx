@@ -75,6 +75,15 @@ export default function LabelLayer() {
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 
       if (e.key === 'Backspace' || e.key === 'Delete') {
+        // Policy: only STANDALONE labels (no controlId) are deletable.
+        // Linked labels belong to a control and can't be removed
+        // independently. Pipeline-generated.
+        const lbl = (editorLabels as EditorLabel[]).find((l) => l.id === selectedLabel);
+        if (!lbl || lbl.controlId) {
+          // Linked label or missing — silently no-op. User can still
+          // edit/move/icon-change it; just not delete it.
+          return;
+        }
         e.preventDefault();
         pushSnapshot();
         deleteLabel(selectedLabel);

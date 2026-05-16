@@ -144,17 +144,33 @@ async function main() {
   check('label2 moved with label1 (lockstep — cross-type drag)', lbl2Dx === lbl1Dx && lbl2Dy === lbl1Dy, `lbl1 dx=${lbl1Dx},dy=${lbl1Dy} lbl2 dx=${lbl2Dx},dy=${lbl2Dy}`);
   check('control moved with labels (cross-type drag)', ctrlDx === lbl1Dx && ctrlDy === lbl1Dy, `ctrl dx=${ctrlDx},dy=${ctrlDy} vs lbl1 dx=${lbl1Dx},dy=${lbl1Dy}`);
 
-  // ── Scenario 2: real Delete key with mixed selection
-  console.log('\n[2] mixed: 1 control + 2 labels, press Delete — controls actually get deleted today (existing behavior)');
-  // Re-set selection (drag may have changed it)
-  await page.evaluate(({ ctrlId, label1Id }) => {
+  // ── Scenario 2: real Delete key with mixed selection — POLICY:
+  //   * Controls are NEVER deletable (pipeline-generated, protected)
+  //   * Linked labels are NEVER deletable (belong to their control)
+  //   * Standalone labels + banners ARE deletable
+  console.log('\n[2] mixed: control + label, press Delete — control protected, linked label protected, standalone label deleted');
+
+  // Find a standalone label specifically (one with no controlId) so we can
+  // verify it gets deleted while the control is preserved.
+  const standaloneLabelId = await page.evaluate(() => {
     const s = (window as any).useEditorStore.getState();
-    s.setSelection([`control:${ctrlId}`, `label:${label1Id}`]);
-  }, targets);
+    const lbls = (s.editorLabels || []) as any[];
+    return lbls.find((l) => !l.controlId)?.id ?? null;
+  });
+
+  // Re-set selection with the standalone label (if one exists)
+  await page.evaluate(({ ctrlId, label1Id, standaloneId }) => {
+    const s = (window as any).useEditorStore.getState();
+    const labelToTest = standaloneId ?? label1Id;
+    s.setSelection([`control:${ctrlId}`, `label:${labelToTest}`]);
+  }, { ...targets, standaloneId: standaloneLabelId });
+
+  const testLabelId = standaloneLabelId ?? targets.label1Id;
+  const isStandalone = standaloneLabelId !== null;
 
   const preDelete = await readStore(page);
   const ctrlExistedBefore = preDelete.controls[targets.ctrlId] !== undefined;
-  const lblExistedBefore = preDelete.editorLabels.some((l: any) => l.id === targets.label1Id);
+  const lblExistedBefore = preDelete.editorLabels.some((l: any) => l.id === testLabelId);
 
   // Real Delete keypress
   await page.keyboard.press('Backspace');
@@ -162,23 +178,29 @@ async function main() {
 
   const postDelete = await readStore(page);
   const ctrlExistsAfter = postDelete.controls[targets.ctrlId] !== undefined;
-  const lblExistsAfter = postDelete.editorLabels.some((l: any) => l.id === targets.label1Id);
+  const lblExistsAfter = postDelete.editorLabels.some((l: any) => l.id === testLabelId);
   check('precondition: control existed before delete', ctrlExistedBefore, '');
   check('precondition: label existed before delete', lblExistedBefore, '');
-  check('label was deleted via keyboard', !lblExistsAfter, `label1 still exists=${lblExistsAfter}`);
-  check('control was deleted via keyboard (current behavior)', !ctrlExistsAfter, `control still exists=${ctrlExistsAfter}`);
-  check('selection cleared after delete', postDelete.selection.length === 0, `selection=[${postDelete.selection.join(',')}]`);
+  check('control PROTECTED from delete (policy)', ctrlExistsAfter, `control still exists=${ctrlExistsAfter}`);
+  if (isStandalone) {
+    check('standalone label deleted via keyboard', !lblExistsAfter, `label still exists=${lblExistsAfter}`);
+  } else {
+    check('linked label PROTECTED from delete (policy)', lblExistsAfter, `linked label preserved=${lblExistsAfter}`);
+  }
 
-  // ── Scenario 3: Undo restores everything in ONE step
-  console.log('\n[3] Undo after multi-delete — restores everything in 1 step');
-  await page.evaluate(() => {
-    const s = (window as any).useEditorStore.getState();
-    s.undo();
-  });
-  await page.waitForTimeout(200);
-  const postUndo = await readStore(page);
-  check('control restored by 1 undo', postUndo.controls[targets.ctrlId] !== undefined, '');
-  check('label restored by 1 undo', postUndo.editorLabels.some((l: any) => l.id === targets.label1Id), '');
+  // ── Scenario 3: Undo — only meaningful if something was deleted
+  console.log('\n[3] Undo — restores any deleted standalone entries');
+  if (isStandalone && !lblExistsAfter) {
+    await page.evaluate(() => {
+      const s = (window as any).useEditorStore.getState();
+      s.undo();
+    });
+    await page.waitForTimeout(200);
+    const postUndo = await readStore(page);
+    check('standalone label restored by 1 undo', postUndo.editorLabels.some((l: any) => l.id === testLabelId), '');
+  } else {
+    console.log('  (no deletion occurred — undo not applicable in this manifest)');
+  }
 
   // ── Scenario 4: same-type multi-control drag should still work (legacy regression)
   console.log('\n[4] legacy: select 2 controls (no labels), drag one — both move (moveSelectedControls path)');
@@ -218,6 +240,74 @@ async function main() {
     check('control B moved with A (legacy moveSelectedControls)', bDx === aDx && bDy === aDy, `A=(${aDx},${aDy}) B=(${bDx},${bDy})`);
   } else {
     console.log('  (skipped — control not in viewport)');
+  }
+
+  // ── Scenario 5: drag the CONTROL when control + 2 labels are selected.
+  // User reported: "if i multi select a standalone label + a control and
+  // move them somewhere, only the control moves". Tests the inverse of
+  // scenario [1] — drag entry is a control, not a label.
+  console.log('\n[5] mixed: control + 2 labels — drag the CONTROL — all 3 move (the bug user reported)');
+  await page.evaluate(() => (window as any).useEditorStore.getState().clearSelection());
+  // Pick fresh targets (some might have been deleted in [2])
+  const t5 = await page.evaluate(() => {
+    const s = (window as any).useEditorStore.getState();
+    const ctrls = Object.values(s.controls) as any[];
+    const labels = (s.editorLabels || []) as any[];
+    const ctrl = ctrls.find((c) => !labels.some((l) => l.controlId === c.id)) ?? ctrls[0];
+    // Find TWO distinct labels that are not linked to our chosen ctrl.
+    // Prefer standalone, but fall back to any-other-control label provided
+    // the two ids are different (avoids the "same label picked twice" bug).
+    const standalone = labels.filter((l) => !l.controlId);
+    const otherLinked = labels.filter((l) => l.controlId && l.controlId !== ctrl?.id);
+    const pool = [...standalone, ...otherLinked];
+    const distinct: any[] = [];
+    for (const l of pool) {
+      if (distinct.length === 2) break;
+      if (!distinct.some((d) => d.id === l.id)) distinct.push(l);
+    }
+    return {
+      ctrlId: ctrl?.id,
+      label1: distinct[0]?.id,
+      label2: distinct[1]?.id,
+    };
+  });
+  if (t5.ctrlId && t5.label1 && t5.label2 && t5.label1 !== t5.label2) {
+    await page.evaluate(({ ctrlId, label1, label2 }) => {
+      (window as any).useEditorStore.getState().setSelection([`control:${ctrlId}`, `label:${label1}`, `label:${label2}`]);
+    }, t5);
+
+    const before5 = await readStore(page);
+    const ctrlBefore = before5.controls[t5.ctrlId];
+    const lbl1Before = before5.editorLabels.find((l: any) => l.id === t5.label1)!;
+    const lbl2Before = before5.editorLabels.find((l: any) => l.id === t5.label2)!;
+    console.log(`    before: ctrl=(${ctrlBefore.x},${ctrlBefore.y}) lbl1=(${lbl1Before.x},${lbl1Before.y}) lbl2=(${lbl2Before.x},${lbl2Before.y})`);
+
+    // Drag the control (NOT a label this time) via Rnd
+    const ctrlEl = page.locator(`[data-control-id="${t5.ctrlId}"]`).first();
+    const cBox = await ctrlEl.boundingBox();
+    if (cBox) {
+      await page.mouse.move(cBox.x + 5, cBox.y + 5);
+      await page.mouse.down();
+      await page.mouse.move(cBox.x + 25, cBox.y + 15, { steps: 3 });
+      await page.mouse.move(cBox.x + 45, cBox.y + 25, { steps: 3 });
+      await page.mouse.up();
+      await page.waitForTimeout(300);
+
+      const after5 = await readStore(page);
+      const ctrlAfter = after5.controls[t5.ctrlId];
+      const lbl1After = after5.editorLabels.find((l: any) => l.id === t5.label1)!;
+      const lbl2After = after5.editorLabels.find((l: any) => l.id === t5.label2)!;
+      console.log(`    after:  ctrl=(${ctrlAfter.x},${ctrlAfter.y}) lbl1=(${lbl1After.x},${lbl1After.y}) lbl2=(${lbl2After.x},${lbl2After.y})`);
+
+      const ctrlDx = ctrlAfter.x - ctrlBefore.x;
+      const lbl1Dx = lbl1After.x - lbl1Before.x;
+      const lbl2Dx = lbl2After.x - lbl2Before.x;
+      check('control moved (it was dragged)', ctrlDx !== 0, `dx=${ctrlDx}`);
+      check('label1 moved with control (the user-reported bug)', Math.abs(lbl1Dx - ctrlDx) < 2, `ctrl dx=${ctrlDx} lbl1 dx=${lbl1Dx}`);
+      check('label2 moved with control', Math.abs(lbl2Dx - ctrlDx) < 2, `ctrl dx=${ctrlDx} lbl2 dx=${lbl2Dx}`);
+    }
+  } else {
+    console.log('  (skipped — not enough entities)');
   }
 
   console.log(`\n=== Result: ${pass} pass, ${fail} fail ===`);

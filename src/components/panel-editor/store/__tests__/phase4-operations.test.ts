@@ -100,40 +100,46 @@ describe('Phase 4 — moveSelection', () => {
   });
 });
 
-describe('Phase 4 — deleteSelection', () => {
+describe('Phase 4 — deleteSelection (with control-delete prevention policy)', () => {
   beforeEach(() => reset());
 
-  it('deletes a label entry from selection', () => {
+  it('deletes a STANDALONE label entry from selection', () => {
     useEditorStore.getState().setSelection(['label:lbl1' as SelectableId]);
     useEditorStore.getState().deleteSelection();
     expect(useEditorStore.getState().editorLabels.find((l: EditorLabel) => l.id === 'lbl1')).toBeUndefined();
   });
 
-  it('deletes a control via the existing deleteSelected machinery (cleans section.childIds)', () => {
+  it('does NOT delete a control entry (control deletion policy)', () => {
     useEditorStore.getState().setSelection(['control:c1' as SelectableId]);
     useEditorStore.getState().deleteSelection();
-    expect(useEditorStore.getState().controls['c1']).toBeUndefined();
-    expect(useEditorStore.getState().sections['s1'].childIds).not.toContain('c1');
+    expect(useEditorStore.getState().controls['c1']).toBeDefined();
+    // section.childIds unchanged because control wasn't deleted
+    expect(useEditorStore.getState().sections['s1'].childIds).toContain('c1');
   });
 
-  it('deletes mixed selection (control + label + banner) in one batch', () => {
+  it('deletes mixed selection: only standalone labels + banners; controls + linked labels survive', () => {
     useEditorStore.getState().setSelection([
-      'control:c1' as SelectableId,
-      'label:lbl1' as SelectableId,
-      'banner:b1' as SelectableId,
+      'control:c1' as SelectableId,         // protected
+      'label:lbl1' as SelectableId,         // standalone — deletable
+      'label:lbl2' as SelectableId,         // LINKED to c2 — protected
+      'banner:b1' as SelectableId,          // deletable
     ]);
     useEditorStore.getState().deleteSelection();
-    expect(useEditorStore.getState().controls['c1']).toBeUndefined();
+    // Control survives
+    expect(useEditorStore.getState().controls['c1']).toBeDefined();
+    // Standalone label gone
     expect(useEditorStore.getState().editorLabels.find((l: EditorLabel) => l.id === 'lbl1')).toBeUndefined();
+    // Linked label survives (its parent c2 still exists)
+    expect(useEditorStore.getState().editorLabels.find((l: EditorLabel) => l.id === 'lbl2')).toBeDefined();
+    // Banner gone
     expect(useEditorStore.getState().polishBanners).toHaveLength(0);
   });
 
-  it('clears the unified selection after delete', () => {
+  it('clears the now-stale entries from selection but leaves protected entries selected', () => {
     useEditorStore.getState().setSelection(['label:lbl1' as SelectableId, 'control:c1' as SelectableId]);
     useEditorStore.getState().deleteSelection();
-    expect(useEditorStore.getState().selection).toHaveLength(0);
-    expect(useEditorStore.getState().selectedIds).toHaveLength(0);
-    expect(useEditorStore.getState().selectedLabelId).toBeNull();
+    // lbl1 deleted → removed from selection. control:c1 stays.
+    expect(useEditorStore.getState().selection).toEqual(['control:c1']);
   });
 
   it('does nothing on empty selection', () => {
@@ -142,11 +148,11 @@ describe('Phase 4 — deleteSelection', () => {
     expect(useEditorStore.getState().controls).toEqual(before);
   });
 
-  it('deletes a linked label without orphaning its parent control', () => {
+  it('does NOT delete a linked label (linked labels belong to controls, also protected)', () => {
     useEditorStore.getState().setSelection(['label:lbl2' as SelectableId]);
     useEditorStore.getState().deleteSelection();
-    expect(useEditorStore.getState().editorLabels.find((l: EditorLabel) => l.id === 'lbl2')).toBeUndefined();
-    // Parent control should remain
+    // Linked label survives
+    expect(useEditorStore.getState().editorLabels.find((l: EditorLabel) => l.id === 'lbl2')).toBeDefined();
     expect(useEditorStore.getState().controls['c2']).toBeDefined();
   });
 });

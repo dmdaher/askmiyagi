@@ -631,7 +631,20 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         // Plain click on grouped control: select entire group
         setSelectedIds(group.controlIds);
       } else {
-        setSelectedIds([controlId]);
+        // Figma-style: if this control is ALREADY part of a multi-
+        // selection (e.g., a control + labels selected via shift), a
+        // plain click should preserve the selection so the user can
+        // start a multi-drag. Only replace when clicking an unselected
+        // control. Without this, clicking the control wipes the
+        // unified `selection` (via setSelectedIds) and the drag
+        // handler sees only this one control → labels get left behind.
+        // Caught by Phase 4 e2e scenario [5] (drag-control-with-labels).
+        const currentSel = useEditorStore.getState().selection;
+        const ctrlSid = `control:${controlId}` as const;
+        if (!currentSel.includes(ctrlSid)) {
+          setSelectedIds([controlId]);
+        }
+        // else: preserve selection; drag will fan out via moveSelection.
       }
     },
     [controlId, sectionId, toggleSelected, setSelectedIds, setFocusedSection],
