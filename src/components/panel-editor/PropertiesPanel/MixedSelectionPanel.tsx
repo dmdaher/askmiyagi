@@ -6,25 +6,25 @@ import type { SelectableId } from '../store/selection-types';
 
 /**
  * Phase 5 — properties panel for mixed-type selections.
+ * Phase 7 — adds Align + Distribute buttons with auto-anchor logic.
  *
  * Triggered when the unified `selection` array contains entries of
- * 2+ distinct types (e.g., 1 control + 1 label, or 2 controls + a
- * polish banner). Existing single-type forms (`SingleControlProperties`,
- * `MultiControlProperties`, `LabelProperties`, etc.) handle their own
- * homogeneous cases.
+ * 2+ distinct types (e.g., 1 control + 1 label), OR when 2+ standalone
+ * labels are selected (the multi-label-only case that previously fell
+ * through to "Unknown selection").
  *
- * This panel shows a count breakdown so the contractor can confirm
- * what's currently grouped, plus the universally-applicable actions
- * (currently just Delete — Align/Distribute land in Phase 7). The
- * Delete button respects the control-protection policy: it deletes
- * only standalone labels and polish banners; controls and linked
- * labels are preserved.
+ * Align/Distribute rules:
+ *   - Default (no modifier): controls in selection anchor the alignment.
+ *     Labels move to match controls' edge; controls stay put.
+ *   - Shift+Click: bbox mode (Figma-style). Controls might move.
+ *   - Linked labels always skipped (owned by parent control).
+ *   - Distribute always operates on standalone labels only.
  */
 
 type EntityCount = {
   controls: number;
   sections: number;
-  /** Standalone labels (deletable). */
+  /** Standalone labels (deletable + alignable). */
   standaloneLabels: number;
   /** Linked labels (protected — bound to their parent control). */
   linkedLabels: number;
@@ -93,6 +93,9 @@ function formatBreakdown(c: EntityCount): string {
   return parts.join(', ');
 }
 
+const alignBtnClass =
+  'flex h-7 items-center justify-center rounded border border-gray-800 bg-gray-900 px-1 text-gray-300 hover:bg-gray-800 hover:text-gray-100 disabled:opacity-40 disabled:cursor-not-allowed text-[10px]';
+
 export default function MixedSelectionPanel() {
   const selection = useEditorStore((s) => s.selection);
   const editorLabels = useEditorStore((s) => s.editorLabels) as Array<{
@@ -100,12 +103,49 @@ export default function MixedSelectionPanel() {
     controlId?: string | null;
   }>;
   const deleteSelection = useEditorStore((s) => s.deleteSelection);
+  const alignSelection = useEditorStore((s) => s.alignSelection);
+  const distributeSelection = useEditorStore((s) => s.distributeSelection);
 
   const counts = useMemo(() => tally(selection, editorLabels), [selection, editorLabels]);
   const total = selection.length;
   const breakdown = formatBreakdown(counts);
   const deletableCount = counts.standaloneLabels + counts.banners;
   const protectedCount = total - deletableCount;
+
+  // Phase 7 — what can align/distribute?
+  //
+  // Align needs:
+  //   - at least 1 STANDALONE label (the only thing that can move), AND
+  //   - at least one ANCHOR present (control or linked label) OR
+  //     another standalone label for bbox-style alignment among labels.
+  //
+  // Linked labels count as anchors (they contribute their position to
+  // the target edge but don't move themselves). User-asked: "when I
+  // select one standalone + one linked label, why is align disabled?"
+  // The fix is to count linked labels in the anchor pool.
+  const hasMovable = counts.standaloneLabels >= 1;
+  const hasAnchor = counts.controls > 0 || counts.linkedLabels > 0;
+  const canAlign = hasMovable && (hasAnchor || counts.standaloneLabels >= 2);
+  // Hint shows "labels move to control" only when CONTROLS specifically
+  // anchor (linked-label anchoring is a more subtle case the hint doesn't
+  // need to spell out — the "linked label acts as anchor" indicator below
+  // covers it).
+  const hasAnchorControls = counts.controls > 0 && counts.standaloneLabels > 0;
+  const canDistribute = counts.standaloneLabels >= 3;
+  const linkedSkipped = counts.linkedLabels;
+
+  const handleAlign = (
+    mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom',
+  ) => () => {
+    // Phase 7 — single mode: auto-anchor. Controls and linked labels in
+    // selection anchor the alignment; standalone labels move to match.
+    // The previous Shift+Click bbox-mode escape hatch was removed as
+    // un-discoverable UI debt — contractor workflow is anchor-only by
+    // design (controls are hardware-positioned and shouldn't move from
+    // an align operation). The action still accepts opts.anchor='bbox'
+    // for any future programmatic use.
+    alignSelection(mode);
+  };
 
   return (
     <div className="space-y-3" data-testid="mixed-selection-panel">
@@ -116,6 +156,126 @@ export default function MixedSelectionPanel() {
         <div className="text-sm text-gray-200">{total} selected</div>
         <div className="text-xs text-gray-400 mt-1" data-testid="mixed-selection-breakdown">
           {breakdown}
+        </div>
+      </div>
+
+      {/* Phase 7 — anchor hint surfaces when controls are present alongside
+          standalone labels. Tells the contractor what the align buttons
+          will actually do (which would otherwise be invisible behavior). */}
+      {hasAnchorControls && (
+        <div
+          className="rounded border border-blue-900/40 bg-blue-950/30 px-2 py-1.5 text-[10px] text-blue-200 leading-relaxed"
+          data-testid="mixed-selection-anchor-hint"
+        >
+          Labels move to match the selected control{counts.controls > 1 ? 's' : ''}; control{counts.controls > 1 ? 's' : ''} stay{counts.controls > 1 ? '' : 's'} in place.
+        </div>
+      )}
+
+      {/* Phase 7 — align buttons */}
+      <div className="border-t border-gray-800 pt-3">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
+          Align
+        </div>
+        <div className="grid grid-cols-3 gap-1 mb-2" data-testid="mixed-selection-align-row1">
+          <button
+            type="button"
+            className={alignBtnClass}
+            onClick={handleAlign('left')}
+            disabled={!canAlign}
+            title="Align left edges"
+            data-testid="align-left"
+          >
+            ⊢
+          </button>
+          <button
+            type="button"
+            className={alignBtnClass}
+            onClick={handleAlign('center-x')}
+            disabled={!canAlign}
+            title="Align horizontal centers"
+            data-testid="align-center-x"
+          >
+            ↔
+          </button>
+          <button
+            type="button"
+            className={alignBtnClass}
+            onClick={handleAlign('right')}
+            disabled={!canAlign}
+            title="Align right edges"
+            data-testid="align-right"
+          >
+            ⊣
+          </button>
+        </div>
+        <div className="grid grid-cols-3 gap-1" data-testid="mixed-selection-align-row2">
+          <button
+            type="button"
+            className={alignBtnClass}
+            onClick={handleAlign('top')}
+            disabled={!canAlign}
+            title="Align top edges"
+            data-testid="align-top"
+          >
+            ⊤
+          </button>
+          <button
+            type="button"
+            className={alignBtnClass}
+            onClick={handleAlign('center-y')}
+            disabled={!canAlign}
+            title="Align vertical centers"
+            data-testid="align-center-y"
+          >
+            ↕
+          </button>
+          <button
+            type="button"
+            className={alignBtnClass}
+            onClick={handleAlign('bottom')}
+            disabled={!canAlign}
+            title="Align bottom edges"
+            data-testid="align-bottom"
+          >
+            ⊥
+          </button>
+        </div>
+        {linkedSkipped > 0 && (
+          <div
+            className="mt-2 text-[10px] text-gray-500"
+            data-testid="mixed-selection-linked-skipped"
+          >
+            {linkedSkipped} linked label{linkedSkipped > 1 ? 's' : ''} act{linkedSkipped > 1 ? '' : 's'} as anchor but won{'’'}t move (linked labels follow their control).
+          </div>
+        )}
+      </div>
+
+      {/* Phase 7 — distribute buttons */}
+      <div className="border-t border-gray-800 pt-3">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
+          Distribute (standalone labels)
+        </div>
+        <div className="grid grid-cols-2 gap-1">
+          <button
+            type="button"
+            className={alignBtnClass}
+            onClick={() => distributeSelection('horizontal')}
+            disabled={!canDistribute}
+            title={canDistribute ? 'Equal horizontal gaps' : 'Need 3+ standalone labels'}
+            data-testid="distribute-horizontal"
+          >
+            ↔ Horizontal
+          </button>
+          <button
+            type="button"
+            className={alignBtnClass}
+            onClick={() => distributeSelection('vertical')}
+            disabled={!canDistribute}
+            title={canDistribute ? 'Equal vertical gaps' : 'Need 3+ standalone labels'}
+            data-testid="distribute-vertical"
+          >
+            ↕ Vertical
+          </button>
         </div>
       </div>
 
@@ -147,8 +307,7 @@ export default function MixedSelectionPanel() {
 
       <div className="border-t border-gray-800 pt-3">
         <div className="text-[10px] text-gray-500 leading-relaxed">
-          Tip: drag any selected item to move all together. Align and
-          distribute land in a future update.
+          Tip: drag any selected item to move all together.
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { computeLabelPosition } from '@/lib/label-position';
 import type { EditorLabel, ControlGroup, PolishBanner } from './historySlice';
 import type { SelectableId } from './selection-types';
 import { selectedControlIds } from './selection-types';
+import { planAlignment, applyAlignToRect, planDistribution } from './selection-align';
 import type {
   ManifestControl,
   ManifestSection,
@@ -351,6 +352,23 @@ export interface ManifestSlice {
   initLabelsFromControls: () => void;
   setLabelPosition: (ids: string[], position: ControlDef['labelPosition']) => void;
   alignControls: (mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom') => void;
+  /**
+   * Phase 7 — entity-agnostic alignment with auto-anchor.
+   * Default (anchor='auto'): controls in selection anchor; standalone
+   * labels align to controls' bbox edge; controls don't move.
+   * Shift+Align (anchor='bbox'): treat all selected uniformly (Figma mode).
+   * Linked labels always skipped (they're owned by their parent control).
+   */
+  alignSelection: (
+    mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom',
+    opts?: { anchor?: 'auto' | 'bbox' },
+  ) => void;
+  /**
+   * Phase 7 — entity-agnostic distribute. Distributes standalone labels
+   * only; endpoints stay, middle ones shift to create equal gaps.
+   * Controls + linked labels stay put.
+   */
+  distributeSelection: (axis: 'horizontal' | 'vertical') => void;
   distributeControls: (axis: 'horizontal' | 'vertical') => void;
   distributeWithGap: (axis: 'horizontal' | 'vertical', gap: number) => void;
   alignColumns: () => void;
@@ -2180,6 +2198,123 @@ export const createManifestSlice: StateCreator<
       get().editorLabels as EditorLabel[], controls, updated, movable, controlScale,
     );
     set({ controls: updated, editorLabels: updatedLabels });
+  },
+
+  /**
+   * Phase 7 — entity-agnostic alignment. Handles mixed selections via
+   * the auto-anchor rule (controls anchor; labels follow). Pure-label
+   * selections fall back to bbox mode. Shift+Align forces bbox mode.
+   */
+  alignSelection: (mode, opts) => {
+    get().clearScaleBase();
+    const { selection, controls, editorLabels } = get();
+    const labels = editorLabels as EditorLabel[];
+    // Phase 7 fix — controls render at `controlScale`; align math must use
+    // the VISIBLE rect, not the bbox. Without this, align-bottom puts
+    // standalone labels far below the visible knob on fantom-06.
+    const controlScale = (get() as any).controlScale ?? 1;
+
+    const plan = planAlignment(
+      {
+        selection,
+        controls: controls as any,
+        editorLabels: labels.map((l) => ({
+          id: l.id,
+          x: l.x,
+          y: l.y,
+          w: l.w ?? 50,
+          h: l.fontSize ?? 12, // align math uses fontSize as label height
+          controlId: l.controlId ?? null,
+        })),
+        controlScale,
+      },
+      mode,
+      opts,
+    );
+
+    if (plan.target === null || (plan.movableLabelIds.length === 0 && plan.movableControlIds.length === 0)) {
+      // Nothing to do (e.g., only linked labels selected, or anchor
+      // mode with no standalone labels to move).
+      return;
+    }
+
+    get().pushSnapshot();
+
+    // Apply to standalone labels.
+    let nextLabels = labels;
+    if (plan.movableLabelIds.length > 0) {
+      const movableSet = new Set(plan.movableLabelIds);
+      nextLabels = labels.map((l) => {
+        if (!movableSet.has(l.id)) return l;
+        const r = { x: l.x, y: l.y, w: l.w ?? 50, h: l.fontSize ?? 12 };
+        const next = applyAlignToRect(r, mode, plan.target!);
+        return { ...l, x: next.x, y: next.y };
+      });
+    }
+
+    // Apply to controls (only in bbox mode).
+    let nextControls = controls;
+    if (plan.movableControlIds.length > 0) {
+      const ctrlScale = (get() as any).controlScale ?? 1;
+      const updatedCtrls = { ...controls };
+      for (const id of plan.movableControlIds) {
+        const c = updatedCtrls[id];
+        if (!c) continue;
+        const next = applyAlignToRect(
+          { x: c.x, y: c.y, w: c.w, h: c.h },
+          mode,
+          plan.target!,
+        );
+        updatedCtrls[id] = { ...c, x: next.x, y: next.y };
+      }
+      // Linked labels follow their parent control via alignLinkedLabels.
+      nextLabels = alignLinkedLabels(
+        nextLabels,
+        controls,
+        updatedCtrls,
+        plan.movableControlIds,
+        ctrlScale,
+      );
+      nextControls = updatedCtrls;
+    }
+
+    set({ controls: nextControls, editorLabels: nextLabels });
+  },
+
+  /**
+   * Phase 7 — entity-agnostic distribute. Distributes only standalone
+   * labels (controls + linked labels stay put). 3+ standalone labels
+   * required; endpoints stay, middle ones shift to create equal gaps.
+   */
+  distributeSelection: (axis) => {
+    get().clearScaleBase();
+    const { selection, editorLabels } = get();
+    const labels = editorLabels as EditorLabel[];
+
+    const plan = planDistribution(
+      {
+        selection,
+        editorLabels: labels.map((l) => ({
+          id: l.id,
+          x: l.x,
+          y: l.y,
+          w: l.w ?? 50,
+          h: l.fontSize ?? 12,
+          controlId: l.controlId ?? null,
+        })),
+      },
+      axis,
+    );
+
+    if (plan.updates.length === 0) return;
+
+    get().pushSnapshot();
+    const byId = new Map(plan.updates.map((u) => [u.id, u]));
+    const nextLabels = labels.map((l) => {
+      const u = byId.get(l.id);
+      return u ? { ...l, x: u.x, y: u.y } : l;
+    });
+    set({ editorLabels: nextLabels });
   },
 
   distributeControls: (axis) => {
