@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import { computeLabelPosition } from '@/lib/label-position';
 import type { EditorLabel, ControlGroup, PolishBanner } from './historySlice';
+import type { SelectableId } from './selection-types';
 import type {
   ManifestControl,
   ManifestSection,
@@ -234,6 +235,17 @@ export interface ManifestSlice {
   hoveredGroupId: string | null;
   selectedLabelId: string | null;
 
+  /**
+   * Unified Figma-style selection. Prefixed-ID array (e.g. `'control:cutoff'`,
+   * `'label:lbl-12'`). MS1: additive — coexists with selectedIds/selectedLabelId
+   * etc., not yet read by any consumer. Subsequent commits wire it into
+   * DragSelectRect, click handlers, and keyboard shortcuts.
+   *
+   * See `selection-types.ts` for helpers (formatSelectableId,
+   * parseSelectableId, selectionOfType, etc.).
+   */
+  selection: SelectableId[];
+
   // Actions
   loadFromManifest: (manifest: MasterManifestInput) => void;
   moveControl: (id: string, dx: number, dy: number) => void;
@@ -251,6 +263,29 @@ export interface ManifestSlice {
   setLockMode: (ids: string[], mode: 'unlocked' | 'size-locked' | 'fully-locked') => void;
   setSelectedIds: (ids: string[]) => void;
   toggleSelected: (id: string) => void;
+  /**
+   * Replace the unified selection set. Phase 2 wires this to also sync
+   * legacy fields (selectedLabelId, selectedBannerId) so existing
+   * consumers don't break.
+   */
+  setSelection: (selection: SelectableId[]) => void;
+  /**
+   * Add entries to the unified selection (idempotent: duplicates ignored).
+   * Use for shift-click semantics. Syncs legacy fields automatically.
+   */
+  addToSelection: (ids: SelectableId[]) => void;
+  /**
+   * Remove entries from the unified selection (no-op if not present).
+   * Use for shift-click on already-selected items.
+   */
+  removeFromSelection: (ids: SelectableId[]) => void;
+  /**
+   * Toggle a single entry in the unified selection. Convenience for the
+   * common shift-click case.
+   */
+  toggleSelection: (id: SelectableId) => void;
+  /** Clear the unified selection (and all legacy slots in sync). */
+  clearSelection: () => void;
   setFocusedSection: (id: string | null) => void;
   addControl: (sectionId: string, type: string, label: string) => void;
   setAllLabelFontSize: (size: number | undefined) => void;
@@ -298,7 +333,21 @@ export interface ManifestSlice {
   createGroup: (name: string) => void;
   ungroupControls: () => void;
   setHoveredGroup: (id: string | null) => void;
-  setSelectedLabel: (id: string | null) => void;
+  /**
+   * Select a label.
+   *
+   * Default (additive=false): mutually exclusive with control/banner
+   * selection — clears `selectedIds` and `selectedBannerId`.
+   *
+   * additive=true: preserves existing `selectedIds` so a contractor can
+   * shift-click a label after selecting controls (Figma-style cross-type
+   * multi-select). Symmetric with `toggleSelected` on controls, which
+   * already preserves `selectedLabelId`.
+   *
+   * Passing `null` always just clears the label selection (no additive
+   * variant needed — clearing IS the safe default).
+   */
+  setSelectedLabel: (id: string | null, opts?: { additive?: boolean }) => void;
   bringToFront: () => void;
   sendToBack: () => void;
   bringForward: () => void;
@@ -527,6 +576,10 @@ interface CanvasFields {
   guides: { id: string; orientation: 'horizontal' | 'vertical'; position: number }[];
   scaleBase: ScaleBase | null;
   scaleCumulativeFactor: number;
+  /** Snap-grid (1|2|4|8|16|32). Exposed to manifestSlice so moveLabel /
+   *  moveControl can snap label positions to the grid — see Phase 8 fix
+   *  for the linked-label drift bug at snapGrid=1. */
+  snapGrid: number;
   setScaleBase: (base: ScaleBase | null) => void;
   setScaleCumulativeFactor: (factor: number) => void;
   clearScaleBase: () => void;
@@ -565,6 +618,7 @@ export const createManifestSlice: StateCreator<
   focusedSectionId: null,
   hoveredGroupId: null,
   selectedLabelId: null,
+  selection: [],
 
   // ── Actions ─────────────────────────────────────────────────────────────
 
@@ -1310,7 +1364,166 @@ export const createManifestSlice: StateCreator<
     set({ controls: updated, lockedIds: newLockedIds });
   },
 
-  setSelectedIds: (ids) => set({ selectedIds: ids, selectedLabelId: ids.length > 0 ? null : get().selectedLabelId, selectedBannerId: ids.length > 0 ? null : get().selectedBannerId }),
+  setSelectedIds: (ids) => set({
+    selectedIds: ids,
+    selectedLabelId: ids.length > 0 ? null : get().selectedLabelId,
+    selectedBannerId: ids.length > 0 ? null : get().selectedBannerId,
+    // Phase 2+3 sync: setSelectedIds is the REPLACE path used by every
+    // entity's plain-click handler (controls, sections, etc.). Clear the
+    // unified `selection` array so previously-selected labels/banners
+    // deselect when the user clicks a different entity. Without this,
+    // LabelLayer's outline check (selection.includes('label:id')) keeps
+    // the label outlined forever — the user-reported bug.
+    selection: [],
+  }),
+
+  /**
+   * Replace the unified selection set + sync legacy fields.
+   *
+   * Sync rules (so existing PropertiesPanel / LayersPanel / drag /
+   * Properties forms keep working unchanged):
+   *  - selectedIds = control entries only
+   *  - selectedLabelId = first label entry if exactly one label is in
+   *    the selection; null when 0 or 2+ labels selected (multi-label is
+   *    a new state legacy fields can't represent — that's the whole
+   *    point of Phase 2)
+   *  - selectedBannerId = banner entry if any
+   *
+   * Consumers reading the legacy fields see the single-select case
+   * unchanged. Multi-label and mixed selections only show up to
+   * consumers that read the new `selection` array directly.
+   */
+  setSelection: (selection) => {
+    const controlIds: string[] = [];
+    const labelIds: string[] = [];
+    let bannerId: string | null = null;
+    for (const sid of selection) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      if (type === 'control' || type === 'section') controlIds.push(id);
+      else if (type === 'label') labelIds.push(id);
+      else if (type === 'banner') bannerId = id;
+    }
+    set({
+      selection,
+      selectedIds: controlIds,
+      selectedLabelId: labelIds.length === 1 ? labelIds[0] : null,
+      selectedBannerId: bannerId,
+    });
+  },
+
+  /**
+   * Add to the unified selection. Idempotent — duplicates ignored.
+   *
+   * Critical: this does NOT go through `setSelection` (which has REPLACE
+   * semantics — it derives legacy fields purely from the new selection
+   * array). Instead, addToSelection PRESERVES existing legacy state and
+   * only adds the new entries' effects.
+   *
+   * Why: when the user has selectedIds=[ctrl1] (set via the legacy
+   * setSelectedIds path, with NO control entries in `selection`), then
+   * shift-clicks a label, naive setSelection(['label:l1']) would see
+   * "selection has no controls" and CLEAR selectedIds, deselecting the
+   * control. That's the user-reported bug. The fix is to add the label
+   * to `selection` AND to selectedLabelId, without touching selectedIds.
+   */
+  addToSelection: (ids) => {
+    const current = get().selection;
+    const existingSet = new Set(current);
+    const nextSelection = [...current];
+    for (const sid of ids) {
+      if (!existingSet.has(sid)) {
+        nextSelection.push(sid);
+        existingSet.add(sid);
+      }
+    }
+    // Sync legacy fields ADDITIVELY (preserve, never strip)
+    const { selectedIds, selectedLabelId, selectedBannerId } = get();
+    let nextSelectedIds = selectedIds;
+    let nextSelectedLabelId = selectedLabelId;
+    let nextSelectedBannerId = selectedBannerId;
+    for (const sid of ids) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      if (type === 'control' || type === 'section') {
+        if (!nextSelectedIds.includes(id)) nextSelectedIds = [...nextSelectedIds, id];
+      } else if (type === 'label') {
+        // Multi-label is a NEW state legacy can't represent. If selection
+        // now contains exactly one label, set selectedLabelId to it;
+        // otherwise null. The label-count check uses the new selection
+        // (after this add), not the legacy field.
+        const labelCount = nextSelection.filter((s) => s.startsWith('label:')).length;
+        nextSelectedLabelId = labelCount === 1
+          ? nextSelection.find((s) => s.startsWith('label:'))!.slice('label:'.length)
+          : null;
+      } else if (type === 'banner') {
+        nextSelectedBannerId = id;
+      }
+    }
+    set({
+      selection: nextSelection,
+      selectedIds: nextSelectedIds,
+      selectedLabelId: nextSelectedLabelId,
+      selectedBannerId: nextSelectedBannerId,
+    });
+  },
+
+  /**
+   * Remove entries from the unified selection. Mirrors addToSelection's
+   * additive semantics: only strips the legacy field state that the
+   * removed entry contributed; doesn't touch unrelated legacy state.
+   */
+  removeFromSelection: (ids) => {
+    const toRemove = new Set(ids);
+    const nextSelection = get().selection.filter((sid) => !toRemove.has(sid));
+    // Compute legacy fields from the remaining unified selection state,
+    // but only for the types being removed. Other legacy fields
+    // (controls touched only via legacy setSelectedIds) stay intact.
+    let { selectedIds, selectedLabelId, selectedBannerId } = get();
+    for (const sid of ids) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      if (type === 'control' || type === 'section') {
+        selectedIds = selectedIds.filter((cid) => cid !== id);
+      } else if (type === 'label') {
+        // After removal: if 0 or 2+ labels remain in unified selection,
+        // selectedLabelId is null. If exactly 1, it's that one.
+        const remainingLabels = nextSelection.filter((s) => s.startsWith('label:'));
+        selectedLabelId = remainingLabels.length === 1
+          ? remainingLabels[0].slice('label:'.length)
+          : null;
+      } else if (type === 'banner') {
+        selectedBannerId = null;
+      }
+    }
+    set({ selection: nextSelection, selectedIds, selectedLabelId, selectedBannerId });
+  },
+
+  /** Toggle one entry — adds if absent, removes if present. */
+  toggleSelection: (id) => {
+    const current = get().selection;
+    if (current.includes(id)) {
+      get().removeFromSelection([id]);
+    } else {
+      get().addToSelection([id]);
+    }
+  },
+
+  /** Clear unified selection + all legacy single-slots. */
+  clearSelection: () => {
+    set({
+      selection: [],
+      selectedIds: [],
+      selectedLabelId: null,
+      selectedBannerId: null,
+    });
+  },
 
   toggleSelected: (id) => {
     const { selectedIds } = get();
@@ -1577,16 +1790,20 @@ export const createManifestSlice: StateCreator<
 
   moveLabel: (labelId, dx, dy) => {
     get().clearScaleBase();
-    // Round to integers — invariant: label positions are always integer.
-    // This lets us detect non-integer positions as "broken data" for auto-repair.
-    // For standalone labels, recompute sectionId from new position so the
-    // Layers-panel tree reflects the drag (cross-boundary moves reassign).
+    // Snap final position to snapGrid — NOT just the delta. The drag
+    // handler in LabelLayer already snaps the delta, but if the label
+    // started off-grid (e.g., from computeLabelPosition rounding to
+    // integer when it created the label), only snapping the delta
+    // perpetuates the off-grid offset forever. Snapping the final
+    // position realigns to the grid on every move — same logic as
+    // Phase 8 applied to linked-label follow in moveControl.
     const sections = get().sections;
+    const snap = get().snapGrid;
     set((s) => ({
       editorLabels: (s.editorLabels as EditorLabel[]).map(l => {
         if (l.id !== labelId) return l;
-        const nx = Math.round(l.x + dx);
-        const ny = Math.round(l.y + dy);
+        const nx = Math.round((l.x + dx) / snap) * snap;
+        const ny = Math.round((l.y + dy) / snap) * snap;
         // Linked labels keep their (unused) sectionId untouched —
         // they derive section from their control, not from this field.
         if (l.controlId) return { ...l, x: nx, y: ny };
@@ -1715,6 +1932,9 @@ export const createManifestSlice: StateCreator<
       // Clear other selections so Properties panel routes cleanly
       selectedIds: id ? [] : s.selectedIds,
       selectedLabelId: id ? null : s.selectedLabelId,
+      // Phase 2+3: also clear unified `selection` so visual outlines on
+      // labels/controls deselect when the banner takes focus.
+      selection: id ? [`banner:${id}` as SelectableId] : s.selection.filter((sid) => !sid.startsWith('banner:')),
     }));
   },
 
@@ -2109,12 +2329,36 @@ export const createManifestSlice: StateCreator<
 
   setHoveredGroup: (id) => set({ hoveredGroupId: id }),
 
-  setSelectedLabel: (id) => {
-    // Selecting a label clears control + banner selection (all mutually exclusive).
+  setSelectedLabel: (id, opts) => {
+    // Default: label selection is mutually exclusive with control/banner.
+    // additive: preserve existing controls so cross-type multi-select works
+    // (shift-clicking a label after picking controls — symmetric with
+    // toggleSelected on the control side).
     if (id !== null) {
-      set({ selectedLabelId: id, selectedIds: [], selectedBannerId: null });
+      if (opts?.additive) {
+        // Additive: keep existing selectedIds; add this label to the
+        // unified selection without clearing anything else.
+        const sid = `label:${id}` as SelectableId;
+        const next = get().selection.includes(sid) ? get().selection : [...get().selection, sid];
+        set({ selectedLabelId: id, selectedBannerId: null, selection: next });
+      } else {
+        // Replace: clear everything else (selectedIds, banner, unified
+        // selection) and select just this label.
+        set({
+          selectedLabelId: id,
+          selectedIds: [],
+          selectedBannerId: null,
+          selection: [`label:${id}` as SelectableId],
+        });
+      }
     } else {
-      set({ selectedLabelId: null });
+      // Deselect the label slot. Also drop label entries from the unified
+      // selection so a programmatic setSelectedLabel(null) cleanly clears
+      // the visual outline driven by `selection.includes('label:...')`.
+      set({
+        selectedLabelId: null,
+        selection: get().selection.filter((sid) => !sid.startsWith('label:')),
+      });
     }
   },
 

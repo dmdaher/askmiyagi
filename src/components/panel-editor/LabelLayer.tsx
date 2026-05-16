@@ -23,6 +23,18 @@ export default function LabelLayer() {
   const selectedLabel = useEditorStore((s) => s.selectedLabelId);
   const setSelectedLabel = useEditorStore((s) => s.setSelectedLabel);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
+  // Phase 3 (label-multi-select wiring): read the unified selection set
+  // and the new primitive actions. Shift-click on a label adds it to
+  // `selection`, supporting BOTH standalone and linked labels (no
+  // selectedLabelId clearing — multi-label is a first-class state now).
+  const selection = useEditorStore((s) => s.selection);
+  const setSelection = useEditorStore((s) => s.setSelection);
+  // toggleSelection uses get() internally so it always sees fresh state —
+  // avoids the stale-closure bug where useCallback captures `selection`
+  // from initial render and never sees subsequent updates. Caught by
+  // e2e/label-multiselect.spec.ts scenario [3] (shift-click same label
+  // twice should toggle it off).
+  const toggleSelection = useEditorStore((s) => s.toggleSelection);
   // Set by flashLabelCreated for ~2.5s after a new label is added; drives
   // the "flash" outline below so the contractor can see where it landed.
   const recentlyCreatedLabelId = useEditorStore((s) => s.recentlyCreatedLabelId);
@@ -93,7 +105,31 @@ export default function LabelLayer() {
       setSelectedIds([label.controlId]);
       return;
     }
-    setSelectedLabel(label.id);
+    // Phase 3 — shift/cmd-click writes to the unified `selection` array,
+    // not just `selectedLabelId`. This is what enables label-to-label
+    // multi-select (the bug the user hit: 2nd label click replaces 1st).
+    //
+    // Plain click: REPLACE selection with [this label] (legacy behavior).
+    // Shift/Cmd-click: TOGGLE this label in the unified selection — adds
+    // if absent, removes if present. Works across BOTH standalone and
+    // linked labels because `selection` is type-agnostic.
+    //
+    // `setSelection` and `addToSelection` keep legacy fields
+    // (selectedIds, selectedLabelId, selectedBannerId) in sync so the
+    // rest of the editor (PropertiesPanel routing, drag, etc.) doesn't
+    // break during the phased migration.
+    const isMulti = e.shiftKey || e.metaKey || e.ctrlKey;
+    const labelSid = `label:${label.id}` as const;
+    if (isMulti) {
+      // toggleSelection reads state fresh via get() — safe against
+      // useCallback stale-closure on the `selection` value.
+      toggleSelection(labelSid);
+    } else {
+      // Plain click: replace selection with just this label.
+      // Legacy callers that read selectedLabelId still see the right
+      // single-selection state (synced by setSelection).
+      setSelection([labelSid]);
+    }
     setDragging(label.id);
     dragStart.current = {
       x: e.clientX,
@@ -106,8 +142,13 @@ export default function LabelLayer() {
       if (!dragStart.current) return;
       const rawDx = (me.clientX - dragStart.current.x) / zoom;
       const rawDy = (me.clientY - dragStart.current.y) / zoom;
-      // Snap to grid — same grid as controls
-      const snap = snapGrid ?? 1;
+      // Read snapGrid FRESH from the store on every mousemove. The
+      // useCallback that wraps this handler captures the snapGrid value
+      // from the render where the user first touched the label —
+      // changing snap-grid mid-session (via the toolbar) wouldn't take
+      // effect until the next render. Stale-closure bug surfaced in the
+      // user-reported "labels don't follow snap to grid" complaint.
+      const snap = useEditorStore.getState().snapGrid ?? 1;
       const dx = Math.round(rawDx / snap) * snap;
       const dy = Math.round(rawDy / snap) * snap;
       if (dx === 0 && dy === 0) return;
@@ -180,19 +221,37 @@ export default function LabelLayer() {
               }}
               opacity={label.hidden ? 0.25 : (dragging === label.id ? 0.7 : 1)}
               outline={
-                selectedLabel === label.id
+                // Phase 3 — label is "selected" if its SelectableId is in
+                // the unified `selection` array OR (legacy single-select)
+                // selectedLabelId points at it. Both paths produce the
+                // same blue outline; the multi-select case lights up
+                // every label simultaneously.
+                selection.includes(`label:${label.id}`) || selectedLabel === label.id
                   ? '1px solid rgba(59,130,246,0.8)'
                   : label.hidden
                     ? '1px dashed rgba(251,191,36,0.4)'
                     : 'none'
               }
-              zIndex={dragging === label.id ? 200 : selectedLabel === label.id ? 100 : 60}
+              zIndex={
+                dragging === label.id ? 200
+                : (selection.includes(`label:${label.id}`) || selectedLabel === label.id) ? 100
+                : 60
+              }
               outerClassName={recentlyCreatedLabelId === label.id ? 'label-flash-new' : undefined}
               innerSpanProps={{
                 'data-label-id': label.id,
                 className: 'pointer-events-auto cursor-move',
                 onMouseDown: (e) => handleMouseDown(e, label),
                 onDoubleClick: () => handleDoubleClick(label),
+                // Stop the click event from bubbling to the underlying
+                // ControlNode. Without this, shift-clicking a label that
+                // sits on top of a selected control fires ControlNode's
+                // onClick → toggleSelected → removes the control from
+                // selection. e.stopPropagation() on mousedown does NOT
+                // block the click phase — click is a separate event in
+                // the React synthetic chain. See e2e/multi-select-order
+                // scenario [4] for the repro.
+                onClick: (e) => { e.stopPropagation(); },
                 onContextMenu: (e) => {
                   // Right-click on a canvas label opens the same label menu
                   // as right-click in the Layers panel sidebar tree.
