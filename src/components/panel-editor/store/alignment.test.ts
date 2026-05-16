@@ -667,12 +667,15 @@ describe('ungroupControls', () => {
   });
 });
 
-// ─── deleteSelected group cleanup ──────────────────────────────────────────
+// ─── deleteSelected policy: no-op for controls ────────────────────────────
+//
+// Per user mandate, pipeline-generated controls are NEVER deletable in the
+// editor. `deleteSelected` is a no-op. controlGroups and other cross-refs
+// to controls therefore stay intact even when "delete" is called.
 
-describe('deleteSelected cleans up controlGroups', () => {
+describe('deleteSelected — control deletion policy (no-op)', () => {
   beforeEach(() => {
     resetStore();
-    // Add sections so deleteSelected can find childIds
     useEditorStore.setState({
       sections: {
         s1: { id: 's1', x: 0, y: 0, w: 500, h: 500, archetype: 'single-row', childIds: ['a', 'b', 'c', 'locked'], headerLabel: 'S1' },
@@ -680,32 +683,30 @@ describe('deleteSelected cleans up controlGroups', () => {
     } as any);
   });
 
-  it('removes deleted controls from groups', () => {
+  it('does NOT remove controls from groups (deleteSelected is no-op)', () => {
     useEditorStore.getState().createGroup('TestGroup');
     const group = useEditorStore.getState().controlGroups[0];
     expect(group.controlIds).toContain('a');
 
-    // Delete control 'a'
     useEditorStore.setState({ selectedIds: ['a'] });
     useEditorStore.getState().deleteSelected();
 
     const groups = useEditorStore.getState().controlGroups;
-    // Group should still exist with b and c
     expect(groups).toHaveLength(1);
-    expect(groups[0].controlIds).not.toContain('a');
+    // All original members still in the group — no deletion happened
+    expect(groups[0].controlIds).toContain('a');
     expect(groups[0].controlIds).toContain('b');
     expect(groups[0].controlIds).toContain('c');
   });
 
-  it('dissolves group when it drops below 2 members after delete', () => {
-    // Create group with just a and b
+  it('preserves the group when called with all its members', () => {
     useEditorStore.setState({ selectedIds: ['a', 'b'] });
     useEditorStore.getState().createGroup('SmallGroup');
     expect(useEditorStore.getState().controlGroups).toHaveLength(1);
 
-    // Delete both — group should dissolve
     useEditorStore.setState({ selectedIds: ['a', 'b'] });
     useEditorStore.getState().deleteSelected();
-    expect(useEditorStore.getState().controlGroups).toHaveLength(0);
+    // Group stays — deleteSelected didn't delete the controls
+    expect(useEditorStore.getState().controlGroups).toHaveLength(1);
   });
 });

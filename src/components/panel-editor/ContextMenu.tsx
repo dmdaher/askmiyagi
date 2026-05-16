@@ -314,20 +314,13 @@ export default function ContextMenu() {
         className="min-w-[160px] overflow-y-auto rounded-md border border-gray-700 bg-gray-900 py-1 shadow-xl text-xs text-gray-300"
         style={{ maxHeight: `${availableHeight}px` }}
       >
-        {/* Delete */}
-        <button
-          className={`flex w-full items-center justify-between px-3 py-1.5 transition-colors text-left ${
-            isLocked ? 'text-gray-600 cursor-not-allowed' : 'hover:bg-gray-800 hover:text-red-400'
-          }`}
-          onClick={isLocked ? undefined : handleDelete}
-          disabled={isLocked}
-        >
-          <span>Delete</span>
-          <span className="text-gray-600 ml-4">Del</span>
-        </button>
-
-        {/* Separator */}
-        <div className="my-1 h-px bg-gray-800" />
+        {/* Delete button intentionally removed for controls.
+            Policy (per user mandate): pipeline-generated controls are
+            NEVER deletable in the editor — only standalone labels,
+            polish banners, and containers can be removed. Removing the
+            menu entry prevents accidental deletes; the keyboard
+            Backspace path is also no-op'd for controls (see
+            manifestSlice.ts:deleteSelected). */}
 
         {/* Lock cycle: Unlocked → Size Locked → Fully Locked → Unlocked */}
         <button

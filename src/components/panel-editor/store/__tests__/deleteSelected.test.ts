@@ -2,15 +2,15 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { useEditorStore } from '../index';
 
 /**
- * Tests that deleteSelected fully cleans up cross-references in:
- *   - section.childIds
- *   - editorLabels (linked labels for deleted controls)
- *   - controlGroups (filter members, dissolve under-2)
- *   - controlContainers (NEW — closes Tier 3 gap)
+ * Policy: pipeline-generated CONTROLS are NEVER deletable in the editor.
+ * Only standalone labels, polish banners, and containers are removable.
+ * `deleteSelected` is therefore a no-op for controls.
  *
- * Without the controlContainers cleanup, deleting a control would leave an
- * orphan id in `controlContainers[i].controlIds` forever, caught by the
- * post-editor validator as CONTAINER_ORPHAN (PR #104 E8).
+ * These tests assert the no-op contract for the legacy deleteSelected
+ * action. The previous behavior (controlContainers/childIds/groups
+ * cleanup on control delete) is preserved as
+ * `_legacyDeleteSelected_DEPRECATED` for any rare admin tooling, but no
+ * UI surface exercises it.
  */
 
 function resetStore() {
@@ -26,7 +26,6 @@ function resetStore() {
     controlContainers: [
       { id: 'ctn-1', controlIds: ['a', 'b'], style: 'recessed', x: 5, y: 5, w: 100, h: 50, borderRadius: 4 },
       { id: 'ctn-2', controlIds: ['c'], style: 'recessed', x: 105, y: 5, w: 50, h: 50, borderRadius: 4 },
-      { id: 'ctn-3', controlIds: ['a', 'c'], style: 'recessed', x: 5, y: 5, w: 150, h: 50, borderRadius: 4 },
     ],
     editorLabels: [
       { id: 'lbl-a', controlId: 'a', text: 'A-label', x: 10, y: 50, w: 40, fontSize: 8, align: 'center', hidden: false },
@@ -38,86 +37,44 @@ function resetStore() {
   } as any);
 }
 
-describe('deleteSelected — controlContainers cleanup (Tier 3)', () => {
+describe('deleteSelected — control deletion policy (no-op)', () => {
   beforeEach(resetStore);
 
-  it('removes deleted control id from controlContainers.controlIds', () => {
+  it('does NOT delete controls when called with selected controls', () => {
+    useEditorStore.setState({ selectedIds: ['a'] });
+    useEditorStore.getState().deleteSelected();
+    const { controls } = useEditorStore.getState();
+    expect(controls.a).toBeDefined();
+    expect(controls.b).toBeDefined();
+    expect(controls.c).toBeDefined();
+  });
+
+  it('preserves section.childIds unchanged', () => {
+    useEditorStore.setState({ selectedIds: ['a', 'b'] });
+    useEditorStore.getState().deleteSelected();
+    const { sections } = useEditorStore.getState();
+    expect(sections.s1.childIds).toEqual(['a', 'b', 'c']);
+  });
+
+  it('preserves controlContainers entirely (containers untouched)', () => {
     useEditorStore.setState({ selectedIds: ['a'] });
     useEditorStore.getState().deleteSelected();
     const { controlContainers } = useEditorStore.getState();
-
-    // ctn-1 originally had ['a', 'b'] — now ['b']
-    const ctn1 = controlContainers.find(c => c.id === 'ctn-1');
-    expect(ctn1?.controlIds).toEqual(['b']);
-
-    // ctn-3 originally had ['a', 'c'] — now ['c']
-    const ctn3 = controlContainers.find(c => c.id === 'ctn-3');
-    expect(ctn3?.controlIds).toEqual(['c']);
-
-    // ctn-2 untouched
-    const ctn2 = controlContainers.find(c => c.id === 'ctn-2');
-    expect(ctn2?.controlIds).toEqual(['c']);
+    expect(controlContainers).toHaveLength(2);
+    expect(controlContainers.find((c) => c.id === 'ctn-1')?.controlIds).toEqual(['a', 'b']);
   });
 
-  it('dissolves a container when its last control is deleted', () => {
-    useEditorStore.setState({ selectedIds: ['c'] });
-    useEditorStore.getState().deleteSelected();
-    const { controlContainers } = useEditorStore.getState();
-
-    // ctn-2 had only ['c'] — should be removed entirely
-    expect(controlContainers.find(c => c.id === 'ctn-2')).toBeUndefined();
-
-    // ctn-1 had ['a', 'b'] — unchanged
-    expect(controlContainers.find(c => c.id === 'ctn-1')?.controlIds).toEqual(['a', 'b']);
-
-    // ctn-3 had ['a', 'c'] — now ['a']
-    expect(controlContainers.find(c => c.id === 'ctn-3')?.controlIds).toEqual(['a']);
-  });
-
-  it('handles deleting multiple controls in a single pass', () => {
-    useEditorStore.setState({ selectedIds: ['a', 'c'] });
-    useEditorStore.getState().deleteSelected();
-    const { controlContainers } = useEditorStore.getState();
-
-    // ctn-1 had ['a', 'b'] — now ['b']
-    expect(controlContainers.find(c => c.id === 'ctn-1')?.controlIds).toEqual(['b']);
-
-    // ctn-2 had ['c'] — dissolved
-    expect(controlContainers.find(c => c.id === 'ctn-2')).toBeUndefined();
-
-    // ctn-3 had ['a', 'c'] — both deleted, dissolved
-    expect(controlContainers.find(c => c.id === 'ctn-3')).toBeUndefined();
-  });
-
-  it('does not mutate containers when no selected controls belong to them', () => {
-    // Create a control NOT in any container, then delete it
-    useEditorStore.setState((s: any) => ({
-      controls: {
-        ...s.controls,
-        loose: { id: 'loose', x: 200, y: 200, w: 40, h: 30, sectionId: 's1', label: 'L', type: 'button', labelPosition: 'above', locked: false },
-      },
-      selectedIds: ['loose'],
-    }));
-    useEditorStore.getState().deleteSelected();
-    const { controlContainers } = useEditorStore.getState();
-
-    // All three containers untouched
-    expect(controlContainers.find(c => c.id === 'ctn-1')?.controlIds).toEqual(['a', 'b']);
-    expect(controlContainers.find(c => c.id === 'ctn-2')?.controlIds).toEqual(['c']);
-    expect(controlContainers.find(c => c.id === 'ctn-3')?.controlIds).toEqual(['a', 'c']);
-  });
-
-  it('still cleans section.childIds and editorLabels (pre-existing behavior)', () => {
+  it('preserves linked labels — they belong to controls that stay', () => {
     useEditorStore.setState({ selectedIds: ['a'] });
     useEditorStore.getState().deleteSelected();
-    const { sections, editorLabels } = useEditorStore.getState();
+    const { editorLabels } = useEditorStore.getState();
+    expect(editorLabels.find((l) => l.id === 'lbl-a')).toBeDefined();
+  });
 
-    // section.childIds drops the deleted control
-    expect(sections.s1.childIds).not.toContain('a');
-    expect(sections.s1.childIds).toEqual(['b', 'c']);
-
-    // editorLabels drops the linked label
-    expect((editorLabels as any[]).find(l => l.id === 'lbl-a')).toBeUndefined();
-    expect((editorLabels as any[]).find(l => l.id === 'lbl-b')).toBeDefined();
+  it('is a true no-op — multiple calls produce identical state', () => {
+    const before = JSON.stringify(useEditorStore.getState().controls);
+    useEditorStore.getState().deleteSelected();
+    useEditorStore.getState().deleteSelected();
+    expect(JSON.stringify(useEditorStore.getState().controls)).toEqual(before);
   });
 });

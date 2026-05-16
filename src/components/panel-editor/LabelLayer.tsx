@@ -75,6 +75,15 @@ export default function LabelLayer() {
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 
       if (e.key === 'Backspace' || e.key === 'Delete') {
+        // Policy: only STANDALONE labels (no controlId) are deletable.
+        // Linked labels belong to a control and can't be removed
+        // independently. Pipeline-generated.
+        const lbl = (editorLabels as EditorLabel[]).find((l) => l.id === selectedLabel);
+        if (!lbl || lbl.controlId) {
+          // Linked label or missing — silently no-op. User can still
+          // edit/move/icon-change it; just not delete it.
+          return;
+        }
         e.preventDefault();
         pushSnapshot();
         deleteLabel(selectedLabel);
@@ -120,16 +129,25 @@ export default function LabelLayer() {
     // break during the phased migration.
     const isMulti = e.shiftKey || e.metaKey || e.ctrlKey;
     const labelSid = `label:${label.id}` as const;
+    // Figma-style: if user plain-clicks a label that's ALREADY in the
+    // multi-selection, preserve the selection so the drag can move all
+    // selected entities together. Only replace when clicking an
+    // unselected label (single-select intent). Shift/Cmd always toggles.
+    const currentSel = useEditorStore.getState().selection;
+    const alreadyInSelection = currentSel.includes(labelSid);
     if (isMulti) {
       // toggleSelection reads state fresh via get() — safe against
       // useCallback stale-closure on the `selection` value.
       toggleSelection(labelSid);
-    } else {
-      // Plain click: replace selection with just this label.
-      // Legacy callers that read selectedLabelId still see the right
+    } else if (!alreadyInSelection) {
+      // Plain click on an UN-selected label: replace selection with it.
+      // Legacy callers reading selectedLabelId still see the right
       // single-selection state (synced by setSelection).
       setSelection([labelSid]);
     }
+    // else: plain click on already-selected label → preserve current
+    // multi-selection, fall through to drag setup. moveSelection will
+    // then drag everything in lockstep.
     setDragging(label.id);
     dragStart.current = {
       x: e.clientX,
@@ -152,7 +170,20 @@ export default function LabelLayer() {
       const dx = Math.round(rawDx / snap) * snap;
       const dy = Math.round(rawDy / snap) * snap;
       if (dx === 0 && dy === 0) return;
-      moveLabel(label.id, dx, dy);
+
+      // Phase 4 — entity-agnostic drag. When 2+ entities are selected
+      // and this label is one of them, drag the WHOLE selection in
+      // lockstep via moveSelection. When this label is the only thing
+      // selected (or selection.length === 1), fall back to the
+      // single-entity moveLabel path.
+      const sel = useEditorStore.getState().selection;
+      const labelSid = `label:${label.id}` as const;
+      const isMultiDrag = sel.length > 1 && sel.includes(labelSid);
+      if (isMultiDrag) {
+        useEditorStore.getState().moveSelection(dx, dy);
+      } else {
+        moveLabel(label.id, dx, dy);
+      }
       dragStart.current.x += dx * zoom;
       dragStart.current.y += dy * zoom;
     };

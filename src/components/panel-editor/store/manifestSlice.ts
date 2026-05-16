@@ -286,6 +286,32 @@ export interface ManifestSlice {
   toggleSelection: (id: SelectableId) => void;
   /** Clear the unified selection (and all legacy slots in sync). */
   clearSelection: () => void;
+
+  /**
+   * Move every entity in the unified `selection` by the same (dx, dy).
+   * Entity-agnostic: dispatches to the appropriate per-type mover
+   * (`moveControl`, `moveLabel`, `moveSection`, `movePolishBanner`)
+   * based on each entry's type prefix. Used by:
+   *   - Rnd drag on a selected control when multiple entities are
+   *     selected (drags all of them in lockstep)
+   *   - LabelLayer drag handler when multiple labels are selected
+   *   - Arrow-key nudge in useEditorKeyboard
+   *
+   * Sections and containers participate too. Locked controls are
+   * skipped by their own movers (moveControl returns early on locked).
+   */
+  moveSelection: (dx: number, dy: number) => void;
+
+  /**
+   * Delete every entity in the unified `selection`. Cross-type:
+   * controls go through `deleteSelected` (which handles cross-
+   * reference cleanup — section.childIds, controlGroups, linked
+   * labels), labels go through `deleteLabel`, banners through
+   * `deletePolishBanner`. Sections are NOT deleted by this path —
+   * section deletion has more complex child-handling and stays on
+   * its own explicit action. Clears `selection` after.
+   */
+  deleteSelection: () => void;
   setFocusedSection: (id: string | null) => void;
   addControl: (sectionId: string, type: string, label: string) => void;
   setAllLabelFontSize: (size: number | undefined) => void;
@@ -584,6 +610,11 @@ interface CanvasFields {
   setScaleBase: (base: ScaleBase | null) => void;
   setScaleCumulativeFactor: (factor: number) => void;
   clearScaleBase: () => void;
+  /** Snapshot the current manifest state into undo history. Lives in
+   *  historySlice; exposed here so cross-slice actions (Phase 4
+   *  moveSelection, deleteSelection) can batch one snapshot before
+   *  multi-entity mutations. */
+  pushSnapshot: () => void;
 }
 
 // ─── Slice Creator ──────────────────────────────────────────────────────────
@@ -1260,6 +1291,31 @@ export const createManifestSlice: StateCreator<
   },
 
   deleteSelected: () => {
+    // Policy: pipeline-generated CONTROLS are never deletable. The
+    // contractor's job is to position controls, not remint their IDs.
+    // Tutorial control-ref drift would catch deletes via pre-push, but
+    // we'd rather prevent at source than after-the-fact. Only decorative
+    // entities (standalone labels, polish banners, containers) plus
+    // linked labels-via-control-delete are deletable, and the
+    // control-delete path itself is now blocked.
+    //
+    // Concretely: deleteSelected used to delete the controls in
+    // `selectedIds`. Now it's a no-op for controls. Standalone labels
+    // are deleted via `deleteLabel` directly; banners via
+    // `deletePolishBanner`; containers via `deleteContainer`. This
+    // action stays in the codebase (referenced by ContextMenu's "Delete"
+    // entry) but does nothing — the menu entry is also hidden for
+    // controls (see ContextMenu changes).
+    return;
+  },
+
+  /**
+   * Legacy controls-only delete kept for reference but no-op'd above.
+   * The original implementation is preserved for any rare admin
+   * scenarios that need bulk-control-delete (e.g., a script that
+   * manually wires it up). Not exposed via UI anywhere.
+   */
+  _legacyDeleteSelected_DEPRECATED: () => {
     get().clearScaleBase();
     const { selectedIds, controls, sections } = get();
     if (selectedIds.length === 0) return;
@@ -1373,18 +1429,30 @@ export const createManifestSlice: StateCreator<
     set({ controls: updated, lockedIds: newLockedIds });
   },
 
-  setSelectedIds: (ids) => set({
-    selectedIds: ids,
-    selectedLabelId: ids.length > 0 ? null : get().selectedLabelId,
-    selectedBannerId: ids.length > 0 ? null : get().selectedBannerId,
-    // Phase 2+3 sync: setSelectedIds is the REPLACE path used by every
-    // entity's plain-click handler (controls, sections, etc.). Clear the
-    // unified `selection` array so previously-selected labels/banners
-    // deselect when the user clicks a different entity. Without this,
-    // LabelLayer's outline check (selection.includes('label:id')) keeps
-    // the label outlined forever — the user-reported bug.
-    selection: [],
-  }),
+  setSelectedIds: (ids) => {
+    // Mirror the legacy ids into the unified `selection` array with proper
+    // prefixes inferred from the manifest. Without this mirror, the
+    // unified selection drifts whenever shift-click on a control uses the
+    // legacy setSelectedIds path: `selection` ends up empty/stale, and a
+    // subsequent label toggle leaves the controls invisible to the
+    // drag/operations layer — label gets left behind on multi-drag.
+    // (User-reported: "multi-select 2 controls + 1 standalone label, drag
+    // → label stays put." The drag handler routed through the legacy
+    // controls-only mover because `selection` had no control entries.)
+    const state = get();
+    const next: SelectableId[] = ids.map((id): SelectableId => {
+      if (state.sections[id]) return `section:${id}` as SelectableId;
+      // Default to control prefix — matches the dominant caller
+      // (ControlNode plain-click + shift-click).
+      return `control:${id}` as SelectableId;
+    });
+    set({
+      selectedIds: ids,
+      selectedLabelId: ids.length > 0 ? null : state.selectedLabelId,
+      selectedBannerId: ids.length > 0 ? null : state.selectedBannerId,
+      selection: next,
+    });
+  },
 
   /**
    * Replace the unified selection set + sync legacy fields.
@@ -1534,14 +1602,156 @@ export const createManifestSlice: StateCreator<
     });
   },
 
-  toggleSelected: (id) => {
-    const { selectedIds } = get();
-    const idx = selectedIds.indexOf(id);
-    if (idx >= 0) {
-      set({ selectedIds: selectedIds.filter((sid) => sid !== id) });
-    } else {
-      set({ selectedIds: [...selectedIds, id] });
+  /**
+   * Phase 4 — entity-agnostic move. Dispatches to per-type movers by
+   * prefix. Order is type-deterministic but the visual result is
+   * order-independent because each mover applies the same dx/dy.
+   *
+   * Locked controls are short-circuited inside `moveControl`. Sections
+   * also move (their children stay put in world coordinates per
+   * existing `moveSection` semantics — that's the section behavior
+   * users expect).
+   */
+  moveSelection: (dx, dy) => {
+    const sel = get().selection;
+    if (sel.length === 0) return;
+    // Capture one snapshot for the whole group move so undo restores
+    // pre-move state in one step (not N steps, one per entity).
+    get().pushSnapshot();
+
+    // Pre-compute: which CONTROL ids are in selection. Linked labels
+    // whose parent is in this set should NOT be moved separately —
+    // moveControl's linked-label follow already carries them. Without
+    // this guard, the linked label gets moved TWICE per moveSelection
+    // call (once via moveControl, once via moveLabel) and drifts 2x as
+    // fast as the rest of the selection. Caught by Phase 4 e2e
+    // scenario [1] (mixed control + linked-label + standalone).
+    const controlIdsInSel = new Set<string>();
+    for (const sid of sel) {
+      if (sid.startsWith('control:')) {
+        controlIdsInSel.add(sid.slice('control:'.length));
+      }
     }
+    const labels = get().editorLabels as EditorLabel[];
+
+    // Defensive dedupe: selection should never contain duplicates by design,
+    // but if a caller ever sets a duplicate the entity would move 2x.
+    const seen = new Set<string>();
+    for (const sid of sel) {
+      if (seen.has(sid)) continue;
+      seen.add(sid);
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      switch (type) {
+        case 'control':
+          get().moveControl(id, dx, dy);
+          break;
+        case 'label': {
+          const lbl = labels.find((l) => l.id === id);
+          if (lbl?.controlId && controlIdsInSel.has(lbl.controlId)) {
+            // Parent control is also in selection — skip; moveControl
+            // already moved this linked label.
+            continue;
+          }
+          get().moveLabel(id, dx, dy);
+          break;
+        }
+        case 'section':
+          get().moveSection(id, dx, dy);
+          break;
+        case 'banner':
+          get().movePolishBanner(id, dx, dy);
+          break;
+        // container, groupLabel: not yet wired — out of scope for Phase 4
+      }
+    }
+  },
+
+  /**
+   * Phase 4 — entity-agnostic delete. Controls go through the existing
+   * `deleteSelected` (which handles `section.childIds`, `controlGroups`
+   * member cleanup, linked-label cascade). Labels and banners use
+   * their own per-type delete actions. Selection is cleared after.
+   *
+   * Sections are intentionally excluded: section deletion needs an
+   * explicit user confirmation + child-controls-handling decision
+   * (move to parent? delete with section?). Keep that on its own
+   * action.
+   */
+  deleteSelection: () => {
+    const sel = get().selection;
+    if (sel.length === 0) return;
+
+    // Policy (user-explicit): the contractor editor only allows
+    // deletion of DECORATIVE / user-created entities. Pipeline-
+    // generated controls, linked labels (owned by a control), and
+    // sections are NEVER deletable here. Allow-list:
+    //   ✓ standalone labels (controlId === null)
+    //   ✓ polish banners
+    //   ✓ containers (handled by deleteContainer separately, not here)
+    // Everything else in `selection` is silently skipped.
+    const labels = get().editorLabels as EditorLabel[];
+    const standaloneLabelIds: string[] = [];
+    const bannerIds: string[] = [];
+    for (const sid of sel) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      if (type === 'label') {
+        const lbl = labels.find((l) => l.id === id);
+        // Linked labels (those with controlId) belong to a control and
+        // can only be removed by removing their control — but we don't
+        // allow that either, so they stay.
+        if (lbl && !lbl.controlId) standaloneLabelIds.push(id);
+      } else if (type === 'banner') {
+        bannerIds.push(id);
+      }
+      // type === 'control' | 'section' | 'container' | 'groupLabel':
+      // intentionally not deletable through this path.
+    }
+
+    if (standaloneLabelIds.length === 0 && bannerIds.length === 0) {
+      // Nothing deletable in selection — early-out without snapshotting.
+      return;
+    }
+
+    // One snapshot for the whole batch — undo restores everything.
+    get().pushSnapshot();
+    for (const lid of standaloneLabelIds) get().deleteLabel(lid);
+    for (const bid of bannerIds) get().deletePolishBanner(bid);
+
+    // Clear unified selection AND just the now-stale entries from legacy
+    // slots. Don't touch selectedIds (controls stay alive) so any
+    // controls in the selection remain visible-as-selected after delete.
+    set({
+      selection: get().selection.filter((sid) => {
+        const colon = sid.indexOf(':');
+        const type = colon > 0 ? sid.slice(0, colon) : '';
+        const id = colon > 0 ? sid.slice(colon + 1) : '';
+        if (type === 'label' && standaloneLabelIds.includes(id)) return false;
+        if (type === 'banner' && bannerIds.includes(id)) return false;
+        return true;
+      }),
+      selectedLabelId: get().selectedLabelId && standaloneLabelIds.includes(get().selectedLabelId!) ? null : get().selectedLabelId,
+      selectedBannerId: get().selectedBannerId && bannerIds.includes(get().selectedBannerId!) ? null : get().selectedBannerId,
+    });
+  },
+
+  toggleSelected: (id) => {
+    // Route through the unified toggleSelection so legacy selectedIds AND
+    // unified `selection` both update. Previously this only wrote to
+    // selectedIds, causing the order-flip bug: select label → shift-click
+    // control → drag control. The unified `selection` still held only
+    // [label:X], the control wasn't visible to the drag handler, and the
+    // label got left behind.
+    //
+    // Prefer control: prefix because every caller of toggleSelected is a
+    // ControlNode shift-click. Sections use a different writer path.
+    const ctrlSid = `control:${id}` as SelectableId;
+    get().toggleSelection(ctrlSid);
   },
 
   setFocusedSection: (id) => set({ focusedSectionId: id }),

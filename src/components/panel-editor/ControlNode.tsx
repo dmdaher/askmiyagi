@@ -504,12 +504,27 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       // Ignore zero-movement clicks (not actual drags)
       if (dx === 0 && dy === 0) return;
 
-      // Snapshot BEFORE mutation so undo restores the previous state
-      pushSnapshot();
-      if (isMultiSelected) {
-        // Move all selected (non-locked) controls by the same delta
+      // Phase 4 — cross-type drag. When the unified selection contains
+      // non-control entries (labels, banners) AND this control is one of
+      // them, route through moveSelection so the whole group moves in
+      // lockstep. moveSelection takes its own snapshot, so skip the
+      // outer pushSnapshot to avoid double-undo entries.
+      const sel = useEditorStore.getState().selection;
+      const ctrlSid = `control:${controlId}` as const;
+      const hasNonControl = sel.some((s) => !s.startsWith('control:'));
+      const isCrossTypeMulti = sel.length > 1 && sel.includes(ctrlSid) && hasNonControl;
+
+      if (isCrossTypeMulti) {
+        // Cross-type multi-drag (e.g., 1 control + 2 labels selected).
+        // moveSelection handles the snapshot internally.
+        useEditorStore.getState().moveSelection(dx, dy);
+      } else if (isMultiSelected) {
+        // Legacy all-controls multi-drag — preserves existing behavior
+        // and the tested 27-test alignment regression baseline.
+        pushSnapshot();
         moveSelectedControls(dx, dy);
       } else {
+        pushSnapshot();
         moveControl(controlId, dx, dy);
       }
     },
@@ -616,7 +631,20 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         // Plain click on grouped control: select entire group
         setSelectedIds(group.controlIds);
       } else {
-        setSelectedIds([controlId]);
+        // Figma-style: if this control is ALREADY part of a multi-
+        // selection (e.g., a control + labels selected via shift), a
+        // plain click should preserve the selection so the user can
+        // start a multi-drag. Only replace when clicking an unselected
+        // control. Without this, clicking the control wipes the
+        // unified `selection` (via setSelectedIds) and the drag
+        // handler sees only this one control → labels get left behind.
+        // Caught by Phase 4 e2e scenario [5] (drag-control-with-labels).
+        const currentSel = useEditorStore.getState().selection;
+        const ctrlSid = `control:${controlId}` as const;
+        if (!currentSel.includes(ctrlSid)) {
+          setSelectedIds([controlId]);
+        }
+        // else: preserve selection; drag will fan out via moveSelection.
       }
     },
     [controlId, sectionId, toggleSelected, setSelectedIds, setFocusedSection],

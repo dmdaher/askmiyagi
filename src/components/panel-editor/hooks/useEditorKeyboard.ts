@@ -42,10 +42,20 @@ export function useEditorKeyboard() {
       }
 
       // ── Delete selected: Backspace or Delete ──────────────────────────────
+      // Phase 4 — entity-agnostic delete. When the unified `selection`
+      // array has entries (multi-type selection: controls + labels +
+      // banners), route through `deleteSelection` which dispatches per
+      // type. Falls back to legacy `deleteSelected` (controls only)
+      // when nothing is in the unified selection.
       if (e.key === 'Backspace' || e.key === 'Delete') {
         e.preventDefault();
-        store.pushSnapshot();
-        store.deleteSelected();
+        if (store.selection && store.selection.length > 0) {
+          // deleteSelection takes its own snapshot internally
+          store.deleteSelection();
+        } else {
+          store.pushSnapshot();
+          store.deleteSelected();
+        }
         return;
       }
 
