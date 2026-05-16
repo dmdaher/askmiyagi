@@ -264,10 +264,28 @@ export interface ManifestSlice {
   setSelectedIds: (ids: string[]) => void;
   toggleSelected: (id: string) => void;
   /**
-   * Replace the unified selection set. MS1 surface only; further actions
-   * (toggleSelection, addToSelection, removeFromSelection) ship in MS2.
+   * Replace the unified selection set. Phase 2 wires this to also sync
+   * legacy fields (selectedLabelId, selectedBannerId) so existing
+   * consumers don't break.
    */
   setSelection: (selection: SelectableId[]) => void;
+  /**
+   * Add entries to the unified selection (idempotent: duplicates ignored).
+   * Use for shift-click semantics. Syncs legacy fields automatically.
+   */
+  addToSelection: (ids: SelectableId[]) => void;
+  /**
+   * Remove entries from the unified selection (no-op if not present).
+   * Use for shift-click on already-selected items.
+   */
+  removeFromSelection: (ids: SelectableId[]) => void;
+  /**
+   * Toggle a single entry in the unified selection. Convenience for the
+   * common shift-click case.
+   */
+  toggleSelection: (id: SelectableId) => void;
+  /** Clear the unified selection (and all legacy slots in sync). */
+  clearSelection: () => void;
   setFocusedSection: (id: string | null) => void;
   addControl: (sectionId: string, type: string, label: string) => void;
   setAllLabelFontSize: (size: number | undefined) => void;
@@ -1344,7 +1362,83 @@ export const createManifestSlice: StateCreator<
 
   setSelectedIds: (ids) => set({ selectedIds: ids, selectedLabelId: ids.length > 0 ? null : get().selectedLabelId, selectedBannerId: ids.length > 0 ? null : get().selectedBannerId }),
 
-  setSelection: (selection) => set({ selection }),
+  /**
+   * Replace the unified selection set + sync legacy fields.
+   *
+   * Sync rules (so existing PropertiesPanel / LayersPanel / drag /
+   * Properties forms keep working unchanged):
+   *  - selectedIds = control entries only
+   *  - selectedLabelId = first label entry if exactly one label is in
+   *    the selection; null when 0 or 2+ labels selected (multi-label is
+   *    a new state legacy fields can't represent — that's the whole
+   *    point of Phase 2)
+   *  - selectedBannerId = banner entry if any
+   *
+   * Consumers reading the legacy fields see the single-select case
+   * unchanged. Multi-label and mixed selections only show up to
+   * consumers that read the new `selection` array directly.
+   */
+  setSelection: (selection) => {
+    const controlIds: string[] = [];
+    const labelIds: string[] = [];
+    let bannerId: string | null = null;
+    for (const sid of selection) {
+      const colon = sid.indexOf(':');
+      if (colon <= 0) continue;
+      const type = sid.slice(0, colon);
+      const id = sid.slice(colon + 1);
+      if (type === 'control' || type === 'section') controlIds.push(id);
+      else if (type === 'label') labelIds.push(id);
+      else if (type === 'banner') bannerId = id;
+    }
+    set({
+      selection,
+      selectedIds: controlIds,
+      selectedLabelId: labelIds.length === 1 ? labelIds[0] : null,
+      selectedBannerId: bannerId,
+    });
+  },
+
+  /** Add to the unified selection. Idempotent — duplicates ignored. */
+  addToSelection: (ids) => {
+    const current = get().selection;
+    const existing = new Set(current);
+    const next = [...current];
+    for (const sid of ids) {
+      if (!existing.has(sid)) {
+        next.push(sid);
+        existing.add(sid);
+      }
+    }
+    get().setSelection(next);
+  },
+
+  /** Remove entries from the unified selection. */
+  removeFromSelection: (ids) => {
+    const toRemove = new Set(ids);
+    const next = get().selection.filter((sid) => !toRemove.has(sid));
+    get().setSelection(next);
+  },
+
+  /** Toggle one entry — adds if absent, removes if present. */
+  toggleSelection: (id) => {
+    const current = get().selection;
+    if (current.includes(id)) {
+      get().removeFromSelection([id]);
+    } else {
+      get().addToSelection([id]);
+    }
+  },
+
+  /** Clear unified selection + all legacy single-slots. */
+  clearSelection: () => {
+    set({
+      selection: [],
+      selectedIds: [],
+      selectedLabelId: null,
+      selectedBannerId: null,
+    });
+  },
 
   toggleSelected: (id) => {
     const { selectedIds } = get();
