@@ -1360,7 +1360,18 @@ export const createManifestSlice: StateCreator<
     set({ controls: updated, lockedIds: newLockedIds });
   },
 
-  setSelectedIds: (ids) => set({ selectedIds: ids, selectedLabelId: ids.length > 0 ? null : get().selectedLabelId, selectedBannerId: ids.length > 0 ? null : get().selectedBannerId }),
+  setSelectedIds: (ids) => set({
+    selectedIds: ids,
+    selectedLabelId: ids.length > 0 ? null : get().selectedLabelId,
+    selectedBannerId: ids.length > 0 ? null : get().selectedBannerId,
+    // Phase 2+3 sync: setSelectedIds is the REPLACE path used by every
+    // entity's plain-click handler (controls, sections, etc.). Clear the
+    // unified `selection` array so previously-selected labels/banners
+    // deselect when the user clicks a different entity. Without this,
+    // LabelLayer's outline check (selection.includes('label:id')) keeps
+    // the label outlined forever — the user-reported bug.
+    selection: [],
+  }),
 
   /**
    * Replace the unified selection set + sync legacy fields.
@@ -1843,6 +1854,9 @@ export const createManifestSlice: StateCreator<
       // Clear other selections so Properties panel routes cleanly
       selectedIds: id ? [] : s.selectedIds,
       selectedLabelId: id ? null : s.selectedLabelId,
+      // Phase 2+3: also clear unified `selection` so visual outlines on
+      // labels/controls deselect when the banner takes focus.
+      selection: id ? [`banner:${id}` as SelectableId] : s.selection.filter((sid) => !sid.startsWith('banner:')),
     }));
   },
 
@@ -2244,12 +2258,29 @@ export const createManifestSlice: StateCreator<
     // toggleSelected on the control side).
     if (id !== null) {
       if (opts?.additive) {
-        set({ selectedLabelId: id, selectedBannerId: null });
+        // Additive: keep existing selectedIds; add this label to the
+        // unified selection without clearing anything else.
+        const sid = `label:${id}` as SelectableId;
+        const next = get().selection.includes(sid) ? get().selection : [...get().selection, sid];
+        set({ selectedLabelId: id, selectedBannerId: null, selection: next });
       } else {
-        set({ selectedLabelId: id, selectedIds: [], selectedBannerId: null });
+        // Replace: clear everything else (selectedIds, banner, unified
+        // selection) and select just this label.
+        set({
+          selectedLabelId: id,
+          selectedIds: [],
+          selectedBannerId: null,
+          selection: [`label:${id}` as SelectableId],
+        });
       }
     } else {
-      set({ selectedLabelId: null });
+      // Deselect the label slot. Also drop label entries from the unified
+      // selection so a programmatic setSelectedLabel(null) cleanly clears
+      // the visual outline driven by `selection.includes('label:...')`.
+      set({
+        selectedLabelId: null,
+        selection: get().selection.filter((sid) => !sid.startsWith('label:')),
+      });
     }
   },
 

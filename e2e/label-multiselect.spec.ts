@@ -129,6 +129,46 @@ async function main() {
     check('selection has all 3', s.selection.length === 3, `selection=[${s.selection.join(', ')}]`);
   }
 
+  // ── Scenario 5: CROSS-TYPE DESELECT (the bug the user reported)
+  // Click a label, then plain-click a control. The label MUST deselect
+  // (selection array cleared by setSelectedIds since the click was a
+  // plain REPLACE, not a shift-ADD).
+  const controlId = await page.evaluate(() => {
+    const w = window as any;
+    const ctrls = w.useEditorStore.getState().controls || {};
+    return Object.keys(ctrls)[0];
+  });
+  if (controlId) {
+    await clearAll();
+    await clickLabel(targets[0].id);
+    let preState = await readState();
+    console.log('\n[5] click label → plain-click control deselects label');
+    check('precondition: label A selected', preState.selection.includes(`label:${targets[0].id}`), `selection=[${preState.selection.join(', ')}]`);
+
+    // Plain-click on the control (no shift)
+    await page.locator(`[data-control-id="${controlId}"]`).first().click({ force: true });
+    await page.waitForTimeout(200);
+    s = await readState();
+    check('label NOT in selection after control click', !s.selection.includes(`label:${targets[0].id}`), `selection=[${s.selection.join(', ')}]`);
+    check('selectedLabelId is null after control click', s.selectedLabelId === null, `legacy=${s.selectedLabelId}`);
+    check('control IS in selectedIds (legacy)', s.selectedIds.includes(controlId), `selectedIds=[${s.selectedIds.join(', ')}]`);
+  }
+
+  // ── Scenario 6: inverse — click control, plain-click label deselects control
+  if (controlId) {
+    await clearAll();
+    await page.locator(`[data-control-id="${controlId}"]`).first().click({ force: true });
+    await page.waitForTimeout(150);
+    let preState = await readState();
+    console.log('\n[6] click control → plain-click label deselects control');
+    check('precondition: control selected', preState.selectedIds.includes(controlId), `selectedIds=[${preState.selectedIds.join(', ')}]`);
+
+    await clickLabel(targets[0].id);
+    s = await readState();
+    check('control NOT in selectedIds after label click', !s.selectedIds.includes(controlId), `selectedIds=[${s.selectedIds.join(', ')}]`);
+    check('label IS in selection', s.selection.includes(`label:${targets[0].id}`), `selection=[${s.selection.join(', ')}]`);
+  }
+
   console.log(`\n=== Result: ${pass} pass, ${fail} fail ===`);
   await browser.close();
   process.exit(fail > 0 ? 1 : 0);
