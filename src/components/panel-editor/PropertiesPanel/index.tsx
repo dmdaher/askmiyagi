@@ -7,6 +7,7 @@ import ControlTypeSelector from './ControlTypeSelector';
 import LabelEditor from './LabelEditor';
 import GeometryFields from './GeometryFields';
 import ColorPickerRow from './ColorPickerRow';
+import MixedSelectionPanel from './MixedSelectionPanel';
 import {
   AlignLeftIcon,
   AlignCenterHIcon,
@@ -841,6 +842,7 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
   const normalizeLabelSpacing = useEditorStore((s) => s.normalizeLabelSpacing);
   const setLabelPosition = useEditorStore((s) => s.setLabelPosition);
   const editorLabels = useEditorStore((s) => s.editorLabels) as any[];
+  const updateLabel = useEditorStore((s) => s.updateLabel);
 
   const ids = useMemo(() => controls.map((c) => c.id), [controls]);
 
@@ -1023,7 +1025,31 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         onPositionChange={handlePositionChange}
         onSecondaryLabelChange={handleSecondaryLabelChange}
         onFontSizeChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelFontSize', val); }}
-        onColorChange={(val) => { pushSnapshot(); updateControlProp(ids, 'labelColor', val || undefined); }}
+        onColorChange={(val) => {
+          // Position-aware color routing, matching SingleControlProperties:
+          //   - 'on-button' labels → write to control.labelColor (PanelButton
+          //     renders inline using this).
+          //   - External labels (above/below/etc) → the visible label is the
+          //     linked editorLabel rendered by LabelLayer. Write to
+          //     editorLabel.color or the picker appears to do nothing.
+          // Without this per-control split, multi-select + color pick wrote
+          // ONLY to control.labelColor, leaving external labels grey
+          // (user-reported regression vs single-control flow).
+          pushSnapshot();
+          const next = val || undefined;
+          for (const c of controls) {
+            if (c.labelPosition === 'on-button') {
+              updateControlProp([c.id], 'labelColor', next);
+            } else {
+              const linked = editorLabels.find((l) => l.controlId === c.id);
+              if (linked) {
+                updateLabel(linked.id, { color: next });
+              } else {
+                updateControlProp([c.id], 'labelColor', next);
+              }
+            }
+          }
+        }}
       />
 
       <div className="h-px bg-gray-800" />
@@ -1956,10 +1982,27 @@ export default function PropertiesPanel() {
   const selectedIds = useEditorStore((s) => s.selectedIds);
   const selectedLabelId = useEditorStore((s) => s.selectedLabelId);
   const selectedBannerId = useEditorStore((s) => s.selectedBannerId);
+  const selection = useEditorStore((s) => s.selection);
   const editorLabels = useEditorStore((s) => s.editorLabels) as any[];
   const polishBanners = useEditorStore((s) => s.polishBanners);
   const controls = useEditorStore((s) => s.controls);
   const sections = useEditorStore((s) => s.sections);
+
+  // Phase 5 — mixed-type detection. When the unified selection contains
+  // entries of 2+ distinct prefixes (e.g. control + label, or banner +
+  // section), no single-type form fits. Route to MixedSelectionPanel
+  // which shows a count breakdown + safe universal actions.
+  const isMixedSelection = useMemo(() => {
+    const distinct = new Set<string>();
+    for (const sid of selection) {
+      const colon = sid.indexOf(':');
+      if (colon > 0) {
+        distinct.add(sid.slice(0, colon));
+        if (distinct.size > 1) return true;
+      }
+    }
+    return false;
+  }, [selection]);
 
   // Determine what's selected
   const selectedControls = useMemo(
@@ -1996,7 +2039,14 @@ export default function PropertiesPanel() {
     return polishBanners.find((b) => b.id === selectedBannerId) ?? null;
   }, [selectedBannerId, polishBanners]);
 
-  if (selectedBanner) {
+  if (isMixedSelection) {
+    // Phase 5 — multiple distinct entity types selected. Routes BEFORE
+    // single-type forms because legacy fields (selectedLabelId etc.)
+    // may still be populated for the single-of-each-type case and
+    // would otherwise fall into a single-type branch and hide the
+    // multi-type reality from the contractor.
+    content = <MixedSelectionPanel />;
+  } else if (selectedBanner) {
     // A polish banner is selected — show banner properties
     content = <PolishBannerProperties banner={selectedBanner} />;
   } else if (selectedLabel) {
