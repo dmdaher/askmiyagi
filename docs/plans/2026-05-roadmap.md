@@ -7,7 +7,7 @@
 
 ## TL;DR
 
-**31 plan files audited. 26 shipped. 4 deferred/killed. (real active: 1 priority + 3 quick wins + 5 longer-term + 3 deferred-by-trigger)**
+**31 plan files audited. 27 shipped. 5 deferred/killed. (real active: 1 priority + 2 quick wins + 6 longer-term + 4 deferred-by-trigger)**
 
 ### Recommended next 3 moves
 
@@ -87,6 +87,7 @@ Items shipped or merged. Move to historical reference.
 |---|---|---|---|
 | ❌ | RC-505 mk2 restart | User decision — not shipping RC-505. Dashboard registration kept for re-enable option | 2026-05-14 |
 | ❌ | YouTube tutorial discovery (duplicate) | Superseded by `2026-future-tutorial-content-discovery.md` | 2026-05-13 |
+| ❌ | Add Control feature (A6 half) | User decision — not pursuing now | 2026-05-16 |
 
 ---
 
@@ -123,10 +124,7 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 ##### ~~A5~~ ✅ SHIPPED — Mixed selection (PRs #131–#136)
 > Plan: `docs/plans/2026-05-04-mixed-selection-labels-controls-P1.md` — archive on next pass
 
-##### A6 | Keyboard UI + Add Control UI (REMAINING — store API exists)
-- 🔗 `~/.claude/plans/parsed-exploring-pumpkin.md`
-- 💯 **75%** · ⏱️ ~2 hr · 🎯 #2
-- 📝 `addControl` store action exists; missing UI: right-click "Add Control" in ContextMenu, KeyboardProperties panel, per-MIDI black key offset field.
+##### ~~A6~~ ✅ SHIPPED — Keyboard fixes (commit `5dcf17c`: black-key gap, aspect ratio lock, fills container height, DeepMind restore). **Add Control UI: DEFERRED** (user decision 2026-05-16).
 
 ##### ~~A7~~ ✅ SHIPPED — Containers + labelColor (label-align via #137, labelColor field in PropertiesPanel, ContainerNode.tsx)
 
@@ -276,7 +274,6 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 ### Anytime in parallel
 - **E1 Admin subdomain** (6 hr) ← production blocker but not urgent
 - **A3 Issue 3** (45 min) ← circle button icon scaling — quickest remaining editor win
-- **A6 Keyboard + Add Control UI** (2 hr) ← `addControl` store action exists; needs UI surface (ContextMenu, KeyboardProperties)
 
 ### When stable
 - **C3 Relink decision** (30 min discussion) ← blocks B14 preview-relink
@@ -296,12 +293,12 @@ For every active plan, check before execution:
 
 | Protected system | At-risk plans | Mitigation pattern |
 |---|---|---|
-| Manifest schema | A6 (keyboard startNote) | Additive fields, backward-compat defaults |
+| Manifest schema | none active | n/a |
 | Autosave / Hosted Blob | Pull-from-hosted (latent: can overwrite local state — e.g. xdj-rr controlScale 2026-05-16) | Pre-pull `cp` backup; warn before pull if local has fields blob lacks |
-| Send-to-hosted / pull workflow | A6 (keyboard) | Verify round-trip after change |
-| History / undo | A6 (Add Control adds new entities) | New state via `pushSnapshot()` |
+| Send-to-hosted / pull workflow | none active | n/a |
+| History / undo | none active | n/a |
 | Existing features | A3 (Issue 3 icon scaling) | Playwright before/after |
-| Tutorial integrity | A6 (`startNote`), C4 (mutation safety) | Read-only enforcement; pre-flight scan |
+| Tutorial integrity | C4 (mutation safety) | Read-only enforcement; pre-flight scan |
 | Pipeline reliability | C1, B12 (review phase) | Validators + escalation safety nets |
 | Admin/contractor workflow | E1 (subdomain) | Env var pre-check, curl verification |
 | Drift CI baselines | Any layout change | `drift:capture` immediately after intentional layout/font changes |
@@ -321,7 +318,6 @@ For every active plan, check before execution:
 2026-future-tutorial-content-discovery.md D1
 manifest-mutation-safety.md               C4
 my-website-admin-subpages-luminous-music.md  E1
-parsed-exploring-pumpkin.md               A6
 tutorial-regeneration-strategy.md         B11
 ```
 
@@ -329,6 +325,7 @@ tutorial-regeneration-strategy.md         B11
 ```
 get-up-to-speed-eager-dolphin.md          ✅ M1 (PR #129)
 nested-coalescing-squid.md                ✅ Phase 10 (PR #138)
+parsed-exploring-pumpkin.md               ✅ A6 keyboard (commit 5dcf17c); Add Control deferred
 ```
 
 ### Active in `docs/plans/`
