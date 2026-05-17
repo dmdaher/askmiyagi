@@ -206,9 +206,13 @@ function renderControl(
                 backgroundColor: isIntegrated
                   ? (ledOn === true ? undefined : (ledOn === false ? '#2a2a2a' : `${intColor}10`))
                   : (active ? '#3a3a3a' : '#2a2a2a'),
-                background: isIntegrated && ledOn === true
-                  ? `radial-gradient(ellipse at 50% 40%, ${intColor}50 0%, ${intColor}25 50%, transparent 80%)`
-                  : undefined,
+                // `background` is the CSS shorthand. Including it with a falsy
+                // value (even `undefined`) clears `backgroundColor` in the DOM
+                // via React's style serialization. Only include the radial
+                // gradient when actually needed.
+                ...(isIntegrated && ledOn === true && {
+                  background: `radial-gradient(ellipse at 50% 40%, ${intColor}50 0%, ${intColor}25 50%, transparent 80%)`,
+                }),
                 border: isIntegrated
                   ? (ledOn === true ? `1px solid ${intColor}` : ledOn === false ? `3px solid ${control.surfaceColor ?? '#444'}` : `1px solid ${intColor}25`)
                   : `3px solid ${control.surfaceColor ?? '#444'}`,
