@@ -7,7 +7,7 @@
 
 ## TL;DR
 
-**31 plan files audited. 28 shipped. 5 deferred/killed. (real active: 1 priority + 1 quick win + 7 longer-term, of which 4 are deferred-by-trigger)**
+**31 plan files audited. 27.7 shipped. 5 deferred/killed. (real active: 1 priority + 1 quick win + 1 bug to investigate + 7 longer-term, of which 4 are deferred-by-trigger)**
 
 ### Recommended next 3 moves
 
@@ -112,7 +112,10 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 
 ##### ~~A2~~ ✅ SHIPPED — Ruler tool (`Ruler.tsx` in `panel-editor/`)
 
-##### ~~A3~~ ✅ SHIPPED — Sizing input fixes (Issues 1+2 in `e1e341b`, Issue 3 circle icon scaling in `bb6edc6`)
+##### A3 | Sizing-fixes plan — Issue 4 (REOPENED) — Label position unstable after drag
+- 🔗 `docs/plans/2026-04-30-sizing-input-fixes.md` (Issue 4 added 2026-05-16)
+- 💯 **65%** ⚠️ needs investigation · ⏱️ 1-2 hr (1 hr investigate + fix) · 🎯 quick win once root cause known
+- 📝 Issues 1-3 shipped (`e1e341b` + `bb6edc6`). **New Issue 4:** dragging a label, then clicking a labelAlign position, sometimes applies the wrong position — second click of the same option fixes it. Suspected stale state in the align-to-position compute path or explicit-x/y override not cleared on align click. See plan file for hypotheses + investigation steps.
 
 ##### ~~A4~~ ✅ SHIPPED — LED z-order Part 3 (`zOrder` field + `bringToFront`/`sendToBack` + ⌘]/⌘[)
 
@@ -270,6 +273,7 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 
 ### Anytime in parallel
 - **Drift baselines refresh** (15 min) ← `npm run drift:capture`; locks current state, gets CI green
+- **A3 Issue 4** (~1-2 hr) ← label position unstable after drag → align-click; investigate stale-state hypothesis first
 - **E1 Admin subdomain** (6 hr) ← production blocker but not urgent
 
 ### When stable
@@ -330,6 +334,7 @@ parsed-exploring-pumpkin.md               ✅ A6 keyboard (commit 5dcf17c); Add 
 2026-04-27-themes-skins-design.md         A9 (deferred — contractor demand)
 2026-04-30-context-management.md          A10 (low priority docs split)
 2026-04-30-display-builder-agent.md       (REF — SOUL shipped)
+2026-04-30-sizing-input-fixes.md          A3 (Issues 1-3 shipped; Issue 4 added 2026-05-16)
 2026-05-roadmap.md                        (this file)
 ```
 
@@ -340,7 +345,6 @@ parsed-exploring-pumpkin.md               ✅ A6 keyboard (commit 5dcf17c); Add 
 2026-04-26-pre-tutorial-blockers.md       ✅ A8 (ledStyle picker + ledOn rendering)
 2026-04-27-label-align-containers-plan.md ✅ A7 (label-align #137, labelColor + ContainerNode)
 2026-04-29-ruler-and-pipeline-reset.md    ✅ A2 (Ruler.tsx in panel-editor/)
-2026-04-30-sizing-input-fixes.md          ✅ A3 (Issues 1+2 e1e341b, Issue 3 bb6edc6)
 2026-05-04-mixed-selection-labels-controls-P1.md  ✅ A5 (PRs #131–#136)
 ```
 
