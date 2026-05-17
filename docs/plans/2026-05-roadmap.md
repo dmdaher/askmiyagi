@@ -7,7 +7,7 @@
 
 ## TL;DR
 
-**31 plan files audited. 27 shipped. 5 deferred/killed. (real active: 1 priority + 2 quick wins + 6 longer-term + 4 deferred-by-trigger)**
+**31 plan files audited. 28 shipped. 5 deferred/killed. (real active: 1 priority + 1 quick win + 7 longer-term, of which 4 are deferred-by-trigger)**
 
 ### Recommended next 3 moves
 
@@ -112,10 +112,7 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 
 ##### ~~A2~~ ✅ SHIPPED — Ruler tool (`Ruler.tsx` in `panel-editor/`)
 
-##### A3 | Sizing — Issue 3 (circle icon scaling)
-- 🔗 `docs/plans/2026-04-30-sizing-input-fixes.md`
-- 💯 **70%** · ⏱️ ~45 min · 🎯 #1
-- 📝 Issues 1 & 2 shipped in `e1e341b`. **Remaining:** circle button icons don't scale with button size. Quick win.
+##### ~~A3~~ ✅ SHIPPED — Sizing input fixes (Issues 1+2 in `e1e341b`, Issue 3 circle icon scaling in `bb6edc6`)
 
 ##### ~~A4~~ ✅ SHIPPED — LED z-order Part 3 (`zOrder` field + `bringToFront`/`sendToBack` + ⌘]/⌘[)
 
@@ -248,7 +245,7 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 ##### E1 | Admin subdomain deployment
 - 🔗 `~/.claude/plans/my-website-admin-subpages-luminous-music.md`
 - 💯 **70%** · ⏱️ 6 hr · ⚠️ **PRODUCTION BLOCKER**
-- 📝 `askmiyagi.music/admin` returns 404. `src/proxy.ts` is dead code — needs rename to `middleware.ts` + subdomain config + env var verification.
+- 📝 `askmiyagi.music/admin` returns 404. `src/proxy.ts` IS functional locally (auth works — verified 2026-05-16). Real blockers: Vercel subdomain DNS routing + production env vars (`ADMIN_PASSWORD`, `CONTRACTOR_PASSWORD`, `BLOB_READ_WRITE_TOKEN`).
 
 ---
 
@@ -263,17 +260,17 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 ## 📊 Attack order recommendation
 
 ### This week — first 3 sessions
-1. **B12 Path A — Tutorial-Review Pause Phase** (3 hr) ← unblocks everything else in tutorial flow
-2. **B13 Path B — Run CDJ-3000 tutorials** (overnight pipeline) ← first real tutorial output
-3. **Drift baselines refresh** (15 min) ← `npm run drift:capture` + commit; locks in current state after icon-label unification + Inter font + Phase 10; gets drift CI back to green
+1. **Drift baselines refresh** (15 min) ← `npm run drift:capture` + commit; locks current state, gets CI green
+2. **B12 Path A — Tutorial-Review Pause Phase** (3 hr) ← unblocks B13/B14/B15 tutorial flow
+3. **B13 Path B — Run CDJ-3000 tutorials** (overnight pipeline) ← first real pipeline-generated tutorials
 
 ### Next sprint — editor foundation
 4. **A1 Renderer extraction (remaining)** (6 hr) ← biggest editor-quality unlock; SharedLabel already done
 5. **B15 Path C — replicate Path B for other devices** ← scale tutorial generation
 
 ### Anytime in parallel
+- **Drift baselines refresh** (15 min) ← `npm run drift:capture`; locks current state, gets CI green
 - **E1 Admin subdomain** (6 hr) ← production blocker but not urgent
-- **A3 Issue 3** (45 min) ← circle button icon scaling — quickest remaining editor win
 
 ### When stable
 - **C3 Relink decision** (30 min discussion) ← blocks B14 preview-relink
@@ -297,7 +294,7 @@ For every active plan, check before execution:
 | Autosave / Hosted Blob | Pull-from-hosted (latent: can overwrite local state — e.g. xdj-rr controlScale 2026-05-16) | Pre-pull `cp` backup; warn before pull if local has fields blob lacks |
 | Send-to-hosted / pull workflow | none active | n/a |
 | History / undo | none active | n/a |
-| Existing features | A3 (Issue 3 icon scaling) | Playwright before/after |
+| Existing features | none active | n/a |
 | Tutorial integrity | C4 (mutation safety) | Read-only enforcement; pre-flight scan |
 | Pipeline reliability | C1, B12 (review phase) | Validators + escalation safety nets |
 | Admin/contractor workflow | E1 (subdomain) | Env var pre-check, curl verification |
@@ -333,7 +330,6 @@ parsed-exploring-pumpkin.md               ✅ A6 keyboard (commit 5dcf17c); Add 
 2026-04-27-themes-skins-design.md         A9 (deferred — contractor demand)
 2026-04-30-context-management.md          A10 (low priority docs split)
 2026-04-30-display-builder-agent.md       (REF — SOUL shipped)
-2026-04-30-sizing-input-fixes.md          A3 (Issue 3 only — 45 min)
 2026-05-roadmap.md                        (this file)
 ```
 
@@ -344,6 +340,7 @@ parsed-exploring-pumpkin.md               ✅ A6 keyboard (commit 5dcf17c); Add 
 2026-04-26-pre-tutorial-blockers.md       ✅ A8 (ledStyle picker + ledOn rendering)
 2026-04-27-label-align-containers-plan.md ✅ A7 (label-align #137, labelColor + ContainerNode)
 2026-04-29-ruler-and-pipeline-reset.md    ✅ A2 (Ruler.tsx in panel-editor/)
+2026-04-30-sizing-input-fixes.md          ✅ A3 (Issues 1+2 e1e341b, Issue 3 bb6edc6)
 2026-05-04-mixed-selection-labels-controls-P1.md  ✅ A5 (PRs #131–#136)
 ```
 
