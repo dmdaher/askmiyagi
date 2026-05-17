@@ -12,8 +12,11 @@ export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'conflict';
 
 /** Build the save payload from current store state */
 export function buildSavePayload() {
-  const { sections, controls, editorLabels, controlGroups, controlContainers, polishBanners, canvasWidth, canvasHeight, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
-  return { sections, controls, editorLabels, controlGroups, controlContainers, polishBanners, canvasWidth, canvasHeight, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard };
+  const { sections, controls, editorLabels, controlGroups, controlContainers, polishBanners, canvasWidth, canvasHeight, deviceDimensions, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard } = useEditorStore.getState();
+  // Phase 10 — `deviceDimensions` is persisted so future loads don't have
+  // to re-read the raw `manifest.json` to find physical hardware size.
+  // null when the gatekeeper didn't extract dimensions from the manual.
+  return { sections, controls, editorLabels, controlGroups, controlContainers, polishBanners, canvasWidth, canvasHeight, deviceDimensions, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard };
 }
 
 /** Get the save URL for this device */

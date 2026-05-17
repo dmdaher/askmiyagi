@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
 import { computeManifestVersion } from '@/lib/pipeline/manifest-version';
 import { computeLabelPosition } from '@/lib/label-position';
+import { computeControlScaleFromControls } from '@/lib/control-scale';
 import type { EditorLabel, ControlGroup, PolishBanner } from './historySlice';
 import type { SelectableId } from './selection-types';
 import { selectedControlIds } from './selection-types';
@@ -350,6 +351,17 @@ export interface ManifestSlice {
    */
   assignLabelToNearestSection: (labelId: string) => boolean;
   initLabelsFromControls: () => void;
+  /**
+   * Phase 10 — compute & apply controlScale based on physical device
+   * dimensions. Used both internally (auto-fit on FIRST load) and via
+   * a future toolbar button for retroactive sizing.
+   *
+   * No-op when `deviceDimensions` is unknown or `canvasWidth` is invalid.
+   * Pushes a snapshot for undoability when called by the user; on auto-
+   * load it's called BEFORE first save, so undo history is naturally
+   * empty at that point.
+   */
+  autoFitControlScale: (opts?: { pushSnapshot?: boolean }) => boolean;
   setLabelPosition: (ids: string[], position: ControlDef['labelPosition']) => void;
   alignControls: (mode: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom') => void;
   /**
@@ -617,6 +629,12 @@ import type { ScaleBase } from './canvasSlice';
 interface CanvasFields {
   canvasWidth: number;
   canvasHeight: number;
+  /**
+   * Phase 10 — physical hardware dimensions (mm). Source: gatekeeper LLM
+   * reads the device manual ("Dimensions: 997×300×109 mm"). Persisted
+   * in editor manifest so consumers don't have to re-read raw manifest.
+   */
+  deviceDimensions: { widthMm: number; depthMm: number } | null;
   guides: { id: string; orientation: 'horizontal' | 'vertical'; position: number }[];
   scaleBase: ScaleBase | null;
   scaleCumulativeFactor: number;
@@ -1075,6 +1093,11 @@ export const createManifestSlice: StateCreator<
       _manifestVersion: computeManifestVersion(manifest),
       hasUserEdited: false,
       focusedSectionId: null,
+      // Phase 10 — persist deviceDimensions in store state so auto-fit
+      // logic and any future device-aware feature can read it without
+      // re-reading the raw manifest. Falls to null when manifest doesn't
+      // carry it (older instruments, deepmind-12, etc.).
+      deviceDimensions: manifest.deviceDimensions ?? null,
       ...canvasSizeUpdate,
     });
   },
@@ -2773,6 +2796,27 @@ export const createManifestSlice: StateCreator<
       controls: { ...state.controls, [controlId]: { ...ctrl, sectionId: target } },
       sections: updatedSections,
     });
+  },
+
+  /**
+   * Phase 10.1 — compute a sensible controlScale by sampling the typical
+   * button+knob bbox width from the loaded controls and picking the scale
+   * that lands them at ~40px effective. Used by auto-fit-on-first-load.
+   *
+   * Returns true if a scale was applied, false if no-op (<3 button/knob
+   * samples available).
+   */
+  autoFitControlScale: (opts) => {
+    const controlsMap = (get() as any).controls as
+      | Record<string, { type: string; w: number; h: number }>
+      | undefined;
+    const sample = controlsMap ? Object.values(controlsMap) : [];
+    const newScale = computeControlScaleFromControls(sample);
+    if (newScale == null) return false;
+    if (opts?.pushSnapshot) get().pushSnapshot();
+    set({ controlScale: newScale } as any);
+    get().clearScaleBase();
+    return true;
   },
 
   initLabelsFromControls: () => {

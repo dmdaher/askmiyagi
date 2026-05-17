@@ -47,6 +47,17 @@ export interface CanvasSlice {
   photoOpacity: number;
   canvasWidth: number;
   canvasHeight: number;
+  /**
+   * Phase 10 — physical dimensions of the real hardware (mm). Originally
+   * provided by the gatekeeper LLM (reads "Dimensions: 997mm × 300mm"
+   * from the device manual). Persisted in the editor manifest so
+   * `auto-fit controlScale` can compute a sensible default without
+   * having to re-read the raw `manifest.json`.
+   *
+   * Optional — older instruments or those without dimensions in the
+   * manual leave this undefined. Auto-fit becomes a no-op for them.
+   */
+  deviceDimensions: { widthMm: number; depthMm: number } | null;
   photoOffsetX: number;
   photoOffsetY: number;
   photoScale: number;
@@ -145,6 +156,7 @@ export const createCanvasSlice: StateCreator<
   photoOpacity: 0.3,
   canvasWidth: 1200,
   canvasHeight: 1650,
+  deviceDimensions: null, // populated by loadFromManifest when present
   photoOffsetX: 0,
   photoOffsetY: 0,
   photoScale: 1,
