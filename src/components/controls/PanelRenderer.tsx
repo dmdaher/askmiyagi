@@ -15,6 +15,12 @@ import JogWheelAssembly from './JogWheelAssembly';
 import DirectionSwitch from './DirectionSwitch';
 import JogDisplay from './JogDisplay';
 import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import {
+  renderLabelText,
+  inferPortVariant,
+  mapButtonLabelPosition,
+  resolveDisplayContent,
+} from '@/lib/render-helpers';
 import SharedLabel from '@/components/panel/SharedLabel';
 import { computeBannerBoxStyle, computeBannerTextStyle } from '@/lib/banner-style';
 import type { PolishBanner } from '@/components/panel-editor/store/historySlice';
@@ -110,27 +116,6 @@ export interface PanelRendererProps {
   highlightedControls?: string[];
   zones?: { zoneNumber: number; color: string; lowNote: number; highNote: number; label: string }[];
   onButtonClick?: (id: string) => void;
-}
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function renderLabelText(text: string): React.ReactNode {
-  if (!text.includes('\n')) return text;
-  return text.split('\n').map((line, i) => (
-    <span key={i}>
-      {i > 0 && <br />}
-      {line}
-    </span>
-  ));
-}
-
-function inferPortVariant(label: string): string {
-  const l = label.toLowerCase();
-  if (l.includes('usb')) return 'usb-a';
-  if (l.includes('sd') || l.includes('card')) return 'sd-card';
-  if (l.includes('ethernet') || l.includes('lan')) return 'ethernet';
-  if (l.includes('rca') || l.includes('phono')) return 'rca';
-  return 'usb-a';
 }
 
 // ─── Control Renderer ───────────────────────────────────────────────────────
@@ -261,6 +246,7 @@ function renderControl(
             hasLed={control.hasLed && control.ledPosition === 'inside'}
             ledOn={ledOn}
             ledColor={control.ledColor ?? undefined}
+            labelPosition={mapButtonLabelPosition(control.labelPosition)}
             labelFontSize={control.labelFontSize}
             ledStyle={control.ledStyle}
             labelAlign={control.labelAlign}

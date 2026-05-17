@@ -18,44 +18,16 @@ import TouchDisplay from '@/components/controls/TouchDisplay';
 import JogWheelAssembly from '@/components/controls/JogWheelAssembly';
 import DirectionSwitch from '@/components/controls/DirectionSwitch';
 import JogDisplay from '@/components/controls/JogDisplay';
-import { HARDWARE_ICONS, HARDWARE_ICON_SVGS } from '@/lib/hardware-icons';
-
-/** Render label text with \n as line breaks */
-function renderLabelText(text: string): React.ReactNode {
-  if (!text.includes('\n')) return text;
-  return text.split('\n').map((line, i) => (
-    <span key={i}>
-      {i > 0 && <br />}
-      {line}
-    </span>
-  ));
-}
+import {
+  renderLabelText,
+  inferPortVariant,
+  mapButtonLabelPosition,
+  resolveDisplayContent,
+} from '@/lib/render-helpers';
 
 interface ControlNodeProps {
   controlId: string;
   sectionId: string;
-}
-
-/** Map editor labelPosition to PanelButton's labelPosition prop */
-function mapButtonLabelPosition(
-  lp: ControlDef['labelPosition'],
-): 'on' | 'above' | 'below' {
-  if (lp === 'on-button') return 'on';
-  if (lp === 'above') return 'above';
-  if (lp === 'below') return 'below';
-  // 'left', 'right', 'hidden' don't map to PanelButton — fall back to 'on'
-  return 'on';
-}
-
-/** Resolve the display text for a control — icon, SVG, or label */
-function resolveDisplayContent(control: ControlDef): { text: string; isIcon: boolean; svgIcon?: React.ReactNode } {
-  if (control.icon && control.labelDisplay === 'icon-only') {
-    const svg = HARDWARE_ICON_SVGS[control.icon];
-    if (svg) return { text: '', isIcon: true, svgIcon: svg };
-    const iconChar = HARDWARE_ICONS[control.icon] ?? control.icon;
-    return { text: iconChar, isIcon: true };
-  }
-  return { text: control.label, isIcon: false };
 }
 
 /** Render a small LED dot indicator for buttons with hasLed (dot style only) */
@@ -92,15 +64,6 @@ function renderButtonLed(control: ControlDef) {
       {ledDot}
     </div>
   );
-}
-
-/** Infer Port variant from label text */
-function inferPortVariant(label: string): 'usb-a' | 'sd-card' | 'ethernet' | 'rca' {
-  const lower = label.toLowerCase();
-  if (lower.includes('sd') || lower.includes('card')) return 'sd-card';
-  if (lower.includes('ethernet') || lower.includes('lan') || lower.includes('link')) return 'ethernet';
-  if (lower.includes('rca') || lower.includes('phono')) return 'rca';
-  return 'usb-a';
 }
 
 /** Render the real hardware control component based on control type */
