@@ -1,25 +1,47 @@
 # 2026-05 Master Roadmap
 
 > Single source of truth for plan state, priorities, attack order.
-> Rebuilt 2026-05-14 after merging PRs #116, #117, #118 and post-audit cleanup.
+> Re-audited 2026-05-16 after PRs #119 → #138 merged (20 PRs since last audit).
 
 ---
 
 ## TL;DR
 
-**31 plan files audited. 13 shipped. 4 deferred/killed. 14 active.**
+**31 plan files audited. 21 shipped. 4 deferred/killed. 6 active.**
 
 ### Recommended next 3 moves
 
 1. **🥇 Path A — Tutorial-Review Pause Phase** (~3 hr, 88% conf) — gate between tutorial-build and tutorial-pr. Without it, future runs auto-PR tutorials to `test` with no review.
 2. **🥈 Path B — Run CDJ-3000 to generate 23 tutorials** (½-1 day, after Path A) — first real tutorial output for a pipeline-built device.
-3. **🥉 A1 Editor/Preview renderer extraction** (~7 hr) — biggest editor-quality win, stops the editor-vs-preview parity bug class at the source.
+3. **🥉 A1 Renderer extraction (remaining ~480 LOC)** (~6 hr) — SharedLabel shipped via #120; the bulk of ControlNode↔PanelRenderer duplication still drifts.
 
 ---
 
 ## 📦 SHIPPED (no action needed)
 
 Items shipped or merged. Move to historical reference.
+
+### 2026-05-15 → 2026-05-16 — Editor parity + selection unification + Phase 10
+
+| # | What | PR | Plan(s) closed |
+|---|---|---|---|
+| ✅ | Drift measurement + hygiene + CI gate | #121, #122 | new initiative |
+| ✅ | impact-check skill + CLAUDE.md gate | #123 | new initiative |
+| ✅ | 40px preview-mode shift fix + PREVIEW MODE badge | #124 | editor-bugfixes |
+| ✅ | Auto-save guardrails (`?nosave=true` + view-state) | #125 | editor safety |
+| ✅ | Inter web font via `next/font` (cross-platform consistency) | #126 | font initiative |
+| ✅ | Section body-only mode + showTitleBanner toggle | #127 | A.III component |
+| ✅ | Hide Section toggle + drift:ci 33% faster | #128 | A.III component |
+| ✅ | Onboarding docs refresh + worktree-compatible git hooks | #129 | **M1 closed** |
+| ✅ | Linked labels snap to grid when control moves | #130 | A5 supporting |
+| ✅ | Unified selection schema (MS1) | #131 | **A5 starts** |
+| ✅ | Preflight manuals survive worktree cleanup | #132 | C1 part |
+| ✅ | Label multi-select + cross-type deselect (Phase 2+3) | #133 | **A5 continues** |
+| ✅ | Entity-agnostic move/delete + cross-type drag (Phase 4) | #134 | **A5 continues** |
+| ✅ | MixedSelectionPanel cross-type selections (Phase 5) | #135 | **A5 continues** |
+| ✅ | Delete legacy selection fields (Phase 6) | #136 | **A5 closed** |
+| ✅ | Label align + distribute with auto-anchor (Phase 7) | #137 | **A7 label-align closed** |
+| ✅ | Auto-fit `controlScale` for fresh instruments (Phase 10) | #138 | new initiative |
 
 ### Tonight (2026-05-14)
 
@@ -78,12 +100,12 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 
 #### A.I Foundation (must do first)
 
-##### A1 | Editor/Preview renderer extraction
+##### A1 | Editor/Preview renderer extraction (REMAINING)
 - 🔗 `~/.claude/plans/2026-05-editor-renderer-extraction.md`
-- 💯 Overall: **88%** (P:95% / S:88% / R:92%)
-- ⏱️ 7 hours · 4 PRs
+- 💯 Overall: **85%** (P:95% / S:85% / R:88%) — adjusted: SharedLabel risk burned down
+- ⏱️ ~6 hours remaining · 3 PRs
 - 🎯 Priority: #1
-- 📝 Extracts ~480 LOC of duplication between `ControlNode.tsx` and `PanelRenderer.tsx`. Snapshot-based parity tests prevent future drift. Stops the editor-vs-preview bug class that's chewed up the last month of bugfix work.
+- 📝 SharedLabel primitive shipped via PR #120 (closed the label drift surface). Remaining: ~400 LOC of control-renderer duplication across 14 control types (buttons, LEDs, knobs, sliders, jog, pad, encoder, switch, lever, port, screen). Snapshot-based parity tests already in CI via #121/#122.
 
 #### A.II Quick wins (independent, < 2 hrs each)
 
@@ -92,10 +114,10 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 - 💯 **82%** · ⏱️ 1.5-2 hr · 🎯 #1
 - 📝 Figma-style edge rulers with adaptive tick density + R-key toggle. Pure view component.
 
-##### A3 | Sizing input fixes
+##### A3 | Sizing input fixes (REMAINING — Issue 3 only)
 - 🔗 `docs/plans/2026-04-30-sizing-input-fixes.md`
-- 💯 **64%** ⚠️ needs impact analysis · ⏱️ 2 hr · 🎯 #2
-- 📝 Dual-label minimum, geometry input backspace bug, icon scaling. Risk: dual-label minimum removal could clip — Playwright test at small sizes first.
+- 💯 **70%** · ⏱️ ~45 min · 🎯 #2
+- 📝 Issue 1 (dual-label minimum) + Issue 2 (geometry backspace) shipped in `e1e341b`. **Remaining:** Issue 3 — circle button icons don't scale with button size.
 
 ##### A4 | LED z-order Part 3
 - 🔗 `docs/plans/2026-04-26-led-zorder-plan.md` (Part 1 SHIPPED)
@@ -104,20 +126,18 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 
 #### A.III UX features (post A1)
 
-##### A5 | Mixed selection labels + controls
-- 🔗 `docs/plans/2026-05-04-mixed-selection-labels-controls-P1.md`
-- 💯 **83%** · ⏱️ 3 hr · 🎯 #1 (gates other label features)
-- 📝 Figma-like multi-select of controls + standalone labels. 10-point premortem in plan. Linked labels stay single-select.
+##### ~~A5~~ ✅ SHIPPED — Mixed selection (PRs #131–#136)
+> Plan: `docs/plans/2026-05-04-mixed-selection-labels-controls-P1.md` — archive on next pass
 
 ##### A6 | Keyboard fixes + Add Control
 - 🔗 `~/.claude/plans/parsed-exploring-pumpkin.md`
 - 💯 **78%** · ⏱️ 4 hr · 🎯 #2
 - 📝 Per-MIDI black key offsets, right-click "Add Control" modal, click-to-edit keyboard via Properties.
 
-##### A7 | Label alignment + containers
+##### A7 | Containers + labelColor (REMAINING — label-align shipped)
 - 🔗 `docs/plans/2026-04-27-label-align-containers-plan.md`
-- 💯 **82%** · ⏱️ 5-6 hr · 🎯 #3 (depends on A5)
-- 📝 9-position labelAlign grid + labelColor + ControlContainer (visual grouping). Also fixes dual-label LED type mismatch.
+- 💯 **80%** · ⏱️ ~4 hr · 🎯 #3
+- 📝 9-position labelAlign grid + auto-anchor shipped in PR #137. **Remaining:** `labelColor` field + `ControlContainer` (visual grouping primitive) + dual-label LED type mismatch fix.
 
 ##### A8 | LED Parts 2 + Pre-tutorial blockers (MERGE)
 - 🔗 `docs/plans/2026-04-26-led-zorder-plan.md` (Part 2) + `docs/plans/2026-04-26-pre-tutorial-blockers.md`
@@ -248,10 +268,7 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 
 ### 🛡️ Misc quick wins
 
-##### M1 | Onboard slash command fix
-- 🔗 `~/.claude/plans/get-up-to-speed-eager-dolphin.md`
-- 💯 **95%** · ⏱️ 30 min · 🎯 highest confidence in the entire roadmap
-- 📝 Fix 2 dead links in `.claude/commands/onboard.md`, add canonical 5-file reading order.
+##### ~~M1~~ ✅ SHIPPED — Onboard slash command fix (PR #129)
 
 ##### M2 | Dashboard sort/filter
 - 🔗 `docs/plans/2026-04-18-dashboard-sort-filter.md`
@@ -265,10 +282,10 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 ### This week — first 3 sessions
 1. **B12 Path A — Tutorial-Review Pause Phase** (3 hr) ← unblocks everything else in tutorial flow
 2. **B13 Path B — Run CDJ-3000 tutorials** (overnight pipeline) ← first real tutorial output
-3. **M1 Onboard fix** (30 min, anytime) ← cheapest win in the whole roadmap
+3. **Drift baselines refresh** (15 min) ← `npm run drift:capture` + commit; locks in current state after icon-label unification + Inter font + Phase 10; gets drift CI back to green
 
 ### Next sprint — editor foundation
-4. **A1 Renderer extraction** (7 hr) ← biggest editor-quality unlock
+4. **A1 Renderer extraction (remaining)** (6 hr) ← biggest editor-quality unlock; SharedLabel already done
 5. **B15 Path C — replicate Path B for other devices** ← scale tutorial generation
 
 ### Anytime in parallel
@@ -276,11 +293,13 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 - **M2 Dashboard sort/filter** (2 hr) ← admin workflow improvement
 - **A2 Ruler tool** (1.5 hr) ← Figma parity for contractor
 - **A4 LED z-order Part 3** (1.5 hr) ← Figma parity
+- **A3 Issue 3** (45 min) ← circle button icon scaling
 
 ### When stable
 - **C3 Relink decision** (30 min discussion) ← blocks Half B preview-relink
 - **B14 Half B preview UI** (6-8 hr) ← after Path A proves the basic flow needs more
 - **C1 Pipeline build-phase fixes** (5 hr) ← Parts A, C, E remaining
+- **A7 Containers + labelColor** (4 hr) ← label-align already done
 
 ### Parked / decision needed
 - **5 gatekeeper-failed devices** (ddj-flx4, dj-xdj-rr, fantom-07, deepmind-12, rc-505-mk2 — though rc-505 is killed) — separate strategy session
@@ -295,14 +314,15 @@ For every active plan, check before execution:
 
 | Protected system | At-risk plans | Mitigation pattern |
 |---|---|---|
-| Manifest schema | A6 (keyboard startNote), A7 (containers), A8 (ledStyle) | Additive fields, backward-compat defaults |
-| Autosave / Hosted Blob | none currently | n/a |
-| Send-to-hosted / pull workflow | none currently | n/a |
-| History / undo | A4 (zOrder), A5 (selection), A7 (containers) | New state via `pushSnapshot()` |
-| Existing features | A3 (sizing rendering) | Playwright before/after |
+| Manifest schema | A6 (keyboard startNote), A7 (containers, labelColor), A8 (ledStyle) | Additive fields, backward-compat defaults |
+| Autosave / Hosted Blob | Pull-from-hosted (latent: can overwrite local state — e.g. xdj-rr controlScale 2026-05-16) | Pre-pull `cp` backup; warn before pull if local has fields blob lacks |
+| Send-to-hosted / pull workflow | A6 (keyboard) | Verify round-trip after change |
+| History / undo | A4 (zOrder), A7 (containers) | New state via `pushSnapshot()` |
+| Existing features | A3 (Issue 3 icon scaling) | Playwright before/after |
 | Tutorial integrity | A6 (`startNote`), C4 (mutation safety) | Read-only enforcement; pre-flight scan |
 | Pipeline reliability | C1, B12 (review phase) | Validators + escalation safety nets |
 | Admin/contractor workflow | E1 (subdomain) | Env var pre-check, curl verification |
+| Drift CI baselines | Any layout change | `drift:capture` immediately after intentional layout/font changes |
 
 ---
 
@@ -310,18 +330,23 @@ For every active plan, check before execution:
 
 ### Active in `~/.claude/plans/`
 ```
-2026-05-editor-renderer-extraction.md     A1
+2026-05-editor-renderer-extraction.md     A1 (SharedLabel done; control bodies remain)
 2026-05-instrument-preview-and-relink.md  B14 / C2
 2026-05-manifest-repair-cache-cleanup.md  C5
-2026-05-pipeline-build-phase-fixes.md     C1
+2026-05-pipeline-build-phase-fixes.md     C1 (Parts A, C, E)
 2026-05-relink-architecture-rethink.md    C3
-2026-05-14-tutorial-generation-and-review-phase.md  B12/B13/B15 — NEW
+2026-05-14-tutorial-generation-and-review-phase.md  B12/B13/B15
 2026-future-tutorial-content-discovery.md D1
-get-up-to-speed-eager-dolphin.md          M1
 manifest-mutation-safety.md               C4
 my-website-admin-subpages-luminous-music.md  E1
 parsed-exploring-pumpkin.md               A6
 tutorial-regeneration-strategy.md         B11
+```
+
+### Ready to archive (✅ SHIPPED in May 2026)
+```
+get-up-to-speed-eager-dolphin.md          ✅ M1 (PR #129)
+nested-coalescing-squid.md                ✅ Phase 10 (PR #138)
 ```
 
 ### Active in `docs/plans/`
@@ -329,14 +354,18 @@ tutorial-regeneration-strategy.md         B11
 2026-04-18-dashboard-sort-filter.md       M2
 2026-04-26-led-zorder-plan.md             A4 (Part 3 only)
 2026-04-26-pre-tutorial-blockers.md       A8
-2026-04-27-label-align-containers-plan.md A7
+2026-04-27-label-align-containers-plan.md A7 (containers + labelColor remain)
 2026-04-27-themes-skins-design.md         A9
 2026-04-29-ruler-and-pipeline-reset.md    A2
 2026-04-30-context-management.md          A10
 2026-04-30-display-builder-agent.md       (REF — SOUL shipped)
-2026-04-30-sizing-input-fixes.md          A3
-2026-05-04-mixed-selection-labels-controls-P1.md  A5
+2026-04-30-sizing-input-fixes.md          A3 (Issue 3 only)
 2026-05-roadmap.md                        (this file)
+```
+
+### Ready to archive in `docs/plans/`
+```
+2026-05-04-mixed-selection-labels-controls-P1.md  ✅ A5 (PRs #131–#136)
 ```
 
 ### Archived to `~/.claude/plans/archive/2026-05/`
@@ -363,4 +392,4 @@ youtube-tutorial-discovery.md (if merged duplicate)
 
 ---
 
-*Last updated 2026-05-14. Re-audit when 5+ plans ship or major architectural decisions land.*
+*Last updated 2026-05-16 (post-PR #138). Re-audit when 5+ plans ship or major architectural decisions land.*
