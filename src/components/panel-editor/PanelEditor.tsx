@@ -398,6 +398,10 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
               _manifestVersion: data._manifestVersion ?? computeManifestVersion(data),
               _loadedAt: data._updatedAt ?? data._loadedAt ?? null,
               hasUserEdited: false,
+              // Phase 10 — restore deviceDimensions from the saved editor
+              // manifest. Backward compat: missing field → null (will be
+              // null-checked by any consumer; auto-fit is a no-op without it).
+              deviceDimensions: data.deviceDimensions ?? null,
               ...canvasUpdate,
             });
           } else {
@@ -410,6 +414,19 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
           }
           // Initialize labels from controls if not yet done (migration)
           useEditorStore.getState().initLabelsFromControls();
+
+          // Phase 10 — auto-fit controlScale based on physical device
+          // dimensions for FRESH instruments only. Gated on:
+          //   - The saved manifest has NO `controlScale` field (= never
+          //     adjusted by a contractor). If it's set — even to default
+          //     1 — we respect that and skip.
+          //   - `deviceDimensions` is available (otherwise no-op).
+          // This means: all existing instruments (fantom-06=0.3, cdj-3000=1,
+          // deepmind-12=1, etc.) have controlScale set → skipped. Only
+          // brand new pipeline outputs get the auto-fit treatment.
+          if (data.controlScale === undefined || data.controlScale === null) {
+            useEditorStore.getState().autoFitControlScale();
+          }
 
           // In hosted mode, capture admin note. Editor stays unlocked —
           // contractor can keep editing and re-submit at any time.
