@@ -7,7 +7,7 @@
 
 ## TL;DR
 
-**31 plan files audited. 21 shipped. 4 deferred/killed. 6 active.**
+**31 plan files audited. 26 shipped. 4 deferred/killed. (real active: 1 priority + 3 quick wins + 5 longer-term + 3 deferred-by-trigger)**
 
 ### Recommended next 3 moves
 
@@ -109,40 +109,28 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 
 #### A.II Quick wins (independent, < 2 hrs each)
 
-##### A2 | Ruler tool
-- 🔗 `docs/plans/2026-04-29-ruler-and-pipeline-reset.md` (ruler only; reset shipped)
-- 💯 **82%** · ⏱️ 1.5-2 hr · 🎯 #1
-- 📝 Figma-style edge rulers with adaptive tick density + R-key toggle. Pure view component.
+##### ~~A2~~ ✅ SHIPPED — Ruler tool (`Ruler.tsx` in `panel-editor/`)
 
-##### A3 | Sizing input fixes (REMAINING — Issue 3 only)
+##### A3 | Sizing — Issue 3 (circle icon scaling)
 - 🔗 `docs/plans/2026-04-30-sizing-input-fixes.md`
-- 💯 **70%** · ⏱️ ~45 min · 🎯 #2
-- 📝 Issue 1 (dual-label minimum) + Issue 2 (geometry backspace) shipped in `e1e341b`. **Remaining:** Issue 3 — circle button icons don't scale with button size.
+- 💯 **70%** · ⏱️ ~45 min · 🎯 #1
+- 📝 Issues 1 & 2 shipped in `e1e341b`. **Remaining:** circle button icons don't scale with button size. Quick win.
 
-##### A4 | LED z-order Part 3
-- 🔗 `docs/plans/2026-04-26-led-zorder-plan.md` (Part 1 SHIPPED)
-- 💯 **84%** · ⏱️ 1.5 hr · 🎯 #3
-- 📝 Move-to-front/back/forward/backward + ⌘]/⌘[ shortcuts. Additive `zOrder` field on controls.
+##### ~~A4~~ ✅ SHIPPED — LED z-order Part 3 (`zOrder` field + `bringToFront`/`sendToBack` + ⌘]/⌘[)
 
 #### A.III UX features (post A1)
 
 ##### ~~A5~~ ✅ SHIPPED — Mixed selection (PRs #131–#136)
 > Plan: `docs/plans/2026-05-04-mixed-selection-labels-controls-P1.md` — archive on next pass
 
-##### A6 | Keyboard fixes + Add Control
+##### A6 | Keyboard UI + Add Control UI (REMAINING — store API exists)
 - 🔗 `~/.claude/plans/parsed-exploring-pumpkin.md`
-- 💯 **78%** · ⏱️ 4 hr · 🎯 #2
-- 📝 Per-MIDI black key offsets, right-click "Add Control" modal, click-to-edit keyboard via Properties.
+- 💯 **75%** · ⏱️ ~2 hr · 🎯 #2
+- 📝 `addControl` store action exists; missing UI: right-click "Add Control" in ContextMenu, KeyboardProperties panel, per-MIDI black key offset field.
 
-##### A7 | Containers + labelColor (REMAINING — label-align shipped)
-- 🔗 `docs/plans/2026-04-27-label-align-containers-plan.md`
-- 💯 **80%** · ⏱️ ~4 hr · 🎯 #3
-- 📝 9-position labelAlign grid + auto-anchor shipped in PR #137. **Remaining:** `labelColor` field + `ControlContainer` (visual grouping primitive) + dual-label LED type mismatch fix.
+##### ~~A7~~ ✅ SHIPPED — Containers + labelColor (label-align via #137, labelColor field in PropertiesPanel, ContainerNode.tsx)
 
-##### A8 | LED Parts 2 + Pre-tutorial blockers (MERGE)
-- 🔗 `docs/plans/2026-04-26-led-zorder-plan.md` (Part 2) + `docs/plans/2026-04-26-pre-tutorial-blockers.md`
-- 💯 **87%** · ⏱️ 5-6 hr · 🎯 #4
-- 📝 ledStyle field (integrated vs dot) + wiring LED rendering to respond to `ledOn` state. Required for tutorials to show LED feedback.
+##### ~~A8~~ ✅ SHIPPED — LED ledStyle + ledOn wiring (PropertiesPanel picker: none/dot/integrated-glow; PanelButton + PanelRenderer render both modes)
 
 #### A.IV Design system (final pass)
 
@@ -270,10 +258,7 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 
 ##### ~~M1~~ ✅ SHIPPED — Onboard slash command fix (PR #129)
 
-##### M2 | Dashboard sort/filter
-- 🔗 `docs/plans/2026-04-18-dashboard-sort-filter.md`
-- 💯 **85%** · ⏱️ 2 hr
-- 📝 Sort + manufacturer filter + "Ready for Editor" toggle. ~40 LOC client-side.
+##### ~~M2~~ ✅ SHIPPED — Dashboard sort/filter (sort: attention/status/manufacturer/recent + manufacturer filter dropdown in `src/app/admin/page.tsx`)
 
 ---
 
@@ -290,16 +275,13 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 
 ### Anytime in parallel
 - **E1 Admin subdomain** (6 hr) ← production blocker but not urgent
-- **M2 Dashboard sort/filter** (2 hr) ← admin workflow improvement
-- **A2 Ruler tool** (1.5 hr) ← Figma parity for contractor
-- **A4 LED z-order Part 3** (1.5 hr) ← Figma parity
-- **A3 Issue 3** (45 min) ← circle button icon scaling
+- **A3 Issue 3** (45 min) ← circle button icon scaling — quickest remaining editor win
+- **A6 Keyboard + Add Control UI** (2 hr) ← `addControl` store action exists; needs UI surface (ContextMenu, KeyboardProperties)
 
 ### When stable
-- **C3 Relink decision** (30 min discussion) ← blocks Half B preview-relink
+- **C3 Relink decision** (30 min discussion) ← blocks B14 preview-relink
 - **B14 Half B preview UI** (6-8 hr) ← after Path A proves the basic flow needs more
 - **C1 Pipeline build-phase fixes** (5 hr) ← Parts A, C, E remaining
-- **A7 Containers + labelColor** (4 hr) ← label-align already done
 
 ### Parked / decision needed
 - **5 gatekeeper-failed devices** (ddj-flx4, dj-xdj-rr, fantom-07, deepmind-12, rc-505-mk2 — though rc-505 is killed) — separate strategy session
@@ -314,10 +296,10 @@ For every active plan, check before execution:
 
 | Protected system | At-risk plans | Mitigation pattern |
 |---|---|---|
-| Manifest schema | A6 (keyboard startNote), A7 (containers, labelColor), A8 (ledStyle) | Additive fields, backward-compat defaults |
+| Manifest schema | A6 (keyboard startNote) | Additive fields, backward-compat defaults |
 | Autosave / Hosted Blob | Pull-from-hosted (latent: can overwrite local state — e.g. xdj-rr controlScale 2026-05-16) | Pre-pull `cp` backup; warn before pull if local has fields blob lacks |
 | Send-to-hosted / pull workflow | A6 (keyboard) | Verify round-trip after change |
-| History / undo | A4 (zOrder), A7 (containers) | New state via `pushSnapshot()` |
+| History / undo | A6 (Add Control adds new entities) | New state via `pushSnapshot()` |
 | Existing features | A3 (Issue 3 icon scaling) | Playwright before/after |
 | Tutorial integrity | A6 (`startNote`), C4 (mutation safety) | Read-only enforcement; pre-flight scan |
 | Pipeline reliability | C1, B12 (review phase) | Validators + escalation safety nets |
@@ -351,20 +333,20 @@ nested-coalescing-squid.md                ✅ Phase 10 (PR #138)
 
 ### Active in `docs/plans/`
 ```
-2026-04-18-dashboard-sort-filter.md       M2
-2026-04-26-led-zorder-plan.md             A4 (Part 3 only)
-2026-04-26-pre-tutorial-blockers.md       A8
-2026-04-27-label-align-containers-plan.md A7 (containers + labelColor remain)
-2026-04-27-themes-skins-design.md         A9
-2026-04-29-ruler-and-pipeline-reset.md    A2
-2026-04-30-context-management.md          A10
+2026-04-27-themes-skins-design.md         A9 (deferred — contractor demand)
+2026-04-30-context-management.md          A10 (low priority docs split)
 2026-04-30-display-builder-agent.md       (REF — SOUL shipped)
-2026-04-30-sizing-input-fixes.md          A3 (Issue 3 only)
+2026-04-30-sizing-input-fixes.md          A3 (Issue 3 only — 45 min)
 2026-05-roadmap.md                        (this file)
 ```
 
-### Ready to archive in `docs/plans/`
+### Ready to archive in `docs/plans/` (✅ SHIPPED)
 ```
+2026-04-18-dashboard-sort-filter.md       ✅ M2 (in src/app/admin/page.tsx)
+2026-04-26-led-zorder-plan.md             ✅ A4 (zOrder + bringToFront/sendToBack + ⌘]/⌘[)
+2026-04-26-pre-tutorial-blockers.md       ✅ A8 (ledStyle picker + ledOn rendering)
+2026-04-27-label-align-containers-plan.md ✅ A7 (label-align #137, labelColor + ContainerNode)
+2026-04-29-ruler-and-pipeline-reset.md    ✅ A2 (Ruler.tsx in panel-editor/)
 2026-05-04-mixed-selection-labels-controls-P1.md  ✅ A5 (PRs #131–#136)
 ```
 
