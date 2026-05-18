@@ -14,12 +14,11 @@ import TouchDisplay from './TouchDisplay';
 import JogWheelAssembly from './JogWheelAssembly';
 import DirectionSwitch from './DirectionSwitch';
 import JogDisplay from './JogDisplay';
-import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import SharedCircleButton from '@/components/panel/SharedCircleButton';
 import {
   renderLabelText,
   inferPortVariant,
   mapButtonLabelPosition,
-  resolveDisplayContent,
 } from '@/lib/render-helpers';
 import SharedLabel from '@/components/panel/SharedLabel';
 import { computeBannerBoxStyle, computeBannerTextStyle } from '@/lib/banner-style';
@@ -167,13 +166,6 @@ function renderControl(
       }
       if (control.shape === 'circle') {
         const diameter = Math.min(w, h);
-        const iconKey = control.icon;
-        const iconContent = iconKey ? (HARDWARE_ICONS[iconKey] ?? iconKey) : undefined;
-        const showInside = control.labelPosition === 'on-button' || control.labelDisplay === 'icon-only';
-        const displayText = iconContent ?? control.label;
-        const isIcon = !!iconContent;
-        const isIntegrated = control.ledStyle === 'integrated' && control.hasLed;
-        const intColor = control.ledColor ?? '#22c55e';
         return (
           <div className="relative" data-control-id={control.id}>
             {control.hasLed && control.ledPosition !== 'inside' && control.ledStyle !== 'integrated' && (
@@ -185,42 +177,22 @@ function renderControl(
                 }} />
               </div>
             )}
-            <div
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: diameter, height: diameter,
-                backgroundColor: isIntegrated
-                  ? (ledOn === true ? undefined : (ledOn === false ? '#2a2a2a' : `${intColor}10`))
-                  : (active ? '#3a3a3a' : '#2a2a2a'),
-                // `background` is the CSS shorthand. Including it with a falsy
-                // value (even `undefined`) clears `backgroundColor` in the DOM
-                // via React's style serialization. Only include the radial
-                // gradient when actually needed.
-                ...(isIntegrated && ledOn === true && {
-                  background: `radial-gradient(ellipse at 50% 40%, ${intColor}50 0%, ${intColor}25 50%, transparent 80%)`,
-                }),
-                border: isIntegrated
-                  ? (ledOn === true ? `1px solid ${intColor}` : ledOn === false ? `3px solid ${control.surfaceColor ?? '#444'}` : `1px solid ${intColor}25`)
-                  : `3px solid ${control.surfaceColor ?? '#444'}`,
-                boxShadow: isIntegrated && ledOn === true
-                  ? `0 0 12px ${intColor}80, 0 0 4px ${intColor}60, inset 0 0 8px ${intColor}30`
-                  : (control.surfaceColor
-                    ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40`
-                    : 'inset 0 2px 4px rgba(0,0,0,0.4)'),
-              }}
+            <SharedCircleButton
+              diameter={diameter}
+              label={control.label}
+              icon={control.icon}
+              labelPosition={control.labelPosition}
+              labelDisplay={control.labelDisplay}
+              labelFontSize={control.labelFontSize}
+              labelColor={control.labelColor}
+              surfaceColor={control.surfaceColor}
+              hasLed={control.hasLed}
+              ledStyle={control.ledStyle}
+              ledColor={control.ledColor}
+              ledOn={ledOn}
+              active={active}
               onClick={onClick}
-            >
-              {showInside && (
-                <span className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
-                  style={{
-                    fontSize: control.labelFontSize ?? (isIcon ? Math.max(Math.round(diameter * 0.35), 8) : 8),
-                    color: control.labelColor ?? '#d1d5db',
-                    overflowWrap: isIcon ? undefined : 'break-word',
-                  }}>
-                  {displayText}
-                </span>
-              )}
-            </div>
+            />
           </div>
         );
       }
