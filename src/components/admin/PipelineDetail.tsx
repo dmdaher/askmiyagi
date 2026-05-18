@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { PipelineState, LogEntry, Escalation } from '@/lib/pipeline/types';
 import { formatTimeAgo, isRecent } from '@/lib/format-time-ago';
-import { hasUsableManifest } from '@/lib/pipeline/phase-order';
+import { hasUsableManifest, isEditorReady } from '@/lib/pipeline/phase-order';
 import PipelineStatusHero from './PipelineStatusHero';
 import PhaseTimeline from './PhaseTimeline';
 import LogStream from './LogStream';
@@ -107,32 +107,57 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
       {/* Issues from contractor — only renders if there are any. */}
       <IssuesPanel deviceId={pipeline.deviceId} />
 
-      {/* Activity / Manifest / Layout tabs. Activity is the day-to-day view. */}
-      <div className="flex gap-1 rounded-lg p-1" style={{ backgroundColor: 'var(--card-bg, #141420)' }}>
-        {TABS.map((tab) => {
-          const isDisabled =
-            (tab.id === 'manifest' && !gatekeeperPassed) ||
-            (tab.id === 'layout' && !gatekeeperPassed);
+      {/* Activity / Manifest / Layout tabs + always-visible Send-to-Contractor.
+          Send is disabled (not hidden) until a manifest exists — telling admin
+          WHY they can't click rather than hiding state. Once editor-ready, it's
+          available at any time, not only when paused on the editor escalation. */}
+      <div className="flex items-center gap-2 rounded-lg p-1" style={{ backgroundColor: 'var(--card-bg, #141420)' }}>
+        <div className="flex gap-1 flex-1">
+          {TABS.map((tab) => {
+            const isDisabled =
+              (tab.id === 'manifest' && !gatekeeperPassed) ||
+              (tab.id === 'layout' && !gatekeeperPassed);
 
-          return (
-            <button
-              key={tab.id}
-              onClick={() => !isDisabled && setActiveTab(tab.id)}
-              disabled={isDisabled}
-              className="flex-1 text-xs font-medium py-1.5 px-3 rounded transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
-              style={{
-                backgroundColor: activeTab === tab.id ? 'var(--surface, #1a1a2a)' : 'transparent',
-                color: activeTab === tab.id ? 'var(--foreground, #e0e0e0)' : '#6b7280',
-                border: activeTab === tab.id ? '1px solid var(--card-border, #2a2a3a)' : '1px solid transparent',
-              }}
-            >
-              {tab.label}
-              {tab.id === 'layout' && isTemplateReview && (
-                <span className="ml-1.5 w-1.5 h-1.5 rounded-full inline-block" style={{ backgroundColor: '#3b82f6' }} />
-              )}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={tab.id}
+                onClick={() => !isDisabled && setActiveTab(tab.id)}
+                disabled={isDisabled}
+                className="flex-1 text-xs font-medium py-1.5 px-3 rounded transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
+                style={{
+                  backgroundColor: activeTab === tab.id ? 'var(--surface, #1a1a2a)' : 'transparent',
+                  color: activeTab === tab.id ? 'var(--foreground, #e0e0e0)' : '#6b7280',
+                  border: activeTab === tab.id ? '1px solid var(--card-border, #2a2a3a)' : '1px solid transparent',
+                }}
+              >
+                {tab.label}
+                {tab.id === 'layout' && isTemplateReview && (
+                  <span className="ml-1.5 w-1.5 h-1.5 rounded-full inline-block" style={{ backgroundColor: '#3b82f6' }} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          type="button"
+          onClick={contractorActions.openSendModal}
+          disabled={!isEditorReady(pipeline.currentPhase)}
+          data-testid="send-to-contractor-toolbar"
+          title={
+            isEditorReady(pipeline.currentPhase)
+              ? 'Re-send the current manifest to the contractor for editing'
+              : 'No manifest available yet — wait for the layout engine to finish'
+          }
+          className="text-xs font-medium py-1.5 px-3 rounded transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-30 flex-shrink-0 whitespace-nowrap"
+          style={{
+            backgroundColor: 'transparent',
+            color: isEditorReady(pipeline.currentPhase) ? '#22c55e' : '#6b7280',
+            border: '1px solid',
+            borderColor: isEditorReady(pipeline.currentPhase) ? 'rgba(34, 197, 94, 0.4)' : 'var(--card-border, #2a2a3a)',
+          }}
+        >
+          Send to Contractor
+        </button>
       </div>
 
       {activeTab === 'logs' && (
