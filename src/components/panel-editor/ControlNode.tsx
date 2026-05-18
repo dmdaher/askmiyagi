@@ -22,8 +22,8 @@ import {
   renderLabelText,
   inferPortVariant,
   mapButtonLabelPosition,
-  resolveDisplayContent,
 } from '@/lib/render-helpers';
+import SharedCircleButton from '@/components/panel/SharedCircleButton';
 
 interface ControlNodeProps {
   controlId: string;
@@ -99,41 +99,24 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         );
       }
       if (control.shape === 'circle') {
+        // Editor is config-time: no `ledOn`/`active`/`onClick` — those are
+        // tutorial-driven and only matter in the preview render path.
         const diameter = Math.min(control.w, control.h);
-        const { text, isIcon } = resolveDisplayContent(control);
-        // Only show text inside the circle if label is on-button or icon-only
-        const showInside = control.labelPosition === 'on-button' || control.labelDisplay === 'icon-only';
-        const circleButton = (
+        return (
           <div className="relative" data-control-id={control.id}>
             {renderButtonLed(control)}
-            <div
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: diameter,
-                height: diameter,
-                backgroundColor: '#2a2a2a',
-                border: `3px solid ${control.surfaceColor ?? '#444'}`,
-                boxShadow: control.surfaceColor
-                  ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40, 0 1px 0 rgba(255,255,255,0.05)`
-                  : 'inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)',
-              }}
-            >
-              {showInside && (
-                <span
-                  className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
-                  style={{
-                    fontSize: control.labelFontSize ?? (isIcon ? Math.max(Math.round(diameter * 0.35), 8) : 8),
-                    color: control.labelColor ?? '#d1d5db',
-                    overflowWrap: isIcon ? undefined : 'break-word',
-                  }}
-                >
-                  {text}
-                </span>
-              )}
-            </div>
+            <SharedCircleButton
+              diameter={diameter}
+              label={control.label}
+              icon={control.icon}
+              labelPosition={control.labelPosition}
+              labelDisplay={control.labelDisplay}
+              labelFontSize={control.labelFontSize}
+              labelColor={control.labelColor}
+              surfaceColor={control.surfaceColor}
+            />
           </div>
         );
-        return circleButton;
       }
 
       // Map buttonStyle to PanelButton variant ('raised' maps to 'standard')
