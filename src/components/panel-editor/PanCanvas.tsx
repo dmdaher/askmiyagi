@@ -67,6 +67,7 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       ledStyle: c.ledStyle,
       labelAlign: c.labelAlign,
       labelColor: c.labelColor,
+      zOrder: c.zOrder,
       editorPosition: { x: c.x, y: c.y, w: c.w, h: c.h },
     })),
     editorLabels: (state.editorLabels ?? []).map((l: any) => ({

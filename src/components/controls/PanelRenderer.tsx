@@ -47,6 +47,7 @@ interface ManifestControl {
   ledStyle?: 'integrated' | 'dot';
   labelAlign?: string;
   labelColor?: string;
+  zOrder?: number;
   editorPosition?: { x: number; y: number; w: number; h: number };
 }
 
@@ -206,9 +207,13 @@ function renderControl(
                 backgroundColor: isIntegrated
                   ? (ledOn === true ? undefined : (ledOn === false ? '#2a2a2a' : `${intColor}10`))
                   : (active ? '#3a3a3a' : '#2a2a2a'),
-                background: isIntegrated && ledOn === true
-                  ? `radial-gradient(ellipse at 50% 40%, ${intColor}50 0%, ${intColor}25 50%, transparent 80%)`
-                  : undefined,
+                // `background` is the CSS shorthand. Including it with a falsy
+                // value (even `undefined`) clears `backgroundColor` in the DOM
+                // via React's style serialization. Only include the radial
+                // gradient when actually needed.
+                ...(isIntegrated && ledOn === true && {
+                  background: `radial-gradient(ellipse at 50% 40%, ${intColor}50 0%, ${intColor}25 50%, transparent 80%)`,
+                }),
                 border: isIntegrated
                   ? (ledOn === true ? `1px solid ${intColor}` : ledOn === false ? `3px solid ${control.surfaceColor ?? '#444'}` : `1px solid ${intColor}25`)
                   : `3px solid ${control.surfaceColor ?? '#444'}`,
@@ -590,6 +595,12 @@ export default function PanelRenderer({
               // LED box-shadow glows are clipped by PanelShell's `overflow:
               // hidden`, leaving the editor and preview visually different.
               overflow: 'visible',
+              // zIndex matches the editor's ControlLayer (z=200) so controls
+              // sit above floating labels (z=150) and the keyboard (z=50).
+              // Individual `zOrder` (contractor's "Bring to front" gesture)
+              // is added on top so controls within the layer can be re-stacked
+              // exactly as in the editor.
+              zIndex: 200 + (ctrl.zOrder ?? 0),
             }}
           >
             {rotation ? (
@@ -638,6 +649,11 @@ export default function PanelRenderer({
             lineHeight: label.lineHeight,
             color: (label as { color?: string }).color,
           }}
+          // zIndex matches the editor's LabelLayer (z=150) so labels stack
+          // above the keyboard (z=50) and section backdrops but BELOW
+          // controls (z=200). Without this, document order puts labels on
+          // top of controls in preview, which diverges from the editor.
+          zIndex={150}
           innerSpanProps={{ 'data-label-id': label.id }}
         />
       ))}

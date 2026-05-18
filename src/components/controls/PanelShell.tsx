@@ -87,12 +87,17 @@ export default function PanelShell({
             widthPercent) per the editor's free-form model. */}
         {children}
         {keyboard && (
+          // zIndex matches the editor's KeyboardSection (z=50) so controls
+          // (z=200) and floating labels (z=150) stack ABOVE the keyboard —
+          // otherwise document order alone puts the keyboard on top, which
+          // diverges from the editor (where contractors see controls on top).
           <div style={{
             position: 'absolute',
             bottom: 0,
             left: keyboard.leftPercent ? `${keyboard.leftPercent}%` : 0,
             width: keyboard.widthPercent ? `${keyboard.widthPercent}%` : '100%',
             height: height * (1 - keyboard.panelHeightPercent / 100),
+            zIndex: 50,
           }}>
             <Keyboard keys={keyboard.keys} startNote={keyboard.startNote} zones={zones} />
           </div>

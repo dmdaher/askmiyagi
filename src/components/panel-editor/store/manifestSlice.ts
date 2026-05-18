@@ -2934,20 +2934,24 @@ export const createManifestSlice: StateCreator<
 
         const existing = existingByCtrlId.get(id);
         if (existing) {
-          // Always sync text + icon from control. Unhide. Recompute position if wasn't hidden.
-          updateMap.set(existing.id, existing.hidden
-            ? { ...existing, hidden: false, text: ctrl.label, icon: ctrl.icon ?? existing.icon }
-            : {
-                ...existing,
-                hidden: false,
-                text: ctrl.label,
-                icon: ctrl.icon ?? existing.icon,
-                x: lp.x,
-                y: lp.y,
-                w: lp.w,
-                align: lp.align,
-                fontSize: lp.fontSize,
-              });
+          // Always sync text + icon AND recompute position when switching to an
+          // external position. Previously, an existing.hidden=true branch only
+          // unhid without updating x/y, requiring two clicks to snap the label
+          // back into place after a hide→externalize toggle (bug repro:
+          // bug1-repro.test.ts). The user-facing pattern is a structural
+          // "snap to this position" gesture — preserving the prior dragged
+          // coordinates is never the right behavior here.
+          updateMap.set(existing.id, {
+            ...existing,
+            hidden: false,
+            text: ctrl.label,
+            icon: ctrl.icon ?? existing.icon,
+            x: lp.x,
+            y: lp.y,
+            w: lp.w,
+            align: lp.align,
+            fontSize: lp.fontSize,
+          });
         } else {
           newLabels.push({
             id: `label-${id}`,
