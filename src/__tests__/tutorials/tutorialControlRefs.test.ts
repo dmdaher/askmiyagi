@@ -27,6 +27,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import type { Tutorial } from '@/types/tutorial';
+import { loadValidControlIds, loadTutorials } from '@/lib/tutorial/loadValidControlIds';
 
 // ─── Configuration ─────────────────────────────────────────────────────────
 
@@ -56,12 +57,6 @@ const SPECIAL_TARGETS = new Set<string>(['display']);
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 const tutorialsRootDir = path.resolve(__dirname, '../../data/tutorials');
-const manifestsDir = path.resolve(__dirname, '../../data/manifests');
-
-/** Convert 'deepmind-12' → 'deepmind12' (matches barrel export naming). */
-function deviceIdToCamel(deviceId: string): string {
-  return deviceId.replace(/-/g, '');
-}
 
 /** Discover device IDs that have a tutorials directory. */
 function discoverDeviceIds(): string[] {
@@ -71,65 +66,6 @@ function discoverDeviceIds(): string[] {
     .map(d => d.name)
     .filter(name => !SKIP_DEVICES.has(name))
     .sort();
-}
-
-/**
- * Resolve the canonical valid-control-IDs set for a device.
- * Tries committed manifest JSON first, then legacy panel-layout module.
- * Returns null if neither source is found.
- */
-async function loadValidControlIds(deviceId: string): Promise<Set<string> | null> {
-  // Path 1: committed manifest
-  const manifestPath = path.join(manifestsDir, `${deviceId}.json`);
-  if (fs.existsSync(manifestPath)) {
-    try {
-      const m = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
-      if (Array.isArray(m.controls)) {
-        return new Set<string>(
-          m.controls
-            .map((c: { id?: string }) => c.id)
-            .filter((id: unknown): id is string => typeof id === 'string'),
-        );
-      }
-    } catch {
-      // fall through to path 2
-    }
-  }
-
-  // Path 2: legacy panel-layout module (Fantom-08 pattern)
-  try {
-    const mod: Record<string, unknown> = await import(/* @vite-ignore */ `@/data/panelLayouts/${deviceId}`);
-    // Try common export names: allControlIds, all<DeviceCamel>ControlIds
-    const candidates = [
-      'allControlIds',
-      `all${deviceIdToCamel(deviceId).replace(/^./, c => c.toUpperCase())}ControlIds`,
-    ];
-    for (const key of candidates) {
-      const value = mod[key];
-      if (Array.isArray(value)) return new Set<string>(value.filter((id): id is string => typeof id === 'string'));
-    }
-  } catch {
-    // module not found — fall through
-  }
-
-  return null;
-}
-
-/**
- * Load the Tutorial[] array for a device from its barrel export.
- * Looks for `<deviceCamel>Tutorials` (e.g., deepmind12Tutorials).
- */
-async function loadTutorials(deviceId: string): Promise<Tutorial[]> {
-  const mod: Record<string, unknown> = await import(/* @vite-ignore */ `@/data/tutorials/${deviceId}`);
-  const exportName = `${deviceIdToCamel(deviceId)}Tutorials`;
-  const value = mod[exportName];
-  if (!Array.isArray(value)) {
-    throw new Error(
-      `Expected ${exportName} array export from src/data/tutorials/${deviceId}/index.ts. ` +
-      `Found exports: ${Object.keys(mod).slice(0, 5).join(', ')}...`,
-    );
-  }
-  return value as Tutorial[];
 }
 
 /**
