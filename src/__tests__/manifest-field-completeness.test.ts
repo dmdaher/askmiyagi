@@ -77,20 +77,29 @@ const CONTROL_EDITOR_ONLY = new Set<string>([
   'sharedLabel',
   'groupId',
 
-  // 🔴 KNOWN BUG — `ledOn` is editable in the editor via Properties panel
-  // (`PropertiesPanel/index.tsx:567`), and the EDITOR respects it for dot
-  // LED rendering (`ControlNode.tsx`: `ledIsOn = control.ledOn === true`).
-  // But storeToManifest does NOT thread it, so contractor's "LED resting
-  // state" config is stripped on save. Preview uses tutorial-driven
-  // `panelState.ledOn ?? false` — never falls back to a manifest default.
+  // 🟢 INTENTIONAL — `ledOn` is the editor's design-time visualization
+  // field, NOT a runtime state default. The intended design is:
+  //   - Tutorials are the SOURCE OF TRUTH for runtime LED state via
+  //     panelStateChanges. Every step explicitly sets `ledOn` for every
+  //     LED it cares about; unmentioned LEDs default to off.
+  //   - PanelRenderer uses `state.ledOn ?? false` — no manifest fallback
+  //     by design.
+  //   - The editor's Properties-panel "LED on" toggle
+  //     (`PropertiesPanel/index.tsx:567`) and ControlNode dot rendering
+  //     (`ledIsOn = control.ledOn === true`) are editor-only visualization
+  //     — contractor toggles to PREVIEW what the LED looks like when lit,
+  //     not to set a persistent default state.
+  //   - Therefore storeToManifest INTENTIONALLY strips ledOn (preview
+  //     mode shows what production will show — tutorial state only).
+  //     export-manifest INTENTIONALLY strips it (production manifests
+  //     don't carry runtime state).
   //
-  // Same class as `controlId` (fixed in PR-2.6) and `zOrder` (fixed in
-  // PR #138). Fix would require:
-  //   1. Add `ledOn?: boolean` to `ManifestControl` interface
-  //   2. Add `ledOn: c.ledOn` to storeToManifest's controls.map
-  //   3. PanelRenderer.renderControl: `state.ledOn ?? ctrl.ledOn ?? false`
+  // Verified by reading fantom-08 tutorials: every step has explicit
+  // ledOn in panelStateChanges; relying on a manifest default would
+  // break the explicit-set contract.
   //
-  // TODO(post-A1): fix the threading. Remove from this allowlist when done.
+  // (Earlier session attempt to "fix" this as a threading bug was a
+  // misreading of design intent — see git log around 2026-05-18.)
   'ledOn',
 ]);
 
@@ -339,12 +348,13 @@ describe('manifest-field-completeness — known threading regressions are caught
     expect(ctrl.zOrder).toBe(5);
   });
 
-  it('does NOT yet catch the ledOn-on-controls bug (allowlisted as known TODO)', () => {
-    // ledOn is in the CONTROL_EDITOR_ONLY allowlist with a TODO. The
-    // manifest output is missing it (= known bug). Asserting absence
-    // here pins the current state — when the fix lands, this test
-    // will start failing, prompting removal of both the allowlist entry
-    // AND this test.
+  it('correctly strips ledOn from manifest (INTENTIONAL — tutorials control LED state)', () => {
+    // ledOn is editor design-config only; production tutorials drive all
+    // LED state via panelStateChanges. Stripping it from storeToManifest
+    // (and export-manifest) is by design. See CONTROL_EDITOR_ONLY comment
+    // for ledOn for the full reasoning. If anyone "fixes" this by adding
+    // ledOn to the manifest output, this test will fail and prompt them
+    // to read the design intent.
     const state = buildStateWithSentinels();
     const manifest = storeToManifest(state);
     const ctrl = manifest.controls[0] as any;
