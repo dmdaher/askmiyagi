@@ -175,6 +175,20 @@ export async function PUT(
     }
 
     fs.writeFileSync(editorPath, JSON.stringify(body, null, 2));
+
+    // Auto-export: regenerate src/data/manifests/<deviceId>.json so
+    // production renders match the contractor's latest save. Eliminates
+    // the "I forgot to click Export" workflow gap. Best-effort — a
+    // failure here doesn't fail the save (contractor's primary file is
+    // already on disk; the production export can be retried via the
+    // /api/pipeline/{deviceId}/export-manifest route if needed).
+    try {
+      const { exportManifest } = await import('@/lib/pipeline/exportManifest');
+      exportManifest(deviceId);
+    } catch {
+      /* best-effort — manual export route is the fallback */
+    }
+
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(
