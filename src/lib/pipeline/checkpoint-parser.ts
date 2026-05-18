@@ -144,11 +144,26 @@ function extractScoreFromProse(content: string): number | null {
 }
 
 function extractVerdictFromProse(content: string): CheckpointData['verdict'] {
-  const verdictMatch = content.match(/verdict\s*:\s*(APPROVED|REJECTED|READY)/i);
-  if (verdictMatch) return verdictMatch[1].toUpperCase() as CheckpointData['verdict'];
+  // Canonical verdicts. SHIP/SHIPPED/PASS are aliases for APPROVED — LLM
+  // agents writing prose verdicts naturally use these terms (cdj-3000
+  // batch-a reviewer used "Verdict: SHIP ✅" which previously parsed as
+  // null → fake REJECTED. Belt+suspenders alongside the SOUL frontmatter
+  // mandate.
+  const verdictMatch = content.match(/verdict\s*:\s*\**\s*(APPROVED|REJECTED|READY|SHIP|SHIPPED|PASS|FAIL)/i);
+  if (verdictMatch) {
+    const raw = verdictMatch[1].toUpperCase();
+    if (raw === 'SHIP' || raw === 'SHIPPED' || raw === 'PASS') return 'APPROVED';
+    if (raw === 'FAIL') return 'REJECTED';
+    return raw as CheckpointData['verdict'];
+  }
 
-  const scoreVerdict = content.match(/\d+(?:\.\d+)?\s*\/\s*10\s+(APPROVED|REJECTED)/i);
-  if (scoreVerdict) return scoreVerdict[1].toUpperCase() as CheckpointData['verdict'];
+  const scoreVerdict = content.match(/\d+(?:\.\d+)?\s*\/\s*10\s+(APPROVED|REJECTED|SHIP|SHIPPED|PASS|FAIL)/i);
+  if (scoreVerdict) {
+    const raw = scoreVerdict[1].toUpperCase();
+    if (raw === 'SHIP' || raw === 'SHIPPED' || raw === 'PASS') return 'APPROVED';
+    if (raw === 'FAIL') return 'REJECTED';
+    return raw as CheckpointData['verdict'];
+  }
 
   return null;
 }

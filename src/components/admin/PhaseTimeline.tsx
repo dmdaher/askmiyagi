@@ -16,6 +16,7 @@ const PHASE_LABELS: Record<string, string> = {
   'phase-4-audit': 'Audit',
   'phase-5-display-build': 'Displays',
   'phase-5-tutorial-build': 'Tutorials',
+  'tutorial-review': 'Review',
   'tutorial-pr': 'Tutorial PR',
 };
 
@@ -71,6 +72,7 @@ const DISPLAY_PHASES: PipelinePhase[] = [
   'phase-4-audit',
   'phase-5-display-build',
   'phase-5-tutorial-build',
+  'tutorial-review',
   'tutorial-pr',
 ];
 

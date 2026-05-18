@@ -25,6 +25,8 @@ import {
 } from '../src/lib/pipeline/state-machine';
 import {
   invokeAgent,
+  invokeAgentWithRetry,
+  probeAnthropicHealth,
   checkDevServer,
   startDevServer,
   sendNotification,
@@ -216,6 +218,27 @@ async function run() {
   if (!state) {
     console.error(`No state found for device: ${deviceId}`);
     process.exit(1);
+  }
+
+  // Pre-flight: probe Anthropic API health. If the API is hard-down (529),
+  // pause cleanly with a clear message instead of burning budget on doomed
+  // agent invocations. Discovered cdj-3000 2026-05-18 — two consecutive
+  // builder runs wasted $1.30 + ~6min before this guardrail existed.
+  const probe = await probeAnthropicHealth();
+  if (!probe.healthy) {
+    appendLog(deviceId, {
+      level: 'error',
+      message:
+        `Pre-flight: Anthropic API not healthy (${probe.reason ?? 'unknown'}). ` +
+        `Pausing runner. Check https://status.claude.com/ and resume from /admin when green.`,
+    });
+    createEscalation(state, 'agent-failure',
+      `Pre-flight API probe failed: ${probe.reason ?? 'unknown'}. ` +
+      `Anthropic API appears overloaded or unavailable. Wait for recovery, then click Resume.`);
+    state.status = 'paused';
+    state.runnerPid = null;
+    writeState(deviceId, state);
+    return;
   }
 
   state.status = 'running';
@@ -2289,6 +2312,42 @@ Include a summary of your findings in the checkpoint body.`,
   const checkpoint = readAgentCheckpoint('coverage-auditor');
   copyAgentOutput('coverage-auditor');
   const batches = parseBatchesFromAuditor();
+
+  // Post-parse sanity check (cdj-3000 regression guard, 2026-05-18).
+  // Background: a parser bug fixed in 9340015 silently returned [] for
+  // months. Devices that ran phase-4-audit during that window had empty
+  // tutorialBatches written to state, then tutorial-build silently produced
+  // 0 tutorials and tutorial-pr failed with a misleading git error.
+  // The fix below halts immediately if we parsed 0 batches BUT the source
+  // file looks substantive (>200 chars, contains 'T01' or similar). That
+  // signals the auditor produced content but the parser failed — exactly
+  // the cdj-3000 pattern. We escalate instead of advancing with empty
+  // batches.
+  if (batches.length === 0) {
+    const batchesPath = path.join(
+      paths().agent('manual-extractor').wtDir,
+      'sieve',
+      'pass-4-batches.md',
+    );
+    if (fs.existsSync(batchesPath)) {
+      const raw = fs.readFileSync(batchesPath, 'utf-8');
+      const looksSubstantive = raw.length > 200 && /T\d+/.test(raw);
+      if (looksSubstantive) {
+        const msg =
+          `Coverage auditor passed BUT parseBatchesFromExtractor returned 0 batches ` +
+          `from a ${raw.length}-char file at ${batchesPath} that contains T-tokens. ` +
+          `Likely a parser/format regression — refusing to advance with empty batches. ` +
+          `Inspect the file format and reconcile with parseBatchesFromExtractor's regex.`;
+        appendLog(deviceId, { level: 'error', message: msg });
+        completePhase(state, 'phase-4-audit', null, false);
+        createEscalation(state, 'agent-failure', msg);
+        state.status = 'paused';
+        writeState(deviceId, state);
+        return;
+      }
+    }
+  }
+
   if (batches.length > 0) state.tutorialBatches = batches;
 
   // Deterministic verdict from the coverage-scorer. The LLM auditor's
@@ -2507,6 +2566,37 @@ Create: device-theme.json, atoms/, screens/, DisplayScreen.tsx dispatcher, scree
 
 async function doPhase5(state: PipelineState) {
   startPhase(state, 'phase-5-tutorial-build');
+
+  // Defensive re-parse: state.tutorialBatches can be empty even when the
+  // auditor's batch file exists on disk (e.g., cdj-3000 hit an earlier broken
+  // parser that left state empty). If we'd start the agent loop with 0
+  // batches, it would silently produce 0 tutorials and fail downstream at
+  // tutorial-pr with a misleading error. Recover here, or halt loudly.
+  if (state.tutorialBatches.length === 0) {
+    appendLog(deviceId, {
+      level: 'warn',
+      message: 'state.tutorialBatches is empty — attempting recovery from auditor output',
+    });
+    const reparsed = parseBatchesFromExtractor();
+    if (reparsed.length === 0) {
+      const msg =
+        `Cannot start tutorial-build: state.tutorialBatches is empty AND no batches found at ` +
+        `.pipeline/${deviceId}/agents/manual-extractor/sieve/pass-4-batches.md. ` +
+        `Re-run extractor + auditor first.`;
+      appendLog(deviceId, { level: 'error', message: msg });
+      createEscalation(state, 'agent-failure', msg);
+      state.status = 'paused';
+      writeState(deviceId, state);
+      return;
+    }
+    state.tutorialBatches = reparsed;
+    appendLog(deviceId, {
+      level: 'info',
+      message: `Recovered ${reparsed.length} batches from auditor output`,
+    });
+    writeState(deviceId, state);
+  }
+
   appendLog(deviceId, { level: 'info', message: `Starting Phase 5: Tutorial Build (${state.tutorialBatches.length} batches)` });
 
   for (const batch of state.tutorialBatches) {
@@ -2523,7 +2613,10 @@ async function doPhase5(state: PipelineState) {
     const feedbackSuffix = state.tutorialReviewFeedback
       ? `\n\nADMIN FEEDBACK from prior review (address before re-submitting):\n${state.tutorialReviewFeedback}`
       : '';
-    const buildResult = await invokeAgent({
+    // Uses invokeAgentWithRetry — handles transient 529 Overloaded errors
+    // with exponential backoff (30s, 120s, 300s). After exhaustion, returns
+    // the failure and our GATE 1 below pauses with an escalation.
+    const buildResult = await invokeAgentWithRetry({
       prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${batch.tutorials.join(', ')}${feedbackSuffix}`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-builder', batchId: batch.batchId,
       allowedTools: PIPELINE_TOOLS,
@@ -2533,14 +2626,42 @@ async function doPhase5(state: PipelineState) {
     if (buildResult.costEntry) { accumulateCost(state, buildResult.costEntry); recordCostEntry(deviceId, buildResult.costEntry); }
     updateBurnRate(state, deviceId);
     updateSubscription(state, buildResult.rateLimitEvents);
+
+    // GATE 1: builder must exit cleanly. If 529, OOM, or any non-zero exit,
+    // halt with an escalation instead of running the reviewer against empty
+    // (or partial) work. Saves token budget and prevents cascade through
+    // GATE 2's stale-checkpoint hazard.
+    if (buildResult.exitCode !== 0) {
+      const msg =
+        `tutorial-builder failed for batch ${batch.batchId} (exit ${buildResult.exitCode}). ` +
+        `Common causes: 529 API Overloaded, network blip, OOM. ` +
+        `Pipeline paused so the reviewer doesn't run against an empty batch. ` +
+        `Resume from /admin when ready — pipeline will retry this batch.`;
+      appendLog(deviceId, { level: 'error', message: msg });
+      // Reset batch to pending so retry starts fresh
+      batch.status = 'pending';
+      batch.builderScore = null;
+      createEscalation(state, 'agent-failure', msg);
+      state.status = 'paused';
+      writeState(deviceId, state);
+      return;
+    }
+
     batch.builderScore = readAgentCheckpoint('tutorial-builder').score;
 
     batch.status = 'reviewing';
     state.lastCheckpoint = { phase: 'phase-5-tutorial-build', subStep: `batch-${batch.batchId}-reviewing` };
     writeState(deviceId, state);
 
+    // GATE 2: clear ANY prior reviewer checkpoint before invoking reviewer.
+    // Otherwise a stale APPROVED from batch-a (or a manual recovery) gets
+    // re-read as the verdict for batch-b → false-approved cascade.
+    // Discovered cdj-3000 2026-05-18 — see PR-D.
+    const reviewerCheckpointPath = paths().agent('tutorial-reviewer').wtCheckpoint;
+    try { fs.rmSync(reviewerCheckpointPath, { force: true }); } catch { /* ignore */ }
+
     appendLog(deviceId, { level: 'info', agent: 'tutorial-reviewer', message: `Reviewing batch ${batch.batchId}` });
-    const reviewResult = await invokeAgent({
+    const reviewResult = await invokeAgentWithRetry({
       prompt: `Review tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Verify accuracy against the manual.`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-reviewer', batchId: batch.batchId,
       allowedTools: PIPELINE_TOOLS,
@@ -2550,7 +2671,38 @@ async function doPhase5(state: PipelineState) {
     if (reviewResult.costEntry) { accumulateCost(state, reviewResult.costEntry); recordCostEntry(deviceId, reviewResult.costEntry); }
     updateBurnRate(state, deviceId);
     updateSubscription(state, reviewResult.rateLimitEvents);
-    batch.reviewerVerdict = readAgentCheckpoint('tutorial-reviewer').verdict;
+
+    // GATE 3: reviewer must also exit cleanly. Pause if not.
+    if (reviewResult.exitCode !== 0) {
+      const msg =
+        `tutorial-reviewer failed for batch ${batch.batchId} (exit ${reviewResult.exitCode}). ` +
+        `Builder output is intact; reviewer hit an error (likely 529 or transient). ` +
+        `Resume from /admin to retry just the reviewer.`;
+      appendLog(deviceId, { level: 'error', message: msg });
+      createEscalation(state, 'agent-failure', msg);
+      state.status = 'paused';
+      writeState(deviceId, state);
+      return;
+    }
+
+    // GATE 4: verify checkpoint was written AND batchId matches. A
+    // missing-checkpoint or batchId-mismatch means the reviewer didn't
+    // actually review THIS batch (either it forgot to write, or somehow
+    // wrote one for a previous batch). Treat as missing verdict — pause
+    // with a fixable escalation rather than guessing.
+    const checkpoint = readAgentCheckpoint('tutorial-reviewer');
+    const batchIdMismatch = checkpoint.batchId && checkpoint.batchId !== batch.batchId;
+    if (!checkpoint.verdict || batchIdMismatch) {
+      const msg = batchIdMismatch
+        ? `tutorial-reviewer wrote checkpoint for batch ${checkpoint.batchId} but we're on ${batch.batchId} — refusing to use stale verdict.`
+        : `tutorial-reviewer exited cleanly but didn't write a verdict to checkpoint.md for batch ${batch.batchId}. SOUL bug — see .claude/agents/tutorial-reviewer.md "MANDATORY OUTPUT" section.`;
+      appendLog(deviceId, { level: 'error', message: msg });
+      createEscalation(state, 'agent-failure', msg);
+      state.status = 'paused';
+      writeState(deviceId, state);
+      return;
+    }
+    batch.reviewerVerdict = checkpoint.verdict;
 
     if (batch.reviewerVerdict === 'APPROVED') {
       batch.status = 'approved';

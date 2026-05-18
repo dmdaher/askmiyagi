@@ -89,6 +89,55 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
   // Contractor handoff actions hoisted out so the Hero can trigger them
   const contractorActions = useContractorActions(pipeline.deviceId);
 
+  // "Regenerate Tutorials" admin action — rewinds pipeline to tutorial-build.
+  // Gating reflects DISK reality, not just state. We hit the preview endpoint
+  // because state.tutorialBatches can be empty even when the auditor's batch
+  // plan is on disk (cdj-3000 hit this — broken pre-fix parser left state
+  // empty, recovery requires re-reading from disk).
+  const [showRegenConfirm, setShowRegenConfirm] = useState(false);
+  const [regenError, setRegenError] = useState<string | null>(null);
+  const [regenInFlight, setRegenInFlight] = useState(false);
+  const [regenPreview, setRegenPreview] = useState<{
+    canRegenerate: boolean;
+    batchCount: number;
+    source: 'state' | 'disk' | 'none';
+    reason: string;
+  } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/pipeline/${pipeline.deviceId}/regenerate-tutorials`, { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data) => { if (!cancelled) setRegenPreview(data); })
+      .catch(() => { /* leave preview null */ });
+    return () => { cancelled = true; };
+    // Re-fetch whenever the pipeline state changes meaningfully so the button
+    // updates as the pipeline progresses.
+  }, [pipeline.deviceId, pipeline.currentPhase, pipeline.status, pipeline.tutorialBatches.length]);
+
+  // Belt+suspenders: server preview already returns canRegenerate=false when
+  // pipeline.status === 'running', but the UI race (preview fetched before
+  // status updates via SSE) could briefly enable the button. Gate locally too.
+  const canRegenerate = (regenPreview?.canRegenerate ?? false) && pipeline.status !== 'running';
+  const regenerateTutorials = async () => {
+    setRegenInFlight(true);
+    setRegenError(null);
+    try {
+      const res = await fetch(`/api/pipeline/${pipeline.deviceId}/regenerate-tutorials`, { method: 'POST' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setRegenError(body.error ?? `HTTP ${res.status}`);
+        setRegenInFlight(false);
+        return;
+      }
+      setShowRegenConfirm(false);
+      setRegenInFlight(false);
+    } catch (err) {
+      setRegenError(err instanceof Error ? err.message : String(err));
+      setRegenInFlight(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* HERO — the "what's happening / what to do" banner. Always at top. */}
@@ -158,6 +207,22 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
         >
           Send to Contractor
         </button>
+        <button
+          type="button"
+          onClick={() => setShowRegenConfirm(true)}
+          disabled={!canRegenerate}
+          data-testid="regenerate-tutorials-toolbar"
+          title={regenPreview?.reason ?? 'Loading…'}
+          className="text-xs font-medium py-1.5 px-3 rounded transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-30 flex-shrink-0 whitespace-nowrap"
+          style={{
+            backgroundColor: 'transparent',
+            color: canRegenerate ? '#f59e0b' : '#6b7280',
+            border: '1px solid',
+            borderColor: canRegenerate ? 'rgba(245, 158, 11, 0.4)' : 'var(--card-border, #2a2a3a)',
+          }}
+        >
+          Regenerate Tutorials
+        </button>
       </div>
 
       {activeTab === 'logs' && (
@@ -224,6 +289,57 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
 
       {/* Contractor send modal (rendered out-of-flow via the hook) */}
       {contractorActions.modal}
+
+      {/* Regenerate Tutorials confirmation modal */}
+      {showRegenConfirm && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60"
+          onClick={() => !regenInFlight && setShowRegenConfirm(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-xl border border-gray-700 bg-[#111122] p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold text-gray-200 mb-2">Regenerate tutorials?</h3>
+            <p className="text-xs text-gray-400 mb-3">
+              This rewinds the pipeline to <span className="font-mono text-amber-400">phase-5-tutorial-build</span> and
+              re-runs the tutorial-builder agent on all {regenPreview?.batchCount ?? '?'} batches.
+              {regenPreview?.source === 'disk' && (
+                <span className="block mt-1 text-amber-300/80">
+                  ⚠ Batches will be recovered from disk (state was empty — likely from an earlier broken parser).
+                </span>
+              )}
+              {' '}The existing tutorial-pr and tutorial-review phases (if any) will be marked skipped in the timeline.
+            </p>
+            <p className="text-xs text-gray-500 mb-4">
+              <span className="text-amber-400 font-medium">Cost warning</span>: this is a real LLM run — typically{' '}
+              $5–$15 per batch. Only do this if the existing tutorials are stale enough to scrap.
+            </p>
+            {regenError && (
+              <p className="text-xs text-red-400 mb-3 break-words">{regenError}</p>
+            )}
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowRegenConfirm(false)}
+                disabled={regenInFlight}
+                className="text-xs px-3 py-1.5 rounded text-gray-400 hover:text-gray-200 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={regenerateTutorials}
+                disabled={regenInFlight}
+                data-testid="regenerate-tutorials-confirm"
+                className="text-xs px-3 py-1.5 rounded font-medium bg-amber-600 text-white hover:bg-amber-500 disabled:opacity-50 transition-colors"
+              >
+                {regenInFlight ? 'Regenerating…' : 'Regenerate'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
