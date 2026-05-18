@@ -21,6 +21,7 @@ import {
   mapButtonLabelPosition,
 } from '@/lib/render-helpers';
 import SharedLabel from '@/components/panel/SharedLabel';
+import { computeLabelZ } from '@/lib/label-zorder';
 import { computeBannerBoxStyle, computeBannerTextStyle } from '@/lib/banner-style';
 import type { PolishBanner } from '@/components/panel-editor/store/historySlice';
 import { PanelState } from '@/types/panel';
@@ -67,6 +68,13 @@ interface ManifestLabel {
   align?: 'left' | 'center' | 'right';
   hidden?: boolean;
   lineHeight?: number;
+  /**
+   * If set, this label is linked to a control — it inherits the control's
+   * z-order so a "Bring to Front" gesture on the control brings the label
+   * with it (otherwise labels are stuck at z=150 and any overlapping
+   * control hides them regardless of zOrder).
+   */
+  controlId?: string;
 }
 
 interface ManifestSection {
@@ -607,11 +615,21 @@ export default function PanelRenderer({
             lineHeight: label.lineHeight,
             color: (label as { color?: string }).color,
           }}
-          // zIndex matches the editor's LabelLayer (z=150) so labels stack
-          // above the keyboard (z=50) and section backdrops but BELOW
-          // controls (z=200). Without this, document order puts labels on
-          // top of controls in preview, which diverges from the editor.
-          zIndex={150}
+          // Per-label z: linked labels ride with their control's zOrder so
+          // they stay visible above overlapping controls; standalone labels
+          // stay at the historical z=150. Without per-label z, labels are
+          // stuck at 150 and any control (z=200+) hides them — the issue
+          // PR #140 inadvertently introduced by locking labels at a fixed z.
+          // See src/lib/label-zorder.ts for the formula.
+          zIndex={computeLabelZ({
+            controlId: label.controlId,
+            // Treat existing control with no zOrder as 0; null only when the
+            // control no longer exists (orphan label).
+            controlZOrder: (id) => {
+              const c = manifest.controls.find((c) => c.id === id);
+              return c ? (c.zOrder ?? 0) : null;
+            },
+          })}
           innerSpanProps={{ 'data-label-id': label.id }}
         />
       ))}
