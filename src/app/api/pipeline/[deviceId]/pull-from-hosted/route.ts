@@ -59,14 +59,16 @@ export async function POST(
     }
     fs.writeFileSync(editorPath, JSON.stringify(writeData, null, 2));
 
-    // Run export-manifest to write production JSON
+    // Run export-manifest to write production JSON.
+    // Direct module import instead of an HTTP self-fetch to localhost
+    // (the old approach was fragile in tests / non-default ports).
     let exported = false;
     try {
-      const exportRes = await fetch(`http://localhost:3000/api/pipeline/${deviceId}/export-manifest`, {
-        method: 'POST',
-      });
-      exported = exportRes.ok;
-    } catch { /* export is best-effort */ }
+      const { exportManifest } = await import('@/lib/pipeline/exportManifest');
+      exported = exportManifest(deviceId).ok;
+    } catch {
+      /* export is best-effort */
+    }
 
     return NextResponse.json({
       ok: true,

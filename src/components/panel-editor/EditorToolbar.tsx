@@ -604,25 +604,11 @@ export default function EditorToolbar({
             <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
           </div>
         ) : (
-          <button
-            data-tutorial="approve"
-            onClick={onApproveAndBuild}
-            disabled={previewMode || buildStatus === 'building'}
-            className={`flex h-7 items-center rounded px-2 text-[10px] font-medium whitespace-nowrap transition-colors ${
-              previewMode
-                ? 'border border-green-700 bg-green-700/20 text-green-400 cursor-default'
-                : buildStatus === 'building'
-                  ? 'border border-gray-600 bg-gray-800 text-gray-400 cursor-wait'
-                  : 'border border-green-600 bg-green-700/30 text-green-300 hover:bg-green-700/50'
-            }`}
-            title="Export panel manifest for production"
-          >
-            {buildStatus === 'building'
-              ? 'Exporting...'
-              : buildStatus === 'approved'
-                ? 'Exported ✓'
-                : 'Export Panel'}
-          </button>
+          // Local-mode "Export Panel" button removed — auto-export on save
+          // (since PR #146) keeps src/data/manifests/<deviceId>.json in
+          // sync automatically. The /api/pipeline/<id>/export-manifest
+          // route still exists as a manual diagnostic for admin if needed.
+          null
         )}
       </div>
     </div>

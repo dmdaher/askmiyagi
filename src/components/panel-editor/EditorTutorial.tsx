@@ -54,11 +54,10 @@ const localSteps = [
     target: '[data-tutorial="report"]',
     content: 'Found a missing control, wrong label, or incorrect type? Click Report Issue to flag it. The admin will see your report and fix it in the pipeline.',
   },
-  {
-    ...stepDefaults,
-    target: '[data-tutorial="approve"]',
-    content: 'When you\'re happy with the layout, click Export Panel to generate the final manifest from your layout.',
-  },
+  // "Export Panel" step removed — manual Export button no longer
+  // exists (auto-export on save handles this since PR #146). Contractor
+  // doesn't need to think about it; their autosaves keep production in
+  // sync automatically.
 ];
 
 // Hosted-mode steps (contractor sees Submit button, not Export/Report)
