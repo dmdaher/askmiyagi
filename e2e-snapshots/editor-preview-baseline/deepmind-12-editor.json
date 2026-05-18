@@ -10,21 +10,21 @@
     "width": 2680,
     "height": 699
   },
-  "capturedAt": "2026-05-14T16:25:51.048Z",
+  "capturedAt": "2026-05-18T15:46:50.215Z",
   "elements": {
     "label:label-volume-knob": {
       "id": "label-volume-knob",
       "kind": "label",
       "rect": {
-        "left": 127.25,
+        "left": 127.75,
         "top": 649,
-        "width": 49.5,
+        "width": 48.5,
         "height": 18
       },
       "innerRect": {
-        "left": 133.25,
+        "left": 133.75,
         "top": 653,
-        "width": 37.5,
+        "width": 36.5,
         "height": 10
       },
       "computed": {
@@ -48,13 +48,13 @@
       "rect": {
         "left": 195,
         "top": 649,
-        "width": 73.89,
+        "width": 71.95,
         "height": 18
       },
       "innerRect": {
         "left": 201,
         "top": 653,
-        "width": 61.89,
+        "width": 59.95,
         "height": 10
       },
       "computed": {
@@ -76,15 +76,15 @@
       "id": "label-oct-up",
       "kind": "label",
       "rect": {
-        "left": 65.02,
+        "left": 65.59,
         "top": 668,
-        "width": 45.95,
+        "width": 44.81,
         "height": 18
       },
       "innerRect": {
-        "left": 71.02,
+        "left": 71.59,
         "top": 672,
-        "width": 33.95,
+        "width": 32.81,
         "height": 10
       },
       "computed": {
@@ -106,15 +106,15 @@
       "id": "label-oct-down",
       "kind": "label",
       "rect": {
-        "left": 266.13,
+        "left": 266.75,
         "top": 668,
-        "width": 61.73,
+        "width": 60.48,
         "height": 18
       },
       "innerRect": {
-        "left": 272.13,
+        "left": 272.75,
         "top": 672,
-        "width": 49.73,
+        "width": 48.48,
         "height": 10
       },
       "computed": {
@@ -136,15 +136,15 @@
       "id": "label-pitch-wheel",
       "kind": "label",
       "rect": {
-        "left": 132.38,
+        "left": 132.94,
         "top": 827,
-        "width": 39.25,
+        "width": 38.13,
         "height": 18
       },
       "innerRect": {
-        "left": 138.38,
+        "left": 138.94,
         "top": 831,
-        "width": 27.25,
+        "width": 26.13,
         "height": 10
       },
       "computed": {
@@ -166,15 +166,15 @@
       "id": "label-mod-wheel",
       "kind": "label",
       "rect": {
-        "left": 195,
+        "left": 195.45,
         "top": 827,
-        "width": 66.98,
+        "width": 65.09,
         "height": 18
       },
       "innerRect": {
-        "left": 201,
+        "left": 201.45,
         "top": 831,
-        "width": 54.98,
+        "width": 53.09,
         "height": 10
       },
       "computed": {
@@ -196,15 +196,15 @@
       "id": "label-arp-chord",
       "kind": "label",
       "rect": {
-        "left": 132.84,
+        "left": 133.53,
         "top": 268,
-        "width": 44.3,
+        "width": 42.92,
         "height": 18
       },
       "innerRect": {
-        "left": 138.84,
+        "left": 139.53,
         "top": 272,
-        "width": 32.3,
+        "width": 30.92,
         "height": 10
       },
       "computed": {
@@ -226,15 +226,15 @@
       "id": "label-arp-pchord",
       "kind": "label",
       "rect": {
-        "left": 132.84,
+        "left": 133.53,
         "top": 355,
-        "width": 44.3,
+        "width": 42.92,
         "height": 28
       },
       "innerRect": {
-        "left": 143.45,
+        "left": 143.7,
         "top": 359,
-        "width": 23.08,
+        "width": 22.56,
         "height": 10
       },
       "computed": {
@@ -256,15 +256,15 @@
       "id": "label-arp-on-off",
       "kind": "label",
       "rect": {
-        "left": 132.05,
+        "left": 132.44,
         "top": 459,
-        "width": 45.89,
+        "width": 45.11,
         "height": 18
       },
       "innerRect": {
-        "left": 138.05,
+        "left": 138.44,
         "top": 463,
-        "width": 33.89,
+        "width": 33.11,
         "height": 10
       },
       "computed": {
@@ -286,15 +286,15 @@
       "id": "label-arp-tap-hold",
       "kind": "label",
       "rect": {
-        "left": 193.52,
+        "left": 194.05,
         "top": 459,
-        "width": 56.97,
+        "width": 55.89,
         "height": 18
       },
       "innerRect": {
-        "left": 199.52,
+        "left": 200.05,
         "top": 463,
-        "width": 44.97,
+        "width": 43.89,
         "height": 10
       },
       "computed": {
@@ -316,15 +316,15 @@
       "id": "label-lfo1-edit",
       "kind": "label",
       "rect": {
-        "left": 380.72,
+        "left": 381.19,
         "top": 459,
-        "width": 32.55,
+        "width": 31.61,
         "height": 18
       },
       "innerRect": {
-        "left": 386.72,
+        "left": 387.19,
         "top": 463,
-        "width": 20.55,
+        "width": 19.61,
         "height": 10
       },
       "computed": {
@@ -346,15 +346,15 @@
       "id": "label-lfo1-rate",
       "kind": "label",
       "rect": {
-        "left": 348.67,
+        "left": 349.08,
         "top": 258,
-        "width": 34.64,
+        "width": 33.83,
         "height": 18
       },
       "innerRect": {
-        "left": 354.67,
+        "left": 355.08,
         "top": 262,
-        "width": 22.64,
+        "width": 21.83,
         "height": 10
       },
       "computed": {
@@ -378,13 +378,13 @@
       "rect": {
         "left": 434,
         "top": 1478,
-        "width": 88.81,
+        "width": 86.33,
         "height": 18
       },
       "innerRect": {
         "left": 440,
         "top": 1482,
-        "width": 76.81,
+        "width": 74.33,
         "height": 10
       },
       "computed": {
@@ -406,15 +406,15 @@
       "id": "label-lfo1-delay-time",
       "kind": "label",
       "rect": {
-        "left": 410.66,
+        "left": 411.11,
         "top": 258,
-        "width": 40.67,
+        "width": 39.77,
         "height": 28
       },
       "innerRect": {
-        "left": 416.66,
+        "left": 417.11,
         "top": 262,
-        "width": 28.67,
+        "width": 27.77,
         "height": 10
       },
       "computed": {
@@ -436,15 +436,15 @@
       "id": "label-lfo2-edit",
       "kind": "label",
       "rect": {
-        "left": 496.72,
+        "left": 497.19,
         "top": 459,
-        "width": 32.55,
+        "width": 31.61,
         "height": 18
       },
       "innerRect": {
-        "left": 502.72,
+        "left": 503.19,
         "top": 463,
-        "width": 20.55,
+        "width": 19.61,
         "height": 10
       },
       "computed": {
@@ -466,15 +466,15 @@
       "id": "label-lfo2-rate",
       "kind": "label",
       "rect": {
-        "left": 464.67,
+        "left": 465.08,
         "top": 258,
-        "width": 34.64,
+        "width": 33.83,
         "height": 18
       },
       "innerRect": {
-        "left": 470.67,
+        "left": 471.08,
         "top": 262,
-        "width": 22.64,
+        "width": 21.83,
         "height": 10
       },
       "computed": {
@@ -498,13 +498,13 @@
       "rect": {
         "left": 522,
         "top": 1029,
-        "width": 106.19,
+        "width": 104.91,
         "height": 20
       },
       "innerRect": {
         "left": 528,
         "top": 1033,
-        "width": 94.19,
+        "width": 92.91,
         "height": 12
       },
       "computed": {
@@ -526,15 +526,15 @@
       "id": "label-lfo2-delay-time",
       "kind": "label",
       "rect": {
-        "left": 526.66,
+        "left": 527.11,
         "top": 258,
-        "width": 40.67,
+        "width": 39.77,
         "height": 28
       },
       "innerRect": {
-        "left": 532.66,
+        "left": 533.11,
         "top": 262,
-        "width": 28.67,
+        "width": 27.77,
         "height": 10
       },
       "computed": {
@@ -556,15 +556,15 @@
       "id": "label-osc1-pitch-mod",
       "kind": "label",
       "rect": {
-        "left": 585.38,
+        "left": 585.94,
         "top": 258,
-        "width": 39.25,
+        "width": 38.13,
         "height": 28
       },
       "innerRect": {
-        "left": 591.38,
+        "left": 591.94,
         "top": 262,
-        "width": 27.25,
+        "width": 26.13,
         "height": 10
       },
       "computed": {
@@ -586,15 +586,15 @@
       "id": "label-osc1-pwm",
       "kind": "label",
       "rect": {
-        "left": 651.03,
+        "left": 651.16,
         "top": 258,
-        "width": 33.94,
+        "width": 33.67,
         "height": 18
       },
       "innerRect": {
-        "left": 657.03,
+        "left": 657.16,
         "top": 262,
-        "width": 21.94,
+        "width": 21.67,
         "height": 10
       },
       "computed": {
@@ -616,15 +616,15 @@
       "id": "label-osc2-pitch-mod",
       "kind": "label",
       "rect": {
-        "left": 718.38,
+        "left": 718.94,
         "top": 258,
-        "width": 39.25,
+        "width": 38.13,
         "height": 28
       },
       "innerRect": {
-        "left": 724.38,
+        "left": 724.94,
         "top": 262,
-        "width": 27.25,
+        "width": 26.13,
         "height": 10
       },
       "computed": {
@@ -646,15 +646,15 @@
       "id": "label-osc2-tone-mod",
       "kind": "label",
       "rect": {
-        "left": 784.8,
+        "left": 785.2,
         "top": 258,
-        "width": 36.41,
+        "width": 35.59,
         "height": 28
       },
       "innerRect": {
-        "left": 790.8,
+        "left": 791.2,
         "top": 262,
-        "width": 24.41,
+        "width": 23.59,
         "height": 10
       },
       "computed": {
@@ -676,15 +676,15 @@
       "id": "label-osc2-pitch",
       "kind": "label",
       "rect": {
-        "left": 848.38,
+        "left": 848.94,
         "top": 258,
-        "width": 39.25,
+        "width": 38.13,
         "height": 18
       },
       "innerRect": {
-        "left": 854.38,
+        "left": 854.94,
         "top": 262,
-        "width": 27.25,
+        "width": 26.13,
         "height": 10
       },
       "computed": {
@@ -706,15 +706,15 @@
       "id": "label-osc2-level",
       "kind": "label",
       "rect": {
-        "left": 913.27,
+        "left": 913.81,
         "top": 258,
-        "width": 39.45,
+        "width": 38.38,
         "height": 18
       },
       "innerRect": {
-        "left": 919.27,
+        "left": 919.81,
         "top": 262,
-        "width": 27.45,
+        "width": 26.38,
         "height": 10
       },
       "computed": {
@@ -736,15 +736,15 @@
       "id": "label-noise-level",
       "kind": "label",
       "rect": {
-        "left": 981.22,
+        "left": 981.81,
         "top": 258,
-        "width": 39.56,
+        "width": 38.38,
         "height": 28
       },
       "innerRect": {
-        "left": 987.22,
+        "left": 987.81,
         "top": 262,
-        "width": 27.56,
+        "width": 26.36,
         "height": 10
       },
       "computed": {
@@ -766,15 +766,15 @@
       "id": "label-osc-edit",
       "kind": "label",
       "rect": {
-        "left": 820.72,
+        "left": 821.19,
         "top": 459,
-        "width": 32.55,
+        "width": 31.61,
         "height": 18
       },
       "innerRect": {
-        "left": 826.72,
+        "left": 827.19,
         "top": 463,
-        "width": 20.55,
+        "width": 19.61,
         "height": 10
       },
       "computed": {
@@ -796,15 +796,15 @@
       "id": "label-data-fader",
       "kind": "label",
       "rect": {
-        "left": 1644.2,
+        "left": 1644.67,
         "top": 258,
-        "width": 41.58,
+        "width": 40.66,
         "height": 28
       },
       "innerRect": {
-        "left": 1653.5,
+        "left": 1653.86,
         "top": 262,
-        "width": 22.97,
+        "width": 22.27,
         "height": 10
       },
       "computed": {
@@ -826,15 +826,15 @@
       "id": "label-mod-button",
       "kind": "label",
       "rect": {
-        "left": 1648.5,
+        "left": 1648.78,
         "top": 459,
-        "width": 32.98,
+        "width": 32.42,
         "height": 18
       },
       "innerRect": {
-        "left": 1654.5,
+        "left": 1654.78,
         "top": 463,
-        "width": 20.98,
+        "width": 20.42,
         "height": 10
       },
       "computed": {
@@ -856,15 +856,15 @@
       "id": "label-menu-prog",
       "kind": "label",
       "rect": {
-        "left": 1054.41,
+        "left": 1054.97,
         "top": 459,
-        "width": 37.17,
+        "width": 36.05,
         "height": 18
       },
       "innerRect": {
-        "left": 1060.41,
+        "left": 1060.97,
         "top": 463,
-        "width": 25.17,
+        "width": 24.05,
         "height": 10
       },
       "computed": {
@@ -886,15 +886,15 @@
       "id": "label-menu-fx",
       "kind": "label",
       "rect": {
-        "left": 1121.28,
+        "left": 1121.44,
         "top": 459,
-        "width": 23.44,
+        "width": 23.13,
         "height": 18
       },
       "innerRect": {
-        "left": 1127.28,
+        "left": 1127.44,
         "top": 463,
-        "width": 11.44,
+        "width": 11.13,
         "height": 10
       },
       "computed": {
@@ -916,15 +916,15 @@
       "id": "label-menu-global",
       "kind": "label",
       "rect": {
-        "left": 1169.11,
+        "left": 1169.86,
         "top": 459,
-        "width": 47.78,
+        "width": 46.27,
         "height": 18
       },
       "innerRect": {
-        "left": 1175.11,
+        "left": 1175.86,
         "top": 463,
-        "width": 35.78,
+        "width": 34.27,
         "height": 10
       },
       "computed": {
@@ -946,15 +946,15 @@
       "id": "label-menu-compare",
       "kind": "label",
       "rect": {
-        "left": 1225.06,
+        "left": 1225.84,
         "top": 459,
-        "width": 55.88,
+        "width": 54.31,
         "height": 18
       },
       "innerRect": {
-        "left": 1231.06,
+        "left": 1231.84,
         "top": 463,
-        "width": 43.88,
+        "width": 42.31,
         "height": 10
       },
       "computed": {
@@ -976,15 +976,15 @@
       "id": "label-menu-write",
       "kind": "label",
       "rect": {
-        "left": 1292.75,
+        "left": 1293.28,
         "top": 459,
-        "width": 40.48,
+        "width": 39.44,
         "height": 18
       },
       "innerRect": {
-        "left": 1298.75,
+        "left": 1299.28,
         "top": 463,
-        "width": 28.48,
+        "width": 27.44,
         "height": 10
       },
       "computed": {
@@ -1006,15 +1006,15 @@
       "id": "label-nav-up",
       "kind": "label",
       "rect": {
-        "left": 1478.81,
+        "left": 1479.06,
         "top": 231,
-        "width": 24.36,
+        "width": 23.86,
         "height": 18
       },
       "innerRect": {
-        "left": 1484.81,
+        "left": 1485.06,
         "top": 235,
-        "width": 12.36,
+        "width": 11.86,
         "height": 10
       },
       "computed": {
@@ -1036,15 +1036,15 @@
       "id": "label-nav-down",
       "kind": "label",
       "rect": {
-        "left": 1470.92,
+        "left": 1471.23,
         "top": 457,
-        "width": 40.14,
+        "width": 39.52,
         "height": 18
       },
       "innerRect": {
-        "left": 1476.92,
+        "left": 1477.23,
         "top": 461,
-        "width": 28.14,
+        "width": 27.52,
         "height": 10
       },
       "computed": {
@@ -1066,15 +1066,15 @@
       "id": "label-nav-yes",
       "kind": "label",
       "rect": {
-        "left": 1567.94,
+        "left": 1568.06,
         "top": 319,
-        "width": 38.13,
+        "width": 37.86,
         "height": 18
       },
       "innerRect": {
-        "left": 1573.94,
+        "left": 1574.06,
         "top": 323,
-        "width": 26.13,
+        "width": 25.86,
         "height": 10
       },
       "computed": {
@@ -1096,15 +1096,15 @@
       "id": "label-nav-no",
       "kind": "label",
       "rect": {
-        "left": 1380.5,
+        "left": 1380.77,
         "top": 319,
-        "width": 32.98,
+        "width": 32.45,
         "height": 18
       },
       "innerRect": {
-        "left": 1386.5,
+        "left": 1386.77,
         "top": 323,
-        "width": 20.98,
+        "width": 20.45,
         "height": 10
       },
       "computed": {
@@ -1126,15 +1126,15 @@
       "id": "label-poly-unison-detune",
       "kind": "label",
       "rect": {
-        "left": 1740.84,
+        "left": 1741.48,
         "top": 258,
-        "width": 48.3,
+        "width": 47.03,
         "height": 28
       },
       "innerRect": {
-        "left": 1747.33,
+        "left": 1748.05,
         "top": 262,
-        "width": 35.31,
+        "width": 33.91,
         "height": 10
       },
       "computed": {
@@ -1156,15 +1156,15 @@
       "id": "label-poly-edit",
       "kind": "label",
       "rect": {
-        "left": 1748.72,
+        "left": 1749.19,
         "top": 459,
-        "width": 32.55,
+        "width": 31.61,
         "height": 18
       },
       "innerRect": {
-        "left": 1754.72,
+        "left": 1755.19,
         "top": 463,
-        "width": 20.55,
+        "width": 19.61,
         "height": 10
       },
       "computed": {
@@ -1186,15 +1186,15 @@
       "id": "label-vcf-freq",
       "kind": "label",
       "rect": {
-        "left": 1836.27,
+        "left": 1836.75,
         "top": 258,
-        "width": 35.45,
+        "width": 34.48,
         "height": 18
       },
       "innerRect": {
-        "left": 1842.27,
+        "left": 1842.75,
         "top": 262,
-        "width": 23.45,
+        "width": 22.48,
         "height": 10
       },
       "computed": {
@@ -1216,15 +1216,15 @@
       "id": "label-vcf-res",
       "kind": "label",
       "rect": {
-        "left": 1904.39,
+        "left": 1904.8,
         "top": 258,
-        "width": 29.2,
+        "width": 28.39,
         "height": 18
       },
       "innerRect": {
-        "left": 1910.39,
+        "left": 1910.8,
         "top": 262,
-        "width": 17.2,
+        "width": 16.39,
         "height": 10
       },
       "computed": {
@@ -1246,15 +1246,15 @@
       "id": "label-vcf-env",
       "kind": "label",
       "rect": {
-        "left": 1972.91,
+        "left": 1973.13,
         "top": 258,
-        "width": 30.19,
+        "width": 29.75,
         "height": 18
       },
       "innerRect": {
-        "left": 1978.91,
+        "left": 1979.13,
         "top": 262,
-        "width": 18.19,
+        "width": 17.75,
         "height": 10
       },
       "computed": {
@@ -1276,15 +1276,15 @@
       "id": "label-vcf-lfo",
       "kind": "label",
       "rect": {
-        "left": 2037.34,
+        "left": 2037.7,
         "top": 258,
-        "width": 29.3,
+        "width": 28.58,
         "height": 18
       },
       "innerRect": {
-        "left": 2043.34,
+        "left": 2043.7,
         "top": 262,
-        "width": 17.3,
+        "width": 16.58,
         "height": 10
       },
       "computed": {
@@ -1306,15 +1306,15 @@
       "id": "label-vcf-kybd",
       "kind": "label",
       "rect": {
-        "left": 2098.78,
+        "left": 2099.14,
         "top": 258,
-        "width": 36.44,
+        "width": 35.7,
         "height": 18
       },
       "innerRect": {
-        "left": 2104.78,
+        "left": 2105.14,
         "top": 262,
-        "width": 24.44,
+        "width": 23.7,
         "height": 10
       },
       "computed": {
@@ -1336,15 +1336,15 @@
       "id": "label-vcf-2pole",
       "kind": "label",
       "rect": {
-        "left": 1831.38,
+        "left": 1832.17,
         "top": 459,
-        "width": 45.23,
+        "width": 43.66,
         "height": 18
       },
       "innerRect": {
-        "left": 1837.38,
+        "left": 1838.17,
         "top": 463,
-        "width": 33.23,
+        "width": 31.66,
         "height": 10
       },
       "computed": {
@@ -1366,15 +1366,15 @@
       "id": "label-vcf-invert",
       "kind": "label",
       "rect": {
-        "left": 1965.63,
+        "left": 1966.22,
         "top": 459,
-        "width": 44.75,
+        "width": 43.55,
         "height": 18
       },
       "innerRect": {
-        "left": 1971.63,
+        "left": 1972.22,
         "top": 463,
-        "width": 32.75,
+        "width": 31.55,
         "height": 10
       },
       "computed": {
@@ -1396,15 +1396,15 @@
       "id": "label-vcf-edit",
       "kind": "label",
       "rect": {
-        "left": 1902.72,
+        "left": 1903.19,
         "top": 459,
-        "width": 32.55,
+        "width": 31.61,
         "height": 18
       },
       "innerRect": {
-        "left": 1908.72,
+        "left": 1909.19,
         "top": 463,
-        "width": 20.55,
+        "width": 19.61,
         "height": 10
       },
       "computed": {
@@ -1426,15 +1426,15 @@
       "id": "label-vca-level",
       "kind": "label",
       "rect": {
-        "left": 2197.27,
+        "left": 2197.81,
         "top": 258,
-        "width": 39.45,
+        "width": 38.38,
         "height": 18
       },
       "innerRect": {
-        "left": 2203.27,
+        "left": 2203.81,
         "top": 262,
-        "width": 27.45,
+        "width": 26.38,
         "height": 10
       },
       "computed": {
@@ -1456,15 +1456,15 @@
       "id": "label-vca-edit",
       "kind": "label",
       "rect": {
-        "left": 2200.72,
+        "left": 2201.19,
         "top": 459,
-        "width": 32.55,
+        "width": 31.61,
         "height": 18
       },
       "innerRect": {
-        "left": 2206.72,
+        "left": 2207.19,
         "top": 463,
-        "width": 20.55,
+        "width": 19.61,
         "height": 10
       },
       "computed": {
@@ -1486,15 +1486,15 @@
       "id": "label-hpf-freq",
       "kind": "label",
       "rect": {
-        "left": 2289.27,
+        "left": 2289.75,
         "top": 258,
-        "width": 35.45,
+        "width": 34.48,
         "height": 18
       },
       "innerRect": {
-        "left": 2295.27,
+        "left": 2295.75,
         "top": 262,
-        "width": 23.45,
+        "width": 22.48,
         "height": 10
       },
       "computed": {
@@ -1516,15 +1516,15 @@
       "id": "label-hpf-boost",
       "kind": "label",
       "rect": {
-        "left": 2285.42,
+        "left": 2286.06,
         "top": 459,
-        "width": 43.16,
+        "width": 41.88,
         "height": 18
       },
       "innerRect": {
-        "left": 2291.42,
+        "left": 2292.06,
         "top": 463,
-        "width": 31.16,
+        "width": 29.88,
         "height": 10
       },
       "computed": {
@@ -1546,15 +1546,15 @@
       "id": "label-env-attack",
       "kind": "label",
       "rect": {
-        "left": 2388.92,
+        "left": 2388.95,
         "top": 258,
-        "width": 18.16,
+        "width": 18.08,
         "height": 18
       },
       "innerRect": {
-        "left": 2394.92,
+        "left": 2394.95,
         "top": 262,
-        "width": 6.16,
+        "width": 6.08,
         "height": 10
       },
       "computed": {
@@ -1576,15 +1576,15 @@
       "id": "label-env-decay",
       "kind": "label",
       "rect": {
-        "left": 2453.75,
+        "left": 2453.91,
         "top": 258,
-        "width": 18.48,
+        "width": 18.19,
         "height": 18
       },
       "innerRect": {
-        "left": 2459.75,
+        "left": 2459.91,
         "top": 262,
-        "width": 6.48,
+        "width": 6.19,
         "height": 10
       },
       "computed": {
@@ -1606,15 +1606,15 @@
       "id": "label-env-sustain",
       "kind": "label",
       "rect": {
-        "left": 2519.09,
+        "left": 2519.2,
         "top": 258,
-        "width": 17.81,
+        "width": 17.58,
         "height": 18
       },
       "innerRect": {
-        "left": 2525.09,
+        "left": 2525.2,
         "top": 262,
-        "width": 5.81,
+        "width": 5.58,
         "height": 10
       },
       "computed": {
@@ -1636,15 +1636,15 @@
       "id": "label-env-release",
       "kind": "label",
       "rect": {
-        "left": 2584.02,
+        "left": 2584.2,
         "top": 258,
-        "width": 17.95,
+        "width": 17.59,
         "height": 18
       },
       "innerRect": {
-        "left": 2590.02,
+        "left": 2590.2,
         "top": 262,
-        "width": 5.95,
+        "width": 5.59,
         "height": 10
       },
       "computed": {
@@ -1668,13 +1668,13 @@
       "rect": {
         "left": 2036,
         "top": 1020,
-        "width": 56.34,
+        "width": 55.63,
         "height": 20
       },
       "innerRect": {
         "left": 2042,
         "top": 1024,
-        "width": 44.34,
+        "width": 43.63,
         "height": 12
       },
       "computed": {
@@ -1696,15 +1696,15 @@
       "id": "label-env-vca-sel",
       "kind": "label",
       "rect": {
-        "left": 2412.83,
+        "left": 2413.02,
         "top": 459,
-        "width": 30.33,
+        "width": 29.95,
         "height": 18
       },
       "innerRect": {
-        "left": 2418.83,
+        "left": 2419.02,
         "top": 463,
-        "width": 18.33,
+        "width": 17.95,
         "height": 10
       },
       "computed": {
@@ -1726,15 +1726,15 @@
       "id": "label-env-vcf-sel",
       "kind": "label",
       "rect": {
-        "left": 2480.2,
+        "left": 2480.41,
         "top": 459,
-        "width": 29.59,
+        "width": 29.17,
         "height": 18
       },
       "innerRect": {
-        "left": 2486.2,
+        "left": 2486.41,
         "top": 463,
-        "width": 17.59,
+        "width": 17.17,
         "height": 10
       },
       "computed": {
@@ -1756,15 +1756,15 @@
       "id": "label-env-mod-sel",
       "kind": "label",
       "rect": {
-        "left": 2545.5,
+        "left": 2545.78,
         "top": 459,
-        "width": 32.98,
+        "width": 32.42,
         "height": 18
       },
       "innerRect": {
-        "left": 2551.5,
+        "left": 2551.78,
         "top": 463,
-        "width": 20.98,
+        "width": 20.42,
         "height": 10
       },
       "computed": {
@@ -1786,15 +1786,15 @@
       "id": "label-env-curves",
       "kind": "label",
       "rect": {
-        "left": 2622.92,
+        "left": 2623.55,
         "top": 459,
-        "width": 48.16,
+        "width": 46.91,
         "height": 18
       },
       "innerRect": {
-        "left": 2628.92,
+        "left": 2629.55,
         "top": 463,
-        "width": 36.16,
+        "width": 34.91,
         "height": 10
       },
       "computed": {
@@ -1816,15 +1816,15 @@
       "id": "label-arp-rate",
       "kind": "label",
       "rect": {
-        "left": 203.67,
+        "left": 204.08,
         "top": 258,
-        "width": 34.64,
+        "width": 33.83,
         "height": 18
       },
       "innerRect": {
-        "left": 209.67,
+        "left": 210.08,
         "top": 262,
-        "width": 22.64,
+        "width": 21.83,
         "height": 10
       },
       "computed": {
@@ -1846,15 +1846,15 @@
       "id": "label-arp-gate-time",
       "kind": "label",
       "rect": {
-        "left": 268.41,
+        "left": 268.8,
         "top": 258,
-        "width": 35.19,
+        "width": 34.41,
         "height": 28
       },
       "innerRect": {
-        "left": 274.41,
+        "left": 274.8,
         "top": 262,
-        "width": 23.19,
+        "width": 22.41,
         "height": 10
       },
       "computed": {
@@ -1876,15 +1876,15 @@
       "id": "label-arp-edit",
       "kind": "label",
       "rect": {
-        "left": 270.72,
+        "left": 271.19,
         "top": 459,
-        "width": 32.55,
+        "width": 31.61,
         "height": 18
       },
       "innerRect": {
-        "left": 276.72,
+        "left": 277.19,
         "top": 463,
-        "width": 20.55,
+        "width": 19.61,
         "height": 10
       },
       "computed": {
@@ -1906,15 +1906,15 @@
       "id": "label-voices-leds",
       "kind": "label",
       "rect": {
-        "left": 2222.77,
+        "left": 2223,
         "top": 508,
-        "width": 16.45,
+        "width": 16,
         "height": 18
       },
       "innerRect": {
-        "left": 2228.77,
+        "left": 2229.13,
         "top": 512,
-        "width": 4.45,
+        "width": 3.73,
         "height": 10
       },
       "computed": {
@@ -1938,13 +1938,13 @@
       "rect": {
         "left": 1038,
         "top": 516,
-        "width": 270,
+        "width": 264.28,
         "height": 20
       },
       "innerRect": {
         "left": 1044,
         "top": 520,
-        "width": 258,
+        "width": 252.28,
         "height": 12
       },
       "computed": {
@@ -1966,15 +1966,15 @@
       "id": "label-osc-sync",
       "kind": "label",
       "rect": {
-        "left": 719.64,
+        "left": 719.86,
         "top": 459,
-        "width": 36.7,
+        "width": 36.27,
         "height": 18
       },
       "innerRect": {
-        "left": 725.64,
+        "left": 725.86,
         "top": 463,
-        "width": 24.7,
+        "width": 24.27,
         "height": 10
       },
       "computed": {
@@ -2026,15 +2026,15 @@
       "id": "label-standalone-1778022427184-viok2j",
       "kind": "label",
       "rect": {
-        "left": 619.86,
+        "left": 620.69,
         "top": 232,
-        "width": 38.27,
+        "width": 36.63,
         "height": 18
       },
       "innerRect": {
-        "left": 625.86,
+        "left": 626.69,
         "top": 236,
-        "width": 26.27,
+        "width": 24.63,
         "height": 10
       },
       "computed": {
@@ -2056,15 +2056,15 @@
       "id": "label-standalone-1778022454917-hu4gd3",
       "kind": "label",
       "rect": {
-        "left": 815.31,
+        "left": 815.88,
         "top": 232,
-        "width": 39.36,
+        "width": 38.23,
         "height": 18
       },
       "innerRect": {
-        "left": 821.31,
+        "left": 821.88,
         "top": 236,
-        "width": 27.36,
+        "width": 26.23,
         "height": 10
       },
       "computed": {
@@ -2086,15 +2086,15 @@
       "id": "label-standalone-1778038552514-vjfyoz",
       "kind": "label",
       "rect": {
-        "left": 2158.36,
+        "left": 2159.02,
         "top": 516,
-        "width": 45.28,
+        "width": 43.97,
         "height": 18
       },
       "innerRect": {
-        "left": 2164.36,
+        "left": 2165.02,
         "top": 520,
-        "width": 33.28,
+        "width": 31.97,
         "height": 10
       },
       "computed": {
@@ -2116,15 +2116,15 @@
       "id": "label-standalone-1778041209092-t7jlsh",
       "kind": "label",
       "rect": {
-        "left": 57.31,
+        "left": 57.73,
         "top": 516,
-        "width": 47.36,
+        "width": 46.53,
         "height": 18
       },
       "innerRect": {
-        "left": 63.31,
+        "left": 63.73,
         "top": 520,
-        "width": 35.36,
+        "width": 34.53,
         "height": 10
       },
       "computed": {
@@ -4167,6 +4167,36 @@
       },
       "text": "⋮⋮ENVELOPES9"
     },
+    "section:performance": {
+      "id": "performance",
+      "kind": "section",
+      "rect": {
+        "left": 34,
+        "top": 479,
+        "width": 239,
+        "height": 318
+      },
+      "innerRect": {
+        "left": 42,
+        "top": 483,
+        "width": 133.75,
+        "height": 18
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "◌ Hidden — PERFORMANCE"
+    },
     "section:arp-seq": {
       "id": "arp-seq",
       "kind": "section",
@@ -4346,6 +4376,36 @@
         "zIndex": "auto"
       },
       "text": "⋮⋮HPF2"
+    },
+    "section:voices": {
+      "id": "voices",
+      "kind": "section",
+      "rect": {
+        "left": 1309,
+        "top": 1007,
+        "width": 124,
+        "height": 73
+      },
+      "innerRect": {
+        "left": 1317,
+        "top": 1011,
+        "width": 100.42,
+        "height": 18
+      },
+      "computed": {
+        "position": "static",
+        "display": "flex",
+        "padding": "0px",
+        "margin": "0px",
+        "border": "0px solid rgb(224, 224, 224)",
+        "boxShadow": "none",
+        "transform": "none",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "textAlign": "start",
+        "zIndex": "auto"
+      },
+      "text": "◌ Hidden — VOICES"
     }
   }
 }
