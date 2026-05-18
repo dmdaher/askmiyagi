@@ -147,6 +147,12 @@ const PHASE_ORDER: PipelinePhase[] = [
   'phase-4-audit',
   'phase-5-display-build',
   'phase-5-tutorial-build',
+  // Pause for admin to review generated tutorials in the embedded TutorialRunner
+  // against the actual panel before tutorial-pr opens a PR to `test`.
+  // Resolves via /api/pipeline/<id>/escalation with:
+  //   'approve' → advance to tutorial-pr
+  //   'changes-requested' → reset batches, store feedback, jump back to tutorial-build
+  'tutorial-review',
   'tutorial-pr',
   'completed',
 ];

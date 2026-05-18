@@ -384,6 +384,9 @@ async function run() {
         case 'phase-5-tutorial-build':
           await doPhase5(state);
           break;
+        case 'tutorial-review':
+          await doTutorialReview(state);
+          break;
         case 'tutorial-pr':
           await doTutorialPR(state);
           break;
@@ -2515,8 +2518,13 @@ async function doPhase5(state: PipelineState) {
     if (!isBudgetOk(state)) return;
 
     appendLog(deviceId, { level: 'info', agent: 'tutorial-builder', message: `Building batch ${batch.batchId}: ${batch.tutorials.join(', ')}` });
+    // If admin requested changes from a prior tutorial-review pause, the feedback
+    // note rides on the next build attempt's prompt so the agent knows what to fix.
+    const feedbackSuffix = state.tutorialReviewFeedback
+      ? `\n\nADMIN FEEDBACK from prior review (address before re-submitting):\n${state.tutorialReviewFeedback}`
+      : '';
     const buildResult = await invokeAgent({
-      prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${batch.tutorials.join(', ')}`,
+      prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${batch.tutorials.join(', ')}${feedbackSuffix}`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-builder', batchId: batch.batchId,
       allowedTools: PIPELINE_TOOLS,
       remainingBudgetUsd: getRemainingBudget(state),
@@ -2557,7 +2565,123 @@ async function doPhase5(state: PipelineState) {
   }
 
   completePhase(state, 'phase-5-tutorial-build', 10, true);
+  // Clear the feedback once consumed so we don't re-include it on the NEXT
+  // unrelated build pass.
+  state.tutorialReviewFeedback = null;
   advancePhase(state, worktreeCwd);
+}
+
+/**
+ * Tutorial Review pause phase — runs deterministic validators across all
+ * generated tutorials, persists the summary to disk, then pauses for admin
+ * approval via the /admin/<id>/review-tutorials page.
+ *
+ * Resume routes:
+ *   resolution = 'approve'              → advance to tutorial-pr
+ *   resolution = 'changes-requested'    → reset batches, store feedback,
+ *                                         jump back to phase-5-tutorial-build
+ */
+async function doTutorialReview(state: PipelineState) {
+  // Re-entry: a previous run paused us here and admin resolved the escalation.
+  const resolvedReview = state.escalations.find(
+    e => e.type === 'tutorial-review' && e.resolvedAt && e.phase === 'tutorial-review',
+  );
+
+  if (resolvedReview) {
+    const resolution = resolvedReview.resolution ?? '';
+    appendLog(deviceId, {
+      level: 'info',
+      message: `Tutorial review resolved: ${resolution}`,
+    });
+
+    if (resolution === 'approve' || resolution === 'override-applied') {
+      completePhase(state, 'tutorial-review', null, true);
+      advancePhase(state, worktreeCwd);
+      return;
+    }
+
+    if (resolution.startsWith('changes-requested')) {
+      // Reset batches so tutorial-build re-runs; store the feedback note for
+      // the tutorial-builder agent to consume on its next attempt.
+      const note = resolution.slice('changes-requested:'.length).trim();
+      state.tutorialReviewFeedback = note || 'Admin requested changes (no note provided).';
+      for (const batch of state.tutorialBatches) {
+        batch.status = 'pending';
+        batch.builderScore = null;
+        batch.reviewerVerdict = null;
+      }
+      // Move back to tutorial-build. completePhase isn't called here — the
+      // review phase stays "running" historically until tutorials are approved.
+      startPhase(state, 'phase-5-tutorial-build');
+      appendLog(deviceId, {
+        level: 'info',
+        message: `Pipeline rewound to tutorial-build with admin feedback: ${state.tutorialReviewFeedback}`,
+      });
+      return;
+    }
+
+    // Unknown resolution — fail safe by halting
+    appendLog(deviceId, {
+      level: 'error',
+      message: `Unknown tutorial-review resolution: ${resolution}`,
+    });
+    state.status = 'failed';
+    return;
+  }
+
+  // First entry: run validators + create the pause escalation.
+  startPhase(state, 'tutorial-review');
+  appendLog(deviceId, { level: 'info', message: 'Starting tutorial-review: validating generated tutorials' });
+
+  try {
+    const { validateGeneratedTutorials } = await import('../src/lib/pipeline/tutorial-validators');
+    const { loadTutorials } = await import('../src/lib/tutorial/loadValidControlIds');
+
+    // Generated tutorials live in the worktree at <wt>/src/data/tutorials/<deviceId>/
+    // — they aren't in canonical yet (tutorial-pr opens that PR). The admin
+    // review page reads from canonical, so we serialize the tutorials to JSON
+    // here and persist alongside summary.json.
+    const tutorialsBaseDir = path.join(worktreeCwd, 'src/data/tutorials');
+    const summary = await validateGeneratedTutorials(deviceId, {
+      preferPipelineManifest: true,
+      tutorialsBaseDir,
+    });
+    const tutorials = await loadTutorials(deviceId, { tutorialsBaseDir });
+
+    // Persist for the admin review page. .pipeline/ in the worktree is a
+    // symlink to canonical so a single write reaches the admin's source.
+    const summaryDir = paths().agent('tutorial-review').wtDir;
+    fs.mkdirSync(summaryDir, { recursive: true });
+    fs.writeFileSync(path.join(summaryDir, 'summary.json'), JSON.stringify(summary, null, 2));
+    fs.writeFileSync(path.join(summaryDir, 'tutorials.json'), JSON.stringify(tutorials, null, 2));
+
+    const msg =
+      `${summary.totalTutorials} tutorials generated for ${state.deviceName} ` +
+      `(${summary.totalSteps} total steps). ` +
+      `Errors: ${summary.totalErrors}, Warnings: ${summary.totalWarnings}, Info: ${summary.totalInfos}. ` +
+      `Click "Review Tutorials" to inspect each one in the admin review canvas, ` +
+      `then Approve or Request Changes.`;
+
+    createEscalation(state, 'tutorial-review', msg);
+    sendNotification('Miyagi Pipeline', `${state.deviceName} tutorials ready for review`);
+    appendLog(deviceId, { level: 'info', message: 'Tutorial Review: paused, waiting for admin approval' });
+    state.status = 'paused';
+    writeState(deviceId, state);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    appendLog(deviceId, {
+      level: 'error',
+      message: `Tutorial-review validation failed: ${message}. Pausing anyway so admin can investigate.`,
+    });
+    // Pause even on validator failure — admin can decide whether to retry or override
+    createEscalation(
+      state,
+      'tutorial-review',
+      `Validator failed to run (${message}). Inspect generated tutorials manually before approving.`,
+    );
+    state.status = 'paused';
+    writeState(deviceId, state);
+  }
 }
 
 async function doTutorialPR(state: PipelineState) {

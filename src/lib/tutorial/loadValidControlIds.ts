@@ -94,17 +94,35 @@ export async function loadValidControlIds(
   return null;
 }
 
+export interface LoadTutorialsOptions {
+  /**
+   * Absolute path to a tutorials base directory (e.g.
+   * `/path/to/.worktrees/<id>/src/data/tutorials`). When set, the loader
+   * imports `<tutorialsBaseDir>/<deviceId>/index` directly instead of
+   * resolving via the `@/data/tutorials/...` path alias. Used by the pipeline
+   * runner at tutorial-review pause time, where the just-generated tutorials
+   * live in a separate worktree.
+   */
+  tutorialsBaseDir?: string;
+}
+
 /**
  * Load the Tutorial[] array for a device from its barrel export.
  * Looks for `<deviceCamel>Tutorials` (e.g., deepmind12Tutorials).
  */
-export async function loadTutorials(deviceId: string): Promise<Tutorial[]> {
-  const mod: Record<string, unknown> = await import(/* @vite-ignore */ `@/data/tutorials/${deviceId}`);
+export async function loadTutorials(
+  deviceId: string,
+  opts: LoadTutorialsOptions = {},
+): Promise<Tutorial[]> {
+  const importTarget = opts.tutorialsBaseDir
+    ? `${opts.tutorialsBaseDir}/${deviceId}/index`
+    : `@/data/tutorials/${deviceId}`;
+  const mod: Record<string, unknown> = await import(/* @vite-ignore */ importTarget);
   const exportName = `${deviceIdToCamel(deviceId)}Tutorials`;
   const value = mod[exportName];
   if (!Array.isArray(value)) {
     throw new Error(
-      `Expected ${exportName} array export from src/data/tutorials/${deviceId}/index.ts. ` +
+      `Expected ${exportName} array export from ${importTarget}. ` +
       `Found exports: ${Object.keys(mod).slice(0, 5).join(', ')}...`,
     );
   }
