@@ -215,6 +215,130 @@ export function invokeAgent(opts: {
   });
 }
 
+// ─── API resilience ────────────────────────────────────────────────────────
+//
+// Anthropic occasionally returns 529 Overloaded during periods of high
+// platform-wide load. Discovered cdj-3000 2026-05-18 — two consecutive
+// builder runs failed on 529 immediately at session start, costing nothing
+// but wasting the orchestration round-trip.
+//
+// invokeAgentWithRetry wraps invokeAgent with:
+//   - 529 detection (scans output for "API Error: 529" pattern)
+//   - exponential backoff (30s, 120s, 300s — covers transient blips up to ~7min)
+//   - cleanly returns the final result after exhausting retries so callers
+//     can pause with a proper escalation rather than silently advancing.
+//
+// Note on shape: the wrapper returns the same InvokeResult as invokeAgent,
+// so it's a drop-in replacement. Callers don't need to change.
+
+const RETRY_BACKOFF_SECONDS = [30, 120, 300];
+
+function looks529(output: string): boolean {
+  return /API Error: 529|Overloaded|overloaded_error/i.test(output);
+}
+
+function sleep(seconds: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, seconds * 1000));
+}
+
+export async function invokeAgentWithRetry(opts: Parameters<typeof invokeAgent>[0]): Promise<InvokeResult> {
+  for (let attempt = 0; attempt <= RETRY_BACKOFF_SECONDS.length; attempt++) {
+    const result = await invokeAgent(opts);
+
+    // Success or non-529 failure → return as-is. The caller's gates
+    // (builder-exit check, etc.) decide what to do.
+    if (result.exitCode === 0 || !looks529(result.output)) {
+      if (attempt > 0) {
+        appendLog(opts.deviceId, {
+          level: 'info',
+          agent: opts.agent,
+          message: `Recovered on attempt ${attempt + 1} after 529 retry(s).`,
+        });
+      }
+      return result;
+    }
+
+    // 529 detected. If we have retries left, sleep + try again.
+    if (attempt < RETRY_BACKOFF_SECONDS.length) {
+      const sleepSec = RETRY_BACKOFF_SECONDS[attempt];
+      appendLog(opts.deviceId, {
+        level: 'warn',
+        agent: opts.agent,
+        message:
+          `Anthropic API 529 Overloaded on attempt ${attempt + 1}. ` +
+          `Sleeping ${sleepSec}s before retry ${attempt + 2}/${RETRY_BACKOFF_SECONDS.length + 1}. ` +
+          `Check status.claude.com if this persists.`,
+      });
+      await sleep(sleepSec);
+      continue;
+    }
+
+    // Exhausted all retries — return the failure. Caller will pause the
+    // pipeline via its agent-failure gate.
+    appendLog(opts.deviceId, {
+      level: 'error',
+      agent: opts.agent,
+      message:
+        `Anthropic API 529 persisted through ${RETRY_BACKOFF_SECONDS.length + 1} attempts ` +
+        `(${RETRY_BACKOFF_SECONDS.reduce((a, b) => a + b, 0)}s total backoff). ` +
+        `Giving up so the pipeline can pause cleanly.`,
+    });
+    return result;
+  }
+
+  // Unreachable, but TS wants a return
+  throw new Error('invokeAgentWithRetry: loop exhausted');
+}
+
+/**
+ * Pre-flight Anthropic API health probe. Sends a 1-token request with the
+ * cheapest model and returns true if the API is healthy.
+ *
+ * Use this before spawning the runner to avoid burning budget on an outage.
+ */
+export async function probeAnthropicHealth(opts: {
+  apiKey?: string;
+  timeoutMs?: number;
+} = {}): Promise<{ healthy: boolean; status?: number; reason?: string }> {
+  const apiKey = opts.apiKey ?? process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    // Can't probe without a key. Don't block the runner — let it fail
+    // properly if it hits an outage, instead of failing here on missing key.
+    return { healthy: true, reason: 'no ANTHROPIC_API_KEY env, skipping probe' };
+  }
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), opts.timeoutMs ?? 10000);
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1,
+        messages: [{ role: 'user', content: '.' }],
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (res.status === 529) {
+      return { healthy: false, status: 529, reason: 'Anthropic API returned 529 Overloaded' };
+    }
+    if (res.status >= 500) {
+      return { healthy: false, status: res.status, reason: `Anthropic API returned ${res.status}` };
+    }
+    return { healthy: true, status: res.status };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    // Network errors / timeouts are not necessarily an Anthropic problem,
+    // could be local connectivity. Don't block the runner.
+    return { healthy: true, reason: `probe inconclusive: ${message}` };
+  }
+}
+
 /**
  * Check if the dev server is running.
  */

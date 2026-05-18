@@ -31,6 +31,7 @@ const PHASE_LABELS: Record<string, string> = {
   'phase-4-audit': 'Coverage Audit',
   'phase-5-display-build': 'Display Build',
   'phase-5-tutorial-build': 'Tutorial Build',
+  'tutorial-review': 'Tutorial Review',
   'tutorial-pr': 'Tutorial PR',
 };
 
@@ -285,6 +286,27 @@ function deriveEscalationState(esc: Escalation, _pipeline: PipelineState): HeroS
         details: {
           whatsWrong: 'Nothing wrong — this is a quality gate. Review the proposed templates on the Layout tab before approving.',
           autoResolveNote: 'This step is a manual quality gate by design.',
+        },
+      };
+
+    case 'tutorial-review':
+      return {
+        tone: 'blue',
+        icon: '◇',
+        headline: 'Tutorials ready for review',
+        subtext:
+          'Tutorial-builder finished. Review each tutorial live against the panel, then approve or send back for changes.',
+        action: {
+          label: 'Review tutorials',
+          handler: 'resolve',
+          resolution: 'navigate',
+          variant: 'primary',
+          description:
+            'Opens the tutorial-review canvas. You can step through each tutorial against the actual panel, inspect deterministic diagnostics (missing control IDs, excessive flips, leftover LEDs), and either Approve (advances to tutorial-pr) or Request Changes (rewinds to tutorial-build with your feedback note).',
+        },
+        details: {
+          whatsWrong: 'Nothing wrong — this is a planned quality gate before opening a PR.',
+          autoResolveNote: 'Manual gate by design — review and approve / request changes on the review page itself.',
         },
       };
 
