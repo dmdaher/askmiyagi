@@ -24,6 +24,7 @@ import {
   mapButtonLabelPosition,
 } from '@/lib/render-helpers';
 import SharedCircleButton from '@/components/panel/SharedCircleButton';
+import SharedLed from '@/components/panel/SharedLed';
 
 interface ControlNodeProps {
   controlId: string;
@@ -79,23 +80,20 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
 
   switch (control.type) {
     case 'button': {
-      // Dual-label buttons render as LED indicator regardless of type
+      // Dual-label buttons render as LED indicator regardless of type.
+      // Editor is config-time — no `ledOn` passed → SharedLed treats as
+      // undefined → top row active (design-viz, matches pre-PR-3 editor).
       if (control.ledVariant === 'dual-label') {
-        const ledColor = control.ledColor ?? '#22c55e';
-        const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
         return (
-          <div className="flex flex-col rounded overflow-hidden"
-            style={{ width: visW, height: visH, border: '1px solid #333' }}
-            data-control-id={control.id}>
-            <div className="flex flex-1 items-center justify-center py-0.5 px-1"
-              style={{ backgroundColor: '#0a2e1a', borderBottom: '1px solid #333' }}>
-              <span className="text-[7px] font-medium text-green-400 uppercase truncate">{parts[0] || 'MODE A'}</span>
-            </div>
-            <div className="flex flex-1 items-center justify-center py-0.5 px-1"
-              style={{ backgroundColor: '#1a1a2a' }}>
-              <span className="text-[7px] font-medium uppercase truncate" style={{ color: `${ledColor}88` }}>{parts[1] || 'MODE B'}</span>
-            </div>
-          </div>
+          <SharedLed
+            width={visW}
+            height={visH}
+            variant="dual-label"
+            label={control.label}
+            secondaryLabel={control.secondaryLabel}
+            ledColor={control.ledColor}
+            dataControlId={control.id}
+          />
         );
       }
       if (control.shape === 'circle') {
@@ -178,78 +176,31 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       );
     case 'led':
     case 'indicator': {
-      const ledColor = control.ledColor ?? '#22c55e';
-      if (control.ledVariant === 'dual-label') {
-        // Dual-label indicator (e.g., VINYL/CDJ -- top and bottom rows)
-        const parts = control.label.split(/[\/\n]/).map(s => s.trim()).filter(Boolean);
-        const topLabel = parts[0] || 'MODE A';
-        const bottomLabel = parts[1] || 'MODE B';
-        return (
-          <div
-            className="flex flex-col rounded overflow-hidden"
-            style={{ width: visW, height: visH, border: '1px solid #333' }}
-            data-control-id={control.id}
-          >
-            <div className="flex flex-1 items-center justify-center py-0.5 px-1"
-              style={{ backgroundColor: '#0a2e1a', borderBottom: '1px solid #333' }}>
-              <span className="text-[7px] font-medium text-green-400 uppercase truncate">{topLabel}</span>
-            </div>
-            <div className="flex flex-1 items-center justify-center py-0.5 px-1"
-              style={{ backgroundColor: '#1a1a2a' }}>
-              <span className="text-[7px] font-medium uppercase truncate" style={{ color: `${ledColor}88` }}>{bottomLabel}</span>
-            </div>
-          </div>
-        );
-      }
-      if (control.ledVariant === 'bar') {
-        return (
-          <div
-            className="flex flex-col items-center justify-center gap-1 rounded"
-            style={{ backgroundColor: '#1a1a2a', padding: 4 }}
-            data-control-id={control.id}
-          >
-            <div
-              className="rounded-sm"
-              style={{
-                width: Math.max(visW - 8, 16),
-                height: 6,
-                backgroundColor: ledColor,
-                boxShadow: `0 0 6px ${ledColor}`,
-              }}
-            />
-            <span className="text-[7px] text-gray-400 uppercase break-words w-full text-center leading-tight">
-              {renderLabelText(control.label)}
-            </span>
-          </div>
-        );
-      }
-      // Default: simple dot indicator. Icons are rendered by LabelLayer.
-      // No dark housing — the LED is a transparent-bg dot with a glow when on.
-      //
-      // Active/inactive state mirrors PanelRenderer (production):
-      //   ledOn === true  → full color + glow (lit)
-      //   ledOn === false → dim grey, no glow (off)
-      //   ledOn undefined → treat as off (most synth LEDs default off)
-      const ledIsOn = control.ledOn === true;
-      const dotColor = ledIsOn ? ledColor : '#333';
+      // Editor is config-time. SharedLed dispatches on `variant`:
+      //   - dual-label: ledOn=undefined → top row active (design-viz,
+      //     matches pre-PR-3 editor which ignored ledOn for dual-label)
+      //   - bar: ledOn=undefined → lit (design-viz, matches pre-PR-3
+      //     editor's "bar always lit" behavior)
+      //   - dot: pass `control.ledOn === true ? true : undefined` so the
+      //     contractor's configured ledOn=true lights the dot, anything
+      //     else (false/undefined) renders dim. Matches pre-PR-3 editor's
+      //     `ledIsOn = control.ledOn === true` check.
+      const variant: 'dot' | 'dual-label' | 'bar' =
+        control.ledVariant === 'dual-label' ? 'dual-label'
+        : control.ledVariant === 'bar' ? 'bar'
+        : 'dot';
+      const ledOnForDot = control.ledOn === true ? true : undefined;
       return (
-        <div
-          className="flex items-center justify-center"
-          style={{ width: visW, height: visH }}
-          data-control-id={control.id}
-        >
-          <div
-            className="rounded-full flex-shrink-0"
-            style={{
-              width: Math.min(visW, visH) * 0.7,
-              height: Math.min(visW, visH) * 0.7,
-              minWidth: 6, minHeight: 6,
-              backgroundColor: dotColor,
-              border: ledIsOn ? `2px solid ${ledColor}44` : '1px solid #444',
-              boxShadow: ledIsOn ? `0 0 6px ${ledColor}` : 'none',
-            }}
-          />
-        </div>
+        <SharedLed
+          width={visW}
+          height={visH}
+          variant={variant}
+          label={control.label}
+          secondaryLabel={control.secondaryLabel}
+          ledColor={control.ledColor}
+          ledOn={variant === 'dot' ? ledOnForDot : undefined}
+          dataControlId={control.id}
+        />
       );
     }
     case 'wheel': {
