@@ -1,25 +1,40 @@
 # 2026-05 Master Roadmap
 
 > Single source of truth for plan state, priorities, attack order.
-> Re-audited 2026-05-16 after PRs #119 → #138 merged (20 PRs since last audit).
+> Re-audited 2026-05-18 after PRs #139 → #146 merged/opened (8 PRs since last audit). **A1 renderer extraction COMPLETE.**
 
 ---
 
 ## TL;DR
 
-**31 plan files audited. 21 shipped. 4 deferred/killed. 6 active.**
+**31 plan files audited. 23 shipped. 4 deferred/killed. 4 active. 2 in-flight PRs (#145, #146).**
 
 ### Recommended next 3 moves
 
 1. **🥇 Path A — Tutorial-Review Pause Phase** (~3 hr, 88% conf) — gate between tutorial-build and tutorial-pr. Without it, future runs auto-PR tutorials to `test` with no review.
 2. **🥈 Path B — Run CDJ-3000 to generate 23 tutorials** (½-1 day, after Path A) — first real tutorial output for a pipeline-built device.
-3. **🥉 A1 Renderer extraction (remaining ~480 LOC)** (~6 hr) — SharedLabel shipped via #120; the bulk of ControlNode↔PanelRenderer duplication still drifts.
+3. **🥉 A8 — LED Parts 2 + Pre-tutorial blockers** (~5-6 hr) — `ledStyle` field + wiring LED rendering to respond to `ledOn` state. Required for tutorials to show LED feedback. (Replaces A1 in #3 slot — A1 shipped.)
 
 ---
 
 ## 📦 SHIPPED (no action needed)
 
 Items shipped or merged. Move to historical reference.
+
+### 2026-05-17 → 2026-05-18 — A1 Renderer extraction complete + auto-export
+
+| # | What | PR | Plan(s) closed |
+|---|---|---|---|
+| ✅ | Roadmap audit pass (this doc updates) | #139 | doc-maintenance |
+| ✅ | 3 editor bug fixes: label position after hidden + circle button bg + z-order | #140 | editor-bugfixes |
+| ✅ | A1 PR-1 — render-helpers consolidation (renderLabelText, inferPortVariant, mapButtonLabelPosition, resolveDisplayContent) | #141 | **A1 PR-1** |
+| ✅ | A1 PR-2 + 2.5 + 2.6 — SharedCircleButton + circle Rnd wrapper alignment + linked-label z-order (OFFSET=0 final) | #143 | **A1 PR-2 + emergent fixes** |
+| ✅ | A1 PR-3 — SharedLed (dot + dual-label + bar variants) | #144 | **A1 PR-3** |
+| 🟡 | A1 PR-4 — manifest-field-completeness test (catches storeToManifest threading bugs) | #145 OPEN | **A1 PR-4** |
+| 🟡 | Auto-export production manifest on every contractor save (closes "forgot to Export" gap) + removes manual Export button | #146 OPEN | new initiative |
+| 🟡 | Worktree symlink hygiene: `bin/setup-worktree.sh` + CLAUDE.md correction | PR pending | new initiative (prevents `git checkout -- .pipeline/<file>` from destroying the symlink) |
+
+**A1 plan is now CLOSED.** All 4 planned PRs (helpers, SharedCircleButton, SharedLed, manifest-completeness test) plus 3 emergent fixes (circle wrapper alignment, linked-label z-order, OFFSET=0 wedge prevention) shipped or in-flight.
 
 ### 2026-05-15 → 2026-05-16 — Editor parity + selection unification + Phase 10
 
@@ -100,12 +115,9 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 
 #### A.I Foundation (must do first)
 
-##### A1 | Editor/Preview renderer extraction (REMAINING)
-- 🔗 `~/.claude/plans/2026-05-editor-renderer-extraction.md`
-- 💯 Overall: **85%** (P:95% / S:85% / R:88%) — adjusted: SharedLabel risk burned down
-- ⏱️ ~6 hours remaining · 3 PRs
-- 🎯 Priority: #1
-- 📝 SharedLabel primitive shipped via PR #120 (closed the label drift surface). Remaining: ~400 LOC of control-renderer duplication across 14 control types (buttons, LEDs, knobs, sliders, jog, pad, encoder, switch, lever, port, screen). Snapshot-based parity tests already in CI via #121/#122.
+##### ~~A1~~ ✅ SHIPPED — Editor/Preview renderer extraction (PRs #141, #143, #144, + #145 open)
+> Plan: `~/.claude/plans/nested-coalescing-squid.md` — archive on next pass.
+> 5 PRs total. SharedLabel (PR #120, prior) + render-helpers (PR #141) + SharedCircleButton (PR #143) + SharedLed (PR #144) + manifest-completeness test (PR #145 open). 3 emergent fixes embedded in #143: circle Rnd wrapper alignment, linked-label z-order with OFFSET=0 wedge prevention. ControlNode ↔ PanelRenderer duplication closed.
 
 #### A.II Quick wins (independent, < 2 hrs each)
 
@@ -282,11 +294,11 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 ### This week — first 3 sessions
 1. **B12 Path A — Tutorial-Review Pause Phase** (3 hr) ← unblocks everything else in tutorial flow
 2. **B13 Path B — Run CDJ-3000 tutorials** (overnight pipeline) ← first real tutorial output
-3. **Drift baselines refresh** (15 min) ← `npm run drift:capture` + commit; locks in current state after icon-label unification + Inter font + Phase 10; gets drift CI back to green
+3. **A8 — LED Parts 2 + Pre-tutorial blockers** (5-6 hr) ← `ledStyle` field + LED runtime state wiring (tutorial precondition)
 
-### Next sprint — editor foundation
-4. **A1 Renderer extraction (remaining)** (6 hr) ← biggest editor-quality unlock; SharedLabel already done
-5. **B15 Path C — replicate Path B for other devices** ← scale tutorial generation
+### Next sprint — scale tutorial generation
+4. **B15 Path C — replicate Path B for other devices** (variable) ← alphatheta-cdj3000x, fantom-06, minimoog-model-d
+5. **A2 Ruler tool** (1.5 hr) ← Figma parity for contractor (was deferred but quick + high contractor value)
 
 ### Anytime in parallel
 - **E1 Admin subdomain** (6 hr) ← production blocker but not urgent
@@ -330,7 +342,6 @@ For every active plan, check before execution:
 
 ### Active in `~/.claude/plans/`
 ```
-2026-05-editor-renderer-extraction.md     A1 (SharedLabel done; control bodies remain)
 2026-05-instrument-preview-and-relink.md  B14 / C2
 2026-05-manifest-repair-cache-cleanup.md  C5
 2026-05-pipeline-build-phase-fixes.md     C1 (Parts A, C, E)
@@ -345,8 +356,9 @@ tutorial-regeneration-strategy.md         B11
 
 ### Ready to archive (✅ SHIPPED in May 2026)
 ```
-get-up-to-speed-eager-dolphin.md          ✅ M1 (PR #129)
-nested-coalescing-squid.md                ✅ Phase 10 (PR #138)
+get-up-to-speed-eager-dolphin.md                  ✅ M1 (PR #129)
+nested-coalescing-squid.md                        ✅ A1 complete (PRs #141, #143, #144, #145 open)
+2026-05-editor-renderer-extraction.md             ✅ A1 complete (same)
 ```
 
 ### Active in `docs/plans/`
@@ -392,4 +404,4 @@ youtube-tutorial-discovery.md (if merged duplicate)
 
 ---
 
-*Last updated 2026-05-16 (post-PR #138). Re-audit when 5+ plans ship or major architectural decisions land.*
+*Last updated 2026-05-18 (post-PR #144 merge; #145 + #146 in-flight). A1 renderer extraction complete. Re-audit when 5+ plans ship or major architectural decisions land.*

@@ -333,9 +333,10 @@ curl -X POST http://localhost:3000/api/pipeline/<device-id>/recover \
 - Manifest: `.pipeline/<device-id>/manifest.json` (promoted from agents/gatekeeper/)
 - Templates: `.pipeline/<device-id>/templates.json` (layout engine output)
 - Editor: `.pipeline/<device-id>/manifest-editor.json` (contractor's positioning — SACRED)
-- Saved edits: `.pipeline/saved/<device-id>/` (survives pipeline resets)
-- Worktree: `.worktrees/<device-id>/` (isolated git checkout)
-- All gitignored — not committed to the repo
+- Saved edits: `.pipeline/saved/<device-id>/` (survives pipeline resets; gitignored)
+- Worktree: `.worktrees/<device-id>/` (isolated git checkout; gitignored)
+- **Tracked in git** (intentional, for Vercel deploy + backup): `manifest.json`, `manifest-editor.json`, `templates.json`, `inferred-layout.json`. Everything else gitignored. See `memory/feedback_dont_untrack_pipeline.md` for why.
+- **New worktree setup**: run `bin/setup-worktree.sh` to symlink `.pipeline/`, apply skip-worktree, and copy `.env.local`. Idempotent; safe to re-run for recovery (see `memory/feedback_git_checkout_breaks_pipeline_symlink.md`).
 
 ### Admin Panel
 
