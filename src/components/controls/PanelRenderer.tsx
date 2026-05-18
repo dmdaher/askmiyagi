@@ -14,14 +14,14 @@ import TouchDisplay from './TouchDisplay';
 import JogWheelAssembly from './JogWheelAssembly';
 import DirectionSwitch from './DirectionSwitch';
 import JogDisplay from './JogDisplay';
-import { HARDWARE_ICONS } from '@/lib/hardware-icons';
+import SharedCircleButton from '@/components/panel/SharedCircleButton';
 import {
   renderLabelText,
   inferPortVariant,
   mapButtonLabelPosition,
-  resolveDisplayContent,
 } from '@/lib/render-helpers';
 import SharedLabel from '@/components/panel/SharedLabel';
+import { computeLabelZ } from '@/lib/label-zorder';
 import { computeBannerBoxStyle, computeBannerTextStyle } from '@/lib/banner-style';
 import type { PolishBanner } from '@/components/panel-editor/store/historySlice';
 import { PanelState } from '@/types/panel';
@@ -68,6 +68,13 @@ interface ManifestLabel {
   align?: 'left' | 'center' | 'right';
   hidden?: boolean;
   lineHeight?: number;
+  /**
+   * If set, this label is linked to a control — it inherits the control's
+   * z-order so a "Bring to Front" gesture on the control brings the label
+   * with it (otherwise labels are stuck at z=150 and any overlapping
+   * control hides them regardless of zOrder).
+   */
+  controlId?: string;
 }
 
 interface ManifestSection {
@@ -167,13 +174,6 @@ function renderControl(
       }
       if (control.shape === 'circle') {
         const diameter = Math.min(w, h);
-        const iconKey = control.icon;
-        const iconContent = iconKey ? (HARDWARE_ICONS[iconKey] ?? iconKey) : undefined;
-        const showInside = control.labelPosition === 'on-button' || control.labelDisplay === 'icon-only';
-        const displayText = iconContent ?? control.label;
-        const isIcon = !!iconContent;
-        const isIntegrated = control.ledStyle === 'integrated' && control.hasLed;
-        const intColor = control.ledColor ?? '#22c55e';
         return (
           <div className="relative" data-control-id={control.id}>
             {control.hasLed && control.ledPosition !== 'inside' && control.ledStyle !== 'integrated' && (
@@ -185,42 +185,22 @@ function renderControl(
                 }} />
               </div>
             )}
-            <div
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: diameter, height: diameter,
-                backgroundColor: isIntegrated
-                  ? (ledOn === true ? undefined : (ledOn === false ? '#2a2a2a' : `${intColor}10`))
-                  : (active ? '#3a3a3a' : '#2a2a2a'),
-                // `background` is the CSS shorthand. Including it with a falsy
-                // value (even `undefined`) clears `backgroundColor` in the DOM
-                // via React's style serialization. Only include the radial
-                // gradient when actually needed.
-                ...(isIntegrated && ledOn === true && {
-                  background: `radial-gradient(ellipse at 50% 40%, ${intColor}50 0%, ${intColor}25 50%, transparent 80%)`,
-                }),
-                border: isIntegrated
-                  ? (ledOn === true ? `1px solid ${intColor}` : ledOn === false ? `3px solid ${control.surfaceColor ?? '#444'}` : `1px solid ${intColor}25`)
-                  : `3px solid ${control.surfaceColor ?? '#444'}`,
-                boxShadow: isIntegrated && ledOn === true
-                  ? `0 0 12px ${intColor}80, 0 0 4px ${intColor}60, inset 0 0 8px ${intColor}30`
-                  : (control.surfaceColor
-                    ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40`
-                    : 'inset 0 2px 4px rgba(0,0,0,0.4)'),
-              }}
+            <SharedCircleButton
+              diameter={diameter}
+              label={control.label}
+              icon={control.icon}
+              labelPosition={control.labelPosition}
+              labelDisplay={control.labelDisplay}
+              labelFontSize={control.labelFontSize}
+              labelColor={control.labelColor}
+              surfaceColor={control.surfaceColor}
+              hasLed={control.hasLed}
+              ledStyle={control.ledStyle}
+              ledColor={control.ledColor}
+              ledOn={ledOn}
+              active={active}
               onClick={onClick}
-            >
-              {showInside && (
-                <span className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
-                  style={{
-                    fontSize: control.labelFontSize ?? (isIcon ? Math.max(Math.round(diameter * 0.35), 8) : 8),
-                    color: control.labelColor ?? '#d1d5db',
-                    overflowWrap: isIcon ? undefined : 'break-word',
-                  }}>
-                  {displayText}
-                </span>
-              )}
-            </div>
+            />
           </div>
         );
       }
@@ -635,11 +615,21 @@ export default function PanelRenderer({
             lineHeight: label.lineHeight,
             color: (label as { color?: string }).color,
           }}
-          // zIndex matches the editor's LabelLayer (z=150) so labels stack
-          // above the keyboard (z=50) and section backdrops but BELOW
-          // controls (z=200). Without this, document order puts labels on
-          // top of controls in preview, which diverges from the editor.
-          zIndex={150}
+          // Per-label z: linked labels ride with their control's zOrder so
+          // they stay visible above overlapping controls; standalone labels
+          // stay at the historical z=150. Without per-label z, labels are
+          // stuck at 150 and any control (z=200+) hides them — the issue
+          // PR #140 inadvertently introduced by locking labels at a fixed z.
+          // See src/lib/label-zorder.ts for the formula.
+          zIndex={computeLabelZ({
+            controlId: label.controlId,
+            // Treat existing control with no zOrder as 0; null only when the
+            // control no longer exists (orphan label).
+            controlZOrder: (id) => {
+              const c = manifest.controls.find((c) => c.id === id);
+              return c ? (c.zOrder ?? 0) : null;
+            },
+          })}
           innerSpanProps={{ 'data-label-id': label.id }}
         />
       ))}

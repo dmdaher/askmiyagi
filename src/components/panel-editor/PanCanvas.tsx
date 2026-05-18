@@ -81,6 +81,10 @@ function storeToManifest(state: ReturnType<typeof useEditorStore.getState>): Pan
       align: l.align,
       hidden: l.hidden,
       lineHeight: l.fontSize + 2,
+      // Thread controlId so PanelRenderer (preview) can compute per-label
+      // zIndex relative to the linked control's zOrder. Without this, all
+      // labels are stuck at z=150 and any overlapping control hides them.
+      controlId: l.controlId,
     })),
     groupLabels: state.groupLabels ?? [],
     controlContainers: (state.controlContainers ?? []).map((c) => ({

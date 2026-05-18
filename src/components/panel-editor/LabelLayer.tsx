@@ -5,6 +5,7 @@ import { useEditorStore } from './store';
 import type { EditorLabel } from './store';
 import { selectedLabelIdFromSelection } from './store/selection-types';
 import SharedLabel from '@/components/panel/SharedLabel';
+import { computeLabelZ } from '@/lib/label-zorder';
 
 /**
  * Renders all editorLabels as a flat overlay on the editor canvas.
@@ -230,7 +231,15 @@ export default function LabelLayer() {
   if (!showLabels) return null;
 
   return (
-    <div className="absolute inset-0" style={{ zIndex: 150, pointerEvents: 'none' }}>
+    // PR-2.6 — outer wrapper does NOT set its own zIndex (was 150) because
+    // that created a stacking context that trapped all labels at z=150,
+    // forever below controls at z=200+. Per-label zIndex now comes from
+    // computeLabelZ() and can be > 200 for linked labels (so a "Bring to
+    // Front" gesture on a control brings its linked label with it). The
+    // wrapper keeps `pointer-events: none` so the underlying canvas
+    // receives clicks; each individual label re-enables pointer events on
+    // its inner span via innerSpanProps.
+    <div className="absolute inset-0" style={{ pointerEvents: 'none' }}>
       {editorLabels.map((label) => (
         <div key={label.id}>
           {/* Label text — hidden labels render at low opacity so they're
@@ -263,11 +272,20 @@ export default function LabelLayer() {
                     ? '1px dashed rgba(251,191,36,0.4)'
                     : 'none'
               }
-              zIndex={
-                dragging === label.id ? 200
-                : (selection.includes(`label:${label.id}`) || selectedLabel === label.id) ? 100
-                : 60
-              }
+              // PR-2.6 — per-label absolute z (no longer relative to the
+              // removed z=150 wrapper). Linked labels (label.controlId set)
+              // ride with their control's zOrder; standalone labels sit at
+              // z=150. Dragging/selected add boosts on top of the base.
+              zIndex={computeLabelZ({
+                controlId: label.controlId,
+                // Treat existing control with no explicit zOrder as 0 (the
+                // default for all controls until the contractor uses "Bring
+                // to Front"). Only return null if the control was deleted
+                // (truly orphan label).
+                controlZOrder: (id) => controls[id] ? (controls[id]?.zOrder ?? 0) : null,
+                dragging: dragging === label.id,
+                selected: selection.includes(`label:${label.id}`) || selectedLabel === label.id,
+              })}
               outerClassName={recentlyCreatedLabelId === label.id ? 'label-flash-new' : undefined}
               innerSpanProps={{
                 'data-label-id': label.id,

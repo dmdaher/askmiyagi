@@ -22,8 +22,8 @@ import {
   renderLabelText,
   inferPortVariant,
   mapButtonLabelPosition,
-  resolveDisplayContent,
 } from '@/lib/render-helpers';
+import SharedCircleButton from '@/components/panel/SharedCircleButton';
 
 interface ControlNodeProps {
   controlId: string;
@@ -99,41 +99,28 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         );
       }
       if (control.shape === 'circle') {
-        const diameter = Math.min(control.w, control.h);
-        const { text, isIcon } = resolveDisplayContent(control);
-        // Only show text inside the circle if label is on-button or icon-only
-        const showInside = control.labelPosition === 'on-button' || control.labelDisplay === 'icon-only';
-        const circleButton = (
+        // Editor is config-time: no `ledOn`/`active`/`onClick` — those are
+        // tutorial-driven and only matter in the preview render path.
+        // diameter uses the SCALED visual dims (was raw `control.w` / `control.h`
+        // pre-PR-2.5; pre-existing bug exposed once Phase 10 auto-fit started
+        // applying controlScale < 1 — circle rendered larger than its Rnd
+        // wrapper. SCALED dims match the preview render path and the wrapper.
+        const diameter = Math.min(visW, visH);
+        return (
           <div className="relative" data-control-id={control.id}>
             {renderButtonLed(control)}
-            <div
-              className="rounded-full flex items-center justify-center cursor-pointer"
-              style={{
-                width: diameter,
-                height: diameter,
-                backgroundColor: '#2a2a2a',
-                border: `3px solid ${control.surfaceColor ?? '#444'}`,
-                boxShadow: control.surfaceColor
-                  ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${control.surfaceColor}40, 0 1px 0 rgba(255,255,255,0.05)`
-                  : 'inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)',
-              }}
-            >
-              {showInside && (
-                <span
-                  className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
-                  style={{
-                    fontSize: control.labelFontSize ?? (isIcon ? Math.max(Math.round(diameter * 0.35), 8) : 8),
-                    color: control.labelColor ?? '#d1d5db',
-                    overflowWrap: isIcon ? undefined : 'break-word',
-                  }}
-                >
-                  {text}
-                </span>
-              )}
-            </div>
+            <SharedCircleButton
+              diameter={diameter}
+              label={control.label}
+              icon={control.icon}
+              labelPosition={control.labelPosition}
+              labelDisplay={control.labelDisplay}
+              labelFontSize={control.labelFontSize}
+              labelColor={control.labelColor}
+              surfaceColor={control.surfaceColor}
+            />
           </div>
         );
-        return circleButton;
       }
 
       // Map buttonStyle to PanelButton variant ('raised' maps to 'standard')
@@ -454,6 +441,33 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   const relX = control?.x ?? 0;
   const relY = control?.y ?? 0;
 
+  // PR-2.5 — circle wrapper alignment.
+  //
+  // For controls with `shape === 'circle'`, the visible circle is square at
+  // `min(visW, visH)` while the historical Rnd wrapper was the full
+  // `visW × visH` rectangle. Two consequences (both pre-existing bugs):
+  //   1. When the stored `control.w !== control.h`, the wrapper extended
+  //      horizontally past the visible circle — selection chrome, resize
+  //      handles, and drag area sat outside the circle on the wide axis.
+  //   2. When Phase 10 controlScale < 1 produced asymmetric scaling, the
+  //      circle diameter (formerly unscaled `Math.min(control.w, control.h)`)
+  //      rendered LARGER than the scaled wrapper — circle visually
+  //      overflowed its draggable Rnd container.
+  //
+  // Fix: make the Rnd wrapper square at the scaled diameter for circle
+  // controls, with a positional offset so the visible circle stays on-panel
+  // exactly where it was. The drag handler's delta math is offset-independent
+  // (dragStartRef stores the offset position, current d.x has same offset →
+  // delta cancels). The resize handler's `dx = position.x - relX` math is
+  // adjusted to subtract `circleOffsetX` below.
+  const visWTop = Math.round(control.w * controlScale);
+  const visHTop = Math.round(control.h * controlScale);
+  const isCircleShape = control.type === 'button' && control.shape === 'circle';
+  const wrapperW = isCircleShape ? Math.min(visWTop, visHTop) : visWTop;
+  const wrapperH = isCircleShape ? Math.min(visWTop, visHTop) : visHTop;
+  const circleOffsetX = isCircleShape ? (visWTop - wrapperW) / 2 : 0;
+  const circleOffsetY = isCircleShape ? (visHTop - wrapperH) / 2 : 0;
+
   // Track drag start position for multi-select delta computation
   const dragStartRef = useRef({ x: 0, y: 0 });
 
@@ -521,15 +535,18 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
       if (deltaW < 3 && deltaH < 3) return;
       // Snapshot BEFORE mutation so undo restores the previous state
       pushSnapshot();
-      // Handle position shift from top/left resize handles
-      const dx = position.x - relX;
-      const dy = position.y - relY;
+      // Handle position shift from top/left resize handles.
+      // PR-2.5: for circle controls, Rnd's `position.x/y` is relative to the
+      // OFFSET wrapper origin; subtract `circleOffsetX/Y` to get the logical
+      // store-relative delta.
+      const dx = position.x - (relX + circleOffsetX);
+      const dy = position.y - (relY + circleOffsetY);
       if (dx !== 0 || dy !== 0) {
         moveControl(controlId, dx, dy);
       }
       resizeControl(controlId, newW, newH);
     },
-    [relX, relY, controlId, moveControl, resizeControl, pushSnapshot],
+    [relX, relY, circleOffsetX, circleOffsetY, controlId, moveControl, resizeControl, pushSnapshot],
   );
 
   const handleClick = useCallback(
@@ -704,7 +721,7 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   // After click → control is selected → handles appear → user can then
   // resize freely. Larger controls keep their handles always.
   // Threshold: 32 px on the shorter axis (post-zoom).
-  const isTooSmallToResize = Math.min(control.w * controlScale, control.h * controlScale) < 32;
+  const isTooSmallToResize = Math.min(wrapperW, wrapperH) < 32;
   const canResize = !isLocked && !isResizeLocked && (isSelected || !isTooSmallToResize);
 
   // Controls can be dragged freely — section boundaries are decorative only.
@@ -712,12 +729,14 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   return (
     <>
       <Rnd
-        position={{ x: relX, y: relY }}
-        size={{ width: control.w * controlScale, height: control.h * controlScale }}
+        position={{ x: relX + circleOffsetX, y: relY + circleOffsetY }}
+        size={{ width: wrapperW, height: wrapperH }}
         scale={zoom}
         dragGrid={[snapGrid, snapGrid]}
         resizeGrid={[snapGrid, snapGrid]}
-        lockAspectRatio={shiftHeld}
+        // Circle controls always lock aspect ratio — a circle resized into
+        // an oval looks wrong and would snap back to square on next render.
+        lockAspectRatio={shiftHeld || isCircleShape}
         disableDragging={isLocked}
         enableResizing={canResize ? {
           topRight: true, bottomRight: true, bottomLeft: true, topLeft: true,
