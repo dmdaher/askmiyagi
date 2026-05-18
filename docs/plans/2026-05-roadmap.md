@@ -1,19 +1,21 @@
 # 2026-05 Master Roadmap
 
 > Single source of truth for plan state, priorities, attack order.
-> Re-audited 2026-05-18 after PRs #139 → #146 merged/opened (8 PRs since last audit). **A1 renderer extraction COMPLETE.**
+> Re-audited 2026-05-18 — **full code audit** (not just trust the doc). Most "active editor plans" were silently shipped; corrected below. A1 renderer extraction COMPLETE.
 
 ---
 
 ## TL;DR
 
-**31 plan files audited. 23 shipped. 4 deferred/killed. 4 active. 2 in-flight PRs (#145, #146).**
+**31 plan files audited. 28 shipped (or part of in-flight PRs). 4 deferred/killed. 1 partial. Only ~10 distinct items genuinely remain across Tutorial/Pipeline/Web work.**
+
+The editor is essentially feature-complete. Remaining work is **tutorial pipeline, production deployment, and one partial editor item**.
 
 ### Recommended next 3 moves
 
-1. **🥇 Path A — Tutorial-Review Pause Phase** (~3 hr, 88% conf) — gate between tutorial-build and tutorial-pr. Without it, future runs auto-PR tutorials to `test` with no review.
-2. **🥈 Path B — Run CDJ-3000 to generate 23 tutorials** (½-1 day, after Path A) — first real tutorial output for a pipeline-built device.
-3. **🥉 A8 — LED Parts 2 + Pre-tutorial blockers** (~5-6 hr) — `ledStyle` field + wiring LED rendering to respond to `ledOn` state. Required for tutorials to show LED feedback. (Replaces A1 in #3 slot — A1 shipped.)
+1. **🥇 B12 Path A — Tutorial-Review Pause Phase** (~3 hr, 88% conf) — gate between tutorial-build and tutorial-pr. Tutorial-reviewer agent exists but doesn't actually pause for admin approval. Without it, future runs auto-PR tutorials to `test` with no review.
+2. **🥈 E1 — Admin subdomain deployment** (~6 hr) — `askmiyagi.music/admin` returns 404. `src/proxy.ts` is dead code that needs renaming to `middleware.ts` + subdomain config. **Production blocker.**
+3. **🥉 B13 Path B — Run CDJ-3000 to generate 23 tutorials** (½-1 day, after B12) — first real tutorial output for a pipeline-built device.
 
 ---
 
@@ -35,6 +37,23 @@ Items shipped or merged. Move to historical reference.
 | 🟡 | Worktree symlink hygiene: `bin/setup-worktree.sh` + CLAUDE.md correction | PR pending | new initiative (prevents `git checkout -- .pipeline/<file>` from destroying the symlink) |
 
 **A1 plan is now CLOSED.** All 4 planned PRs (helpers, SharedCircleButton, SharedLed, manifest-completeness test) plus 3 emergent fixes (circle wrapper alignment, linked-label z-order, OFFSET=0 wedge prevention) shipped or in-flight.
+
+### Re-audit corrections (2026-05-18) — plans that were marked "active" but actually shipped
+
+Verified by code inspection, not roadmap status. Moved to ✅ SHIPPED:
+
+| Plan | Actual code state |
+|---|---|
+| ✅ A2 Ruler tool | `src/components/panel-editor/Ruler.tsx` exists, fully wired |
+| ✅ A3 Issue 3 (circle icon scaling) | `SharedCircleButton` has `Math.round(diameter * 0.35)` icon size derivation |
+| ✅ A4 LED z-order Part 3 | `ContextMenu.tsx` has `handleZOrder('bringToFront' \| 'sendToBack' \| 'bringForward' \| 'sendBackward')`; ⌘]/⌘[ shortcuts documented in HelpDrawer |
+| ✅ A7 Containers + labelColor | `ContainerNode.tsx` + `controlContainers` in store + `labelColor?: string` on ControlDef |
+| ✅ A8 LED Parts 2 + Pre-tutorial blockers | `ledStyle` field exists; PanelRenderer wires `ledOn` for dot/bar/integrated states; `displayState` + `zones` pass through to PanelShell |
+| ✅ M2 Dashboard sort/filter | `src/app/admin/page.tsx` has `sortBy`, `filterManufacturer`, `filterEditorReady` |
+
+🟡 A6 Keyboard + Add Control — PARTIAL: double-click-to-edit-label shipped; black key offsets + right-click "Add Control" modal still TODO.
+
+**The roadmap had ~5 stale entries marked active that were silently shipped.** Source: assumed plans were active without code verification.
 
 ### 2026-05-15 → 2026-05-16 — Editor parity + selection unification + Phase 10
 
@@ -119,42 +138,22 @@ Numbering reset for clarity. Confidence scores updated post-merges.
 > Plan: `~/.claude/plans/nested-coalescing-squid.md` — archive on next pass.
 > 5 PRs total. SharedLabel (PR #120, prior) + render-helpers (PR #141) + SharedCircleButton (PR #143) + SharedLed (PR #144) + manifest-completeness test (PR #145 open). 3 emergent fixes embedded in #143: circle Rnd wrapper alignment, linked-label z-order with OFFSET=0 wedge prevention. ControlNode ↔ PanelRenderer duplication closed.
 
-#### A.II Quick wins (independent, < 2 hrs each)
+#### A.II Quick wins — ALL SHIPPED ✅
 
-##### A2 | Ruler tool
-- 🔗 `docs/plans/2026-04-29-ruler-and-pipeline-reset.md` (ruler only; reset shipped)
-- 💯 **82%** · ⏱️ 1.5-2 hr · 🎯 #1
-- 📝 Figma-style edge rulers with adaptive tick density + R-key toggle. Pure view component.
+##### ~~A2~~ ✅ SHIPPED — Ruler tool (`src/components/panel-editor/Ruler.tsx`)
+##### ~~A3~~ ✅ SHIPPED — Circle icon scaling (`SharedCircleButton`'s `diameter * 0.35`)
+##### ~~A4~~ ✅ SHIPPED — LED z-order Part 3 (ContextMenu Bring/Send gestures + ⌘]/⌘[ shortcuts)
 
-##### A3 | Sizing input fixes (REMAINING — Issue 3 only)
-- 🔗 `docs/plans/2026-04-30-sizing-input-fixes.md`
-- 💯 **70%** · ⏱️ ~45 min · 🎯 #2
-- 📝 Issue 1 (dual-label minimum) + Issue 2 (geometry backspace) shipped in `e1e341b`. **Remaining:** Issue 3 — circle button icons don't scale with button size.
-
-##### A4 | LED z-order Part 3
-- 🔗 `docs/plans/2026-04-26-led-zorder-plan.md` (Part 1 SHIPPED)
-- 💯 **84%** · ⏱️ 1.5 hr · 🎯 #3
-- 📝 Move-to-front/back/forward/backward + ⌘]/⌘[ shortcuts. Additive `zOrder` field on controls.
-
-#### A.III UX features (post A1)
+#### A.III UX features — MOSTLY SHIPPED ✅
 
 ##### ~~A5~~ ✅ SHIPPED — Mixed selection (PRs #131–#136)
-> Plan: `docs/plans/2026-05-04-mixed-selection-labels-controls-P1.md` — archive on next pass
+##### ~~A7~~ ✅ SHIPPED — Containers + labelColor (`ContainerNode.tsx` + `controlContainers` + `labelColor` field)
+##### ~~A8~~ ✅ SHIPPED — LED Parts 2 + Pre-tutorial blockers (ledStyle field + ledOn wiring + displayState/zones pass-through)
 
-##### A6 | Keyboard fixes + Add Control
+##### A6 | Keyboard fixes + Add Control 🟡 PARTIAL
 - 🔗 `~/.claude/plans/parsed-exploring-pumpkin.md`
-- 💯 **78%** · ⏱️ 4 hr · 🎯 #2
-- 📝 Per-MIDI black key offsets, right-click "Add Control" modal, click-to-edit keyboard via Properties.
-
-##### A7 | Containers + labelColor (REMAINING — label-align shipped)
-- 🔗 `docs/plans/2026-04-27-label-align-containers-plan.md`
-- 💯 **80%** · ⏱️ ~4 hr · 🎯 #3
-- 📝 9-position labelAlign grid + auto-anchor shipped in PR #137. **Remaining:** `labelColor` field + `ControlContainer` (visual grouping primitive) + dual-label LED type mismatch fix.
-
-##### A8 | LED Parts 2 + Pre-tutorial blockers (MERGE)
-- 🔗 `docs/plans/2026-04-26-led-zorder-plan.md` (Part 2) + `docs/plans/2026-04-26-pre-tutorial-blockers.md`
-- 💯 **87%** · ⏱️ 5-6 hr · 🎯 #4
-- 📝 ledStyle field (integrated vs dot) + wiring LED rendering to respond to `ledOn` state. Required for tutorials to show LED feedback.
+- 💯 **78%** · ⏱️ ~2-3 hr remaining
+- 📝 Double-click-to-edit-label shipped. **Remaining:** per-MIDI black key offsets + right-click "Add Control" modal.
 
 #### A.IV Design system (final pass)
 
@@ -281,24 +280,23 @@ Display Builder SOUL + validators + parser fix landed in PR #116 + #118.
 ### 🛡️ Misc quick wins
 
 ##### ~~M1~~ ✅ SHIPPED — Onboard slash command fix (PR #129)
-
-##### M2 | Dashboard sort/filter
-- 🔗 `docs/plans/2026-04-18-dashboard-sort-filter.md`
-- 💯 **85%** · ⏱️ 2 hr
-- 📝 Sort + manufacturer filter + "Ready for Editor" toggle. ~40 LOC client-side.
+##### ~~M2~~ ✅ SHIPPED — Dashboard sort/filter (verified in `src/app/admin/page.tsx`: `sortBy`, `filterManufacturer`, `filterEditorReady`)
 
 ---
 
 ## 📊 Attack order recommendation
 
 ### This week — first 3 sessions
-1. **B12 Path A — Tutorial-Review Pause Phase** (3 hr) ← unblocks everything else in tutorial flow
-2. **B13 Path B — Run CDJ-3000 tutorials** (overnight pipeline) ← first real tutorial output
-3. **A8 — LED Parts 2 + Pre-tutorial blockers** (5-6 hr) ← `ledStyle` field + LED runtime state wiring (tutorial precondition)
+1. **B12 Path A — Tutorial-Review Pause Phase** (3 hr) ← unblocks everything else in tutorial flow; tutorial-reviewer exists but the pause gate doesn't
+2. **E1 — Admin subdomain deployment** (6 hr) ← `askmiyagi.music/admin` 404s; `src/proxy.ts` needs rename to `middleware.ts`. **Production blocker.**
+3. **B13 Path B — Run CDJ-3000 tutorials** (overnight pipeline, after B12) ← first real tutorial output
 
 ### Next sprint — scale tutorial generation
 4. **B15 Path C — replicate Path B for other devices** (variable) ← alphatheta-cdj3000x, fantom-06, minimoog-model-d
-5. **A2 Ruler tool** (1.5 hr) ← Figma parity for contractor (was deferred but quick + high contractor value)
+5. **B14 Half B — Rich review UI for tutorials** (6-8 hr) ← admin renders panel + steps through tutorials in real-time
+
+### Optional contractor-UX polish
+- **A6 partial** (~2-3 hr) — black key offsets + right-click "Add Control" modal
 
 ### Anytime in parallel
 - **E1 Admin subdomain** (6 hr) ← production blocker but not urgent
