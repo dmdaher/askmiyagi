@@ -46,7 +46,21 @@ export interface LabelZInputs {
 
 const STANDALONE_BASE = 150;
 const LINKED_BASE = 200; // matches PanelRenderer's `200 + ctrl.zOrder` for controls
-const LINKED_ABOVE_OFFSET = 1; // sits just above its linked control
+/**
+ * Linked label sits this far above its linked control's z. Originally 1 (just
+ * above), but that left a 1-layer gap that ANOTHER control with zOrder=+1
+ * could wedge into — splitting the visually-coupled label-and-control pair.
+ *
+ * Bumped to 100 so the label is effectively locked above its control (no
+ * realistic zOrder difference reaches 100). Other controls re-stack as before
+ * via their own zOrder relative to each other; only the WEDGE case is now
+ * impossible. Standalone labels still sit at STANDALONE_BASE.
+ *
+ * Trade-off: linked labels are now always at z ≥ 300 (200 base + ≥0 zOrder
+ * + 100 offset). They effectively float above ALL controls. This matches
+ * the contractor's mental model: "labels are informational; never hidden."
+ */
+const LINKED_ABOVE_OFFSET = 100;
 
 const SELECTED_BOOST = 10;
 const DRAGGING_BOOST = 50;
