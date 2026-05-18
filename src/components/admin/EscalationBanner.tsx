@@ -93,6 +93,16 @@ const ESCALATION_CONFIG: Record<
       { label: 'Send to Contractor', resolution: 'send-to-contractor', variant: 'primary' },
     ],
   },
+  'tutorial-review': {
+    bg: 'rgba(59, 130, 246, 0.1)',
+    border: '#3b82f6',
+    buttons: [
+      // 'navigate' is intercepted by PipelineDetail and routed to the review
+      // page — it does NOT resolve the escalation. The Approve / Request
+      // Changes buttons live on the review page itself.
+      { label: 'Review Tutorials', resolution: 'navigate', variant: 'primary' },
+    ],
+  },
   'control-id-validation-failed': {
     bg: 'rgba(239, 68, 68, 0.1)',
     border: '#ef4444',

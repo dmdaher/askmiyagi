@@ -43,6 +43,8 @@ export interface TutorialReviewSummary {
 export interface ValidateGeneratedTutorialsOptions {
   /** Use `.pipeline/<id>/manifest.json` instead of committed manifest. */
   preferPipelineManifest?: boolean;
+  /** Absolute path to a tutorials base dir (e.g. worktree src/data/tutorials). */
+  tutorialsBaseDir?: string;
 }
 
 export async function validateGeneratedTutorials(
@@ -60,7 +62,7 @@ export async function validateGeneratedTutorials(
     );
   }
 
-  const tutorials = await loadTutorials(deviceId);
+  const tutorials = await loadTutorials(deviceId, { tutorialsBaseDir: opts.tutorialsBaseDir });
   const results = validateAllTutorials(tutorials, controlIds);
 
   const issues: TutorialIssue[] = [];

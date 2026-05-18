@@ -14,6 +14,7 @@ export type PipelinePhase =
   | 'phase-4-audit'
   | 'phase-5-display-build'
   | 'phase-5-tutorial-build'
+  | 'tutorial-review'  // pause: admin reviews generated tutorials before tutorial-pr fires
   | 'tutorial-pr'
   | 'completed'
   | 'failed';
@@ -91,6 +92,7 @@ export type EscalationType =
   | 'physical-impossibility'
   | 'template-review'
   | 'editor-ready'
+  | 'tutorial-review'
   | 'control-id-validation-failed';
 
 export interface Escalation {
@@ -146,6 +148,14 @@ export interface PipelineState {
 
   /** True after codegen has successfully generated the panel. Used for nav gating. */
   codegenCompleted?: boolean;
+
+  /**
+   * Admin feedback captured when a tutorial-review escalation is resolved
+   * with 'changes-requested'. Pipeline-runner reads this on the next
+   * tutorial-build attempt so the tutorial-builder agent knows what to fix.
+   * Cleared once consumed.
+   */
+  tutorialReviewFeedback?: string | null;
 
   lastCheckpoint: {
     phase: PipelinePhase;

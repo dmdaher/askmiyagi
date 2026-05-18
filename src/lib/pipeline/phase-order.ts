@@ -29,6 +29,7 @@ export const PIPELINE_PHASES: PipelinePhase[] = [
   'phase-4-audit',
   'phase-5-display-build',
   'phase-5-tutorial-build',
+  'tutorial-review',
   'tutorial-pr',
   'completed',
 ];
