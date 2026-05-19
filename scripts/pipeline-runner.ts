@@ -2880,12 +2880,38 @@ async function doTutorialReview(state: PipelineState) {
     });
     const tutorials = await loadTutorials(deviceId, { tutorialsBaseDir });
 
-    // Persist for the admin review page. .pipeline/ in the worktree is a
-    // symlink to canonical so a single write reaches the admin's source.
-    const summaryDir = paths().agent('tutorial-review').wtDir;
-    fs.mkdirSync(summaryDir, { recursive: true });
-    fs.writeFileSync(path.join(summaryDir, 'summary.json'), JSON.stringify(summary, null, 2));
-    fs.writeFileSync(path.join(summaryDir, 'tutorials.json'), JSON.stringify(tutorials, null, 2));
+    // Persist for the admin review page. The admin Next.js process reads
+    // from CANONICAL `.pipeline/` (via process.cwd() relative path). Device
+    // worktrees created by `git worktree add` have their OWN .pipeline/
+    // directory — NOT a symlink to canonical (only the dev-only worktrees
+    // I made via setup-worktree.sh are symlinked). So writing to wtDir
+    // would put files where the API can't find them.
+    //
+    // Discovered cdj-3000 2026-05-18: doTutorialReview wrote to wtDir
+    // (`.worktrees/cdj-3000/.pipeline/.../tutorial-review/`), admin API
+    // looked in canonical (`.pipeline/.../tutorial-review/`) → 404. Fixed
+    // by writing to BOTH: wtDir for runner-internal consistency, and the
+    // canonical dir for admin access.
+    const wtSummaryDir = paths().agent('tutorial-review').wtDir;
+    const canonicalSummaryDir = path.join(
+      process.cwd(),
+      '.pipeline',
+      deviceId,
+      'agents',
+      'tutorial-review',
+    );
+    for (const targetDir of [wtSummaryDir, canonicalSummaryDir]) {
+      try {
+        fs.mkdirSync(targetDir, { recursive: true });
+        fs.writeFileSync(path.join(targetDir, 'summary.json'), JSON.stringify(summary, null, 2));
+        fs.writeFileSync(path.join(targetDir, 'tutorials.json'), JSON.stringify(tutorials, null, 2));
+      } catch (writeErr) {
+        appendLog(deviceId, {
+          level: 'warn',
+          message: `Could not write tutorial-review JSON to ${targetDir}: ${writeErr instanceof Error ? writeErr.message : String(writeErr)}`,
+        });
+      }
+    }
 
     const msg =
       `${summary.totalTutorials} tutorials generated for ${state.deviceName} ` +
