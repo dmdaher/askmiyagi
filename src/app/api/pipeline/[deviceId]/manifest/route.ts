@@ -189,6 +189,18 @@ export async function PUT(
       /* best-effort — manual export route is the fallback */
     }
 
+    // Schedule a debounced re-run of tutorial-validators + canvas-qa so
+    // the admin canvas's summary.json + qa-report.json stay in sync with
+    // editor edits. No-op when tutorials haven't been generated yet (the
+    // helper checks and skips). Fire-and-forget — debounced internally;
+    // a burst of autosaves produces one re-run 1.5s after the last save.
+    try {
+      const { scheduleCanvasDataRefresh } = await import('@/lib/pipeline/refresh-canvas-data');
+      scheduleCanvasDataRefresh(deviceId);
+    } catch {
+      /* best-effort — manual "Refresh from editor" button is the fallback */
+    }
+
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(

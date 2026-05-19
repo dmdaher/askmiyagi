@@ -122,6 +122,26 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     setTimeout(() => setTransientHighlight((cur) => (cur === controlId ? null : cur)), 3500);
   }, []);
 
+  const [refreshInFlight, setRefreshInFlight] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const triggerRefreshFromEditor = useCallback(async () => {
+    setRefreshInFlight(true);
+    setRefreshError(null);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/refresh-from-editor`, { method: 'POST' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setRefreshError(body.error ?? `HTTP ${res.status}`);
+      } else {
+        router.refresh();
+      }
+    } catch (err) {
+      setRefreshError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setRefreshInFlight(false);
+    }
+  }, [deviceId, router]);
+
   const triggerVisualQa = useCallback(async () => {
     setQaRerunInFlight(true);
     setQaRerunError(null);
@@ -531,19 +551,33 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                     );
                   })}
 
-                  {/* Visual QA re-run button */}
-                  <div className="pt-1">
+                  {/* Refresh from editor (fast — re-export + re-validate + re-QA) */}
+                  <div className="pt-1 space-y-1">
+                    <button
+                      type="button"
+                      onClick={triggerRefreshFromEditor}
+                      disabled={refreshInFlight}
+                      data-testid="qa-refresh-from-editor-button"
+                      title="Re-export from manifest-editor.json, re-validate tutorials, re-run deterministic QA"
+                      className="w-full text-[10px] px-2 py-1.5 rounded border border-amber-700/40 bg-amber-900/20 text-amber-300 hover:bg-amber-800/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {refreshInFlight ? 'Refreshing…' : '↻ Refresh from editor'}
+                    </button>
+                    {refreshError && (
+                      <p className="text-[9px] text-red-400 px-1">{refreshError}</p>
+                    )}
                     <button
                       type="button"
                       onClick={triggerVisualQa}
                       disabled={qaRerunInFlight}
                       data-testid="qa-rerun-button"
+                      title="Walk every tutorial step with Playwright + verify highlight glow"
                       className="w-full text-[10px] px-2 py-1.5 rounded border border-cyan-700/40 bg-cyan-900/20 text-cyan-300 hover:bg-cyan-800/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {qaRerunInFlight ? 'Running visual QA…' : qaReport.visualVerified ? 'Re-run visual QA' : 'Run visual QA (Playwright)'}
                     </button>
                     {qaRerunError && (
-                      <p className="text-[9px] text-red-400 mt-1 px-1">{qaRerunError}</p>
+                      <p className="text-[9px] text-red-400 px-1">{qaRerunError}</p>
                     )}
                   </div>
                 </div>
