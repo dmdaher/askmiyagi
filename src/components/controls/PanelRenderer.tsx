@@ -187,6 +187,7 @@ function renderControl(
               ledOn={ledOn}
               active={active}
               onClick={onClick}
+              highlighted={highlighted}
             />
           </div>
         );
@@ -264,6 +265,7 @@ function renderControl(
           ledColor={control.ledColor}
           ledOn={ledOn}
           dataControlId={control.id}
+          highlighted={highlighted}
         />
       );
     }
