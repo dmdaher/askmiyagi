@@ -77,6 +77,12 @@ export async function GET(
       alive: processAlive,
       uptime: processUptime,
       memory: processMem,
+      childPid: state.childPid ?? null,
+      activeAgentName: state.activeAgentName ?? null,
+      // Idle ms = "time since last stdout chunk from the active agent". Watch
+      // for >5min (warn) / >20min (watchdog should have killed by now). Null
+      // when no agent active.
+      agentIdleMs: state.lastAgentActivityMs ? Date.now() - state.lastAgentActivityMs : null,
     },
     timing: {
       createdAt: state.createdAt,

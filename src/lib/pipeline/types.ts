@@ -139,6 +139,19 @@ export interface PipelineState {
   burnRate: BurnRate | null;
   runnerPid: number | null;
   childPid: number | null;
+  /**
+   * Name of the currently-active agent (e.g., 'tutorial-builder'). Used by
+   * the diagnostics panel to surface "agent X idle for Ymin" hints. Set when
+   * an agent is spawned, cleared on exit.
+   */
+  activeAgentName?: string | null;
+  /**
+   * Unix timestamp (ms) of the last stdout chunk we observed from the
+   * active agent. The diagnostics panel computes `Date.now() - this` to
+   * flag hung agents (>5min idle = warn, >20min = watchdog already killed).
+   * Null when no agent active.
+   */
+  lastAgentActivityMs?: number | null;
   worktreePath: string | null;
 
   extractionProgress: ExtractionProgress | null;
