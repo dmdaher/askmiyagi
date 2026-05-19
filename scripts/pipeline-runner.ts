@@ -2887,6 +2887,32 @@ async function doTutorialReview(state: PipelineState) {
     fs.writeFileSync(path.join(summaryDir, 'summary.json'), JSON.stringify(summary, null, 2));
     fs.writeFileSync(path.join(summaryDir, 'tutorials.json'), JSON.stringify(tutorials, null, 2));
 
+    // ── Auto-run Canvas QA (deterministic layers 1 + 3) ────────────────
+    // Surfaces unreferenced manifest controls, missing-id tutorial bugs,
+    // and semantic coherence findings on the admin canvas — admin doesn't
+    // have to run TEST_DEVICE manually. Visual layer (2) is opt-in via
+    // canvas "Re-run Visual QA" button (needs dev server). Failures here
+    // never block the pause; they're advisory.
+    try {
+      const { runDeterministicQa } = await import('../src/lib/pipeline/canvas-qa');
+      const report = runDeterministicQa({ deviceId, repoRoot: worktreeCwd });
+      const failCount = report.results.filter((r) => r.severity === 'fail').length;
+      const warnCount = report.results.filter((r) => r.severity === 'warn').length;
+      appendLog(deviceId, {
+        level: failCount > 0 ? 'warn' : 'info',
+        message:
+          `Canvas QA (deterministic): ${failCount} fail · ${warnCount} warn · ` +
+          `${report.results.filter((r) => r.severity === 'ok').length} ok. ` +
+          `See qa-report.json or open the canvas for details.`,
+      });
+    } catch (qaErr) {
+      const m = qaErr instanceof Error ? qaErr.message : String(qaErr);
+      appendLog(deviceId, {
+        level: 'warn',
+        message: `Canvas QA failed to run: ${m}. Tutorial review pause still ready.`,
+      });
+    }
+
     const msg =
       `${summary.totalTutorials} tutorials generated for ${state.deviceName} ` +
       `(${summary.totalSteps} total steps). ` +
