@@ -1,7 +1,23 @@
 import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 import { appendLog } from './state-machine';
 import { parseStreamJsonCost } from './cost-tracker';
 import { CostEntry, PipelinePhase, RateLimitInfo } from './types';
+
+// Watchdog idle threshold per agent. Agents have wildly different legit
+// runtimes — the threshold should be longer than the longest "I'm thinking"
+// gap any real agent ever exhibits. Tonight's cdj-3000 builder paused up to
+// 5 min between tool calls (PDF reads) without hanging; reviewer was similar.
+// 20 min is generous; the only legit case >20min is sustained API overload
+// (which Layer 1 retry handles separately).
+const WATCHDOG_IDLE_MS = 20 * 60 * 1000;
+const WATCHDOG_CHECK_INTERVAL_MS = 60 * 1000;
+
+// Cap on how much stdout we persist per agent invocation. Reviewer prose can
+// be 10-50KB; manual-extractor output much larger. 1MB is plenty without
+// risking disk fill on a broken agent that streams gibberish forever.
+const STDOUT_PERSIST_CAP_BYTES = 1_000_000;
 
 /**
  * Parse a stream-json event line into a human-readable log message.
@@ -79,6 +95,16 @@ export interface InvokeResult {
   costEntry: CostEntry | null;
   rateLimitEvents: RateLimitInfo[];
   childPid: number | null;
+  /**
+   * Wall-clock idle time at exit, in ms. Distinguishes:
+   *   - exit-0 after long-but-active work (low idle)
+   *   - exit-1 from watchdog kill (idle >= WATCHDOG_IDLE_MS)
+   *   - exit-1 from real agent error (low idle, immediate fail)
+   * Callers use this to differentiate hang-recovery from real-failure paths.
+   */
+  idleMsAtExit: number;
+  /** True if the watchdog killed this agent for being idle too long. */
+  killedByWatchdog: boolean;
 }
 
 /**
@@ -99,6 +125,12 @@ export function invokeAgent(opts: {
   remainingBudgetUsd?: number;
   maxBudgetPerInvocation?: number;
   onChildPid?: (pid: number) => void;
+  /**
+   * Called on each stdout chunk, throttled to ~30s, with the current Unix
+   * ms. Caller persists to state for diagnostics-panel surfacing of
+   * hung-agent warnings (>5min idle = warning, >20min = watchdog kills).
+   */
+  onAgentActivity?: (timestampMs: number) => void;
 }): Promise<InvokeResult> {
   return new Promise((resolve) => {
     const args = [
@@ -146,7 +178,38 @@ export function invokeAgent(opts: {
       opts.onChildPid(proc.pid);
     }
 
+    // Watchdog state — uses monotonic clock (process.hrtime.bigint) so DST/NTP
+    // shifts don't corrupt the idle calculation. Tonight's cdj-3000 batch-e
+    // reviewer hung for 90+ min before manual intervention; this catches it
+    // at WATCHDOG_IDLE_MS (~20 min).
+    let lastActivityNs = process.hrtime.bigint();
+    let lastActivityCallbackMs = 0;  // throttle onAgentActivity to every 30s
+    let killedByWatchdog = false;
+    const watchdog = setInterval(() => {
+      const idleMs = Number(process.hrtime.bigint() - lastActivityNs) / 1_000_000;
+      if (idleMs >= WATCHDOG_IDLE_MS) {
+        killedByWatchdog = true;
+        appendLog(opts.deviceId, {
+          level: 'error',
+          agent: opts.agent,
+          message:
+            `Watchdog: ${opts.agent} idle for ${Math.round(idleMs / 60000)}min ` +
+            `(threshold ${WATCHDOG_IDLE_MS / 60000}min). Sending SIGKILL.`,
+        });
+        try { proc.kill('SIGKILL'); } catch { /* may already be dead */ }
+        clearInterval(watchdog);
+      }
+    }, WATCHDOG_CHECK_INTERVAL_MS);
+
     proc.stdout?.on('data', (data: Buffer) => {
+      lastActivityNs = process.hrtime.bigint();
+      // Throttled activity callback (state writes are expensive; 30s is plenty
+      // for the diagnostics panel's polling cadence).
+      const nowMs = Date.now();
+      if (opts.onAgentActivity && nowMs - lastActivityCallbackMs > 30_000) {
+        lastActivityCallbackMs = nowMs;
+        try { opts.onAgentActivity(nowMs); } catch { /* don't crash on callback error */ }
+      }
       const lines = data.toString().split('\n').filter(Boolean);
       for (const line of lines) {
         outputLines.push(line);
@@ -164,6 +227,7 @@ export function invokeAgent(opts: {
     });
 
     proc.stderr?.on('data', (data: Buffer) => {
+      lastActivityNs = process.hrtime.bigint();
       appendLog(opts.deviceId, {
         level: 'error',
         agent: opts.agent,
@@ -172,7 +236,9 @@ export function invokeAgent(opts: {
     });
 
     proc.on('close', (code) => {
+      clearInterval(watchdog);
       const exitCode = code ?? 1;
+      const idleMsAtExit = Number(process.hrtime.bigint() - lastActivityNs) / 1_000_000;
       const model = opts.model ?? 'claude-sonnet-4-6';
       const parsed = parseStreamJsonCost(
         outputLines,
@@ -183,10 +249,42 @@ export function invokeAgent(opts: {
         opts.batchId
       );
 
+      // Persist full stdout to disk for postmortem / synth fallback. Tonight's
+      // cdj-3000 batches c/d/e all had reviewer prose worth keeping but
+      // runner.log truncates messages at ~500 chars. This file lets admin
+      // (and synth logic) recover the full review when the agent fails to
+      // write its own checkpoint.
+      try {
+        const fullOutput = outputLines.join('\n');
+        const truncated = fullOutput.length > STDOUT_PERSIST_CAP_BYTES
+          ? fullOutput.slice(0, STDOUT_PERSIST_CAP_BYTES) +
+            `\n\n[truncated at ${STDOUT_PERSIST_CAP_BYTES} bytes; total was ${fullOutput.length}]`
+          : fullOutput;
+        const agentDir = path.join('.pipeline', opts.deviceId, 'agents', opts.agent);
+        // wtDir if cwd provided, else relative to current dir
+        const targetDir = opts.cwd
+          ? path.join(opts.cwd, agentDir)
+          : agentDir;
+        fs.mkdirSync(targetDir, { recursive: true });
+        fs.writeFileSync(path.join(targetDir, 'last-output.md'), truncated);
+      } catch (err) {
+        // Best-effort — don't fail the invocation over a log-preservation issue
+        appendLog(opts.deviceId, {
+          level: 'warn',
+          agent: opts.agent,
+          message: `Could not persist stdout to last-output.md: ${err instanceof Error ? err.message : String(err)}`,
+        });
+      }
+
       appendLog(opts.deviceId, {
         level: 'info',
         agent: opts.agent,
-        message: `${opts.agent} exited with code ${exitCode}${parsed.costEntry ? ` ($${parsed.costEntry.costUsd.toFixed(4)}${parsed.costEntry.actualCostUsd !== null ? ` actual: $${parsed.costEntry.actualCostUsd.toFixed(4)}` : ''})` : ''}`,
+        message:
+          `${opts.agent} exited with code ${exitCode}` +
+          (killedByWatchdog ? ' (killed by watchdog)' : '') +
+          (parsed.costEntry
+            ? ` ($${parsed.costEntry.costUsd.toFixed(4)}${parsed.costEntry.actualCostUsd !== null ? ` actual: $${parsed.costEntry.actualCostUsd.toFixed(4)}` : ''})`
+            : ''),
       });
 
       resolve({
@@ -195,10 +293,13 @@ export function invokeAgent(opts: {
         costEntry: parsed.costEntry,
         rateLimitEvents: parsed.rateLimitEvents,
         childPid: proc.pid ?? null,
+        idleMsAtExit,
+        killedByWatchdog,
       });
     });
 
     proc.on('error', (err) => {
+      clearInterval(watchdog);
       appendLog(opts.deviceId, {
         level: 'error',
         agent: opts.agent,
@@ -210,6 +311,8 @@ export function invokeAgent(opts: {
         costEntry: null,
         rateLimitEvents: [],
         childPid: null,
+        idleMsAtExit: 0,
+        killedByWatchdog: false,
       });
     });
   });
@@ -233,9 +336,38 @@ export function invokeAgent(opts: {
 
 const RETRY_BACKOFF_SECONDS = [30, 120, 300];
 
-function looks529(output: string): boolean {
-  return /API Error: 529|Overloaded|overloaded_error/i.test(output);
+// Transient error patterns — these typically resolve with a retry.
+// Discovered during cdj-3000 2026-05-18: 529 Overloaded, stream-idle-timeout,
+// socket-closed all hit during the same pipeline run. All recoverable.
+const TRANSIENT_PATTERNS = [
+  /API Error: 529|Overloaded|overloaded_error/i,
+  /Stream idle timeout/i,
+  /socket (?:hang up|connection was closed unexpectedly)/i,
+  /ECONNRESET(?!\s*\(billing)/i,  // not billing-related ECONNRESET
+  /ETIMEDOUT/i,
+  /fetch failed/i,
+];
+
+// Errors that should NEVER auto-retry — retrying just repeats the same problem
+// and burns budget. These need human intervention.
+const NEVER_RETRY_PATTERNS = [
+  /JavaScript heap out of memory|FATAL ERROR.*heap/i,
+  /\b401 Unauthorized\b|invalid_api_key/i,
+  /\b403 Forbidden\b/i,
+  /\b402 Payment Required\b|insufficient_quota/i,
+];
+
+export function looksTransient(output: string): boolean {
+  if (NEVER_RETRY_PATTERNS.some((p) => p.test(output))) return false;
+  return TRANSIENT_PATTERNS.some((p) => p.test(output));
 }
+
+// Legacy shim — some tests/callers may still reference looks529. Keep one
+// release cycle for backward compat.
+function looks529(output: string): boolean {
+  return looksTransient(output);
+}
+void looks529; // not currently called outside the legacy path
 
 function sleep(seconds: number): Promise<void> {
   return new Promise((r) => setTimeout(r, seconds * 1000));
@@ -245,27 +377,28 @@ export async function invokeAgentWithRetry(opts: Parameters<typeof invokeAgent>[
   for (let attempt = 0; attempt <= RETRY_BACKOFF_SECONDS.length; attempt++) {
     const result = await invokeAgent(opts);
 
-    // Success or non-529 failure → return as-is. The caller's gates
-    // (builder-exit check, etc.) decide what to do.
-    if (result.exitCode === 0 || !looks529(result.output)) {
+    // Success or non-transient failure → return as-is. The caller's gates
+    // (builder-exit check, etc.) decide what to do. Note: never-retry
+    // patterns (OOM, auth) are explicitly NOT transient → return immediately.
+    if (result.exitCode === 0 || !looksTransient(result.output)) {
       if (attempt > 0) {
         appendLog(opts.deviceId, {
           level: 'info',
           agent: opts.agent,
-          message: `Recovered on attempt ${attempt + 1} after 529 retry(s).`,
+          message: `Recovered on attempt ${attempt + 1} after transient-error retry(s).`,
         });
       }
       return result;
     }
 
-    // 529 detected. If we have retries left, sleep + try again.
+    // Transient failure detected. If we have retries left, sleep + try again.
     if (attempt < RETRY_BACKOFF_SECONDS.length) {
       const sleepSec = RETRY_BACKOFF_SECONDS[attempt];
       appendLog(opts.deviceId, {
         level: 'warn',
         agent: opts.agent,
         message:
-          `Anthropic API 529 Overloaded on attempt ${attempt + 1}. ` +
+          `Transient error on attempt ${attempt + 1}. ` +
           `Sleeping ${sleepSec}s before retry ${attempt + 2}/${RETRY_BACKOFF_SECONDS.length + 1}. ` +
           `Check status.claude.com if this persists.`,
       });
@@ -279,7 +412,7 @@ export async function invokeAgentWithRetry(opts: Parameters<typeof invokeAgent>[
       level: 'error',
       agent: opts.agent,
       message:
-        `Anthropic API 529 persisted through ${RETRY_BACKOFF_SECONDS.length + 1} attempts ` +
+        `Transient error persisted through ${RETRY_BACKOFF_SECONDS.length + 1} attempts ` +
         `(${RETRY_BACKOFF_SECONDS.reduce((a, b) => a + b, 0)}s total backoff). ` +
         `Giving up so the pipeline can pause cleanly.`,
     });

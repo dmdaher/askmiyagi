@@ -11,6 +11,9 @@ interface HealthData {
     alive: boolean;
     uptime: string | null;
     memory: string | null;
+    childPid?: number | null;
+    activeAgentName?: string | null;
+    agentIdleMs?: number | null;
   };
   timing: {
     createdAt: string;
@@ -91,6 +94,28 @@ function detectIssues(health: HealthData): Issue[] {
       description: `No state update for ${formatAgo(health.timing.lastUpdateAgoMs)}. Process may be hung.`,
       action: 'kill-restart',
       severity: 'warning',
+    });
+  }
+
+  // Agent-level hang detection (PR-E): the RUNNER may be heartbeating fine
+  // while a specific AGENT subprocess is hung. The watchdog will kill at
+  // 20min, but admin can intervene earlier via this surfacing.
+  // Discovered cdj-3000 2026-05-18: reviewer hung 90+min before manual kill.
+  if (
+    health.status === 'running' &&
+    health.process.alive &&
+    health.process.activeAgentName &&
+    typeof health.process.agentIdleMs === 'number' &&
+    health.process.agentIdleMs > 5 * 60 * 1000
+  ) {
+    const idleMin = Math.round(health.process.agentIdleMs / 60000);
+    issues.push({
+      label: `Agent "${health.process.activeAgentName}" idle ${idleMin}min`,
+      description:
+        `${health.process.activeAgentName} hasn't emitted output in ${idleMin}min. ` +
+        `Watchdog will kill at 20min. Click "Kill agent + retry" to intervene now.`,
+      action: 'kill-agent',
+      severity: idleMin > 15 ? 'error' : 'warning',
     });
   }
 

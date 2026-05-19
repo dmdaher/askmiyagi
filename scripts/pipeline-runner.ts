@@ -213,6 +213,17 @@ function trackChildPid(state: PipelineState, pid: number | null) {
   writeState(deviceId, state);
 }
 
+/**
+ * Track active agent name + last-activity timestamp in state for the
+ * diagnostics panel's hung-agent detection. Called from invokeAgent's
+ * onAgentActivity callback (throttled to every 30s).
+ */
+function trackAgentActivity(state: PipelineState, agent: string | null, ts: number | null) {
+  state.activeAgentName = agent;
+  state.lastAgentActivityMs = ts;
+  writeState(deviceId, state);
+}
+
 async function run() {
   let state = readState(deviceId);
   if (!state) {
@@ -2616,13 +2627,16 @@ async function doPhase5(state: PipelineState) {
     // Uses invokeAgentWithRetry — handles transient 529 Overloaded errors
     // with exponential backoff (30s, 120s, 300s). After exhaustion, returns
     // the failure and our GATE 1 below pauses with an escalation.
+    trackAgentActivity(state, 'tutorial-builder', Date.now());
     const buildResult = await invokeAgentWithRetry({
       prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${batch.tutorials.join(', ')}${feedbackSuffix}`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-builder', batchId: batch.batchId,
       allowedTools: PIPELINE_TOOLS,
       remainingBudgetUsd: getRemainingBudget(state),
       onChildPid: (pid) => trackChildPid(state, pid),
+      onAgentActivity: (ts) => trackAgentActivity(state, 'tutorial-builder', ts),
     });
+    trackAgentActivity(state, null, null);
     if (buildResult.costEntry) { accumulateCost(state, buildResult.costEntry); recordCostEntry(deviceId, buildResult.costEntry); }
     updateBurnRate(state, deviceId);
     updateSubscription(state, buildResult.rateLimitEvents);
@@ -2661,13 +2675,18 @@ async function doPhase5(state: PipelineState) {
     try { fs.rmSync(reviewerCheckpointPath, { force: true }); } catch { /* ignore */ }
 
     appendLog(deviceId, { level: 'info', agent: 'tutorial-reviewer', message: `Reviewing batch ${batch.batchId}` });
+    const reviewStartMs = Date.now();
+    trackAgentActivity(state, 'tutorial-reviewer', Date.now());
     const reviewResult = await invokeAgentWithRetry({
       prompt: `Review tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Verify accuracy against the manual.`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-reviewer', batchId: batch.batchId,
       allowedTools: PIPELINE_TOOLS,
       remainingBudgetUsd: getRemainingBudget(state),
       onChildPid: (pid) => trackChildPid(state, pid),
+      onAgentActivity: (ts) => trackAgentActivity(state, 'tutorial-reviewer', ts),
     });
+    trackAgentActivity(state, null, null);
+    const reviewWallMs = Date.now() - reviewStartMs;
     if (reviewResult.costEntry) { accumulateCost(state, reviewResult.costEntry); recordCostEntry(deviceId, reviewResult.costEntry); }
     updateBurnRate(state, deviceId);
     updateSubscription(state, reviewResult.rateLimitEvents);
@@ -2688,21 +2707,82 @@ async function doPhase5(state: PipelineState) {
     // GATE 4: verify checkpoint was written AND batchId matches. A
     // missing-checkpoint or batchId-mismatch means the reviewer didn't
     // actually review THIS batch (either it forgot to write, or somehow
-    // wrote one for a previous batch). Treat as missing verdict — pause
-    // with a fixable escalation rather than guessing.
+    // wrote one for a previous batch).
+    //
+    // PR-E enhancement: if checkpoint missing but reviewer exited cleanly
+    // with substantive work (>$0.50, >60s) AND stdout has an explicit
+    // `Verdict: APPROVED|REJECTED` line matching this batchId AND no
+    // contradicting rejection keywords → synthesize the checkpoint and
+    // proceed. Strict guards in reviewer-prose-synth.ts. Saves admin from
+    // manually patching state.json (4 of 5 cdj-3000 batches needed this).
     const checkpoint = readAgentCheckpoint('tutorial-reviewer');
     const batchIdMismatch = checkpoint.batchId && checkpoint.batchId !== batch.batchId;
     if (!checkpoint.verdict || batchIdMismatch) {
-      const msg = batchIdMismatch
-        ? `tutorial-reviewer wrote checkpoint for batch ${checkpoint.batchId} but we're on ${batch.batchId} — refusing to use stale verdict.`
-        : `tutorial-reviewer exited cleanly but didn't write a verdict to checkpoint.md for batch ${batch.batchId}. SOUL bug — see .claude/agents/tutorial-reviewer.md "MANDATORY OUTPUT" section.`;
-      appendLog(deviceId, { level: 'error', message: msg });
-      createEscalation(state, 'agent-failure', msg);
-      state.status = 'paused';
-      writeState(deviceId, state);
-      return;
+      // Try synth from prose first
+      const { synthesizeReviewerVerdict } = await import('../src/lib/pipeline/reviewer-prose-synth');
+      const synth = synthesizeReviewerVerdict({
+        output: reviewResult.output,
+        expectedBatchId: batch.batchId,
+        exitCode: reviewResult.exitCode,
+        wallMs: reviewWallMs,
+        costUsd: reviewResult.costEntry?.costUsd ?? 0,
+      });
+
+      if (synth.synthesized && synth.verdict) {
+        // Write synthetic checkpoint so resume / re-entry sees the verdict
+        try {
+          const synthCheckpoint =
+            `---\n` +
+            `agent: tutorial-reviewer\n` +
+            `deviceId: ${deviceId}\n` +
+            `batchId: ${batch.batchId}\n` +
+            `verdict: ${synth.verdict}\n` +
+            `score: 0\n` +
+            `timestamp: ${new Date().toISOString()}\n` +
+            `synthesized: true\n` +
+            `synthesisReason: ${synth.reason.replace(/[\n\r]/g, ' ')}\n` +
+            `---\n\n` +
+            `# Auto-synthesized verdict from reviewer prose\n\n` +
+            `Reviewer exited cleanly but didn't write checkpoint.md (likely a SOUL ` +
+            `bug on this worktree pre-dating PR-D's mandate). The synth module ` +
+            `extracted the verdict from stdout with all strict guards passing.\n\n` +
+            `**Evidence**: \`${synth.evidence ?? ''}\`\n\n` +
+            `Full reviewer output preserved at: ` +
+            `\`.pipeline/${deviceId}/agents/tutorial-reviewer/last-output.md\`\n`;
+          fs.mkdirSync(path.dirname(reviewerCheckpointPath), { recursive: true });
+          fs.writeFileSync(reviewerCheckpointPath, synthCheckpoint);
+        } catch (writeErr) {
+          appendLog(deviceId, {
+            level: 'warn',
+            message: `Could not write synthesized checkpoint: ${writeErr instanceof Error ? writeErr.message : String(writeErr)}. Proceeding anyway.`,
+          });
+        }
+
+        batch.reviewerVerdict = synth.verdict;
+        appendLog(deviceId, {
+          level: 'info',
+          message:
+            `[AUTO-RECOVERY] Synthesized ${synth.verdict} verdict for batch ${batch.batchId} ` +
+            `from reviewer prose. ${synth.reason}. Evidence: "${synth.evidence}".`,
+        });
+        // Fall through to the normal verdict-handling branch below
+      } else {
+        // Synth refused (guards not met) → pause with detailed reason
+        const msg = batchIdMismatch
+          ? `tutorial-reviewer wrote checkpoint for batch ${checkpoint.batchId} but we're on ${batch.batchId} — refusing to use stale verdict.`
+          : `tutorial-reviewer exited cleanly but didn't write a verdict to checkpoint.md for batch ${batch.batchId}. ` +
+            `Auto-synth refused: ${synth.reason}. ` +
+            `Full reviewer output preserved at .pipeline/${deviceId}/agents/tutorial-reviewer/last-output.md — ` +
+            `read it and either click Approve in /admin or restart the reviewer.`;
+        appendLog(deviceId, { level: 'error', message: msg });
+        createEscalation(state, 'agent-failure', msg);
+        state.status = 'paused';
+        writeState(deviceId, state);
+        return;
+      }
+    } else {
+      batch.reviewerVerdict = checkpoint.verdict;
     }
-    batch.reviewerVerdict = checkpoint.verdict;
 
     if (batch.reviewerVerdict === 'APPROVED') {
       batch.status = 'approved';

@@ -9,6 +9,8 @@ import { isProcessAlive, gracefulKill } from '@/lib/pipeline/process-utils';
  * - action: "fix-stale"    — Process is dead but status says running. Resets to paused.
  * - action: "reset-failed" — Pipeline failed. Resets to the last completed phase (or pending).
  * - action: "kill-restart"  — Gracefully stop processes and reset to paused for restart.
+ * - action: "kill-agent"    — Kill ONLY the hung agent child, leave runner alive
+ *                              so it can pause cleanly via its own GATE logic.
  */
 export async function POST(
   request: NextRequest,
@@ -98,6 +100,36 @@ export async function POST(
       appendLog(deviceId, { level: 'warn', message: `Recovery kill-restart: ${summary}` });
       writeState(deviceId, state);
       return NextResponse.json({ status: 'paused', action: 'kill-restart', message: summary });
+    }
+
+    case 'kill-agent': {
+      // Kill ONLY the active agent (claude -p subprocess), leave the runner
+      // alive. The runner's invokeAgent will see exit-1 and route through
+      // its existing GATE logic (pause with escalation). Cleaner than
+      // kill-restart because the runner does the cleanup.
+      //
+      // Use when admin spots a hung agent (e.g., reviewer idle >5min) and
+      // wants to abort it without waiting 20min for the watchdog or
+      // killing the whole pipeline.
+      if (!state.childPid) {
+        return NextResponse.json({ error: 'No active agent to kill' }, { status: 409 });
+      }
+      if (!isProcessAlive(state.childPid)) {
+        return NextResponse.json({ error: 'Agent process not alive (already exited)' }, { status: 409 });
+      }
+      const killMsg = gracefulKill(state.childPid, `Agent ${state.activeAgentName ?? '(unknown)'}`);
+      appendLog(deviceId, {
+        level: 'warn',
+        message: `[ADMIN-KILL] ${killMsg}. Runner will see exit-1 and route through normal GATE logic.`,
+      });
+      // Don't touch state.status / runnerPid — the runner is still alive
+      // and will update state itself when it observes the agent's exit.
+      writeState(deviceId, state);
+      return NextResponse.json({
+        status: 'agent-killed',
+        action: 'kill-agent',
+        message: `${killMsg}. Runner will report failure + pause shortly.`,
+      });
     }
 
     case 'reset-to-editor': {
