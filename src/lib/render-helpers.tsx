@@ -34,8 +34,14 @@ export function renderLabelText(text: string): React.ReactNode {
  * helper combines both — strictest typing, broadest keyword coverage.
  */
 export function inferPortVariant(
-  label: string,
+  label: string | undefined | null,
 ): 'usb-a' | 'sd-card' | 'ethernet' | 'rca' {
+  // Defensive: cdj-3000's manifest has port controls with no `label` field
+  // (e.g., the USB port). Pre-PR-E5 this threw `Cannot read properties of
+  // undefined (reading 'toLowerCase')` and crashed PanelRenderer for the
+  // entire canvas. Caught 2026-05-19 via Playwright smoke test against the
+  // tutorial-review canvas. Per the docstring contract, default → 'usb-a'.
+  if (!label) return 'usb-a';
   const lower = label.toLowerCase();
   if (lower.includes('sd') || lower.includes('card')) return 'sd-card';
   if (

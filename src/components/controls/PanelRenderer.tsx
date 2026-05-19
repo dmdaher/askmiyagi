@@ -331,8 +331,11 @@ function renderControl(
         highlighted={highlighted} width={w} height={h} />;
     case 'screen':
     case 'display': {
+      // Defensive: cdj-3000's screen/display controls may have no label
+      // (caught by Playwright smoke 2026-05-19 — manifest control id
+      // 'touch-display' had no label field, threw on .toLowerCase()).
       const isJog = control.shape === 'circle'
-        || control.label.toLowerCase().includes('jog')
+        || (control.label?.toLowerCase().includes('jog') ?? false)
         || control.nestedIn != null;
       if (isJog) {
         return <JogDisplay id={control.id} size={Math.min(w, h)}

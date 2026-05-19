@@ -29,7 +29,23 @@ export async function GET(
   const reviewDir = path.join(process.cwd(), '.pipeline', deviceId, 'agents', 'tutorial-review');
   const summaryPath = path.join(reviewDir, 'summary.json');
   const tutorialsPath = path.join(reviewDir, 'tutorials.json');
-  const manifestPath = path.join(process.cwd(), '.pipeline', deviceId, 'manifest.json');
+
+  // Manifest precedence — show the panel as production will render it:
+  //   1. src/data/manifests/<id>.json   (committed production, what /tutorial/* renders)
+  //   2. .pipeline/<id>/manifest-editor.json (contractor's most recent edits,
+  //      not yet promoted to src/data/manifests/)
+  //   3. .pipeline/<id>/manifest.json   (gatekeeper raw — fallback for fresh
+  //      devices that haven't been committed yet)
+  //
+  // The canvas review's purpose is to verify tutorials AGAINST PRODUCTION,
+  // so the committed file is most accurate. Caught by devin 2026-05-19:
+  // initially the API only looked at .pipeline/<id>/manifest.json (raw)
+  // which could miss contractor edits.
+  const manifestCandidates = [
+    path.join(process.cwd(), 'src', 'data', 'manifests', `${deviceId}.json`),
+    path.join(process.cwd(), '.pipeline', deviceId, 'manifest-editor.json'),
+    path.join(process.cwd(), '.pipeline', deviceId, 'manifest.json'),
+  ];
 
   if (!fs.existsSync(summaryPath) || !fs.existsSync(tutorialsPath)) {
     return NextResponse.json(
@@ -44,9 +60,18 @@ export async function GET(
   try {
     const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf-8'));
     const tutorials = JSON.parse(fs.readFileSync(tutorialsPath, 'utf-8'));
-    const manifest = fs.existsSync(manifestPath)
-      ? JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
-      : null;
+
+    let manifest = null;
+    let manifestSource: string | null = null;
+    for (const candidatePath of manifestCandidates) {
+      if (fs.existsSync(candidatePath)) {
+        try {
+          manifest = JSON.parse(fs.readFileSync(candidatePath, 'utf-8'));
+          manifestSource = path.relative(process.cwd(), candidatePath);
+          break;
+        } catch { /* try next candidate */ }
+      }
+    }
 
     const escalation = state.escalations.find(
       e => e.type === 'tutorial-review' && !e.resolvedAt,
@@ -61,6 +86,7 @@ export async function GET(
       summary,
       tutorials,
       manifest,
+      manifestSource,  // surfaces which file backed the panel render
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

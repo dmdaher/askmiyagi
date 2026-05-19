@@ -78,7 +78,12 @@ export interface SharedLedProps {
 
 const DEFAULT_LED_COLOR = '#22c55e';
 
-function splitDualLabel(label: string): { top: string; bottom: string } {
+function splitDualLabel(label: string | undefined | null): { top: string; bottom: string } {
+  // Defensive: cdj-3000's LED manifest entries can have no label field.
+  // Caught by Playwright smoke 2026-05-19 — same class as the toLowerCase
+  // bugs in render-helpers.tsx + PanelRenderer.tsx. Fall through to the
+  // existing 'MODE A' / 'MODE B' defaults.
+  if (!label) return { top: 'MODE A', bottom: 'MODE B' };
   const parts = label.split(/[\/\n]/).map((s) => s.trim()).filter(Boolean);
   return {
     top: parts[0] || 'MODE A',
