@@ -22,8 +22,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
-      <body className="min-h-screen bg-[#0a0a0f] text-gray-100 antialiased">
+    <html lang="en" className={`dark ${inter.variable}`} suppressHydrationWarning>
+      {/*
+        suppressHydrationWarning on <body> silences React's hydration mismatch
+        warnings caused by browser extensions (Grammarly, LastPass, etc.) that
+        inject attributes like `data-new-gr-c-s-check-loaded` and
+        `data-gr-ext-installed` before React hydrates. These attributes only
+        ever appear on <html> and <body>, never on our own components — so the
+        suppression is scoped to a known-benign mismatch.
+      */}
+      <body className="min-h-screen bg-[#0a0a0f] text-gray-100 antialiased" suppressHydrationWarning>
         {children}
         <Analytics />
       </body>

@@ -185,6 +185,49 @@ function copyAgentOutput(agentName: string) {
   appendLog(deviceId, { level: 'info', agent: agentName, message: `Copied agent output to main repo` });
 }
 
+/**
+ * Write a runner-produced artifact to BOTH locations:
+ *   - canonical `.pipeline/<id>/agents/<name>/<file>` (where admin Next.js reads)
+ *   - worktree `<wt>/.pipeline/<id>/agents/<name>/<file>` (for resume + agent
+ *     consistency if anything spawns there later)
+ *
+ * Use this for any file the RUNNER (not an agent) writes that the admin
+ * UI needs to see. For AGENT outputs (checkpoints, manifests), agents
+ * write to their cwd=worktree naturally and `copyAgentOutput()` promotes
+ * the whole dir to canonical after — use that pattern instead.
+ *
+ * Discovered cdj-3000 2026-05-18: doTutorialReview wrote summary.json
+ * + tutorials.json to wtDir only. Admin API read from canonical. Canvas
+ * 404'd with "Tutorial review not ready" despite the validator
+ * succeeding. This helper makes the dual-write the obvious default so
+ * future runner-produced files don't repeat the bug.
+ *
+ * Writes are independent — one failing doesn't abort the other. Failures
+ * logged as warnings, not thrown, so the calling code's happy path keeps
+ * working even if one filesystem leg is degraded.
+ */
+function writeAgentArtifact(agentName: string, fileName: string, content: string): void {
+  const p = paths();
+  const targets = [
+    { kind: 'canonical', dir: p.agent(agentName).dir },
+    { kind: 'worktree',  dir: p.agent(agentName).wtDir },
+  ];
+  for (const { kind, dir } of targets) {
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, fileName), content);
+    } catch (err) {
+      appendLog(deviceId, {
+        level: 'warn',
+        agent: agentName,
+        message:
+          `writeAgentArtifact failed for ${kind} target ${dir}/${fileName}: ` +
+          (err instanceof Error ? err.message : String(err)),
+      });
+    }
+  }
+}
+
 /** Copy all agent outputs + inputs from main repo to worktree (for resume) */
 function copyPipelineToWorktree() {
   const p = paths();
@@ -2880,38 +2923,12 @@ async function doTutorialReview(state: PipelineState) {
     });
     const tutorials = await loadTutorials(deviceId, { tutorialsBaseDir });
 
-    // Persist for the admin review page. The admin Next.js process reads
-    // from CANONICAL `.pipeline/` (via process.cwd() relative path). Device
-    // worktrees created by `git worktree add` have their OWN .pipeline/
-    // directory — NOT a symlink to canonical (only the dev-only worktrees
-    // I made via setup-worktree.sh are symlinked). So writing to wtDir
-    // would put files where the API can't find them.
-    //
-    // Discovered cdj-3000 2026-05-18: doTutorialReview wrote to wtDir
-    // (`.worktrees/cdj-3000/.pipeline/.../tutorial-review/`), admin API
-    // looked in canonical (`.pipeline/.../tutorial-review/`) → 404. Fixed
-    // by writing to BOTH: wtDir for runner-internal consistency, and the
-    // canonical dir for admin access.
-    const wtSummaryDir = paths().agent('tutorial-review').wtDir;
-    const canonicalSummaryDir = path.join(
-      process.cwd(),
-      '.pipeline',
-      deviceId,
-      'agents',
-      'tutorial-review',
-    );
-    for (const targetDir of [wtSummaryDir, canonicalSummaryDir]) {
-      try {
-        fs.mkdirSync(targetDir, { recursive: true });
-        fs.writeFileSync(path.join(targetDir, 'summary.json'), JSON.stringify(summary, null, 2));
-        fs.writeFileSync(path.join(targetDir, 'tutorials.json'), JSON.stringify(tutorials, null, 2));
-      } catch (writeErr) {
-        appendLog(deviceId, {
-          level: 'warn',
-          message: `Could not write tutorial-review JSON to ${targetDir}: ${writeErr instanceof Error ? writeErr.message : String(writeErr)}`,
-        });
-      }
-    }
+    // Persist for the admin review page via the dual-write helper —
+    // canonical (where the admin Next.js reads) + worktree (for runner
+    // self-consistency). See writeAgentArtifact() docstring for the
+    // bug history that motivated this pattern.
+    writeAgentArtifact('tutorial-review', 'summary.json', JSON.stringify(summary, null, 2));
+    writeAgentArtifact('tutorial-review', 'tutorials.json', JSON.stringify(tutorials, null, 2));
 
     const msg =
       `${summary.totalTutorials} tutorials generated for ${state.deviceName} ` +
