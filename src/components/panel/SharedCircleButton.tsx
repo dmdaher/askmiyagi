@@ -34,7 +34,26 @@
  *   when serialized to the DOM. Conditional spread guarantees the shorthand
  *   only enters the style object when actually needed.
  */
+import { motion } from 'framer-motion';
 import { resolveDisplayContent } from '@/lib/render-helpers';
+
+// Same cyan pulse PanelButton uses (PanelButton.tsx:74). Kept verbatim so
+// circular transport buttons (PLAY_PAUSE, CUE_BTN, HOT_CUE_*, SLIP, etc.)
+// glow identically to rectangular ones during tutorial steps.
+const highlightAnimation = {
+  animate: {
+    boxShadow: [
+      '0 0 8px 2px rgba(0,170,255,0.4)',
+      '0 0 20px 8px rgba(0,170,255,0.8)',
+      '0 0 8px 2px rgba(0,170,255,0.4)',
+    ],
+  },
+  transition: {
+    duration: 1.5,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
 
 export interface SharedCircleButtonProps {
   /** Diameter in CSS pixels (caller has already applied controlScale). */
@@ -69,6 +88,15 @@ export interface SharedCircleButtonProps {
 
   /** Optional click handler. Preview-only (editor uses Rnd for interaction). */
   onClick?: () => void;
+
+  /**
+   * Tutorial-driven highlight (preview-only). When true, the button face
+   * pulses with the cyan-blue framer animation and lifts to z-index 1000
+   * so the glow renders unclipped above sibling controls. Editor never
+   * passes this — default `false` keeps the editor render path
+   * pixel-identical to baseline.
+   */
+  highlighted?: boolean;
 }
 
 export default function SharedCircleButton({
@@ -86,6 +114,7 @@ export default function SharedCircleButton({
   ledOn,
   active,
   onClick,
+  highlighted = false,
 }: SharedCircleButtonProps) {
   const { text, isIcon } = resolveDisplayContent({ label, icon, labelDisplay });
   const showInside = labelPosition === 'on-button' || labelDisplay === 'icon-only';
@@ -138,29 +167,50 @@ export default function SharedCircleButton({
     ...(integratedGradient && { background: integratedGradient }),
     border,
     boxShadow,
+    // Lift highlighted buttons so the cyan glow renders unclipped above
+    // section frames + sibling controls (same pattern as PanelButton).
+    ...(highlighted && { position: 'relative' as const, zIndex: 1000 }),
   };
 
   const fontSize =
     labelFontSize ?? (isIcon ? Math.max(Math.round(diameter * 0.35), 8) : 8);
 
+  const inner = showInside && (
+    <span
+      className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
+      style={{
+        fontSize,
+        color: labelColor ?? '#d1d5db',
+        ...(isIcon ? {} : { overflowWrap: 'break-word' as const }),
+      }}
+    >
+      {text}
+    </span>
+  );
+
+  // When NOT highlighted: plain <div> — byte-identical to pre-PR-F editor
+  // render. Editor never passes `highlighted`, so drift CI stays clean.
+  // When highlighted (preview only): wrap in motion.div with the same
+  // pulse animation PanelButton uses.
+  if (!highlighted) {
+    return (
+      <div
+        className="rounded-full flex items-center justify-center cursor-pointer"
+        style={faceStyle}
+        onClick={onClick}
+      >
+        {inner}
+      </div>
+    );
+  }
   return (
-    <div
+    <motion.div
       className="rounded-full flex items-center justify-center cursor-pointer"
       style={faceStyle}
       onClick={onClick}
+      {...highlightAnimation}
     >
-      {showInside && (
-        <span
-          className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
-          style={{
-            fontSize,
-            color: labelColor ?? '#d1d5db',
-            ...(isIcon ? {} : { overflowWrap: 'break-word' as const }),
-          }}
-        >
-          {text}
-        </span>
-      )}
-    </div>
+      {inner}
+    </motion.div>
   );
 }

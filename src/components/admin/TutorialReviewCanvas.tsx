@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import type { Tutorial } from '@/types/tutorial';
@@ -10,6 +10,25 @@ import PanelRenderer from '@/components/controls/PanelRenderer';
 import { useTutorialStore } from '@/store/tutorialStore';
 import TutorialListPanel from './TutorialListPanel';
 import TutorialDiagnosticsPanel from './TutorialDiagnosticsPanel';
+import ProgressBar from '@/components/tutorial/ProgressBar';
+import StepContent from '@/components/tutorial/StepContent';
+import NavigationControls from '@/components/tutorial/NavigationControls';
+
+interface QaFinding {
+  layer: number;
+  name: string;
+  severity: 'fail' | 'warn' | 'ok';
+  message: string;
+  details?: unknown;
+}
+interface QaReport {
+  generatedAt: string;
+  manifest: { controlCount: number; panelWidth: number; panelHeight: number };
+  tutorials: { count: number; stepCount: number };
+  results: QaFinding[];
+  visualVerified: boolean;
+  hasFailures: boolean;
+}
 
 interface ReviewData {
   deviceId: string;
@@ -20,18 +39,37 @@ interface ReviewData {
   summary: TutorialReviewSummary;
   tutorials: Tutorial[];
   manifest: PanelManifest | null;
+  manifestSource?: string | null;
+  manifestStaleWarning?: string | null;
+  manifestEditorMtime?: number | null;
+  reviewerNotes?: Record<string, string>;
+  qaReport?: QaReport | null;
 }
 
 interface TutorialReviewCanvasProps {
   data: ReviewData;
 }
 
-// Local-storage namespace so the "reviewed" set survives a refresh
+// localStorage namespace so the "reviewed" set survives a refresh
 const REVIEWED_KEY = (deviceId: string) => `tutorial-review:reviewed:${deviceId}`;
+const FIT_KEY = 'canvas:fit-to-viewport';
+const DISMISS_STALE_KEY = (deviceId: string, mtime: number | null | undefined) =>
+  `canvas:dismiss-stale:${deviceId}:${mtime ?? 'n/a'}`;
 
 export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps) {
   const router = useRouter();
-  const { tutorials, summary, manifest, deviceId, deviceName, escalationId } = data;
+  const {
+    tutorials,
+    summary,
+    manifest,
+    deviceId,
+    deviceName,
+    escalationId,
+    manifestStaleWarning,
+    manifestEditorMtime,
+    reviewerNotes,
+    qaReport,
+  } = data;
 
   // ──────────── State ─────────────────────────────────────────────────────
   const [currentTutorialId, setCurrentTutorialId] = useState<string>(tutorials[0]?.id ?? '');
@@ -47,6 +85,81 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const [feedbackText, setFeedbackText] = useState('');
   const [actionInFlight, setActionInFlight] = useState<'approve' | 'changes' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [fitToViewport, setFitToViewport] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try { return sessionStorage.getItem(FIT_KEY) === '1'; } catch { return false; }
+  });
+  const [staleDismissed, setStaleDismissed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    if (!manifestStaleWarning) return false;
+    try { return sessionStorage.getItem(DISMISS_STALE_KEY(deviceId, manifestEditorMtime)) === '1'; }
+    catch { return false; }
+  });
+  const [reviewerNotesOpen, setReviewerNotesOpen] = useState(false);
+  const [expandedNoteBatch, setExpandedNoteBatch] = useState<string | null>(null);
+  // QA panel state. Default-open when there are non-ok findings — admin
+  // should see them on land. Hard-fail findings keep the panel open even
+  // after manual collapse via re-render of derived state.
+  const qaHasIssues = useMemo(
+    () => !!qaReport?.results.some((r) => r.severity !== 'ok'),
+    [qaReport],
+  );
+  const [qaOpen, setQaOpen] = useState<boolean>(qaHasIssues);
+  const [expandedQaFinding, setExpandedQaFinding] = useState<string | null>(null);
+  const [transientHighlight, setTransientHighlight] = useState<string | null>(null);
+  const [qaRerunInFlight, setQaRerunInFlight] = useState(false);
+  const [qaRerunError, setQaRerunError] = useState<string | null>(null);
+
+  // Click an unreferenced-control finding → temporarily glow the control
+  // on the panel so the admin can see what's orphaned.
+  const flashControlOnPanel = useCallback((controlId: string) => {
+    setTransientHighlight(controlId);
+    // Scroll the control into view in the preview area.
+    requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-control-id="${controlId}"]`);
+      if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+    setTimeout(() => setTransientHighlight((cur) => (cur === controlId ? null : cur)), 3500);
+  }, []);
+
+  const [refreshInFlight, setRefreshInFlight] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const triggerRefreshFromEditor = useCallback(async () => {
+    setRefreshInFlight(true);
+    setRefreshError(null);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/refresh-from-editor`, { method: 'POST' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setRefreshError(body.error ?? `HTTP ${res.status}`);
+      } else {
+        router.refresh();
+      }
+    } catch (err) {
+      setRefreshError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setRefreshInFlight(false);
+    }
+  }, [deviceId, router]);
+
+  const triggerVisualQa = useCallback(async () => {
+    setQaRerunInFlight(true);
+    setQaRerunError(null);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/qa-rerun`, { method: 'POST' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setQaRerunError(body.error ?? `HTTP ${res.status}`);
+      } else {
+        // Re-fetch the page to pick up updated qa-report.json
+        router.refresh();
+      }
+    } catch (err) {
+      setQaRerunError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setQaRerunInFlight(false);
+    }
+  }, [deviceId, router]);
 
   // Persist reviewed set on change
   useEffect(() => {
@@ -54,6 +167,11 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
       localStorage.setItem(REVIEWED_KEY(deviceId), JSON.stringify([...reviewed]));
     } catch { /* localStorage unavailable */ }
   }, [reviewed, deviceId]);
+
+  // Persist fit toggle
+  useEffect(() => {
+    try { sessionStorage.setItem(FIT_KEY, fitToViewport ? '1' : '0'); } catch { /* ignore */ }
+  }, [fitToViewport]);
 
   // ──────────── Tutorial loading ──────────────────────────────────────────
   const currentTutorial = useMemo(
@@ -70,7 +188,8 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const highlightedControls = useTutorialStore(s => s.highlightedControls);
   const currentStepIndex = useTutorialStore(s => s.currentStepIndex);
 
-  // Load the selected tutorial into the store whenever it changes
+  // Load the selected tutorial into the store whenever it changes.
+  // loadTutorial() already resets currentStepIndex to 0 (see tutorialStore.ts:82).
   useEffect(() => {
     if (currentTutorial) loadTutorial(currentTutorial);
   }, [currentTutorial, loadTutorial]);
@@ -115,7 +234,6 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         setActionInFlight(null);
         return;
       }
-      // Success — clear reviewed-set local state (this device's review is done)
       try { localStorage.removeItem(REVIEWED_KEY(deviceId)); } catch { /* ignore */ }
       router.push(`/admin/${deviceId}`);
     } catch (err) {
@@ -125,11 +243,8 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   }, [deviceId, escalationId, router]);
 
   const handleApprove = useCallback(() => {
-    if (summary.totalErrors > 0) {
-      submitResolution('override-applied');
-    } else {
-      submitResolution('approve');
-    }
+    if (summary.totalErrors > 0) submitResolution('override-applied');
+    else submitResolution('approve');
   }, [summary.totalErrors, submitResolution]);
 
   const handleRequestChanges = useCallback(() => {
@@ -152,6 +267,32 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     });
   }, []);
 
+  // ──────────── Panel scaling ─────────────────────────────────────────────
+  // Default = native size (production fidelity, vertical+horizontal scroll
+  // if it doesn't fit). Fit-to-viewport (god-mode toggle) computes a single
+  // scale that fits both dimensions of the preview area. NO double-transform.
+  const previewRef = useRef<HTMLDivElement | null>(null);
+  const [previewSize, setPreviewSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
+
+  useEffect(() => {
+    if (!previewRef.current) return;
+    const el = previewRef.current;
+    const ro = new ResizeObserver(() => {
+      const rect = el.getBoundingClientRect();
+      setPreviewSize({ w: rect.width, h: rect.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const panelScale = useMemo(() => {
+    if (!fitToViewport || !manifest || previewSize.w === 0 || previewSize.h === 0) return 1;
+    const PAD = 48;
+    const fitW = (previewSize.w - PAD) / manifest.panelWidth;
+    const fitH = (previewSize.h - PAD) / manifest.panelHeight;
+    return Math.min(fitW, fitH, 1);
+  }, [fitToViewport, manifest, previewSize]);
+
   // ──────────── Render ────────────────────────────────────────────────────
   if (!currentTutorial) {
     return (
@@ -163,12 +304,8 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
 
   const step = currentTutorial.steps[currentStepIndex];
   const totalSteps = currentTutorial.steps.length;
-
-  // Scale the panel so it fits the available width without overflowing
-  const previewMaxWidth = 900;
-  const panelScale = manifest
-    ? Math.min(1, previewMaxWidth / manifest.panelWidth)
-    : 1;
+  const reviewerNoteEntries = Object.entries(reviewerNotes ?? {}).sort(([a], [b]) => a.localeCompare(b));
+  const showStaleBanner = manifestStaleWarning && !staleDismissed;
 
   return (
     <div className="flex h-screen flex-col bg-[#0a0a14] text-white" data-testid="tutorial-review-canvas">
@@ -202,6 +339,20 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setFitToViewport(v => !v)}
+            data-testid="fit-toggle"
+            aria-pressed={fitToViewport}
+            className={`text-[11px] px-2.5 py-1 rounded font-medium border transition-colors cursor-pointer ${
+              fitToViewport
+                ? 'border-[#00aaff]/40 bg-[#00aaff]/20 text-[#00ccff]'
+                : 'border-white/20 text-white/70 hover:bg-white/10'
+            }`}
+            title="Fit panel to viewport (god-mode). Off = native size with scroll."
+          >
+            {fitToViewport ? '✓ Fit' : 'Fit'}
+          </button>
           {actionError && (
             <span className="text-[11px] text-red-400 mr-2 max-w-xs truncate" title={actionError}>
               {actionError}
@@ -233,52 +384,281 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
       </header>
 
+      {/* ── Manifest freshness banner (god-mode signal) ────────────────── */}
+      {showStaleBanner && (
+        <div
+          data-testid="manifest-stale-banner"
+          className="flex items-center justify-between gap-3 border-b border-amber-700/40 bg-amber-950/30 px-4 py-2 text-amber-300 text-[12px] flex-shrink-0"
+        >
+          <span className="min-w-0 truncate">⚠ {manifestStaleWarning}</span>
+          <span className="flex items-center gap-3 flex-shrink-0">
+            <a
+              href={`/admin/${deviceId}/editor`}
+              className="underline hover:text-amber-100"
+            >
+              Open editor
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                setStaleDismissed(true);
+                try {
+                  sessionStorage.setItem(DISMISS_STALE_KEY(deviceId, manifestEditorMtime), '1');
+                } catch { /* ignore */ }
+              }}
+              data-testid="dismiss-stale-banner"
+              className="text-amber-400/80 hover:text-amber-100 px-1"
+              title="Dismiss for this session"
+              aria-label="Dismiss freshness warning"
+            >
+              ✕
+            </button>
+          </span>
+        </div>
+      )}
+
       {/* ── Main grid ─────────────────────────────────────────────────── */}
       <div
-        className="grid flex-1 overflow-hidden"
+        className="grid flex-1 min-h-0"
         style={{
           gridTemplateColumns: diagnosticsCollapsed
             ? '260px 1fr 32px'
             : '260px 1fr 320px',
         }}
       >
-        {/* ── Sidebar ────────────────────────────────────────────── */}
-        <TutorialListPanel
-          tutorials={tutorials}
-          summary={summary}
-          currentTutorialId={currentTutorialId}
-          reviewed={reviewed}
-          onSelect={setCurrentTutorialId}
-          onToggleReviewed={toggleReviewed}
-        />
+        {/* ── Sidebar: tutorial list + reviewer notes ──────────────── */}
+        <div className="flex flex-col overflow-hidden border-r border-white/10 bg-[#0c0c18]">
+          <div className="flex-1 overflow-y-auto">
+            <TutorialListPanel
+              tutorials={tutorials}
+              summary={summary}
+              currentTutorialId={currentTutorialId}
+              reviewed={reviewed}
+              onSelect={setCurrentTutorialId}
+              onToggleReviewed={toggleReviewed}
+            />
+          </div>
+
+          {/* QA Findings (auto-generated by pipeline at tutorial-review pause) */}
+          {qaReport && (
+            <div className="flex-shrink-0 border-t border-white/10 bg-[#0a0a14]" data-testid="qa-findings-section">
+              <button
+                type="button"
+                onClick={() => setQaOpen((v) => !v)}
+                className={`w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold transition-colors flex items-center justify-between ${
+                  qaReport.hasFailures
+                    ? 'text-red-300 hover:bg-red-500/5'
+                    : qaHasIssues
+                      ? 'text-amber-300 hover:bg-amber-500/5'
+                      : 'text-emerald-300 hover:bg-emerald-500/5'
+                }`}
+                data-testid="qa-findings-toggle"
+              >
+                <span>
+                  {qaReport.hasFailures ? '🔴' : qaHasIssues ? '🟡' : '🟢'} QA Findings ·{' '}
+                  {qaReport.results.filter((r) => r.severity === 'fail').length} fail ·{' '}
+                  {qaReport.results.filter((r) => r.severity === 'warn').length} warn
+                </span>
+                <span className="text-white/40">{qaOpen ? '▾' : '▸'}</span>
+              </button>
+              {qaOpen && (
+                <div className="max-h-[50vh] overflow-y-auto px-3 pb-3 space-y-2">
+                  <p className="text-[10px] text-white/40 leading-snug">
+                    Auto-generated at pipeline pause. {qaReport.visualVerified ? 'Includes visual highlight verification.' : 'Deterministic layers only — click "Run Visual QA" below to verify highlights end-to-end.'}
+                  </p>
+                  {qaReport.results.map((finding, idx) => {
+                    const key = `${finding.layer}-${idx}`;
+                    const expanded = expandedQaFinding === key;
+                    const detailsArr = Array.isArray(finding.details) ? finding.details : [];
+                    const sym = finding.severity === 'fail' ? '🔴'
+                      : finding.severity === 'warn' ? '🟡' : '🟢';
+                    return (
+                      <div
+                        key={key}
+                        className="rounded border border-white/10 bg-white/[0.02]"
+                        data-testid={`qa-finding-${finding.layer}-${idx}`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setExpandedQaFinding((c) => c === key ? null : key)}
+                          className="w-full text-left px-2 py-1.5 text-[11px] font-medium text-white/85 hover:bg-white/5 flex items-start gap-1.5 transition-colors"
+                          disabled={detailsArr.length === 0}
+                        >
+                          <span className="flex-shrink-0">{sym}</span>
+                          <span className="flex-1 min-w-0">
+                            <div className="font-semibold">{finding.name}</div>
+                            <div className="text-[10px] text-white/55 mt-0.5 leading-snug">{finding.message}</div>
+                          </span>
+                          {detailsArr.length > 0 && (
+                            <span className="text-white/40 flex-shrink-0 text-[10px]">{expanded ? '▾' : '▸'}</span>
+                          )}
+                        </button>
+                        {expanded && detailsArr.length > 0 && (
+                          <div className="border-t border-white/5 px-2 py-2 space-y-1 max-h-[30vh] overflow-y-auto">
+                            {detailsArr.slice(0, 100).map((d, i) => {
+                              // Layer 1b: { controlId, label, hint } — click flashes panel
+                              if (d && typeof d === 'object' && 'controlId' in (d as object)) {
+                                const dd = d as { controlId: string; label?: string | null; hint?: string };
+                                return (
+                                  <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => flashControlOnPanel(dd.controlId)}
+                                    className="block w-full text-left text-[10px] text-white/70 hover:bg-white/5 px-1.5 py-1 rounded transition-colors"
+                                    data-testid={`qa-detail-flash-${dd.controlId}`}
+                                  >
+                                    <code className="text-cyan-300">{dd.controlId}</code>
+                                    {dd.label && <span className="text-white/40 ml-1">— {dd.label}</span>}
+                                    {dd.hint && <div className="text-amber-400/80 text-[9px] ml-3 italic mt-0.5">{dd.hint}</div>}
+                                  </button>
+                                );
+                              }
+                              // Layer 3a/3b: { tutorial, step, control, label } — click jumps to step
+                              if (d && typeof d === 'object' && 'tutorial' in (d as object) && 'step' in (d as object)) {
+                                const dd = d as { tutorial: string; step: number; control: string; label?: string | null };
+                                return (
+                                  <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => {
+                                      setCurrentTutorialId(dd.tutorial);
+                                      // Step click after tutorial loads
+                                      setTimeout(() => goToStep(dd.step - 1), 250);
+                                    }}
+                                    className="block w-full text-left text-[10px] text-white/70 hover:bg-white/5 px-1.5 py-1 rounded transition-colors"
+                                  >
+                                    <code className="text-cyan-300">{dd.control}</code>
+                                    <span className="text-white/40"> · {dd.tutorial} step {dd.step}</span>
+                                  </button>
+                                );
+                              }
+                              // Layer 1a: plain string IDs (missing-from-manifest hard fails)
+                              if (typeof d === 'string') {
+                                return (
+                                  <div key={i} className="text-[10px] text-red-300 px-1.5 py-1">
+                                    <code>{d}</code>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
+                            {detailsArr.length > 100 && (
+                              <div className="text-[9px] text-white/30 italic px-1.5">… {detailsArr.length - 100} more</div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Refresh from editor (fast — re-export + re-validate + re-QA) */}
+                  <div className="pt-1 space-y-1">
+                    <button
+                      type="button"
+                      onClick={triggerRefreshFromEditor}
+                      disabled={refreshInFlight}
+                      data-testid="qa-refresh-from-editor-button"
+                      title="Re-export from manifest-editor.json, re-validate tutorials, re-run deterministic QA"
+                      className="w-full text-[10px] px-2 py-1.5 rounded border border-amber-700/40 bg-amber-900/20 text-amber-300 hover:bg-amber-800/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {refreshInFlight ? 'Refreshing…' : '↻ Refresh from editor'}
+                    </button>
+                    {refreshError && (
+                      <p className="text-[9px] text-red-400 px-1">{refreshError}</p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={triggerVisualQa}
+                      disabled={qaRerunInFlight}
+                      data-testid="qa-rerun-button"
+                      title="Walk every tutorial step with Playwright + verify highlight glow"
+                      className="w-full text-[10px] px-2 py-1.5 rounded border border-cyan-700/40 bg-cyan-900/20 text-cyan-300 hover:bg-cyan-800/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {qaRerunInFlight ? 'Running visual QA…' : qaReport.visualVerified ? 'Re-run visual QA' : 'Run visual QA (Playwright)'}
+                    </button>
+                    {qaRerunError && (
+                      <p className="text-[9px] text-red-400 px-1">{qaRerunError}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Reviewer prose accordion (god-mode) */}
+          {reviewerNoteEntries.length > 0 && (
+            <div className="flex-shrink-0 border-t border-white/10 bg-[#0a0a14]" data-testid="reviewer-notes-section">
+              <button
+                type="button"
+                onClick={() => setReviewerNotesOpen(v => !v)}
+                className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between"
+                data-testid="reviewer-notes-toggle"
+              >
+                <span>Reviewer Notes · {reviewerNoteEntries.length} batches</span>
+                <span className="text-white/40">{reviewerNotesOpen ? '▾' : '▸'}</span>
+              </button>
+              {reviewerNotesOpen && (
+                <div className="max-h-[40vh] overflow-y-auto px-3 pb-3 space-y-2">
+                  {reviewerNoteEntries.map(([batchId, content]) => (
+                    <div key={batchId} className="rounded border border-white/10 bg-white/[0.02]" data-testid={`reviewer-note-${batchId}`}>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedNoteBatch(b => b === batchId ? null : batchId)}
+                        className="w-full text-left px-2 py-1.5 text-[11px] font-medium text-white/80 hover:bg-white/5 flex items-center justify-between transition-colors"
+                      >
+                        <span>Batch {batchId.toUpperCase()}</span>
+                        <span className="text-white/40">{expandedNoteBatch === batchId ? '▾' : '▸'}</span>
+                      </button>
+                      {expandedNoteBatch === batchId && (
+                        <pre className="px-2 py-2 text-[10px] text-white/70 whitespace-pre-wrap font-mono leading-snug border-t border-white/5 max-h-[30vh] overflow-y-auto">
+                          {content}
+                        </pre>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* ── Preview area ──────────────────────────────────────── */}
-        <div className="flex flex-col overflow-hidden bg-[#080812]">
-          {/* Panel preview */}
-          <div className="flex-1 flex items-center justify-center overflow-auto p-6">
+        <div className="flex flex-col min-h-0 bg-gradient-to-br from-[#0a0a14] to-[#0d1424]">
+          {/* Panel viewer */}
+          <div
+            ref={previewRef}
+            data-testid="panel-preview-scroll"
+            className="flex-1 overflow-auto p-6 min-h-0"
+          >
             {manifest ? (
               <div
                 style={{
                   width: manifest.panelWidth * panelScale,
                   height: manifest.panelHeight * panelScale,
-                  transform: `scale(${panelScale})`,
-                  transformOrigin: 'top left',
                   position: 'relative',
                 }}
+                data-testid="panel-scaled-wrapper"
               >
-                <div style={{
-                  width: manifest.panelWidth,
-                  height: manifest.panelHeight,
-                  transform: `scale(1)`,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                }}>
+                <div
+                  style={{
+                    width: manifest.panelWidth,
+                    height: manifest.panelHeight,
+                    transform: `scale(${panelScale})`,
+                    transformOrigin: 'top left',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                  }}
+                >
                   <PanelRenderer
                     manifest={manifest}
                     panelState={panelState}
                     displayState={displayState}
-                    highlightedControls={highlightedControls}
+                    highlightedControls={
+                      transientHighlight
+                        ? [...highlightedControls, transientHighlight]
+                        : highlightedControls
+                    }
                   />
                 </div>
               </div>
@@ -287,44 +667,35 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
             )}
           </div>
 
-          {/* Step content */}
-          <div className="flex-shrink-0 border-t border-white/10 bg-[#0f0f1a] p-4">
-            <div className="flex items-start justify-between gap-3 mb-2">
-              <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-wider text-white/40 mb-0.5">
-                  Step {currentStepIndex + 1} of {totalSteps}
-                </p>
-                <h3 className="text-sm font-semibold text-white truncate" data-testid="current-step-title">
-                  {step?.title ?? '—'}
-                </h3>
+          {/* ── End-user-feel zone: ProgressBar + StepContent + Nav ── */}
+          <div className="flex-shrink-0 border-t border-white/10 bg-[#0f0f1a]">
+            <div className="max-w-[1100px] mx-auto px-6 pt-4 pb-2 flex items-center gap-4">
+              <p
+                className="text-[10px] uppercase tracking-wider text-white/40 flex-shrink-0"
+                data-testid="current-step-num"
+              >
+                Step {currentStepIndex + 1} / {totalSteps}
+              </p>
+              <div className="flex-1 min-w-0">
+                <ProgressBar
+                  progress={((currentStepIndex + 1) / totalSteps) * 100}
+                  steps={totalSteps}
+                  currentStep={currentStepIndex}
+                  onStepClick={goToStep}
+                />
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  disabled={currentStepIndex === 0}
-                  className="text-[11px] px-2 py-1 rounded text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  title="Previous step (K)"
-                >
-                  ‹ Prev
-                </button>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  disabled={currentStepIndex >= totalSteps - 1}
-                  className="text-[11px] px-2 py-1 rounded text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  title="Next step (J)"
-                >
-                  Next ›
-                </button>
+              <div className="flex-shrink-0">
+                <NavigationControls
+                  onPrev={prevStep}
+                  onNext={nextStep}
+                  isPrevDisabled={currentStepIndex === 0}
+                  isNextDisabled={currentStepIndex >= totalSteps - 1}
+                />
               </div>
             </div>
-            <p className="text-[13px] text-white/80 leading-relaxed" data-testid="current-step-instruction">
-              {step?.instruction ?? '—'}
-            </p>
-            {step?.details && (
-              <p className="text-[12px] text-white/50 mt-2 leading-relaxed">{step.details}</p>
-            )}
+            <div data-testid="step-content-wrapper">
+              {step && <StepContent step={step} />}
+            </div>
           </div>
         </div>
 

@@ -50,7 +50,28 @@
  * The undefined case matches each variant's CURRENT editor behavior
  * pre-PR-3, so editor renders are pixel-identical post-extraction.
  */
+import { motion } from 'framer-motion';
 import { renderLabelText } from '@/lib/render-helpers';
+
+// Same cyan pulse other highlight-aware controls use (PanelButton,
+// SharedCircleButton). LEDs already glow in their own color via `ledOn`;
+// the cyan halo is the "tutorial wants you to look here" signal layered
+// on top. Editor never passes `highlighted` so its pixel baseline is
+// unaffected.
+const HIGHLIGHT_ANIMATION = {
+  animate: {
+    boxShadow: [
+      '0 0 8px 2px rgba(0,170,255,0.4)',
+      '0 0 20px 8px rgba(0,170,255,0.8)',
+      '0 0 8px 2px rgba(0,170,255,0.4)',
+    ],
+  },
+  transition: {
+    duration: 1.5,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
 
 export type SharedLedVariant = 'dot' | 'dual-label' | 'bar';
 
@@ -74,6 +95,13 @@ export interface SharedLedProps {
   ledOn?: boolean;
   /** Optional data-control-id for editor selectors + drift CI. */
   dataControlId?: string;
+  /**
+   * Tutorial-driven highlight (preview-only). When true, the LED is
+   * wrapped in a motion.div that pulses with the cyan-blue framer
+   * animation. Editor never passes this; default `false` keeps pixel-
+   * identical editor render.
+   */
+  highlighted?: boolean;
 }
 
 const DEFAULT_LED_COLOR = '#22c55e';
@@ -195,7 +223,33 @@ function Dot({ width, height, ledColor, ledOn, dataControlId }: SharedLedProps) 
 
 export default function SharedLed(props: SharedLedProps) {
   const variant = props.variant ?? 'dot';
-  if (variant === 'dual-label') return <DualLabel {...props} />;
-  if (variant === 'bar') return <Bar {...props} />;
-  return <Dot {...props} />;
+  const inner =
+    variant === 'dual-label' ? <DualLabel {...props} />
+    : variant === 'bar' ? <Bar {...props} />
+    : <Dot {...props} />;
+  // When highlighted, wrap in a motion.div pulsing the cyan glow. Use
+  // the LED container's exact box (width/height) so the halo sits flush
+  // around the indicator. Editor never passes `highlighted`, so its
+  // baseline render path is unchanged.
+  if (!props.highlighted) return inner;
+  // When highlighted, wrap with a motion.div that pulses the cyan glow.
+  // We also tag the wrapper with data-control-id so test selectors that
+  // search `[data-control-id="X"]` subtrees find the glow on the right
+  // ancestor. (The inner SharedLed variant root also has data-control-id —
+  // that's fine, having it on both is harmless.)
+  return (
+    <motion.div
+      style={{
+        width: props.width,
+        height: props.height,
+        borderRadius: 6,
+        position: 'relative',
+        zIndex: 1000,
+      }}
+      {...HIGHLIGHT_ANIMATION}
+      {...(props.dataControlId ? { 'data-control-id': props.dataControlId } : {})}
+    >
+      {inner}
+    </motion.div>
+  );
 }
