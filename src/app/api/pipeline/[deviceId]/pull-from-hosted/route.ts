@@ -70,6 +70,19 @@ export async function POST(
       /* export is best-effort */
     }
 
+    // Trigger canvas QA refresh (debounced 1.5s) — keeps the tutorial
+    // review canvas's QA findings in sync with the contractor's pulled
+    // edits. Without this hook, admin would need to manually click
+    // "↻ Refresh from editor" on the canvas to see updated findings.
+    // Runs AFTER exportManifest so the QA reads the just-exported
+    // src/data/manifests/<id>.json, not the stale prior version.
+    try {
+      const { scheduleCanvasDataRefresh } = await import('@/lib/pipeline/refresh-canvas-data');
+      scheduleCanvasDataRefresh(deviceId);
+    } catch {
+      /* best-effort — manual "Refresh from editor" button is the fallback */
+    }
+
     return NextResponse.json({
       ok: true,
       status: status.status,

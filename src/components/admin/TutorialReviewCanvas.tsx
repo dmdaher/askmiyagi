@@ -13,6 +13,8 @@ import TutorialDiagnosticsPanel from './TutorialDiagnosticsPanel';
 import ProgressBar from '@/components/tutorial/ProgressBar';
 import StepContent from '@/components/tutorial/StepContent';
 import NavigationControls from '@/components/tutorial/NavigationControls';
+import CanvasScaleControlToolbar, { useCanvasScale } from './CanvasScaleControl';
+import { useCanvasAutoRefresh } from './useCanvasAutoRefresh';
 
 interface QaFinding {
   layer: number;
@@ -52,7 +54,6 @@ interface TutorialReviewCanvasProps {
 
 // localStorage namespace so the "reviewed" set survives a refresh
 const REVIEWED_KEY = (deviceId: string) => `tutorial-review:reviewed:${deviceId}`;
-const FIT_KEY = 'canvas:fit-to-viewport';
 const DISMISS_STALE_KEY = (deviceId: string, mtime: number | null | undefined) =>
   `canvas:dismiss-stale:${deviceId}:${mtime ?? 'n/a'}`;
 
@@ -85,10 +86,6 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const [feedbackText, setFeedbackText] = useState('');
   const [actionInFlight, setActionInFlight] = useState<'approve' | 'changes' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [fitToViewport, setFitToViewport] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    try { return sessionStorage.getItem(FIT_KEY) === '1'; } catch { return false; }
-  });
   const [staleDismissed, setStaleDismissed] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     if (!manifestStaleWarning) return false;
@@ -168,10 +165,17 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     } catch { /* localStorage unavailable */ }
   }, [reviewed, deviceId]);
 
-  // Persist fit toggle
+  // Sync the auto-refresh suppression flag with modal / in-flight state.
+  // We don't want polling to refresh the page mid-modal or mid-action.
   useEffect(() => {
-    try { sessionStorage.setItem(FIT_KEY, fitToViewport ? '1' : '0'); } catch { /* ignore */ }
-  }, [fitToViewport]);
+    suppressRef.current =
+      feedbackOpen ||
+      actionInFlight !== null ||
+      refreshInFlight ||
+      qaRerunInFlight;
+  }, [feedbackOpen, actionInFlight, refreshInFlight, qaRerunInFlight]);
+
+
 
   // ──────────── Tutorial loading ──────────────────────────────────────────
   const currentTutorial = useMemo(
@@ -267,10 +271,9 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     });
   }, []);
 
-  // ──────────── Panel scaling ─────────────────────────────────────────────
-  // Default = native size (production fidelity, vertical+horizontal scroll
-  // if it doesn't fit). Fit-to-viewport (god-mode toggle) computes a single
-  // scale that fits both dimensions of the preview area. NO double-transform.
+  // ──────────── Panel scaling (editor-parity continuous zoom) ─────────────
+  // CSS transform-scale on the panel wrapper. Persisted per device.
+  // See CanvasScaleControl.tsx for the slider/buttons/keyboard/wheel UX.
   const previewRef = useRef<HTMLDivElement | null>(null);
   const [previewSize, setPreviewSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
 
@@ -285,13 +288,38 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     return () => ro.disconnect();
   }, []);
 
-  const panelScale = useMemo(() => {
-    if (!fitToViewport || !manifest || previewSize.w === 0 || previewSize.h === 0) return 1;
+  const computeAutoFit = useCallback(() => {
+    if (!manifest || previewSize.w === 0 || previewSize.h === 0) return 1;
     const PAD = 48;
     const fitW = (previewSize.w - PAD) / manifest.panelWidth;
     const fitH = (previewSize.h - PAD) / manifest.panelHeight;
-    return Math.min(fitW, fitH, 1);
-  }, [fitToViewport, manifest, previewSize]);
+    return Math.max(0.1, Math.min(fitW, fitH, 1));
+  }, [manifest, previewSize]);
+
+  const scaleApi = useCanvasScale({ deviceId, computeAutoFit });
+  const panelScale = scaleApi.scale;
+
+  // Live auto-refresh poll — picks up upstream changes (editor save,
+  // Fix apply, pull-from-hosted) without admin needing to reload.
+  // Suppressed while feedback modal is open so admin's review isn't
+  // yanked out from under them.
+  // The suppress callback must be stable across renders so the polling
+  // hook doesn't restart its timer on every state change. We read the
+  // current value via a ref instead.
+  const suppressRef = useRef<boolean>(false);
+  useCanvasAutoRefresh({
+    deviceId,
+    suppress: useCallback(() => suppressRef.current, []),
+  });
+  // The suppress sync effect runs after all the modal/in-flight states
+  // are declared further down — see the dedicated effect near the
+  // bottom of the component body.
+
+  // Bind Cmd+wheel inside the preview scroll area only (browser zoom
+  // works normally everywhere else).
+  useEffect(() => {
+    return scaleApi.bindWheelTo(previewRef.current);
+  }, [scaleApi]);
 
   // ──────────── Render ────────────────────────────────────────────────────
   if (!currentTutorial) {
@@ -339,20 +367,7 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            type="button"
-            onClick={() => setFitToViewport(v => !v)}
-            data-testid="fit-toggle"
-            aria-pressed={fitToViewport}
-            className={`text-[11px] px-2.5 py-1 rounded font-medium border transition-colors cursor-pointer ${
-              fitToViewport
-                ? 'border-[#00aaff]/40 bg-[#00aaff]/20 text-[#00ccff]'
-                : 'border-white/20 text-white/70 hover:bg-white/10'
-            }`}
-            title="Fit panel to viewport (god-mode). Off = native size with scroll."
-          >
-            {fitToViewport ? '✓ Fit' : 'Fit'}
-          </button>
+          <CanvasScaleControlToolbar api={scaleApi} />
           {actionError && (
             <span className="text-[11px] text-red-400 mr-2 max-w-xs truncate" title={actionError}>
               {actionError}
