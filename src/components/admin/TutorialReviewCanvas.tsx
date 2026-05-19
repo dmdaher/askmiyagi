@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import type { Tutorial } from '@/types/tutorial';
@@ -10,6 +10,9 @@ import PanelRenderer from '@/components/controls/PanelRenderer';
 import { useTutorialStore } from '@/store/tutorialStore';
 import TutorialListPanel from './TutorialListPanel';
 import TutorialDiagnosticsPanel from './TutorialDiagnosticsPanel';
+import ProgressBar from '@/components/tutorial/ProgressBar';
+import StepContent from '@/components/tutorial/StepContent';
+import NavigationControls from '@/components/tutorial/NavigationControls';
 
 interface ReviewData {
   deviceId: string;
@@ -20,18 +23,35 @@ interface ReviewData {
   summary: TutorialReviewSummary;
   tutorials: Tutorial[];
   manifest: PanelManifest | null;
+  manifestSource?: string | null;
+  manifestStaleWarning?: string | null;
+  manifestEditorMtime?: number | null;
+  reviewerNotes?: Record<string, string>;
 }
 
 interface TutorialReviewCanvasProps {
   data: ReviewData;
 }
 
-// Local-storage namespace so the "reviewed" set survives a refresh
+// localStorage namespace so the "reviewed" set survives a refresh
 const REVIEWED_KEY = (deviceId: string) => `tutorial-review:reviewed:${deviceId}`;
+const FIT_KEY = 'canvas:fit-to-viewport';
+const DISMISS_STALE_KEY = (deviceId: string, mtime: number | null | undefined) =>
+  `canvas:dismiss-stale:${deviceId}:${mtime ?? 'n/a'}`;
 
 export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps) {
   const router = useRouter();
-  const { tutorials, summary, manifest, deviceId, deviceName, escalationId } = data;
+  const {
+    tutorials,
+    summary,
+    manifest,
+    deviceId,
+    deviceName,
+    escalationId,
+    manifestStaleWarning,
+    manifestEditorMtime,
+    reviewerNotes,
+  } = data;
 
   // ──────────── State ─────────────────────────────────────────────────────
   const [currentTutorialId, setCurrentTutorialId] = useState<string>(tutorials[0]?.id ?? '');
@@ -47,6 +67,18 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const [feedbackText, setFeedbackText] = useState('');
   const [actionInFlight, setActionInFlight] = useState<'approve' | 'changes' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [fitToViewport, setFitToViewport] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try { return sessionStorage.getItem(FIT_KEY) === '1'; } catch { return false; }
+  });
+  const [staleDismissed, setStaleDismissed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    if (!manifestStaleWarning) return false;
+    try { return sessionStorage.getItem(DISMISS_STALE_KEY(deviceId, manifestEditorMtime)) === '1'; }
+    catch { return false; }
+  });
+  const [reviewerNotesOpen, setReviewerNotesOpen] = useState(false);
+  const [expandedNoteBatch, setExpandedNoteBatch] = useState<string | null>(null);
 
   // Persist reviewed set on change
   useEffect(() => {
@@ -54,6 +86,11 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
       localStorage.setItem(REVIEWED_KEY(deviceId), JSON.stringify([...reviewed]));
     } catch { /* localStorage unavailable */ }
   }, [reviewed, deviceId]);
+
+  // Persist fit toggle
+  useEffect(() => {
+    try { sessionStorage.setItem(FIT_KEY, fitToViewport ? '1' : '0'); } catch { /* ignore */ }
+  }, [fitToViewport]);
 
   // ──────────── Tutorial loading ──────────────────────────────────────────
   const currentTutorial = useMemo(
@@ -70,7 +107,8 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const highlightedControls = useTutorialStore(s => s.highlightedControls);
   const currentStepIndex = useTutorialStore(s => s.currentStepIndex);
 
-  // Load the selected tutorial into the store whenever it changes
+  // Load the selected tutorial into the store whenever it changes.
+  // loadTutorial() already resets currentStepIndex to 0 (see tutorialStore.ts:82).
   useEffect(() => {
     if (currentTutorial) loadTutorial(currentTutorial);
   }, [currentTutorial, loadTutorial]);
@@ -115,7 +153,6 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         setActionInFlight(null);
         return;
       }
-      // Success — clear reviewed-set local state (this device's review is done)
       try { localStorage.removeItem(REVIEWED_KEY(deviceId)); } catch { /* ignore */ }
       router.push(`/admin/${deviceId}`);
     } catch (err) {
@@ -125,11 +162,8 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   }, [deviceId, escalationId, router]);
 
   const handleApprove = useCallback(() => {
-    if (summary.totalErrors > 0) {
-      submitResolution('override-applied');
-    } else {
-      submitResolution('approve');
-    }
+    if (summary.totalErrors > 0) submitResolution('override-applied');
+    else submitResolution('approve');
   }, [summary.totalErrors, submitResolution]);
 
   const handleRequestChanges = useCallback(() => {
@@ -152,6 +186,32 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     });
   }, []);
 
+  // ──────────── Panel scaling ─────────────────────────────────────────────
+  // Default = native size (production fidelity, vertical+horizontal scroll
+  // if it doesn't fit). Fit-to-viewport (god-mode toggle) computes a single
+  // scale that fits both dimensions of the preview area. NO double-transform.
+  const previewRef = useRef<HTMLDivElement | null>(null);
+  const [previewSize, setPreviewSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
+
+  useEffect(() => {
+    if (!previewRef.current) return;
+    const el = previewRef.current;
+    const ro = new ResizeObserver(() => {
+      const rect = el.getBoundingClientRect();
+      setPreviewSize({ w: rect.width, h: rect.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const panelScale = useMemo(() => {
+    if (!fitToViewport || !manifest || previewSize.w === 0 || previewSize.h === 0) return 1;
+    const PAD = 48;
+    const fitW = (previewSize.w - PAD) / manifest.panelWidth;
+    const fitH = (previewSize.h - PAD) / manifest.panelHeight;
+    return Math.min(fitW, fitH, 1);
+  }, [fitToViewport, manifest, previewSize]);
+
   // ──────────── Render ────────────────────────────────────────────────────
   if (!currentTutorial) {
     return (
@@ -163,12 +223,8 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
 
   const step = currentTutorial.steps[currentStepIndex];
   const totalSteps = currentTutorial.steps.length;
-
-  // Scale the panel so it fits the available width without overflowing
-  const previewMaxWidth = 900;
-  const panelScale = manifest
-    ? Math.min(1, previewMaxWidth / manifest.panelWidth)
-    : 1;
+  const reviewerNoteEntries = Object.entries(reviewerNotes ?? {}).sort(([a], [b]) => a.localeCompare(b));
+  const showStaleBanner = manifestStaleWarning && !staleDismissed;
 
   return (
     <div className="flex h-screen flex-col bg-[#0a0a14] text-white" data-testid="tutorial-review-canvas">
@@ -202,6 +258,20 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setFitToViewport(v => !v)}
+            data-testid="fit-toggle"
+            aria-pressed={fitToViewport}
+            className={`text-[11px] px-2.5 py-1 rounded font-medium border transition-colors cursor-pointer ${
+              fitToViewport
+                ? 'border-[#00aaff]/40 bg-[#00aaff]/20 text-[#00ccff]'
+                : 'border-white/20 text-white/70 hover:bg-white/10'
+            }`}
+            title="Fit panel to viewport (god-mode). Off = native size with scroll."
+          >
+            {fitToViewport ? '✓ Fit' : 'Fit'}
+          </button>
           {actionError && (
             <span className="text-[11px] text-red-400 mr-2 max-w-xs truncate" title={actionError}>
               {actionError}
@@ -233,47 +303,126 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
       </header>
 
+      {/* ── Manifest freshness banner (god-mode signal) ────────────────── */}
+      {showStaleBanner && (
+        <div
+          data-testid="manifest-stale-banner"
+          className="flex items-center justify-between gap-3 border-b border-amber-700/40 bg-amber-950/30 px-4 py-2 text-amber-300 text-[12px] flex-shrink-0"
+        >
+          <span className="min-w-0 truncate">⚠ {manifestStaleWarning}</span>
+          <span className="flex items-center gap-3 flex-shrink-0">
+            <a
+              href={`/admin/${deviceId}/editor`}
+              className="underline hover:text-amber-100"
+            >
+              Open editor
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                setStaleDismissed(true);
+                try {
+                  sessionStorage.setItem(DISMISS_STALE_KEY(deviceId, manifestEditorMtime), '1');
+                } catch { /* ignore */ }
+              }}
+              data-testid="dismiss-stale-banner"
+              className="text-amber-400/80 hover:text-amber-100 px-1"
+              title="Dismiss for this session"
+              aria-label="Dismiss freshness warning"
+            >
+              ✕
+            </button>
+          </span>
+        </div>
+      )}
+
       {/* ── Main grid ─────────────────────────────────────────────────── */}
       <div
-        className="grid flex-1 overflow-hidden"
+        className="grid flex-1 min-h-0"
         style={{
           gridTemplateColumns: diagnosticsCollapsed
             ? '260px 1fr 32px'
             : '260px 1fr 320px',
         }}
       >
-        {/* ── Sidebar ────────────────────────────────────────────── */}
-        <TutorialListPanel
-          tutorials={tutorials}
-          summary={summary}
-          currentTutorialId={currentTutorialId}
-          reviewed={reviewed}
-          onSelect={setCurrentTutorialId}
-          onToggleReviewed={toggleReviewed}
-        />
+        {/* ── Sidebar: tutorial list + reviewer notes ──────────────── */}
+        <div className="flex flex-col overflow-hidden border-r border-white/10 bg-[#0c0c18]">
+          <div className="flex-1 overflow-y-auto">
+            <TutorialListPanel
+              tutorials={tutorials}
+              summary={summary}
+              currentTutorialId={currentTutorialId}
+              reviewed={reviewed}
+              onSelect={setCurrentTutorialId}
+              onToggleReviewed={toggleReviewed}
+            />
+          </div>
+
+          {/* Reviewer prose accordion (god-mode) */}
+          {reviewerNoteEntries.length > 0 && (
+            <div className="flex-shrink-0 border-t border-white/10 bg-[#0a0a14]" data-testid="reviewer-notes-section">
+              <button
+                type="button"
+                onClick={() => setReviewerNotesOpen(v => !v)}
+                className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between"
+                data-testid="reviewer-notes-toggle"
+              >
+                <span>Reviewer Notes · {reviewerNoteEntries.length} batches</span>
+                <span className="text-white/40">{reviewerNotesOpen ? '▾' : '▸'}</span>
+              </button>
+              {reviewerNotesOpen && (
+                <div className="max-h-[40vh] overflow-y-auto px-3 pb-3 space-y-2">
+                  {reviewerNoteEntries.map(([batchId, content]) => (
+                    <div key={batchId} className="rounded border border-white/10 bg-white/[0.02]" data-testid={`reviewer-note-${batchId}`}>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedNoteBatch(b => b === batchId ? null : batchId)}
+                        className="w-full text-left px-2 py-1.5 text-[11px] font-medium text-white/80 hover:bg-white/5 flex items-center justify-between transition-colors"
+                      >
+                        <span>Batch {batchId.toUpperCase()}</span>
+                        <span className="text-white/40">{expandedNoteBatch === batchId ? '▾' : '▸'}</span>
+                      </button>
+                      {expandedNoteBatch === batchId && (
+                        <pre className="px-2 py-2 text-[10px] text-white/70 whitespace-pre-wrap font-mono leading-snug border-t border-white/5 max-h-[30vh] overflow-y-auto">
+                          {content}
+                        </pre>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* ── Preview area ──────────────────────────────────────── */}
-        <div className="flex flex-col overflow-hidden bg-[#080812]">
-          {/* Panel preview */}
-          <div className="flex-1 flex items-center justify-center overflow-auto p-6">
+        <div className="flex flex-col min-h-0 bg-gradient-to-br from-[#0a0a14] to-[#0d1424]">
+          {/* Panel viewer */}
+          <div
+            ref={previewRef}
+            data-testid="panel-preview-scroll"
+            className="flex-1 overflow-auto p-6 min-h-0"
+          >
             {manifest ? (
               <div
                 style={{
                   width: manifest.panelWidth * panelScale,
                   height: manifest.panelHeight * panelScale,
-                  transform: `scale(${panelScale})`,
-                  transformOrigin: 'top left',
                   position: 'relative',
                 }}
+                data-testid="panel-scaled-wrapper"
               >
-                <div style={{
-                  width: manifest.panelWidth,
-                  height: manifest.panelHeight,
-                  transform: `scale(1)`,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                }}>
+                <div
+                  style={{
+                    width: manifest.panelWidth,
+                    height: manifest.panelHeight,
+                    transform: `scale(${panelScale})`,
+                    transformOrigin: 'top left',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                  }}
+                >
                   <PanelRenderer
                     manifest={manifest}
                     panelState={panelState}
@@ -287,44 +436,35 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
             )}
           </div>
 
-          {/* Step content */}
-          <div className="flex-shrink-0 border-t border-white/10 bg-[#0f0f1a] p-4">
-            <div className="flex items-start justify-between gap-3 mb-2">
-              <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-wider text-white/40 mb-0.5">
-                  Step {currentStepIndex + 1} of {totalSteps}
-                </p>
-                <h3 className="text-sm font-semibold text-white truncate" data-testid="current-step-title">
-                  {step?.title ?? '—'}
-                </h3>
+          {/* ── End-user-feel zone: ProgressBar + StepContent + Nav ── */}
+          <div className="flex-shrink-0 border-t border-white/10 bg-[#0f0f1a]">
+            <div className="max-w-[1100px] mx-auto px-6 pt-4 pb-2 flex items-center gap-4">
+              <p
+                className="text-[10px] uppercase tracking-wider text-white/40 flex-shrink-0"
+                data-testid="current-step-num"
+              >
+                Step {currentStepIndex + 1} / {totalSteps}
+              </p>
+              <div className="flex-1 min-w-0">
+                <ProgressBar
+                  progress={((currentStepIndex + 1) / totalSteps) * 100}
+                  steps={totalSteps}
+                  currentStep={currentStepIndex}
+                  onStepClick={goToStep}
+                />
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  disabled={currentStepIndex === 0}
-                  className="text-[11px] px-2 py-1 rounded text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  title="Previous step (K)"
-                >
-                  ‹ Prev
-                </button>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  disabled={currentStepIndex >= totalSteps - 1}
-                  className="text-[11px] px-2 py-1 rounded text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  title="Next step (J)"
-                >
-                  Next ›
-                </button>
+              <div className="flex-shrink-0">
+                <NavigationControls
+                  onPrev={prevStep}
+                  onNext={nextStep}
+                  isPrevDisabled={currentStepIndex === 0}
+                  isNextDisabled={currentStepIndex >= totalSteps - 1}
+                />
               </div>
             </div>
-            <p className="text-[13px] text-white/80 leading-relaxed" data-testid="current-step-instruction">
-              {step?.instruction ?? '—'}
-            </p>
-            {step?.details && (
-              <p className="text-[12px] text-white/50 mt-2 leading-relaxed">{step.details}</p>
-            )}
+            <div data-testid="step-content-wrapper">
+              {step && <StepContent step={step} />}
+            </div>
           </div>
         </div>
 
