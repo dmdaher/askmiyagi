@@ -68,7 +68,7 @@ const check = (label: string, ok: boolean, info = '') => {
   await page.waitForTimeout(300);
 
   // Locate the DIRECTION_LEVER-copy flash button
-  const flashBtn = page.locator('[data-testid="qa-detail-flash-DIRECTION_LEVER-copy"]');
+  const flashBtn = page.locator('[data-testid="orphan-flash-DIRECTION_LEVER-copy"]');
   const flashBtnCount = await flashBtn.count();
   check('1b detail lists DIRECTION_LEVER-copy', flashBtnCount === 1, `count=${flashBtnCount}`);
 

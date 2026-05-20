@@ -53,8 +53,17 @@ function reportListsOrphan(reportPath: string, controlId: string): boolean {
   const r = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
   for (const finding of r.results) {
     if (finding.layer === 1 && finding.name.includes('1b')) {
-      const details = (finding.details ?? []) as Array<{ controlId?: string }>;
-      if (details.some((d) => d?.controlId === controlId)) return true;
+      // PR-H: details shape became { active: [{controlId,...}], intentional: [...] }
+      const d = finding.details;
+      if (d && typeof d === 'object' && !Array.isArray(d)) {
+        const active = (d.active ?? []) as Array<{ controlId?: string }>;
+        const intentional = (d.intentional ?? []) as Array<{ controlId?: string }>;
+        if (active.some((x) => x?.controlId === controlId)) return true;
+        if (intentional.some((x) => x?.controlId === controlId)) return true;
+      } else if (Array.isArray(d)) {
+        // Pre-PR-H shape (array of {controlId, ...})
+        if ((d as Array<{ controlId?: string }>).some((x) => x?.controlId === controlId)) return true;
+      }
     }
   }
   return false;

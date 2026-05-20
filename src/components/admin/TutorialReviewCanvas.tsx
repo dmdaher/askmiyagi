@@ -16,7 +16,33 @@ import NavigationControls from '@/components/tutorial/NavigationControls';
 import CanvasScaleControlToolbar, { useCanvasScale } from './CanvasScaleControl';
 import CanvasScaleModal from './CanvasScaleModal';
 import FloatingStepControl, { useStepControlMode } from './FloatingStepControl';
+import OrphanList from './OrphanList';
 import { useCanvasAutoRefresh } from './useCanvasAutoRefresh';
+
+type OrphanCategory = 'A' | 'B' | 'C' | 'D';
+
+interface OrphanDetail {
+  controlId: string;
+  label: string | null;
+  hint?: string;
+  diagnosis?: {
+    category: OrphanCategory;
+    categoryName: string;
+    reason: string;
+    confidence: 'high' | 'medium' | 'low';
+    citation: string;
+    suggestedAction: 'delete' | 'mark-intentional' | 'suggest-tutorial';
+    pairedWith?: string | null;
+    suggestedTutorial?: { title: string; description: string; estimatedSteps?: number; manualPages?: string; category?: string } | null;
+    diagnosedAt: string;
+  };
+  intentional?: {
+    category: OrphanCategory;
+    pairedWith?: string | null;
+    reason?: string;
+    markedAt: string;
+  };
+}
 
 interface QaFinding {
   layer: number;
@@ -134,6 +160,34 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
 
   const [refreshInFlight, setRefreshInFlight] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [orphanActionInFlight, setOrphanActionInFlight] = useState<string | null>(null);
+  const [orphanActionError, setOrphanActionError] = useState<string | null>(null);
+
+  const orphanAction = useCallback(async (
+    action: 'diagnose' | 'mark-intentional' | 'unmark-intentional',
+    controlId: string,
+    intent?: { category: 'A' | 'B' | 'C' | 'D'; pairedWith?: string | null; reason?: string },
+  ) => {
+    setOrphanActionInFlight(`${action}:${controlId}`);
+    setOrphanActionError(null);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/orphan-action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, controlId, intent }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setOrphanActionError(body.error ?? `HTTP ${res.status}`);
+      } else {
+        router.refresh();
+      }
+    } catch (err) {
+      setOrphanActionError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setOrphanActionInFlight(null);
+    }
+  }, [deviceId, router]);
   const triggerRefreshFromEditor = useCallback(async () => {
     setRefreshInFlight(true);
     setRefreshError(null);
@@ -528,7 +582,14 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                   {qaReport.results.map((finding, idx) => {
                     const key = `${finding.layer}-${idx}`;
                     const expanded = expandedQaFinding === key;
+                    // Layer 1b uses a structured shape { active, intentional };
+                    // older layers use arrays.
+                    const isLayer1b = finding.layer === 1 && finding.name.startsWith('1b');
+                    const layer1bDetails = isLayer1b && finding.details && typeof finding.details === 'object' && !Array.isArray(finding.details)
+                      ? (finding.details as { active: OrphanDetail[]; intentional: OrphanDetail[] })
+                      : null;
                     const detailsArr = Array.isArray(finding.details) ? finding.details : [];
+                    const hasDetails = layer1bDetails ? (layer1bDetails.active.length + layer1bDetails.intentional.length) > 0 : detailsArr.length > 0;
                     const sym = finding.severity === 'fail' ? '🔴'
                       : finding.severity === 'warn' ? '🟡' : '🟢';
                     return (
@@ -541,18 +602,28 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                           type="button"
                           onClick={() => setExpandedQaFinding((c) => c === key ? null : key)}
                           className="w-full text-left px-2 py-1.5 text-[11px] font-medium text-white/85 hover:bg-white/5 flex items-start gap-1.5 transition-colors"
-                          disabled={detailsArr.length === 0}
+                          disabled={!hasDetails}
                         >
                           <span className="flex-shrink-0">{sym}</span>
                           <span className="flex-1 min-w-0">
                             <div className="font-semibold">{finding.name}</div>
                             <div className="text-[10px] text-white/55 mt-0.5 leading-snug">{finding.message}</div>
                           </span>
-                          {detailsArr.length > 0 && (
+                          {hasDetails && (
                             <span className="text-white/40 flex-shrink-0 text-[10px]">{expanded ? '▾' : '▸'}</span>
                           )}
                         </button>
-                        {expanded && detailsArr.length > 0 && (
+                        {expanded && layer1bDetails && (
+                          <OrphanList
+                            active={layer1bDetails.active}
+                            intentional={layer1bDetails.intentional}
+                            flashControl={flashControlOnPanel}
+                            onAction={orphanAction}
+                            inFlightKey={orphanActionInFlight}
+                            error={orphanActionError}
+                          />
+                        )}
+                        {expanded && !layer1bDetails && detailsArr.length > 0 && (
                           <div className="border-t border-white/5 px-2 py-2 space-y-1 max-h-[30vh] overflow-y-auto">
                             {detailsArr.slice(0, 100).map((d, i) => {
                               // Layer 1b: { controlId, label, hint } — click flashes panel
@@ -682,12 +753,12 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
 
         {/* ── Preview area ──────────────────────────────────────── */}
-        <div className="flex flex-col min-h-0 bg-gradient-to-br from-[#0a0a14] to-[#0d1424]">
+        <div className="flex flex-col min-h-0 min-w-0 bg-gradient-to-br from-[#0a0a14] to-[#0d1424]">
           {/* Panel viewer */}
           <div
             ref={previewRef}
             data-testid="panel-preview-scroll"
-            className="flex-1 overflow-auto p-6 min-h-0"
+            className="flex-1 overflow-auto p-6 pb-16 min-h-0"
           >
             {manifest ? (
               <div
