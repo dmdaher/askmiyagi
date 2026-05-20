@@ -225,7 +225,14 @@ export async function runDiagnoseOrphan(
   }
 
   const wallMs = Date.now() - start;
-  if (proc.exitCode !== 0) {
+  // Always TRY to read the output file even if exitCode !== 0. Claude CLI
+  // sometimes exits with code 1 after the agent has already written its
+  // structured output to disk (observed: budget-cap soft-stop, tool-call
+  // edge cases). If a valid result is present we should use it — the
+  // diagnosis itself is sound. Only error out when nothing parseable
+  // exists.
+  const parsed = readAgentOutput(input.repoRoot, input.deviceId, proc.stdout);
+  if (proc.exitCode !== 0 && (!parsed || typeof parsed !== 'object' || (parsed as { ok?: unknown }).ok !== true)) {
     appendFixLog(input.repoRoot, input.deviceId, {
       ts: new Date().toISOString(),
       mode: 'diagnose-orphan',
@@ -233,16 +240,14 @@ export async function runDiagnoseOrphan(
       target,
       outcome: 'error',
       wallMs,
-      details: { exitCode: proc.exitCode, stderr: proc.stderr.slice(-500) },
+      details: { exitCode: proc.exitCode, stderr: proc.stderr.slice(-500), reason: 'non-zero exit + no parseable output' },
     });
     return {
       ok: false,
-      error: `tutorial-fixer exited with code ${proc.exitCode}: ${proc.stderr.slice(-400)}`,
+      error: `tutorial-fixer exited with code ${proc.exitCode} and produced no usable output: ${proc.stderr.slice(-400)}`,
       wallMs,
     };
   }
-
-  const parsed = readAgentOutput(input.repoRoot, input.deviceId, proc.stdout);
   if (!parsed || typeof parsed !== 'object') {
     appendFixLog(input.repoRoot, input.deviceId, {
       ts: new Date().toISOString(),

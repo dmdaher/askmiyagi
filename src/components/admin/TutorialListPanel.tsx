@@ -29,7 +29,7 @@ export default function TutorialListPanel({
 }: TutorialListPanelProps) {
   return (
     <aside
-      className="border-r border-white/10 bg-[#0c0c18] overflow-y-auto"
+      className="bg-[#0c0c18]"
       data-testid="tutorial-list-panel"
     >
       <div className="px-3 py-3 border-b border-white/10 sticky top-0 bg-[#0c0c18] z-10">

@@ -187,7 +187,7 @@ function IntentionalRow({ row, onUnmark, inFlightKey }: { row: OrphanDetail; onU
 export default function OrphanList({ active, intentional, flashControl, onAction, inFlightKey, error }: Props) {
   const [intentionalOpen, setIntentionalOpen] = useState(false);
   return (
-    <div className="border-t border-white/5 px-2 py-2 space-y-2 max-h-[60vh] overflow-y-auto">
+    <div className="border-t border-white/5 px-2 py-2 space-y-2">
       {error && (
         <div className="text-[10px] text-red-400 bg-red-500/10 border border-red-500/20 rounded px-1.5 py-1">{error}</div>
       )}

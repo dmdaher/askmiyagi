@@ -13,7 +13,7 @@
  * Mode + position persisted per device in sessionStorage.
  * Drag clamps to viewport.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import type { Tutorial, TutorialStep } from '@/types/tutorial';
 import ProgressBar from '@/components/tutorial/ProgressBar';
 import StepContent from '@/components/tutorial/StepContent';
@@ -176,12 +176,14 @@ function FullStepBlock({
   );
 }
 
-export default function FloatingStepControl(props: Props & {
+interface FullProps extends Props {
   mode: StepControlMode;
   setMode: (m: StepControlMode) => void;
   position: Position;
   setPosition: (p: Position) => void;
-}) {
+}
+
+const FloatingStepControl = forwardRef<HTMLDivElement | HTMLButtonElement, FullProps>(function FloatingStepControl(props, ref) {
   const { mode, setMode, position, setPosition, step, currentStepIndex, totalSteps, onPrev, onNext, onStepClick, steps, deviceId } = props;
   const dragState = useRef<{ active: boolean; startX: number; startY: number; origX: number; origY: number }>({
     active: false, startX: 0, startY: 0, origX: 0, origY: 0,
@@ -229,6 +231,7 @@ export default function FloatingStepControl(props: Props & {
   if (mode === 'hidden') {
     return (
       <button
+        ref={ref as React.Ref<HTMLButtonElement>}
         type="button"
         onClick={() => setMode('anchored')}
         data-testid="step-control-reveal"
@@ -244,6 +247,7 @@ export default function FloatingStepControl(props: Props & {
   if (mode === 'mini') {
     return (
       <div
+        ref={ref as React.Ref<HTMLDivElement>}
         className="fixed z-40 bg-[#0f0f1a] border border-white/15 rounded-full shadow-lg flex items-center gap-2 pl-3 pr-1 py-1 cursor-grab"
         style={{
           bottom: 16 - position.y,
@@ -287,6 +291,7 @@ export default function FloatingStepControl(props: Props & {
   if (mode === 'floating') {
     return (
       <div
+        ref={ref as React.Ref<HTMLDivElement>}
         className="fixed z-40 bg-[#0f0f1a] border border-white/15 rounded-lg shadow-2xl"
         style={{
           bottom: 16 - position.y,
@@ -311,6 +316,9 @@ export default function FloatingStepControl(props: Props & {
   // ── ANCHORED (default) — caller renders this in the preview column ─────
   // We render the full block here too; the caller is responsible for
   // positioning context (it'll be in-flow at the bottom of the preview).
+  // No ref attached in anchored mode — caller's useFloatingSafeArea sees
+  // null and returns default padding, which is exactly what we want
+  // since anchored mode doesn't overlay the scroll content.
   return (
     <div
       className="flex-shrink-0 border-t border-white/10 bg-[#0f0f1a]"
@@ -324,4 +332,6 @@ export default function FloatingStepControl(props: Props & {
       />
     </div>
   );
-}
+});
+
+export default FloatingStepControl;
