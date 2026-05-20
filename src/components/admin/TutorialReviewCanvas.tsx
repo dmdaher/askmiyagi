@@ -177,18 +177,26 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   }, [router]);
 
   const orphanAction = useCallback(async (
-    action: 'diagnose' | 'mark-intentional' | 'unmark-intentional',
+    action: 'diagnose' | 'mark-intentional' | 'unmark-intentional' | 'delete',
     controlId: string,
     intent?: { category: 'A' | 'B' | 'C' | 'D'; pairedWith?: string | null; reason?: string },
   ) => {
     setOrphanActionInFlight(`${action}:${controlId}`);
     setOrphanActionError(null);
     try {
-      const res = await fetch(`/api/pipeline/${deviceId}/orphan-action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, controlId, intent }),
-      });
+      // PR-J: delete dispatches to the dedicated manifest-control DELETE
+      // route (writes manifest-editor.json + auto-exports). All other
+      // orphan actions stay on the orphan-action POST route.
+      const res = action === 'delete'
+        ? await fetch(
+            `/api/pipeline/${deviceId}/manifest-control/${encodeURIComponent(controlId)}`,
+            { method: 'DELETE' },
+          )
+        : await fetch(`/api/pipeline/${deviceId}/orphan-action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, controlId, intent }),
+          });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         setOrphanActionError(body.error ?? `HTTP ${res.status}`);

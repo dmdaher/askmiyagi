@@ -32,7 +32,7 @@ interface Props {
   intentional: OrphanDetail[];
   flashControl: (id: string) => void;
   onAction: (
-    action: 'diagnose' | 'mark-intentional' | 'unmark-intentional',
+    action: 'diagnose' | 'mark-intentional' | 'unmark-intentional' | 'delete',
     controlId: string,
     intent?: { category: OrphanCategory; pairedWith?: string | null; reason?: string },
   ) => void;
@@ -145,10 +145,20 @@ function OrphanRow({
         {diagnosis?.suggestedAction === 'delete' && (
           <button
             type="button"
-            onClick={() => alert('Delete from manifest: planned for PR-I (canvas → editor cross-surface action). For now, open editor and delete there.')}
-            className="text-[9px] px-1.5 py-0.5 rounded text-red-300 hover:bg-red-500/10 border border-red-500/30"
-            title="Coming in PR-I"
-          >🗑 Delete</button>
+            onClick={() => {
+              if (window.confirm(
+                `Delete ${controlId} from manifest-editor.json?\n\n` +
+                `This removes the control + scrubs any section.childIds references. ` +
+                `A backup is saved to .pipeline/<id>/backups/ before the write.`
+              )) {
+                onAction('delete', controlId);
+              }
+            }}
+            disabled={inFlightKey === `delete:${controlId}`}
+            className="text-[9px] px-1.5 py-0.5 rounded text-red-300 hover:bg-red-500/10 border border-red-500/30 disabled:opacity-50"
+            data-testid={`orphan-delete-${controlId}`}
+            title="Delete this orphan from manifest-editor.json (backup created first)"
+          >{inFlightKey === `delete:${controlId}` ? '⏳' : '🗑'} Delete</button>
         )}
         {diagnosis?.suggestedAction === 'suggest-tutorial' && (
           <button
