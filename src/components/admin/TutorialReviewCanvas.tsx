@@ -166,6 +166,26 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const [orphanActionInFlight, setOrphanActionInFlight] = useState<string | null>(null);
   const [orphanActionError, setOrphanActionError] = useState<string | null>(null);
 
+  // PR-M: Edit Highlights mode. When ON, clicking a control on the
+  // preview panel toggles it in the current step's highlightControls
+  // via a no-agent qa-fix-apply call. Default OFF — preserves the
+  // existing flashControl behavior for non-edit clicks.
+  const EDIT_HIGHLIGHTS_KEY = (id: string) => `canvas:edit-highlights:${id}`;
+  const [editHighlightsMode, setEditHighlightsMode] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try { return localStorage.getItem(EDIT_HIGHLIGHTS_KEY(deviceId)) === '1'; }
+    catch { return false; }
+  });
+  const toggleEditHighlights = useCallback(() => {
+    setEditHighlightsMode((v) => {
+      const next = !v;
+      try { localStorage.setItem(EDIT_HIGHLIGHTS_KEY(deviceId), next ? '1' : '0'); } catch { /* ignore */ }
+      return next;
+    });
+  }, [deviceId]);
+  const [toggleInFlight, setToggleInFlight] = useState<string | null>(null);
+  const [toggleError, setToggleError] = useState<string | null>(null);
+
   // PR-I two-phase Fix modal (for Layer 1a / 3a / 3b agent fixes)
   const [fixModalRequest, setFixModalRequest] = useState<FixModalRequest | null>(null);
   const openFixModal = useCallback((request: FixModalRequest) => setFixModalRequest(request), []);
@@ -438,6 +458,72 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     return scaleApi.bindWheelTo(previewRef.current);
   }, [scaleApi]);
 
+  // PR-M: handler for click-to-toggle highlight (only fires when
+  // editHighlightsMode is ON). Builds a single-op patch and POSTs to
+  // qa-fix-apply, reusing PR-I infrastructure + PR-L cumulative-state
+  // gate. On 409 violations, surface a toast — admin can re-toggle
+  // with override via the existing QaFixModal flow (Layer 1a, etc.)
+  // or click again to invert their first attempt.
+  const handlePanelControlClick = useCallback(async (controlId: string) => {
+    if (!editHighlightsMode) {
+      // Default: just flash the control (preserves PR-H/I behavior).
+      flashControlOnPanel(controlId);
+      return;
+    }
+    if (!currentTutorial) return;
+    const step = currentTutorial.steps[currentStepIndex];
+    if (!step) return;
+    const currentHighlights = step.highlightControls ?? [];
+    const isOn = currentHighlights.includes(controlId);
+    setToggleInFlight(controlId);
+    setToggleError(null);
+    try {
+      const patchOp = isOn
+        ? {
+            op: 'remove' as const,
+            path: `/highlightControls/${currentHighlights.indexOf(controlId)}`,
+          }
+        : { op: 'add' as const, path: '/highlightControls/-', value: controlId };
+      const res = await fetch(`/api/pipeline/${deviceId}/qa-fix-apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          result: {
+            tutorialId: currentTutorial.id,
+            stepIndex: currentStepIndex,
+            findingType: 'layer3b',
+            patch: [patchOp],
+            explanation: `Direct admin toggle (PR-M): ${isOn ? 'removed' : 'added'} ${controlId}`,
+            confidence: 'high',
+            citation: 'admin click',
+            alternatives: [],
+          },
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 409 && Array.isArray(body.violations) && body.violations.length > 0) {
+        setToggleError(
+          `Cumulative-state violation: ${body.violations[0].message}. Click 🛠 Fix on the related finding to override.`,
+        );
+        return;
+      }
+      if (!res.ok || !body.ok) {
+        setToggleError(body.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      // Brief glow feedback so admin knows the toggle landed
+      flashControlOnPanel(controlId);
+      router.refresh();
+    } catch (err) {
+      setToggleError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setToggleInFlight(null);
+    }
+  }, [
+    editHighlightsMode, currentTutorial, currentStepIndex,
+    deviceId, flashControlOnPanel, router,
+  ]);
+
   // ──────────── Render ────────────────────────────────────────────────────
   if (!currentTutorial) {
     return (
@@ -578,6 +664,36 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
            See ~/.claude/plans/prancy-dreaming-comet.md (PR-Scroll) for
            the architectural rationale. */}
         <div className="flex flex-col overflow-y-auto border-r border-white/10 bg-[#0c0c18]" data-testid="canvas-sidebar">
+          {/* PR-M: Edit Highlights mode toggle */}
+          <div className="flex-shrink-0 px-2 py-1.5 border-b border-white/10 bg-[#0a0a14]">
+            <button
+              type="button"
+              onClick={toggleEditHighlights}
+              className={`w-full flex items-center justify-between text-[10px] px-2 py-1.5 rounded border transition-colors ${
+                editHighlightsMode
+                  ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'
+                  : 'border-white/10 bg-white/[0.02] text-white/60 hover:bg-white/5'
+              }`}
+              data-testid="edit-highlights-toggle"
+              title="When ON, clicking a control on the panel toggles its highlight on the current step. When OFF, clicks flash the control (default)."
+            >
+              <span className="flex items-center gap-1.5">
+                <span>{editHighlightsMode ? '🟢' : '⚪'}</span>
+                <span>Edit Highlights mode</span>
+              </span>
+              <span className="text-[9px] opacity-70">{editHighlightsMode ? 'ON' : 'OFF'}</span>
+            </button>
+            {toggleInFlight && (
+              <div className="text-[9px] text-cyan-300/70 mt-1 px-2" data-testid="edit-highlights-in-flight">
+                ⏳ toggling {toggleInFlight}…
+              </div>
+            )}
+            {toggleError && (
+              <div className="text-[9px] text-red-300 mt-1 px-2 py-1 rounded bg-red-500/10 border border-red-500/30" data-testid="edit-highlights-error">
+                {toggleError}
+              </div>
+            )}
+          </div>
           <div className="flex-shrink-0">
             <TutorialListPanel
               tutorials={tutorials}
@@ -882,6 +998,7 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                         ? [...highlightedControls, transientHighlight]
                         : highlightedControls
                     }
+                    onButtonClick={handlePanelControlClick}
                   />
                 </div>
               </div>
