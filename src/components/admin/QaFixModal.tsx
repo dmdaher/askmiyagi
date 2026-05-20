@@ -21,7 +21,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-export type FindingType = 'layer1a' | 'layer3a' | 'layer3b';
+export type FindingType = 'layer1a' | 'layer3a' | 'layer3b' | 'layer4';
 export type Confidence = 'high' | 'medium' | 'low';
 
 interface FixStepPatchOp {
@@ -125,6 +125,10 @@ function PatchDiff({ ops }: { ops: FixStepPatchOp[] }) {
 
 export default function QaFixModal({ open, request, onClose, onApplied }: Props) {
   const [phase, setPhase] = useState<'proposing' | 'review' | 'applying' | 'cannotFix'>('proposing');
+  // PR-L: cumulative-state violations from the apply endpoint (status 409)
+  const [violations, setViolations] = useState<Array<{
+    kind: string; stepIndex: number; controlId?: string; message: string; severity: 'fail' | 'warn' | 'info';
+  }>>([]);
   const [proposal, setProposal] = useState<FixStepResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cannotFixQuestion, setCannotFixQuestion] = useState<string | null>(null);
@@ -197,17 +201,26 @@ export default function QaFixModal({ open, request, onClose, onApplied }: Props)
     void propose(request);
   }, [open, request, propose]);
 
-  const handleApply = useCallback(async () => {
+  const handleApply = useCallback(async (applyAnyway = false) => {
     if (!request || !proposal) return;
     setPhase('applying');
     setError(null);
+    if (!applyAnyway) setViolations([]);
     try {
       const res = await fetch(`/api/pipeline/${request.deviceId}/qa-fix-apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ result: proposal }),
+        body: JSON.stringify({ result: proposal, applyAnyway }),
       });
       const body = await res.json().catch(() => ({}));
+      // PR-L: 409 conflict means cumulative-state violations. Show them
+      // and let admin re-submit with applyAnyway.
+      if (res.status === 409 && Array.isArray(body.violations)) {
+        setViolations(body.violations);
+        setError(body.error ?? 'Cumulative-state verification failed.');
+        setPhase('review');
+        return;
+      }
       if (!res.ok || !body.ok) {
         setError(body.error ?? `HTTP ${res.status}`);
         setPhase('review');
@@ -301,6 +314,38 @@ export default function QaFixModal({ open, request, onClose, onApplied }: Props)
             {error && (
               <div className="text-[11px] text-red-300 bg-red-500/10 border border-red-500/20 rounded px-2 py-1">{error}</div>
             )}
+            {/* PR-L: cumulative-state violations + Apply anyway override */}
+            {violations.length > 0 && (
+              <div className="space-y-1.5" data-testid="fix-modal-violations">
+                <div className="text-[10px] uppercase tracking-wider text-amber-300/80">
+                  ⚠ Cumulative-state verification — {violations.length} violation{violations.length === 1 ? '' : 's'}
+                </div>
+                <ul className="space-y-1 max-h-[180px] overflow-y-auto pr-1">
+                  {violations.map((v, i) => (
+                    <li
+                      key={i}
+                      className={`text-[10px] border rounded px-2 py-1 ${
+                        v.severity === 'fail'
+                          ? 'border-red-500/40 bg-red-500/10 text-red-200'
+                          : v.severity === 'warn'
+                            ? 'border-amber-500/40 bg-amber-500/10 text-amber-200'
+                            : 'border-white/10 bg-white/5 text-white/70'
+                      }`}
+                    >
+                      <div className="font-mono text-[10px] opacity-70">
+                        [step {v.stepIndex}] {v.kind}{v.controlId ? ` · ${v.controlId}` : ''}
+                      </div>
+                      <div>{v.message}</div>
+                    </li>
+                  ))}
+                </ul>
+                {violations.some((v) => v.severity === 'fail') && (
+                  <div className="text-[10px] text-amber-300/80 italic">
+                    Apply was rolled back. Press "Apply anyway" to override and persist the patch despite the violations.
+                  </div>
+                )}
+              </div>
+            )}
             <details className="text-[11px]">
               <summary className="cursor-pointer text-white/50 hover:text-white/80">Ask agent again with more context</summary>
               <textarea
@@ -322,14 +367,31 @@ export default function QaFixModal({ open, request, onClose, onApplied }: Props)
             </details>
             <div className="flex justify-end gap-2 pt-1">
               <button type="button" onClick={onClose} data-testid="fix-modal-cancel" className="text-xs px-3 py-1.5 rounded text-gray-400 hover:text-gray-200">Cancel</button>
-              <button
-                type="button"
-                onClick={handleApply}
-                data-testid="fix-modal-apply"
-                className="text-xs px-4 py-1.5 rounded font-medium bg-emerald-600 text-white hover:bg-emerald-500"
-              >
-                Apply fix
-              </button>
+              {violations.some((v) => v.severity === 'fail') ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(
+                      `Apply this patch despite ${violations.filter((v) => v.severity === 'fail').length} cumulative-state violation(s)?\n\nThis is audit-logged.`,
+                    )) {
+                      void handleApply(true);
+                    }
+                  }}
+                  data-testid="fix-modal-apply-anyway"
+                  className="text-xs px-4 py-1.5 rounded font-medium bg-amber-600 text-white hover:bg-amber-500"
+                >
+                  ⚠ Apply anyway
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void handleApply(false)}
+                  data-testid="fix-modal-apply"
+                  className="text-xs px-4 py-1.5 rounded font-medium bg-emerald-600 text-white hover:bg-emerald-500"
+                >
+                  Apply fix
+                </button>
+              )}
             </div>
           </div>
         )}

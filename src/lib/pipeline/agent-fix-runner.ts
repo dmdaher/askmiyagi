@@ -315,7 +315,7 @@ export async function runDiagnoseOrphan(
 
 // ── fix-step (PR-I — IMPLEMENTED) ─────────────────────────────────────
 
-export type FindingType = 'layer1a' | 'layer3a' | 'layer3b';
+export type FindingType = 'layer1a' | 'layer3a' | 'layer3b' | 'layer4';
 
 export interface FixStepInput {
   deviceId: string;
@@ -581,21 +581,47 @@ export async function applyFixStepPatch(
 }
 
 /**
- * Apply a single JSON-Patch-like op to a step object. Supports the
- * limited subset documented in tutorial-fixer.md: replace / add / remove
- * on /highlightControls/<idx>, /instruction, /title, /details, /tipText.
- * Throws on unsupported paths so the catch block above rolls back.
+ * PR-L: allow-list of top-level path prefixes the agent may patch.
+ * Anything outside this list throws (defensive — prevents agent from
+ * touching internal fields like `id`, `__proto__`, etc.).
  */
-function applyPatchOp(step: Record<string, unknown>, op: FixStepPatchOp): void {
-  const parts = op.path.replace(/^\//, '').split('/');
-  if (parts.length === 0) throw new Error(`empty path: ${op.path}`);
+const ALLOWED_PATCH_PREFIXES = [
+  'instruction', 'title', 'details', 'tipText',
+  'highlightControls', 'panelStateChanges', 'displayState', 'menuItems',
+];
 
-  // Single-level scalar paths
+const FORBIDDEN_PATH_SEGMENTS = new Set(['__proto__', 'constructor', 'prototype']);
+
+/**
+ * Apply a single JSON-Patch-like op to a step object.
+ *
+ * PR-I supported: /instruction, /title, /details, /tipText, /highlightControls/<idx>.
+ * PR-L extends to: /panelStateChanges/<controlId>[/<key>],
+ *                  /displayState[/<key>],
+ *                  /menuItems[/<idx>].
+ *
+ * Uses a small JSON-Pointer (RFC 6901 subset) walker. Throws on
+ * unsupported paths so the caller's catch block rolls back.
+ */
+export function applyPatchOp(step: Record<string, unknown>, op: FixStepPatchOp): void {
+  const parts = op.path.replace(/^\//, '').split('/');
+  if (parts.length === 0 || parts[0] === '') throw new Error(`empty path: ${op.path}`);
+
+  // Prototype-pollution defense: reject any segment that could mutate Object.prototype.
+  for (const seg of parts) {
+    if (FORBIDDEN_PATH_SEGMENTS.has(seg)) {
+      throw new Error(`forbidden path segment "${seg}" in ${op.path}`);
+    }
+  }
+
+  // Top-level allowlist enforcement.
+  if (!ALLOWED_PATCH_PREFIXES.includes(parts[0])) {
+    throw new Error(`unsupported path: ${op.path} (allowed: ${ALLOWED_PATCH_PREFIXES.join(', ')})`);
+  }
+
+  // ── Single-level scalar paths (instruction/title/details/tipText) ────
   if (parts.length === 1) {
     const key = parts[0];
-    if (!['instruction', 'title', 'details', 'tipText'].includes(key) && key !== 'highlightControls') {
-      throw new Error(`unsupported path: ${op.path}`);
-    }
     if (op.op === 'replace' || op.op === 'add') {
       step[key] = op.value;
     } else if (op.op === 'remove') {
@@ -606,13 +632,13 @@ function applyPatchOp(step: Record<string, unknown>, op: FixStepPatchOp): void {
     return;
   }
 
-  // highlightControls/<index>
-  if (parts.length === 2 && parts[0] === 'highlightControls') {
+  // ── highlightControls/<index> (PR-I, unchanged) ──────────────────────
+  if (parts[0] === 'highlightControls') {
+    if (parts.length !== 2) throw new Error(`unsupported path depth: ${op.path}`);
     const arr = step.highlightControls as string[];
     if (!Array.isArray(arr)) throw new Error('highlightControls is not an array');
     const idxStr = parts[1];
     if (idxStr === '-') {
-      // append shorthand
       if (op.op !== 'add') throw new Error('append (-) only valid with op=add');
       arr.push(op.value as string);
       return;
@@ -633,7 +659,99 @@ function applyPatchOp(step: Record<string, unknown>, op: FixStepPatchOp): void {
     return;
   }
 
-  throw new Error(`unsupported path depth: ${op.path}`);
+  // ── /panelStateChanges/<controlId>[/<key>] (PR-L) ────────────────────
+  if (parts[0] === 'panelStateChanges') {
+    if (!step.panelStateChanges) step.panelStateChanges = {};
+    const psc = step.panelStateChanges as Record<string, Record<string, unknown>>;
+    if (parts.length === 2) {
+      // /panelStateChanges/<controlId> — set/replace/remove whole change
+      const ctrl = parts[1];
+      if (op.op === 'replace' || op.op === 'add') psc[ctrl] = op.value as Record<string, unknown>;
+      else if (op.op === 'remove') delete psc[ctrl];
+      else throw new Error(`unsupported op: ${op.op}`);
+      return;
+    }
+    if (parts.length === 3) {
+      // /panelStateChanges/<controlId>/<key> — set/replace/remove single field
+      const ctrl = parts[1];
+      const key = parts[2];
+      if (!['ledOn', 'active', 'value'].includes(key)) {
+        throw new Error(`unsupported panelStateChanges key: ${key} (allowed: ledOn, active, value)`);
+      }
+      if (!psc[ctrl]) psc[ctrl] = {};
+      if (op.op === 'replace' || op.op === 'add') psc[ctrl][key] = op.value;
+      else if (op.op === 'remove') delete psc[ctrl][key];
+      else throw new Error(`unsupported op: ${op.op}`);
+      return;
+    }
+    throw new Error(`unsupported path depth: ${op.path}`);
+  }
+
+  // ── /displayState[/<key>] (PR-L) ─────────────────────────────────────
+  if (parts[0] === 'displayState') {
+    if (!step.displayState) step.displayState = {};
+    const ds = step.displayState as Record<string, unknown>;
+    if (parts.length === 1) {
+      // Handled above; included here for clarity.
+      throw new Error('unreachable');
+    }
+    if (parts.length === 2) {
+      const key = parts[1];
+      // Allowlist screenType + common metadata fields. Reject obviously
+      // dangerous keys; everything else passes through (display schema
+      // is freeform per device).
+      if (FORBIDDEN_PATH_SEGMENTS.has(key)) {
+        throw new Error(`forbidden displayState key: ${key}`);
+      }
+      if (op.op === 'replace' || op.op === 'add') ds[key] = op.value;
+      else if (op.op === 'remove') delete ds[key];
+      else throw new Error(`unsupported op: ${op.op}`);
+      return;
+    }
+    throw new Error(`unsupported displayState path depth: ${op.path}`);
+  }
+
+  // ── /menuItems[/<idx>] (PR-L) ────────────────────────────────────────
+  if (parts[0] === 'menuItems') {
+    if (!step.menuItems) step.menuItems = [];
+    const arr = step.menuItems as Array<unknown>;
+    if (!Array.isArray(arr)) throw new Error('menuItems is not an array');
+    if (parts.length === 1) {
+      // /menuItems — replace entire array
+      if (op.op === 'replace' || op.op === 'add') {
+        if (!Array.isArray(op.value)) throw new Error('menuItems value must be an array');
+        step.menuItems = op.value;
+      } else if (op.op === 'remove') {
+        delete step.menuItems;
+      } else throw new Error(`unsupported op: ${op.op}`);
+      return;
+    }
+    if (parts.length === 2) {
+      const idxStr = parts[1];
+      if (idxStr === '-') {
+        if (op.op !== 'add') throw new Error('append (-) only valid with op=add');
+        arr.push(op.value);
+        return;
+      }
+      const idx = Number(idxStr);
+      if (!Number.isInteger(idx) || idx < 0 || idx > arr.length) {
+        throw new Error(`invalid menuItems index: ${idxStr}`);
+      }
+      if (op.op === 'replace') {
+        if (idx >= arr.length) throw new Error(`replace at index ${idx} out of bounds (length ${arr.length})`);
+        arr[idx] = op.value;
+      } else if (op.op === 'add') {
+        arr.splice(idx, 0, op.value);
+      } else if (op.op === 'remove') {
+        if (idx >= arr.length) throw new Error(`remove at index ${idx} out of bounds`);
+        arr.splice(idx, 1);
+      }
+      return;
+    }
+    throw new Error(`unsupported menuItems path depth: ${op.path}`);
+  }
+
+  throw new Error(`unsupported path: ${op.path}`);
 }
 
 // ── PR-J stub ─────────────────────────────────────────────────────────

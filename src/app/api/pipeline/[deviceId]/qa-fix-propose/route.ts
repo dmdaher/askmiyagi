@@ -87,7 +87,7 @@ export async function POST(
       error: 'Body must include { findingType, tutorialId, stepIndex, payload }',
     }, { status: 400 });
   }
-  if (!['layer1a', 'layer3a', 'layer3b'].includes(body.findingType)) {
+  if (!['layer1a', 'layer3a', 'layer3b', 'layer4'].includes(body.findingType)) {
     return NextResponse.json({
       error: `Unsupported findingType: ${body.findingType}`,
     }, { status: 400 });
