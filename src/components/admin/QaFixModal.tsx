@@ -21,7 +21,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-export type FindingType = 'layer1a' | 'layer3a' | 'layer3b' | 'layer4';
+export type FindingType = 'layer1a' | 'layer3a' | 'layer3b' | 'layer4' | 'layer5';
 export type Confidence = 'high' | 'medium' | 'low';
 
 interface FixStepPatchOp {

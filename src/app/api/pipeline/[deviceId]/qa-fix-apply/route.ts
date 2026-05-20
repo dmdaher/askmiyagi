@@ -17,7 +17,11 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { readState } from '@/lib/pipeline/state-machine';
-import { applyFixStepPatch, type FixStepResult } from '@/lib/pipeline/agent-fix-runner';
+import {
+  applyFixStepPatch,
+  applyTutorialFixPatch,
+  type FixStepResult,
+} from '@/lib/pipeline/agent-fix-runner';
 import { runDeterministicQa, loadManifest } from '@/lib/pipeline/canvas-qa';
 import { verifyCumulativeState } from '@/lib/pipeline/cumulative-state';
 
@@ -54,9 +58,19 @@ export async function POST(
   applyInFlight.add(key);
 
   try {
-    const applyResult = await applyFixStepPatch({
-      deviceId, repoRoot, result: body.result,
-    });
+    // PR-K: dispatch by findingType. layer5 has tutorial-level array
+    // ops on /steps/<idx>; everything else uses the step-level applier.
+    const applyResult = body.result.findingType === 'layer5'
+      ? await applyTutorialFixPatch({
+          deviceId, repoRoot,
+          result: {
+            tutorialId: body.result.tutorialId,
+            findingType: body.result.findingType,
+            patch: body.result.patch,
+            confidence: body.result.confidence,
+          },
+        })
+      : await applyFixStepPatch({ deviceId, repoRoot, result: body.result });
     if (!applyResult.ok) {
       return NextResponse.json({
         error: applyResult.error,

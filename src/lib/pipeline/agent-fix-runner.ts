@@ -315,7 +315,7 @@ export async function runDiagnoseOrphan(
 
 // ── fix-step (PR-I — IMPLEMENTED) ─────────────────────────────────────
 
-export type FindingType = 'layer1a' | 'layer3a' | 'layer3b' | 'layer4';
+export type FindingType = 'layer1a' | 'layer3a' | 'layer3b' | 'layer4' | 'layer5';
 
 export interface FixStepInput {
   deviceId: string;
@@ -754,15 +754,318 @@ export function applyPatchOp(step: Record<string, unknown>, op: FixStepPatchOp):
   throw new Error(`unsupported path: ${op.path}`);
 }
 
-// ── PR-J stub ─────────────────────────────────────────────────────────
+// ── assess-coherence (PR-K — IMPLEMENTED) ─────────────────────────────
+
+export interface CoherenceFinding {
+  severity: 'fail' | 'warn' | 'info';
+  stepIndex: number;
+  message: string;
+  suggestedFix?: FixStepPatchOp[];
+}
+
+export interface AssessCoherenceResult {
+  tutorialId: string;
+  coherenceScore: 1 | 2 | 3 | 4 | 5;
+  verdict: 'pass' | 'advisory' | 'fail';
+  citations: string[];
+  findings: CoherenceFinding[];
+  summary: string;
+  /** Optional agent confidence in its own assessment. */
+  confidence?: Confidence;
+}
+
+export interface AssessCoherenceInput {
+  deviceId: string;
+  repoRoot: string;
+  tutorialId: string;
+  additionalContext?: string;
+}
+
+function makeAssessCoherencePrompt(input: AssessCoherenceInput): string {
+  const { deviceId, repoRoot, tutorialId, additionalContext } = input;
+  return [
+    `You are the tutorial-fixer in mode=assess-coherence.`,
+    ``,
+    `Device: ${deviceId}`,
+    `Repo root: ${repoRoot}`,
+    `Tutorial: ${tutorialId}`,
+    additionalContext ? `\nAdmin context: ${additionalContext}` : '',
+    ``,
+    `1. Read the tutorial from ${repoRoot}/.pipeline/${deviceId}/agents/tutorial-review/tutorials.json — find the entry with id="${tutorialId}" and read ALL of its steps in order.`,
+    `2. Read the manifest at ${repoRoot}/src/data/manifests/${deviceId}.json for control labels.`,
+    `3. Read manual PDFs at ${repoRoot}/.pipeline/${deviceId}/input/manuals/ — find the section that covers this tutorial's workflow (use Read's pages: parameter).`,
+    `4. Judge the tutorial as a whole against the manual:`,
+    `   - Workflow correctness (order of steps)`,
+    `   - Conceptual fidelity (does each instruction accurately reflect the manual?)`,
+    `   - Coverage (does it cover the full workflow or stop short?)`,
+    ``,
+    `Write the JSON result to ${repoRoot}/.pipeline/${deviceId}/agents/tutorial-fixer/last-output.json AND emit it to stdout.`,
+    ``,
+    `Required output shape:`,
+    `{`,
+    `  "mode": "assess-coherence",`,
+    `  "deviceId": "${deviceId}",`,
+    `  "ok": true,`,
+    `  "result": {`,
+    `    "tutorialId": "${tutorialId}",`,
+    `    "coherenceScore": 1-5,`,
+    `    "verdict": "pass"|"advisory"|"fail",`,
+    `    "citations": ["p.12", "p.15-17"],`,
+    `    "findings": [{ "severity": "fail"|"warn"|"info", "stepIndex": N, "message": "...", "suggestedFix": [{...patch op...}] }],`,
+    `    "summary": "...",`,
+    `    "confidence": "high"|"medium"|"low"`,
+    `  }`,
+    `}`,
+    ``,
+    `Or if you cannot assess (e.g., manual unavailable):`,
+    `{`,
+    `  "mode": "assess-coherence",`,
+    `  "deviceId": "${deviceId}",`,
+    `  "ok": false,`,
+    `  "cannotFix": true,`,
+    `  "question": "specific question for admin"`,
+    `}`,
+    ``,
+    `End with a single stdout line:`,
+    `[tutorial-fixer] mode=assess-coherence deviceId=${deviceId} tutorial=${tutorialId} score=<N>/5 verdict=<V>`,
+  ].join('\n');
+}
 
 export async function runAssessCoherence(
-  input: { deviceId: string; repoRoot: string; tutorialId: string },
-): Promise<AgentRunResult<never>> {
-  return {
-    ok: false,
-    notYetImplemented: 'assess-coherence mode lands in PR-J',
-    error: 'assess-coherence not yet implemented',
-    wallMs: 0,
+  input: AssessCoherenceInput,
+): Promise<AgentRunResult<AssessCoherenceResult>> {
+  const start = Date.now();
+  const target = `${input.deviceId}:${input.tutorialId}:coherence`;
+  const outDir = path.join(
+    input.repoRoot, '.pipeline', input.deviceId, 'agents', 'tutorial-fixer',
+  );
+  fs.mkdirSync(outDir, { recursive: true });
+
+  let proc: { exitCode: number; stdout: string; stderr: string } | null = null;
+  try {
+    const result = await invokeAgent({
+      prompt: makeAssessCoherencePrompt(input),
+      deviceId: input.deviceId,
+      phase: 'tutorial-review',
+      agent: 'tutorial-fixer',
+      cwd: input.repoRoot,
+      allowedTools: PIPELINE_TOOLS,
+      maxBudgetPerInvocation: FIXER_BUDGET_USD,
+      remainingBudgetUsd: FIXER_BUDGET_USD,
+    });
+    proc = { exitCode: result.exitCode, stdout: result.output, stderr: '' };
+  } catch (err) {
+    const wallMs = Date.now() - start;
+    const msg = err instanceof Error ? err.message : String(err);
+    appendFixLog(input.repoRoot, input.deviceId, {
+      ts: new Date().toISOString(), mode: 'assess-coherence', deviceId: input.deviceId,
+      target, outcome: 'error', wallMs, details: { error: msg },
+    });
+    return { ok: false, error: `Failed to invoke agent: ${msg}`, wallMs };
+  }
+
+  const wallMs = Date.now() - start;
+  const parsed = readAgentOutput(input.repoRoot, input.deviceId, proc.stdout);
+  if (proc.exitCode !== 0 && (!parsed || typeof parsed !== 'object' || ((parsed as { ok?: unknown }).ok !== true && (parsed as { cannotFix?: unknown }).cannotFix !== true))) {
+    appendFixLog(input.repoRoot, input.deviceId, {
+      ts: new Date().toISOString(), mode: 'assess-coherence', deviceId: input.deviceId,
+      target, outcome: 'error', wallMs,
+      details: { exitCode: proc.exitCode, stderr: proc.stderr.slice(-500) },
+    });
+    return {
+      ok: false,
+      error: `tutorial-fixer exited with code ${proc.exitCode} and produced no usable output: ${proc.stderr.slice(-400)}`,
+      wallMs,
+    };
+  }
+  if (!parsed || typeof parsed !== 'object') {
+    appendFixLog(input.repoRoot, input.deviceId, {
+      ts: new Date().toISOString(), mode: 'assess-coherence', deviceId: input.deviceId,
+      target, outcome: 'error', wallMs, details: { reason: 'no parseable output' },
+    });
+    return { ok: false, error: 'Agent produced no parseable JSON output', wallMs };
+  }
+  const obj = parsed as Record<string, unknown>;
+  if (obj.cannotFix === true) {
+    appendFixLog(input.repoRoot, input.deviceId, {
+      ts: new Date().toISOString(), mode: 'assess-coherence', deviceId: input.deviceId,
+      target, outcome: 'cannotFix', wallMs, details: { question: obj.question },
+    });
+    return {
+      ok: false, cannotFix: true,
+      question: typeof obj.question === 'string' ? obj.question : 'Agent could not assess',
+      error: typeof obj.question === 'string' ? obj.question : 'Agent could not assess',
+      wallMs,
+    };
+  }
+  if (obj.ok !== true || !obj.result) {
+    return {
+      ok: false,
+      error: `Agent output malformed: ${JSON.stringify(obj).slice(0, 300)}`,
+      wallMs,
+    };
+  }
+  const r = obj.result as AssessCoherenceResult;
+  if (!Number.isInteger(r.coherenceScore) || r.coherenceScore < 1 || r.coherenceScore > 5) {
+    return {
+      ok: false,
+      error: `Agent output missing valid coherenceScore: ${JSON.stringify(r).slice(0, 200)}`,
+      wallMs,
+    };
+  }
+  if (!['pass', 'advisory', 'fail'].includes(r.verdict)) {
+    return {
+      ok: false,
+      error: `Agent output missing valid verdict: ${JSON.stringify(r).slice(0, 200)}`,
+      wallMs,
+    };
+  }
+  appendFixLog(input.repoRoot, input.deviceId, {
+    ts: new Date().toISOString(), mode: 'assess-coherence', deviceId: input.deviceId,
+    target, outcome: 'proposed', confidence: r.confidence, wallMs,
+    details: { score: r.coherenceScore, verdict: r.verdict, findingCount: r.findings?.length ?? 0 },
+  });
+  return { ok: true, result: r, wallMs };
+}
+
+// ── Tutorial-level patch path (PR-K) ──────────────────────────────────
+
+/**
+ * Apply a /steps/<idx> array operation to a whole-tutorial object.
+ *
+ * Supports:
+ *   - { op: 'replace', path: '/steps/<idx>', value: <whole step> } — overwrite
+ *   - { op: 'add',     path: '/steps/<idx>', value: <whole step> } — insert
+ *   - { op: 'add',     path: '/steps/-',     value: <whole step> } — append
+ *   - { op: 'remove',  path: '/steps/<idx>' }                       — delete
+ *
+ * Single-step scalar paths (e.g. /steps/0/instruction) are NOT handled
+ * here — callers should route those to the step-level applyPatchOp via
+ * applyTutorialFixPatch's dispatcher.
+ */
+export function applyTutorialPatchOp(
+  tutorial: { steps: Array<Record<string, unknown>> },
+  op: FixStepPatchOp,
+): void {
+  const parts = op.path.replace(/^\//, '').split('/');
+  if (parts[0] !== 'steps') throw new Error(`applyTutorialPatchOp called with non-/steps path: ${op.path}`);
+  if (parts.length !== 2) throw new Error(`unsupported tutorial-level path depth: ${op.path}`);
+
+  const idxStr = parts[1];
+  const arr = tutorial.steps;
+  if (!Array.isArray(arr)) throw new Error('tutorial.steps is not an array');
+
+  if (idxStr === '-') {
+    if (op.op !== 'add') throw new Error('append (-) only valid with op=add');
+    arr.push(op.value as Record<string, unknown>);
+    return;
+  }
+  const idx = Number(idxStr);
+  if (!Number.isInteger(idx) || idx < 0 || idx > arr.length) {
+    throw new Error(`invalid /steps index: ${idxStr}`);
+  }
+  if (op.op === 'replace') {
+    if (idx >= arr.length) throw new Error(`replace at index ${idx} out of bounds (length ${arr.length})`);
+    arr[idx] = op.value as Record<string, unknown>;
+  } else if (op.op === 'add') {
+    arr.splice(idx, 0, op.value as Record<string, unknown>);
+  } else if (op.op === 'remove') {
+    if (idx >= arr.length) throw new Error(`remove at index ${idx} out of bounds`);
+    arr.splice(idx, 1);
+  } else {
+    throw new Error(`unsupported op: ${op.op}`);
+  }
+}
+
+/**
+ * Apply a multi-op patch to a tutorial. Dispatches by path prefix:
+ *   - /steps/<idx>           → applyTutorialPatchOp (whole-step ops)
+ *   - /steps/<idx>/<field>   → applyPatchOp on tutorial.steps[idx]
+ *   - everything else        → unsupported (only fix-step uses non-/steps paths)
+ *
+ * Backup-first / rollback-on-failure semantics. Fix-log append.
+ */
+export interface ApplyTutorialFixInput {
+  deviceId: string;
+  repoRoot: string;
+  result: {
+    tutorialId: string;
+    findingType: FindingType;
+    patch: FixStepPatchOp[];
+    confidence: Confidence;
   };
+}
+
+export async function applyTutorialFixPatch(
+  input: ApplyTutorialFixInput,
+): Promise<ApplyResult | ApplyError> {
+  const reviewDir = path.join(
+    input.repoRoot, '.pipeline', input.deviceId, 'agents', 'tutorial-review',
+  );
+  const tutorialsPath = path.join(reviewDir, 'tutorials.json');
+  if (!fs.existsSync(tutorialsPath)) {
+    return { ok: false, error: 'tutorials.json missing' };
+  }
+
+  const tutorials = JSON.parse(fs.readFileSync(tutorialsPath, 'utf-8')) as Array<{
+    id: string; steps: Array<Record<string, unknown>>;
+  }>;
+  const tutIdx = tutorials.findIndex((t) => t.id === input.result.tutorialId);
+  if (tutIdx < 0) {
+    return { ok: false, error: `tutorial ${input.result.tutorialId} not found` };
+  }
+  const tutorial = tutorials[tutIdx];
+
+  // Backup BEFORE write
+  const backupDir = path.join(reviewDir, 'backups');
+  fs.mkdirSync(backupDir, { recursive: true });
+  const iso = new Date().toISOString().replace(/[:.]/g, '-');
+  const backupPath = path.join(backupDir, `tutorials-${iso}.json`);
+  fs.copyFileSync(tutorialsPath, backupPath);
+
+  try {
+    for (const op of input.result.patch) {
+      const parts = op.path.replace(/^\//, '').split('/');
+      if (parts[0] !== 'steps') {
+        throw new Error(`applyTutorialFixPatch only supports /steps/... paths; got ${op.path}`);
+      }
+      if (parts.length === 2) {
+        // /steps/<idx> — whole-step op
+        applyTutorialPatchOp(tutorial, op);
+      } else if (parts.length >= 3) {
+        // /steps/<idx>/<field>... — single-step scalar/nested op
+        const stepIdx = Number(parts[1]);
+        if (!Number.isInteger(stepIdx) || stepIdx < 0 || stepIdx >= tutorial.steps.length) {
+          throw new Error(`invalid step index in path: ${op.path}`);
+        }
+        // Rewrite the op's path to drop the /steps/<idx> prefix so the
+        // step-level applyPatchOp sees just the field path.
+        const stepLevelOp: FixStepPatchOp = {
+          op: op.op,
+          path: '/' + parts.slice(2).join('/'),
+          value: op.value,
+          previousValue: op.previousValue,
+        };
+        applyPatchOp(tutorial.steps[stepIdx], stepLevelOp);
+      } else {
+        throw new Error(`unsupported tutorial path depth: ${op.path}`);
+      }
+    }
+  } catch (err) {
+    fs.copyFileSync(backupPath, tutorialsPath);
+    return {
+      ok: false, rolledBack: true,
+      error: `tutorial patch apply failed: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+
+  fs.writeFileSync(tutorialsPath, JSON.stringify(tutorials, null, 2));
+  appendFixLog(input.repoRoot, input.deviceId, {
+    ts: new Date().toISOString(), mode: 'apply-tutorial-patch', deviceId: input.deviceId,
+    target: `${input.deviceId}:${input.result.tutorialId}:${input.result.findingType}`,
+    outcome: 'applied', confidence: input.result.confidence, wallMs: 0,
+    details: { patchLen: input.result.patch.length, backupPath },
+  });
+
+  return { ok: true, appliedAt: new Date().toISOString(), backupPath };
 }

@@ -316,18 +316,88 @@ If you considered other patches and rejected them, list them in `alternatives` w
 
 ---
 
-## Mode: `assess-coherence` (PR-J — NOT YET IMPLEMENTED)
+## Mode: `assess-coherence` (PR-K — IMPLEMENTED)
 
-When called with `mode: "assess-coherence"`, return:
+When called with `mode: "assess-coherence"`, judge whether a tutorial as a
+whole reflects the real workflow described in the manual. Unlike `fix-step`
+(scoped to a single finding on a single step), assess-coherence reads the
+ENTIRE tutorial in context: all steps, in order, against the manual's
+description of that workflow.
+
+### Input
 
 ```json
 {
   "mode": "assess-coherence",
-  "deviceId": "...",
-  "ok": false,
-  "notYetImplemented": "assess-coherence mode lands in PR-J"
+  "deviceId": "cdj-3000",
+  "tutorialId": "media-and-compatibility",
+  "tutorial": { /* full Tutorial object, all steps */ },
+  "manualPath": ".pipeline/cdj-3000/input/manuals/cdj-3000.pdf"
 }
 ```
+
+### What to evaluate
+
+1. **Workflow correctness**: does the sequence of steps match the
+   manual's procedure? Are any steps in the wrong order? Are critical
+   steps missing? Are there extraneous steps that aren't in the manual?
+2. **Conceptual fidelity**: does each step's `instruction` accurately
+   describe what the control DOES in the context of the workflow?
+3. **Coverage**: does the tutorial cover the manual's stated workflow
+   completely?
+
+### Required output
+
+```json
+{
+  "mode": "assess-coherence",
+  "deviceId": "cdj-3000",
+  "tutorialId": "media-and-compatibility",
+  "coherenceScore": 1-5,
+  "verdict": "pass" | "advisory" | "fail",
+  "citations": ["p.12", "p.15-17", ...],
+  "findings": [
+    {
+      "severity": "fail" | "warn" | "info",
+      "stepIndex": 0,
+      "message": "Step 1 says 'press EJECT first' but the manual specifies pressing PLAY first (p.14).",
+      "suggestedFix": [
+        { "op": "replace", "path": "/steps/0/instruction", "value": "Press PLAY/PAUSE..." }
+      ]
+    }
+  ],
+  "summary": "Overall: the tutorial mostly tracks the manual, but step 2 conflates EJECT with LOAD."
+}
+```
+
+### Score scale
+
+- **5/5 (pass)** — perfectly mirrors the manual's workflow
+- **4/5 (pass)** — minor wording differences; substance correct
+- **3/5 (advisory)** — workflow correct but missing/extra step
+- **2/5 (advisory)** — order or paraphrasing issues
+- **1/5 (fail)** — teaches wrong workflow; substantial rework needed
+
+### Patch path types
+
+Coherence findings may emit step-level patches (single-field edits like
+PR-I) AND tutorial-level patches for `/steps/<idx>` array ops:
+
+- `{ "op": "add", "path": "/steps/2", "value": {/* whole step */} }` — insert
+- `{ "op": "remove", "path": "/steps/3" }` — delete step
+- `{ "op": "replace", "path": "/steps/1", "value": {/* whole step */} }` — replace whole step
+
+### Safety
+
+- **Cite the manual page for every finding** — no citation = `cannotFix`.
+- **Confidence rubric**: HIGH = direct manual citation; MEDIUM = inferred;
+  LOW = uncertain.
+- **Never propose more than 3 step reorderings per assessment** — if more
+  are needed, return `verdict: "fail"` and suggest admin do a full
+  Request Changes.
+- Cumulative-state safety: PR-L's `verifyCumulativeState` post-validates
+  every patch. Reorders that break invariants are rejected unless admin
+  explicitly overrides.
 
 ---
 

@@ -17,6 +17,7 @@ import CanvasScaleControlToolbar, { useCanvasScale } from './CanvasScaleControl'
 import CanvasScaleModal from './CanvasScaleModal';
 import FloatingStepControl, { useStepControlMode } from './FloatingStepControl';
 import OrphanList from './OrphanList';
+import Layer5Panel from './Layer5Panel';
 import { useFloatingSafeArea } from './useFloatingSafeArea';
 import QaFixModal, { type FixModalRequest, type FindingType } from './QaFixModal';
 import { useCanvasAutoRefresh } from './useCanvasAutoRefresh';
@@ -798,6 +799,13 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
               )}
             </div>
           )}
+
+          {/* PR-K: Layer 5 Conceptual Coherence */}
+          <Layer5Panel
+            deviceId={deviceId}
+            tutorials={tutorials.map((t) => ({ id: t.id, title: t.title }))}
+            openFixModal={openFixModal}
+          />
 
           {/* Reviewer prose accordion (god-mode) */}
           {reviewerNoteEntries.length > 0 && (
