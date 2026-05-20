@@ -271,30 +271,30 @@ async function main() {
     check('NavigationControls Next disabled at last step', nextDisabled);
   });
 
-  // ───── 10. Scale control (Auto-fit button) ──────────────────────────
-  // The binary Fit toggle was replaced with continuous Scale UX in PR-G.
-  // Detailed scale tests live in e2e/canvas-scale.ts. Smoke-check the
-  // Auto-fit button + reset round-trip here.
-  await runSection('10. Scale control (auto-fit + reset)', async () => {
+  // ───── 10. Scale control (editor-parity − / + / % / ⤢) ────────────
+  // PR-G-rev replaced the slider + Fit button with editor's exact
+  // pattern. Detailed tests live in e2e/canvas-scale.ts; smoke-check
+  // the − button (×0.8) + percent-reset round-trip here.
+  await runSection('10. Scale control (− button + percent reset)', async () => {
     const wrapper = page.locator('[data-testid="panel-scaled-wrapper"]');
-    // Reset to 100% before this test (other tests may have left a session scale)
+    // Reset to 100% before this test (auto-fit / other tests may have set a scale)
     await page.locator('[data-testid="scale-percent"]').click();
     await page.waitForTimeout(200);
     const before = await wrapper.boundingBox();
 
-    await page.locator('[data-testid="scale-autofit"]').click();
+    await page.locator('[data-testid="scale-minus"]').click();
     await page.waitForTimeout(400);
     const after = await wrapper.boundingBox();
-    check('panel shrinks after Auto-fit',
+    check('panel shrinks after − (×0.8)',
       (after?.width ?? 0) < (before?.width ?? Infinity),
       `before w=${before?.width?.toFixed(0)}, after w=${after?.width?.toFixed(0)}`);
-    await snap(page, '04-fit-on');
+    await snap(page, '04-scale-minus');
 
-    // Reset → click 100% label
+    // Reset → click % label
     await page.locator('[data-testid="scale-percent"]').click();
     await page.waitForTimeout(400);
     const back = await wrapper.boundingBox();
-    check('panel returns to native on reset',
+    check('panel returns to 100% on percent click',
       Math.abs((back?.width ?? 0) - (before?.width ?? 0)) < 5,
       `native w=${before?.width?.toFixed(0)}, back w=${back?.width?.toFixed(0)}`);
   });
@@ -428,14 +428,15 @@ async function main() {
   await navigateToCanvas(page2, errors2);
   await snap(page2, '07-laptop-native');
 
-  await runSection('Laptop: auto-fit works at small viewport', async () => {
-    await page2.locator('[data-testid="scale-autofit"]').click();
+  await runSection('Laptop: panel fits at small viewport (auto-fit default)', async () => {
+    // PR-G-rev: no explicit auto-fit button. The first-visit default is
+    // computed by computeAutoFit and applied automatically.
     await page2.waitForTimeout(500);
     await snap(page2, '08-laptop-fit-on');
     const wrapper = page2.locator('[data-testid="panel-scaled-wrapper"]');
     const bb = await wrapper.boundingBox();
-    check('panel fits in viewport after auto-fit',
-      (bb?.width ?? Infinity) <= 1366 && (bb?.height ?? Infinity) <= 700,
+    check('panel fits in viewport at small viewport',
+      (bb?.width ?? Infinity) <= 1366,
       `panel ${bb?.width?.toFixed(0)}×${bb?.height?.toFixed(0)}`);
   });
 

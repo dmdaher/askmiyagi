@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import type { Tutorial } from '@/types/tutorial';
 import type { TutorialReviewSummary, TutorialIssue } from '@/lib/pipeline/tutorial-validators';
@@ -14,6 +14,8 @@ import ProgressBar from '@/components/tutorial/ProgressBar';
 import StepContent from '@/components/tutorial/StepContent';
 import NavigationControls from '@/components/tutorial/NavigationControls';
 import CanvasScaleControlToolbar, { useCanvasScale } from './CanvasScaleControl';
+import CanvasScaleModal from './CanvasScaleModal';
+import FloatingStepControl, { useStepControlMode } from './FloatingStepControl';
 import { useCanvasAutoRefresh } from './useCanvasAutoRefresh';
 
 interface QaFinding {
@@ -59,6 +61,16 @@ const DISMISS_STALE_KEY = (deviceId: string, mtime: number | null | undefined) =
 
 export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const compact = searchParams.get('compact') === '1';
+  const toggleCompact = useCallback(() => {
+    const next = new URLSearchParams(searchParams.toString());
+    if (compact) next.delete('compact');
+    else next.set('compact', '1');
+    const q = next.toString();
+    router.push(`${pathname}${q ? `?${q}` : ''}`);
+  }, [compact, searchParams, router, pathname]);
   const {
     tutorials,
     summary,
@@ -83,6 +95,7 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   });
   const [diagnosticsCollapsed, setDiagnosticsCollapsed] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [scaleModalOpen, setScaleModalOpen] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
   const [actionInFlight, setActionInFlight] = useState<'approve' | 'changes' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -170,10 +183,11 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   useEffect(() => {
     suppressRef.current =
       feedbackOpen ||
+      scaleModalOpen ||
       actionInFlight !== null ||
       refreshInFlight ||
       qaRerunInFlight;
-  }, [feedbackOpen, actionInFlight, refreshInFlight, qaRerunInFlight]);
+  }, [feedbackOpen, scaleModalOpen, actionInFlight, refreshInFlight, qaRerunInFlight]);
 
 
 
@@ -212,11 +226,15 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
       else if (e.key === 'k' || e.key === 'K') { e.preventDefault(); prevStep(); }
       else if (e.key === ']') { e.preventDefault(); cycleTutorial(1); }
       else if (e.key === '[') { e.preventDefault(); cycleTutorial(-1); }
-      else if (e.key === 'Escape') router.push(`/admin/${deviceId}`);
+      else if (e.key === 'Escape') {
+        // Compact mode: Esc exits compact first. Second Esc → /admin.
+        if (compact) toggleCompact();
+        else router.push(`/admin/${deviceId}`);
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [nextStep, prevStep, cycleTutorial, router, deviceId]);
+  }, [nextStep, prevStep, cycleTutorial, router, deviceId, compact, toggleCompact]);
 
   // ──────────── Action handlers ───────────────────────────────────────────
   const submitResolution = useCallback(async (resolution: string) => {
@@ -288,16 +306,28 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     return () => ro.disconnect();
   }, []);
 
-  const computeAutoFit = useCallback(() => {
-    if (!manifest || previewSize.w === 0 || previewSize.h === 0) return 1;
+  // computeAutoFit — first-visit default when no persisted scale yet.
+  // Fits panel into the preview area on whichever dimension is more
+  // constrained, with a minimum of 50% so the panel stays readable.
+  // For tall panels (cdj-3000 at 1469×1842) at 1400-wide viewport with
+  // sidebar+diagnostics chrome, the preview area is ~820w × ~408h with
+  // the anchored step block, so height is the binding constraint and
+  // we'd fit to ~22% — overridden by the 50% floor so the panel remains
+  // readable. Admin scrolls vertically to see the rest, OR can switch
+  // step control to "floating"/"mini"/"hidden" to reclaim viewport.
+  const computeAutoFit = useCallback((): number | null => {
+    if (!manifest || previewSize.w === 0 || previewSize.h === 0) return null;
     const PAD = 48;
     const fitW = (previewSize.w - PAD) / manifest.panelWidth;
     const fitH = (previewSize.h - PAD) / manifest.panelHeight;
-    return Math.max(0.1, Math.min(fitW, fitH, 1));
+    const fit = Math.min(fitW, fitH);
+    // Clamp: ≥ 50% (readable), ≤ 100% (don't blow up small panels)
+    return Math.max(0.5, Math.min(fit, 1));
   }, [manifest, previewSize]);
 
   const scaleApi = useCanvasScale({ deviceId, computeAutoFit });
   const panelScale = scaleApi.scale;
+  const stepControl = useStepControlMode(deviceId);
 
   // Live auto-refresh poll — picks up upstream changes (editor save,
   // Fix apply, pull-from-hosted) without admin needing to reload.
@@ -367,7 +397,21 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          <CanvasScaleControlToolbar api={scaleApi} />
+          <CanvasScaleControlToolbar api={scaleApi} onOpenModal={() => setScaleModalOpen(true)} />
+          <button
+            type="button"
+            onClick={toggleCompact}
+            data-testid="compact-toggle"
+            title={compact ? 'Exit compact mode (Esc)' : 'Compact mode — hide admin chrome'}
+            aria-pressed={compact}
+            className={`text-[11px] px-2 py-1 rounded font-medium border transition-colors cursor-pointer ${
+              compact
+                ? 'border-cyan-500/40 bg-cyan-500/20 text-cyan-300'
+                : 'border-white/15 text-white/70 hover:bg-white/10'
+            }`}
+          >
+            {compact ? '⤡ Exit compact' : '⛶ Compact'}
+          </button>
           {actionError && (
             <span className="text-[11px] text-red-400 mr-2 max-w-xs truncate" title={actionError}>
               {actionError}
@@ -682,36 +726,26 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
             )}
           </div>
 
-          {/* ── End-user-feel zone: ProgressBar + StepContent + Nav ── */}
-          <div className="flex-shrink-0 border-t border-white/10 bg-[#0f0f1a]">
-            <div className="max-w-[1100px] mx-auto px-6 pt-4 pb-2 flex items-center gap-4">
-              <p
-                className="text-[10px] uppercase tracking-wider text-white/40 flex-shrink-0"
-                data-testid="current-step-num"
-              >
-                Step {currentStepIndex + 1} / {totalSteps}
-              </p>
-              <div className="flex-1 min-w-0">
-                <ProgressBar
-                  progress={((currentStepIndex + 1) / totalSteps) * 100}
-                  steps={totalSteps}
-                  currentStep={currentStepIndex}
-                  onStepClick={goToStep}
-                />
-              </div>
-              <div className="flex-shrink-0">
-                <NavigationControls
-                  onPrev={prevStep}
-                  onNext={nextStep}
-                  isPrevDisabled={currentStepIndex === 0}
-                  isNextDisabled={currentStepIndex >= totalSteps - 1}
-                />
-              </div>
-            </div>
-            <div data-testid="step-content-wrapper">
-              {step && <StepContent step={step} />}
-            </div>
-          </div>
+          {/* ── End-user-feel zone: ProgressBar + StepContent + Nav ─
+             ── Anchored mode renders in-flow here; other modes render
+             via the second mount below the main grid (absolutely
+             positioned). ─────────────────────────────────────────── */}
+          {stepControl.mode === 'anchored' && (
+            <FloatingStepControl
+              deviceId={deviceId}
+              mode={stepControl.mode}
+              setMode={stepControl.setMode}
+              position={stepControl.position}
+              setPosition={stepControl.setPosition}
+              currentStepIndex={currentStepIndex}
+              totalSteps={totalSteps}
+              step={step}
+              steps={currentTutorial.steps}
+              onStepClick={goToStep}
+              onPrev={prevStep}
+              onNext={nextStep}
+            />
+          )}
         </div>
 
         {/* ── Diagnostics ───────────────────────────────────────── */}
@@ -725,6 +759,34 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
       </div>
 
       {/* ── Feedback modal ─────────────────────────────────────────── */}
+      {/* ── Floating / mini / hidden step control ───────────────────
+         Rendered at the canvas root (not inside the preview column)
+         so absolute positioning floats over the whole canvas. */}
+      {stepControl.mode !== 'anchored' && (
+        <FloatingStepControl
+          deviceId={deviceId}
+          mode={stepControl.mode}
+          setMode={stepControl.setMode}
+          position={stepControl.position}
+          setPosition={stepControl.setPosition}
+          currentStepIndex={currentStepIndex}
+          totalSteps={totalSteps}
+          step={step}
+          steps={currentTutorial.steps}
+          onStepClick={goToStep}
+          onPrev={prevStep}
+          onNext={nextStep}
+        />
+      )}
+
+      {/* ── Scale modal ──────────────────────────────────────────── */}
+      <CanvasScaleModal
+        open={scaleModalOpen}
+        currentScale={scaleApi.scale}
+        onApply={(s) => scaleApi.setScale(s)}
+        onClose={() => setScaleModalOpen(false)}
+      />
+
       {feedbackOpen && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60"

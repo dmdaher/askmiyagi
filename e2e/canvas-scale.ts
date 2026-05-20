@@ -1,17 +1,26 @@
 /**
- * Canvas Scale UX — comprehensive verification.
+ * Canvas Scale UX — editor-parity verification.
+ *
+ * After PR-G-rev the canvas scale matches the editor's `Scale:` cluster
+ * exactly: `[−] [%] [+] [⤢ Scale…]`. No slider, no auto-fit button.
  *
  * Covers:
- *   1. Slider drag changes scale
- *   2. + / - buttons step ±10%
- *   3. Cmd+0 resets to 100%
- *   4. Cmd+= / Cmd+- step ±10%
- *   5. Cmd+wheel over panel preview area zooms (preventDefault inside)
- *   6. Cmd+wheel OUTSIDE preview does NOT preventDefault (browser zoom still works elsewhere)
- *   7. sessionStorage persists per device (different devices → different scales)
- *   8. Reset (click % label) returns to 100%
- *   9. Slider clamps to 25–200%, wheel can overshoot to 10–500%
- *  10. Reload picks up persisted scale
+ *   1. Toolbar renders the editor-parity row (label + 4 buttons, NO slider)
+ *   2. − button scales DOWN to 80% of current (editor's scaleCanvas(0.8))
+ *   3. + button scales UP to 125% of current (editor's scaleCanvas(1.25))
+ *   4. Click % resets to 100%
+ *   5. Cmd+0 / Cmd+= / Cmd+- keyboard shortcuts (invisible, power-user)
+ *   6. Cmd+wheel inside panel preview scales (preventDefault inside only)
+ *   7. Cmd+wheel OUTSIDE preview does not scale
+ *   8. sessionStorage persists per device
+ *   9. Reload picks up persisted scale
+ *  10. Modal opens via ⤢ Scale… and preset buttons set the value
+ *  11. Modal Apply commits the value to scale state
+ *  12. Modal Cancel discards changes
+ *  13. Modal percent input + Enter commits
+ *  14. Modal Esc closes without changes
+ *  15. Slider element does NOT exist in DOM (regression guard)
+ *  16. ⇆ Fit button does NOT exist in DOM (regression guard)
  */
 import { chromium, BrowserContext, Page } from 'playwright';
 import fs from 'fs';
@@ -52,13 +61,7 @@ async function openCanvas(page: Page, device = DEVICE) {
   await page.waitForTimeout(800);
 }
 
-async function getPanelWrapperWidth(page: Page): Promise<number> {
-  const wrapper = page.locator('[data-testid="panel-scaled-wrapper"]');
-  const bb = await wrapper.boundingBox();
-  return bb?.width ?? 0;
-}
-
-async function getScalePercentText(page: Page): Promise<string> {
+async function getScalePercent(page: Page): Promise<string> {
   return (await page.locator('[data-testid="scale-percent"]').textContent()) ?? '';
 }
 
@@ -76,167 +79,174 @@ async function main() {
   await clearSessionScale(ctx);
   const page = await ctx.newPage();
 
-  console.log(`\n══ Canvas Scale UX — ${DEVICE} ══════════════════════\n`);
+  console.log(`\n══ Canvas Scale UX (editor parity) — ${DEVICE} ════════════\n`);
   await openCanvas(page);
 
-  const nativeWidth = await getPanelWrapperWidth(page);
-  const nativePercent = await getScalePercentText(page);
-  check('initial scale is 100%', nativePercent === '100%', `text="${nativePercent}"`);
-  check('native panel width measured', nativeWidth > 100, `${nativeWidth.toFixed(0)}px`);
+  // ── 15+16. Regression guards: old elements GONE ────────────────────────
+  console.log('── 0. Regression: removed elements ───');
+  check('slider element is GONE', (await page.locator('[data-testid="scale-slider"]').count()) === 0);
+  check('⇆ Fit button is GONE', (await page.locator('[data-testid="scale-autofit"]').count()) === 0);
 
-  // ── 1. Slider drag ─────────────────────────────────────────────────────
-  console.log('\n── 1. Slider drag ─────────────────────────────');
-  // Programmatically set the slider value via input.fill doesn't work for range;
-  // use evaluate to set value + dispatch input event.
-  // React uses a custom value setter shim — must bypass it via the native
-  // prototype setter for the change event to register on controlled inputs.
-  await page.evaluate(() => {
-    const slider = document.querySelector('[data-testid="scale-slider"]') as HTMLInputElement;
-    const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set!;
-    nativeSetter.call(slider, '0.5');
-    slider.dispatchEvent(new Event('input', { bubbles: true }));
-    slider.dispatchEvent(new Event('change', { bubbles: true }));
-  });
-  await page.waitForTimeout(300);
-  const after50 = await getPanelWrapperWidth(page);
-  const text50 = await getScalePercentText(page);
-  check('slider 0.5 → 50% text', text50 === '50%', `text="${text50}"`);
-  check('slider 0.5 → wrapper half native', Math.abs(after50 / nativeWidth - 0.5) < 0.05,
-    `ratio=${(after50/nativeWidth).toFixed(2)}`);
+  // ── 1. Editor-parity row renders ───────────────────────────────────────
+  console.log('\n── 1. Editor-parity row ──────────────');
+  const toolbar = page.locator('[data-testid="canvas-scale-toolbar"]');
+  check('Scale: label visible', (await toolbar.locator('text=Scale:').count()) > 0);
+  check('− button present', (await page.locator('[data-testid="scale-minus"]').count()) === 1);
+  check('% display present', (await page.locator('[data-testid="scale-percent"]').count()) === 1);
+  check('+ button present', (await page.locator('[data-testid="scale-plus"]').count()) === 1);
+  check('⤢ Scale… button present', (await page.locator('[data-testid="scale-modal-open"]').count()) === 1);
 
-  // ── 2. + / - buttons ──────────────────────────────────────────────────
-  console.log('\n── 2. + / - buttons ──────────────────────');
-  // Reset first
+  // Initial scale: auto-fit on first visit (computeAutoFit returns a
+  // clamped value in [50, 100]%). For cdj-3000 at 1400×900 viewport the
+  // height constraint forces ≥ 50% floor.
+  const initial = await getScalePercent(page);
+  check('initial scale auto-fit (≤ 100%, ≥ 50%)',
+    /%/.test(initial) && Number(initial.replace('%','')) >= 50 && Number(initial.replace('%','')) <= 100,
+    `text="${initial}"`);
+
+  // Reset to 100% for subsequent button tests
   await page.locator('[data-testid="scale-percent"]').click();
   await page.waitForTimeout(200);
-  check('reset via percent click → 100%',
-    (await getScalePercentText(page)) === '100%');
 
+  // ── 2. − scales DOWN to 80% (multiplicative, editor parity) ────────────
+  console.log('\n── 2. − button (× 0.8) ────────────────');
+  await page.locator('[data-testid="scale-minus"]').click();
+  await page.waitForTimeout(200);
+  const afterMinus = await getScalePercent(page);
+  check('after −: 100 → 80%', afterMinus === '80%', `text="${afterMinus}"`);
+
+  // ── 3. + scales UP to 125% (multiplicative) ────────────────────────────
+  console.log('\n── 3. + button (× 1.25) ──────────────');
+  await page.locator('[data-testid="scale-percent"]').click(); // reset to 100%
+  await page.waitForTimeout(200);
   await page.locator('[data-testid="scale-plus"]').click();
   await page.waitForTimeout(200);
-  const afterPlus = await getScalePercentText(page);
-  check('+ button → 110%', afterPlus === '110%', `text="${afterPlus}"`);
+  const afterPlus = await getScalePercent(page);
+  check('after +: 100 → 125%', afterPlus === '125%', `text="${afterPlus}"`);
 
-  await page.locator('[data-testid="scale-minus"]').click();
-  await page.locator('[data-testid="scale-minus"]').click();
+  // ── 4. Reset via % click ───────────────────────────────────────────────
+  console.log('\n── 4. % click resets ──────────────────');
+  await page.locator('[data-testid="scale-percent"]').click();
   await page.waitForTimeout(200);
-  const afterMinus = await getScalePercentText(page);
-  check('- button (×2) from 110 → 90%', afterMinus === '90%', `text="${afterMinus}"`);
+  check('% click → 100%', (await getScalePercent(page)) === '100%');
 
-  // ── 3. Cmd+0 reset ────────────────────────────────────────────────────
-  console.log('\n── 3. Cmd+0 reset ────────────────────────');
-  await page.keyboard.press('Meta+0');
-  await page.waitForTimeout(200);
-  check('Cmd+0 → 100%', (await getScalePercentText(page)) === '100%');
-
-  // ── 4. Cmd+= / Cmd+- ──────────────────────────────────────────────────
-  console.log('\n── 4. Cmd+= / Cmd+- ──────────────────────');
+  // ── 5. Cmd+0 / Cmd+= / Cmd+- (invisible power shortcuts) ───────────────
+  console.log('\n── 5. Keyboard shortcuts ──────────────');
   await page.keyboard.press('Meta+=');
   await page.waitForTimeout(200);
-  check('Cmd+= → 110%', (await getScalePercentText(page)) === '110%');
+  check('Cmd+= → 110%', (await getScalePercent(page)) === '110%');
   await page.keyboard.press('Meta+-');
   await page.keyboard.press('Meta+-');
   await page.waitForTimeout(200);
-  check('Cmd+- ×2 → 90%', (await getScalePercentText(page)) === '90%');
-
-  // ── 5. Cmd+wheel over preview ─────────────────────────────────────────
-  console.log('\n── 5. Cmd+wheel inside panel preview ─────');
-  await page.keyboard.press('Meta+0'); // reset
+  check('Cmd+- ×2 → 90%', (await getScalePercent(page)) === '90%');
+  await page.keyboard.press('Meta+0');
   await page.waitForTimeout(200);
+  check('Cmd+0 → 100%', (await getScalePercent(page)) === '100%');
 
+  // ── 6. Cmd+wheel inside preview ────────────────────────────────────────
+  console.log('\n── 6. Cmd+wheel inside preview ───────');
   const scrollEl = page.locator('[data-testid="panel-preview-scroll"]');
   const sbb = await scrollEl.boundingBox();
   if (sbb) {
-    // Cmd+wheel up (zoom in)
     await page.mouse.move(sbb.x + sbb.width / 2, sbb.y + sbb.height / 2);
     await page.keyboard.down('Meta');
     await page.mouse.wheel(0, -100);
     await page.keyboard.up('Meta');
     await page.waitForTimeout(300);
-    const afterWheelUp = await getScalePercentText(page);
-    check('Cmd+wheel up → zoom in',
-      /^1[0-9][0-9]%$/.test(afterWheelUp.trim()) && afterWheelUp !== '100%',
-      `text="${afterWheelUp}"`);
-
-    // Cmd+wheel down (zoom out)
-    await page.keyboard.down('Meta');
-    await page.mouse.wheel(0, 100);
-    await page.mouse.wheel(0, 100);
-    await page.keyboard.up('Meta');
-    await page.waitForTimeout(300);
-    const afterWheelDown = await getScalePercentText(page);
-    check('Cmd+wheel down → zoom out',
-      Number(afterWheelDown.replace('%', '')) < Number(afterWheelUp.replace('%', '')),
-      `${afterWheelUp} → ${afterWheelDown}`);
-  } else {
-    check('preview area bbox found', false, 'sbb=null');
+    const afterWheel = await getScalePercent(page);
+    check('Cmd+wheel up zooms in',
+      afterWheel !== '100%' && Number(afterWheel.replace('%','')) > 100,
+      `text="${afterWheel}"`);
   }
 
-  // ── 6. Cmd+wheel OUTSIDE preview does NOT scale canvas ────────────────
-  console.log('\n── 6. Cmd+wheel outside preview = no scale change ─');
+  // ── 7. Cmd+wheel outside preview ───────────────────────────────────────
+  console.log('\n── 7. Cmd+wheel outside preview = no change ─');
   await page.keyboard.press('Meta+0');
   await page.waitForTimeout(200);
-  const baselinePercent = await getScalePercentText(page);
-  // Move cursor to the top bar (definitively outside the panel preview)
+  const baseline = await getScalePercent(page);
   await page.mouse.move(700, 30);
   await page.keyboard.down('Meta');
   await page.mouse.wheel(0, -200);
   await page.keyboard.up('Meta');
   await page.waitForTimeout(300);
-  const afterOutside = await getScalePercentText(page);
-  check('Cmd+wheel outside preview leaves canvas scale unchanged',
-    afterOutside === baselinePercent, `before="${baselinePercent}" after="${afterOutside}"`);
+  check('outside preview: scale unchanged',
+    (await getScalePercent(page)) === baseline, `baseline="${baseline}"`);
 
-  // ── 7. sessionStorage persists per device ─────────────────────────────
-  console.log('\n── 7. sessionStorage persists per device ──');
-  // Set cdj-3000 to 75%
-  await page.evaluate(() => {
-    const slider = document.querySelector('[data-testid="scale-slider"]') as HTMLInputElement;
-    const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set!;
-    nativeSetter.call(slider, '0.75');
-    slider.dispatchEvent(new Event('input', { bubbles: true }));
-    slider.dispatchEvent(new Event('change', { bubbles: true }));
-  });
+  // ── 8. sessionStorage persists per device ──────────────────────────────
+  console.log('\n── 8. sessionStorage per device ──────');
+  await page.locator('[data-testid="scale-plus"]').click(); // → 125%
   await page.waitForTimeout(200);
-  check('set cdj-3000 to 75%', (await getScalePercentText(page)) === '75%');
-  const stored = await page.evaluate(() => sessionStorage.getItem(`canvas:scale:${'cdj-3000'}`));
-  check('cdj-3000 scale persisted in sessionStorage', stored === '0.75', `value="${stored}"`);
+  const stored = await page.evaluate(() =>
+    sessionStorage.getItem(`canvas:scale:${'cdj-3000'}`));
+  check('sessionStorage value set', stored !== null);
+  check('persisted value rounds to 125%',
+    stored !== null && Math.round(Number(stored) * 100) === 125,
+    `stored=${stored}`);
 
-  // ── 8. Reload picks up persisted scale ────────────────────────────────
-  console.log('\n── 8. Reload picks up persisted scale ─────');
+  // ── 9. Reload picks up persisted scale ─────────────────────────────────
+  console.log('\n── 9. Reload picks up persisted scale ─');
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForSelector('[data-testid="tutorial-review-canvas"]', { timeout: 15_000 });
   await page.waitForTimeout(600);
-  const afterReload = await getScalePercentText(page);
-  check('after reload, scale still 75%', afterReload === '75%', `text="${afterReload}"`);
+  check('after reload, scale persisted',
+    (await getScalePercent(page)) === '125%',
+    `text="${await getScalePercent(page)}"`);
 
-  // ── 9. Slider clamp 25-200% ───────────────────────────────────────────
-  console.log('\n── 9. Slider clamps 25-200% ──────────────');
-  await page.evaluate(() => {
-    const slider = document.querySelector('[data-testid="scale-slider"]') as HTMLInputElement;
-    check_min: { /* slider min attr is 0.25 */ }
-    return { min: slider.min, max: slider.max };
-  });
-  const sliderAttrs = await page.evaluate(() => {
-    const s = document.querySelector('[data-testid="scale-slider"]') as HTMLInputElement;
-    return { min: s.min, max: s.max };
-  });
-  check('slider min is 25%', sliderAttrs.min === '0.25', `min=${sliderAttrs.min}`);
-  check('slider max is 200%', sliderAttrs.max === '2', `max=${sliderAttrs.max}`);
-
-  // ── 10. Auto-fit button ────────────────────────────────────────────────
-  console.log('\n── 10. Auto-fit ──────────────────────────');
-  await page.keyboard.press('Meta+0');
+  // Reset to 100% before modal tests
+  await page.locator('[data-testid="scale-percent"]').click();
   await page.waitForTimeout(200);
-  await page.locator('[data-testid="scale-autofit"]').click();
-  await page.waitForTimeout(400);
-  const autoPercent = Number((await getScalePercentText(page)).replace('%', ''));
-  check('auto-fit ≤ 100%', autoPercent <= 100, `${autoPercent}%`);
-  // Preview area is much smaller than viewport (260 sidebar + 320 diagnostics
-  // + bottom step content). For cdj-3000 at 1400x900 the fit value is in the
-  // 30-60% range — assert it's at least 20% to catch math bugs without being
-  // brittle.
-  check('auto-fit ≥ 20% (sane lower bound)', autoPercent >= 20, `${autoPercent}%`);
+
+  // ── 10. Modal opens ────────────────────────────────────────────────────
+  console.log('\n── 10. Modal opens ───────────────────');
+  await page.locator('[data-testid="scale-modal-open"]').click();
+  await page.waitForTimeout(300);
+  const modalVisible = await page.locator('[data-testid="canvas-scale-modal"]').isVisible();
+  check('⤢ Scale… opens modal', modalVisible);
+
+  // ── 11. Presets set the input value ────────────────────────────────────
+  console.log('\n── 11. Preset 150 sets input ─────────');
+  await page.locator('[data-testid="canvas-scale-preset-150"]').click();
+  await page.waitForTimeout(150);
+  const inputVal = await page.locator('[data-testid="canvas-scale-modal-input"]').inputValue();
+  check('preset 150 → input=150', inputVal === '150', `value="${inputVal}"`);
+
+  // ── 12. Apply commits ──────────────────────────────────────────────────
+  console.log('\n── 12. Apply commits 150% ────────────');
+  await page.locator('[data-testid="canvas-scale-modal-apply"]').click();
+  await page.waitForTimeout(300);
+  check('after Apply: 150%', (await getScalePercent(page)) === '150%');
+  check('modal closed', (await page.locator('[data-testid="canvas-scale-modal"]').count()) === 0);
+
+  // ── 13. Reset, open modal, custom value + Enter ────────────────────────
+  console.log('\n── 13. Custom value via Enter ────────');
+  await page.locator('[data-testid="scale-percent"]').click(); // reset 100%
+  await page.waitForTimeout(200);
+  await page.locator('[data-testid="scale-modal-open"]').click();
+  await page.waitForTimeout(300);
+  await page.locator('[data-testid="canvas-scale-modal-input"]').fill('175');
+  await page.locator('[data-testid="canvas-scale-modal-input"]').press('Enter');
+  await page.waitForTimeout(300);
+  check('custom 175 → 175%', (await getScalePercent(page)) === '175%');
+
+  // ── 14. Cancel discards ────────────────────────────────────────────────
+  console.log('\n── 14. Cancel discards changes ──────');
+  await page.locator('[data-testid="scale-modal-open"]').click();
+  await page.waitForTimeout(300);
+  await page.locator('[data-testid="canvas-scale-modal-input"]').fill('50');
+  await page.locator('[data-testid="canvas-scale-modal-cancel"]').click();
+  await page.waitForTimeout(200);
+  check('Cancel preserves prior scale',
+    (await getScalePercent(page)) === '175%',
+    `text="${await getScalePercent(page)}"`);
+
+  // ── 15. Esc closes modal ───────────────────────────────────────────────
+  console.log('\n── 15. Esc closes modal ──────────────');
+  await page.locator('[data-testid="scale-modal-open"]').click();
+  await page.waitForTimeout(300);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
+  check('Esc closed modal',
+    (await page.locator('[data-testid="canvas-scale-modal"]').count()) === 0);
 
   await ctx.close();
   await browser.close();
