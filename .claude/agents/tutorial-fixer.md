@@ -169,18 +169,152 @@ Bad: *"This appears to be some kind of indicator that might be related to anothe
 
 ---
 
-## Mode: `fix-step` (PR-I — NOT YET IMPLEMENTED)
+## Mode: `fix-step` (PR-I — IMPLEMENTED)
 
-When called with `mode: "fix-step"`, return:
+**Goal**: produce a JSON patch that fixes EXACTLY one finding on one
+step of one tutorial. You never write files. The admin reviews your
+patch in a modal and clicks Apply if they accept it.
+
+### Input payload
+
+```json
+{
+  "findingType": "layer1a" | "layer3a" | "layer3b",
+  "tutorialId": "basic-playback-and-transport",
+  "stepIndex": 4,
+  "payload": { ... finding-specific details ... },
+  "additionalContext": "optional admin hint"
+}
+```
+
+Per finding type, `payload` looks like:
+
+**`layer1a`** (highlightControls ID missing from manifest):
+```json
+{ "badControlId": "BOGUS_ID", "step": { ... full step ... },
+  "manifestControlIds": ["PLAY_PAUSE", "CUE_BTN", ...] }
+```
+
+**`layer3a`** (step text mentions control NOT in highlightControls):
+```json
+{ "mentionedControlId": "TEMPO_SLIDER", "step": { ... full step ... },
+  "controlLabel": "TEMPO" }
+```
+
+**`layer3b`** (highlightControls entry NOT mentioned in step text):
+```json
+{ "highlightedControlId": "VINYL_SPEED_ADJ", "step": { ... full step ... },
+  "controlLabel": "VINYL SPEED ADJUST" }
+```
+
+In every case `step` is the FULL TutorialStep object:
+```json
+{
+  "id": "step-5", "title": "...", "instruction": "...",
+  "details": "...", "tipText": "...",
+  "highlightControls": ["..."], "panelStateChanges": {...},
+  "displayState": {...}
+}
+```
+
+### What to produce
 
 ```json
 {
   "mode": "fix-step",
-  "deviceId": "...",
-  "ok": false,
-  "notYetImplemented": "fix-step mode lands in PR-I"
+  "deviceId": "cdj-3000",
+  "ok": true,
+  "result": {
+    "tutorialId": "basic-playback-and-transport",
+    "stepIndex": 4,
+    "findingType": "layer1a",
+    "patch": [
+      { "op": "replace",
+        "path": "/highlightControls/0",
+        "value": "PLAY_PAUSE",
+        "previousValue": "BOGUS_ID" }
+    ],
+    "explanation": "BOGUS_ID is not in the manifest. The step's instruction says 'Press PLAY/PAUSE to start playback' — manual page 46 confirms this is the PLAY_PAUSE button. Replaced.",
+    "confidence": "high",
+    "citation": "manual page 46",
+    "alternatives": [
+      { "value": "CUE_BTN", "rejected": "CUE_BTN exists but the step text explicitly mentions PLAY/PAUSE, not cue" }
+    ]
+  }
 }
 ```
+
+If you cannot fix safely, return `{ ok: false, cannotFix: true, question: "..." }`.
+
+### Per-finding decision algorithm
+
+#### `layer1a` — replace bad ID
+
+1. Read `payload.step.instruction` + `title` + `details` + `tipText`.
+2. Find which manifest control the text actually refers to:
+   - Look for any control label appearing verbatim in the text
+   - Look for keyword matches (e.g., "play", "cue", "loop")
+3. If exactly ONE manifest ID matches → patch `highlightControls` to replace `badControlId` with that ID. Confidence: `high`.
+4. If multiple plausible matches → list them in `alternatives`, pick the strongest as the patch, set confidence `medium`.
+5. If no clear match → `cannotFix` with question: "step references a control not in manifest. Best guess is X but text mentions Y. Admin: pick or revise step?"
+
+#### `layer3a` — text mentions control NOT highlighted
+
+1. Determine intent: is this mention a) *teaching the control* (must be highlighted) or b) *contextual reference* ("unlike the X button, this one…")?
+2. Use these signals for "teaching":
+   - Imperative verb ("press X", "rotate X", "hold X")
+   - Subject of the sentence
+3. Signals for "contextual":
+   - Comparison phrasing ("unlike", "different from")
+   - Past tense ("we used X in step 2")
+   - Parenthetical ("X is also available, but…")
+4. If teaching → patch `highlightControls` to append `mentionedControlId`. Confidence `high` if imperative, `medium` otherwise.
+5. If contextual → `cannotFix: true, question: "Step mentions X contextually ('unlike X…'). No highlight needed. Snooze this finding?"` — admin can dismiss.
+
+#### `layer3b` — highlight NOT mentioned in text
+
+1. Determine intent: should the text be rewritten to mention the control, OR should the highlight be REMOVED?
+2. Signals for "rewrite text":
+   - Control is visually central to the step (e.g., the LED that lights when the step's action is performed)
+   - The step's `panelStateChanges` modifies the control
+3. Signals for "remove highlight":
+   - Control is a peripheral indicator
+   - Multiple highlights — this one's extra
+4. If rewrite → patch `instruction` (and optionally `tipText`) to mention the control by its label. Use the exact manual phrasing if possible.
+5. If remove → patch `highlightControls` to drop the entry.
+6. Always cite the manual page that supports your decision.
+
+### Patch format
+
+Use JSON Patch (RFC 6902) operations. Allowed paths:
+- `/highlightControls/<index>` — replace, add, remove
+- `/instruction`, `/title`, `/details`, `/tipText` — replace (string)
+- `/panelStateChanges/<key>` — replace, add (advanced; defer to PR-K)
+- `/displayState/<key>` — replace (defer to PR-K)
+
+**Never** patch outside the targeted step. **Never** patch tutorial-level metadata (id, title, category, etc.).
+
+Output `previousValue` alongside each operation so the admin can see the diff cleanly.
+
+### Cumulative-state safety check
+
+Before producing the patch, mentally walk forward through later steps:
+- Does any later step's `panelStateChanges` assume the current step's state?
+- Does any later step's `highlightControls` reference something that depends on this step's setup?
+
+If your patch would break a later step → `cannotFix: true, question: "Patching this step would break step N's prior-state invariant. Admin: should we patch both, or revise scope?"`
+
+### Confidence rubric (apply consistently)
+
+- **high**: deterministic decision (exact label match, imperative verb, manual page directly supports)
+- **medium**: judgment call with clear evidence
+- **low**: best guess; explicitly tell admin to review carefully
+
+### Alternatives field
+
+If you considered other patches and rejected them, list them in `alternatives` with the rejected value + 1-sentence reason. This gives admin a "try another" option if they disagree.
+
+---
 
 ## Mode: `assess-coherence` (PR-J — NOT YET IMPLEMENTED)
 

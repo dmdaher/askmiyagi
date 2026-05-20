@@ -18,6 +18,7 @@ import CanvasScaleModal from './CanvasScaleModal';
 import FloatingStepControl, { useStepControlMode } from './FloatingStepControl';
 import OrphanList from './OrphanList';
 import { useFloatingSafeArea } from './useFloatingSafeArea';
+import QaFixModal, { type FixModalRequest, type FindingType } from './QaFixModal';
 import { useCanvasAutoRefresh } from './useCanvasAutoRefresh';
 
 type OrphanCategory = 'A' | 'B' | 'C' | 'D';
@@ -164,6 +165,17 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const [orphanActionInFlight, setOrphanActionInFlight] = useState<string | null>(null);
   const [orphanActionError, setOrphanActionError] = useState<string | null>(null);
 
+  // PR-I two-phase Fix modal (for Layer 1a / 3a / 3b agent fixes)
+  const [fixModalRequest, setFixModalRequest] = useState<FixModalRequest | null>(null);
+  const openFixModal = useCallback((request: FixModalRequest) => setFixModalRequest(request), []);
+  const closeFixModal = useCallback(() => setFixModalRequest(null), []);
+  const onFixApplied = useCallback(() => {
+    // Apply-side already re-runs deterministic QA; the canvas auto-refresh
+    // poll picks up the mtime change within 5s. Also force an immediate
+    // refresh so admin sees the change without waiting.
+    router.refresh();
+  }, [router]);
+
   const orphanAction = useCallback(async (
     action: 'diagnose' | 'mark-intentional' | 'unmark-intentional',
     controlId: string,
@@ -239,10 +251,11 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     suppressRef.current =
       feedbackOpen ||
       scaleModalOpen ||
+      fixModalRequest !== null ||
       actionInFlight !== null ||
       refreshInFlight ||
       qaRerunInFlight;
-  }, [feedbackOpen, scaleModalOpen, actionInFlight, refreshInFlight, qaRerunInFlight]);
+  }, [feedbackOpen, scaleModalOpen, fixModalRequest, actionInFlight, refreshInFlight, qaRerunInFlight]);
 
 
 
@@ -661,27 +674,75 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                               // Layer 3a/3b: { tutorial, step, control, label } — click jumps to step
                               if (d && typeof d === 'object' && 'tutorial' in (d as object) && 'step' in (d as object)) {
                                 const dd = d as { tutorial: string; step: number; control: string; label?: string | null };
+                                // findingType inferred from finding.name ("3a." or "3b.")
+                                const layer3Type: FindingType = finding.name.startsWith('3a') ? 'layer3a' : 'layer3b';
+                                const payloadKey = layer3Type === 'layer3a' ? 'mentionedControlId' : 'highlightedControlId';
                                 return (
-                                  <button
-                                    key={i}
-                                    type="button"
-                                    onClick={() => {
-                                      setCurrentTutorialId(dd.tutorial);
-                                      // Step click after tutorial loads
-                                      setTimeout(() => goToStep(dd.step - 1), 250);
-                                    }}
-                                    className="block w-full text-left text-[10px] text-white/70 hover:bg-white/5 px-1.5 py-1 rounded transition-colors"
-                                  >
-                                    <code className="text-cyan-300">{dd.control}</code>
-                                    <span className="text-white/40"> · {dd.tutorial} step {dd.step}</span>
-                                  </button>
+                                  <div key={i} className="flex items-center gap-1 text-[10px] text-white/70 px-1.5 py-1 rounded hover:bg-white/5 transition-colors">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setCurrentTutorialId(dd.tutorial);
+                                        setTimeout(() => goToStep(dd.step - 1), 250);
+                                      }}
+                                      className="flex-1 text-left"
+                                      title="Jump to this step"
+                                    >
+                                      <code className="text-cyan-300">{dd.control}</code>
+                                      <span className="text-white/40"> · {dd.tutorial} step {dd.step}</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => openFixModal({
+                                        deviceId,
+                                        findingType: layer3Type,
+                                        tutorialId: dd.tutorial,
+                                        stepIndex: dd.step - 1,
+                                        payload: { [payloadKey]: dd.control, controlLabel: dd.label ?? null },
+                                        label: `${dd.control} on ${dd.tutorial} step ${dd.step}`,
+                                      })}
+                                      data-testid={`fix-button-${dd.tutorial}-${dd.step}-${dd.control}`}
+                                      title="Ask agent to fix (≈$0.20, ≈60s)"
+                                      className="text-[9px] px-1.5 py-0.5 rounded text-cyan-300 hover:bg-cyan-500/10 border border-cyan-500/30"
+                                    >🛠 Fix</button>
+                                  </div>
                                 );
                               }
                               // Layer 1a: plain string IDs (missing-from-manifest hard fails)
                               if (typeof d === 'string') {
+                                // Find which tutorial+step uses this bad ID so the Fix button can target it.
+                                const usage = (() => {
+                                  for (const t of tutorials) {
+                                    for (let si = 0; si < t.steps.length; si++) {
+                                      if ((t.steps[si].highlightControls ?? []).includes(d)) {
+                                        return { tutorialId: t.id, stepIndex: si };
+                                      }
+                                    }
+                                  }
+                                  return null;
+                                })();
                                 return (
-                                  <div key={i} className="text-[10px] text-red-300 px-1.5 py-1">
-                                    <code>{d}</code>
+                                  <div key={i} className="flex items-center gap-1 text-[10px] text-red-300 px-1.5 py-1">
+                                    <code className="flex-1">{d}</code>
+                                    {usage && (
+                                      <>
+                                        <span className="text-red-300/60 text-[9px]">{usage.tutorialId} step {usage.stepIndex + 1}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => openFixModal({
+                                            deviceId,
+                                            findingType: 'layer1a',
+                                            tutorialId: usage.tutorialId,
+                                            stepIndex: usage.stepIndex,
+                                            payload: { badControlId: d },
+                                            label: `${d} in ${usage.tutorialId} step ${usage.stepIndex + 1}`,
+                                          })}
+                                          data-testid={`fix-button-layer1a-${d}`}
+                                          title="Ask agent to fix (≈$0.20, ≈60s)"
+                                          className="text-[9px] px-1.5 py-0.5 rounded text-cyan-300 hover:bg-cyan-500/10 border border-cyan-500/30"
+                                        >🛠 Fix</button>
+                                      </>
+                                    )}
                                   </div>
                                 );
                               }
@@ -866,6 +927,14 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
           onNext={nextStep}
         />
       )}
+
+      {/* ── PR-I Fix modal (two-phase Propose/Apply for Layer 1a/3a/3b) */}
+      <QaFixModal
+        open={fixModalRequest !== null}
+        request={fixModalRequest}
+        onClose={closeFixModal}
+        onApplied={onFixApplied}
+      />
 
       {/* ── Scale modal ──────────────────────────────────────────── */}
       <CanvasScaleModal
