@@ -70,16 +70,51 @@ function OrphanRow({
   const isDiagnosing = inFlightKey === diagnoseKey;
   const isMarking = inFlightKey === markKey;
 
+  // PR-N follow-up: derive a one-line recommendation from the suggestedAction
+  // so admin sees the "what to do + why" at a glance, not buried under reason.
+  const recommendation = diagnosis ? (() => {
+    const why = diagnosis.pairedWith
+      ? `paired with ${diagnosis.pairedWith}`
+      : diagnosis.categoryName.toLowerCase();
+    switch (diagnosis.suggestedAction) {
+      case 'mark-intentional':
+        return { verb: '✓ Mark intentional', tone: 'emerald', detail: `it's ${why} — not a missing tutorial` };
+      case 'delete':
+        return { verb: '🗑 Delete', tone: 'red', detail: `it's editor garbage — safe to remove` };
+      case 'suggest-tutorial':
+        return { verb: '✓ Accept gap', tone: 'amber', detail: `coverage gap — accept for now or add tutorial later` };
+      default:
+        return null;
+    }
+  })() : null;
+
   return (
     <div className="rounded border border-white/10 bg-white/[0.02] px-2 py-1.5" data-testid={`orphan-row-${controlId}`}>
-      <div className="flex items-start gap-2 mb-1">
-        <code className="text-cyan-300 text-[10px] flex-1 min-w-0">{controlId}</code>
-        {diagnosis && <CategoryBadge category={diagnosis.category} />}
+      {/* Title row: badge on its own line above so long controlIds don't overlap */}
+      {diagnosis && (
+        <div className="mb-1">
+          <CategoryBadge category={diagnosis.category} />
+        </div>
+      )}
+      <div className="mb-1">
+        <code className="text-cyan-300 text-[10px] break-all">{controlId}</code>
+        {label && <span className="text-[10px] text-white/55 ml-1">— {label}</span>}
       </div>
-      {label && <div className="text-[10px] text-white/55 mb-1">— {label}</div>}
       {!diagnosis && hint && <div className="text-[9px] text-amber-400/80 italic mb-1">{hint}</div>}
       {diagnosis && (
         <>
+          {/* PR-N follow-up: top-line recommendation — quick hit "what + why" */}
+          {recommendation && (
+            <div className={`text-[10px] mb-1.5 px-1.5 py-1 rounded border ${
+              recommendation.tone === 'emerald' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
+              : recommendation.tone === 'red' ? 'border-red-500/30 bg-red-500/10 text-red-200'
+              : 'border-amber-500/30 bg-amber-500/10 text-amber-200'
+            }`}>
+              <span className="font-semibold">Recommended: {recommendation.verb}</span>
+              {' — '}
+              <span className="opacity-90">{recommendation.detail}</span>
+            </div>
+          )}
           <div className="text-[10px] text-white/65 leading-snug mb-1">{diagnosis.reason}</div>
           <div className="text-[9px] text-white/35 mb-1.5">
             confidence: <span className={
