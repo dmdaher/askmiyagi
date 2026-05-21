@@ -103,27 +103,30 @@ function OrphanRow({
       {!diagnosis && hint && <div className="text-[9px] text-amber-400/80 italic mb-1">{hint}</div>}
       {diagnosis && (
         <>
-          {/* PR-N follow-up: top-line recommendation — quick hit "what + why" */}
+          {/* PR-N follow-up: top-line recommendation — quick hit "what + why + confidence" */}
           {recommendation && (
             <div className={`text-[10px] mb-1.5 px-1.5 py-1 rounded border ${
               recommendation.tone === 'emerald' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
               : recommendation.tone === 'red' ? 'border-red-500/30 bg-red-500/10 text-red-200'
               : 'border-amber-500/30 bg-amber-500/10 text-amber-200'
             }`}>
-              <span className="font-semibold">Recommended: {recommendation.verb}</span>
-              {' — '}
-              <span className="opacity-90">{recommendation.detail}</span>
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="font-semibold">Recommended: {recommendation.verb}</span>
+                <span className={`text-[9px] px-1 py-0.5 rounded font-semibold uppercase tracking-wide ${
+                  diagnosis.confidence === 'high' ? 'bg-emerald-500/25 text-emerald-200'
+                  : diagnosis.confidence === 'medium' ? 'bg-amber-500/25 text-amber-200'
+                  : 'bg-red-500/25 text-red-200'
+                }`}
+                title={`Agent confidence: ${diagnosis.confidence}`}
+                >{diagnosis.confidence} conf</span>
+              </div>
+              <div className="opacity-90">{recommendation.detail}</div>
             </div>
           )}
           <div className="text-[10px] text-white/65 leading-snug mb-1">{diagnosis.reason}</div>
           <div className="text-[9px] text-white/35 mb-1.5">
-            confidence: <span className={
-              diagnosis.confidence === 'high' ? 'text-emerald-400'
-              : diagnosis.confidence === 'medium' ? 'text-amber-400'
-              : 'text-red-400'
-            }>{diagnosis.confidence}</span>
-            {diagnosis.citation && <span> · {diagnosis.citation}</span>}
-            {diagnosis.pairedWith && <span> · paired w/ <code className="text-cyan-300">{diagnosis.pairedWith}</code></span>}
+            {diagnosis.citation && <span>{diagnosis.citation}</span>}
+            {diagnosis.pairedWith && <span>{diagnosis.citation ? ' · ' : ''}paired w/ <code className="text-cyan-300">{diagnosis.pairedWith}</code></span>}
           </div>
           {diagnosis.suggestedTutorial && (
             <div className="text-[9px] text-white/55 bg-amber-500/5 border border-amber-500/15 rounded px-1.5 py-1 mb-1.5">
