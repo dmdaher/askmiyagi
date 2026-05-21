@@ -168,30 +168,33 @@ async function main() {
     await page.waitForTimeout(400);
     await shot(page, '04b-compact-off');
 
-    // ── Scenario 5: Step control modes ─────────────────────────────────
-    console.log('\n── S5: Step control mode cycling ──');
-    const floatingBtn = page.locator('[data-testid="step-mode-floating"]').first();
-    if (await floatingBtn.count() > 0) {
-      await floatingBtn.click();
-      await page.waitForTimeout(500);
-      await shot(page, '05-step-control-floating');
-      check('floating step control activated', true);
-      // Cycle through mini and hidden
-      const miniBtn = page.locator('[data-testid="step-mode-mini"]').first();
-      if (await miniBtn.count() > 0) {
-        await miniBtn.click();
-        await page.waitForTimeout(400);
-        await shot(page, '05b-step-control-mini');
-        check('mini step control activated', await page.locator('[data-testid="step-control-mini"]').count() > 0);
-      }
+    // ── Scenario 5: Step control modes (PR-N3 — anchored ↔ compact-strip) ─
+    console.log('\n── S5: Step control anchored ↔ compact-strip ──');
+    const anchored = page.locator('[data-testid="step-control-anchored"]');
+    check('starts in anchored mode', await anchored.count() > 0);
+    await shot(page, '05-step-control-anchored');
+
+    const collapseBtn = page.locator('[data-testid="step-control-collapse"]');
+    if (await collapseBtn.count() > 0) {
+      await collapseBtn.click();
+      await page.waitForTimeout(400);
+      const strip = page.locator('[data-testid="step-control-compact-strip"]');
+      check('switched to compact-strip', await strip.count() > 0);
+      await shot(page, '05b-step-control-compact-strip');
+      // Verify arrow keys work in compact-strip mode
+      await page.keyboard.press('ArrowRight');
+      await page.waitForTimeout(300);
+      await page.keyboard.press('ArrowLeft');
+      await page.waitForTimeout(300);
       // Back to anchored
-      const anchoredBtn = page.locator('[data-testid="step-mode-anchored"]').first();
-      if (await anchoredBtn.count() > 0) {
-        await anchoredBtn.click();
+      const expandBtn = page.locator('[data-testid="step-control-expand"]');
+      if (await expandBtn.count() > 0) {
+        await expandBtn.click();
         await page.waitForTimeout(400);
+        check('expanded back to anchored', await page.locator('[data-testid="step-control-anchored"]').count() > 0);
       }
     } else {
-      check('step-mode-floating button present', false, 'mode cluster may have moved');
+      check('step-control-collapse button visible', false);
     }
 
     // ── Scenario 7: Sidebar scroll — reach Layer 5 at bottom ───────────

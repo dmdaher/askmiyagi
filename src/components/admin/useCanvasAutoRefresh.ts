@@ -6,7 +6,13 @@ import { useRouter } from 'next/navigation';
 /**
  * useCanvasAutoRefresh — polls the mtime endpoint every N seconds while
  * the tab is visible AND the suppress callback returns false. When a
- * change is detected, calls `router.refresh()`.
+ * change is detected, calls the supplied `onRefresh` callback (PR-N1)
+ * or falls back to `router.refresh()` for legacy callers.
+ *
+ * **PR-N1**: previously this only called `router.refresh()`, which is
+ * a no-op for client components that fetch their own data via useState
+ * + useEffect (review-tutorials/page.tsx). Pass `onRefresh` to opt
+ * into the client re-fetch path.
  *
  * Suppression: pass a function returning `true` when refresh should be
  * blocked (e.g., while a Fix modal is open so admin's review isn't
@@ -18,6 +24,11 @@ interface AutoRefreshOpts {
   deviceId: string;
   intervalMs?: number;
   suppress?: () => boolean;
+  /**
+   * PR-N1: caller-supplied re-fetch. When omitted, falls back to
+   * `router.refresh()` (legacy behavior).
+   */
+  onRefresh?: () => void | Promise<void>;
 }
 
 interface MtimeResponse {
@@ -29,6 +40,7 @@ export function useCanvasAutoRefresh({
   deviceId,
   intervalMs = 5000,
   suppress,
+  onRefresh,
 }: AutoRefreshOpts) {
   const router = useRouter();
   const lastMtimes = useRef<MtimeResponse>({ qaReportMtime: null, tutorialsMtime: null });
@@ -75,7 +87,10 @@ export function useCanvasAutoRefresh({
           data.tutorialsMtime !== lastMtimes.current.tutorialsMtime;
         if (changed) {
           lastMtimes.current = data;
-          router.refresh();
+          // PR-N1: prefer the caller's re-fetch callback. Fall back to
+          // router.refresh() only when no callback is supplied (legacy).
+          if (onRefresh) void onRefresh();
+          else router.refresh();
         }
       } catch { /* network blip — try again next tick */ }
       scheduleNext();
@@ -98,5 +113,5 @@ export function useCanvasAutoRefresh({
       if (timer !== null) window.clearTimeout(timer);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [deviceId, intervalMs, suppress, router]);
+  }, [deviceId, intervalMs, suppress, router, onRefresh]);
 }

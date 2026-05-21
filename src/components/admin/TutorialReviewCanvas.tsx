@@ -15,12 +15,12 @@ import StepContent from '@/components/tutorial/StepContent';
 import NavigationControls from '@/components/tutorial/NavigationControls';
 import CanvasScaleControlToolbar, { useCanvasScale } from './CanvasScaleControl';
 import CanvasScaleModal from './CanvasScaleModal';
-import FloatingStepControl, { useStepControlMode } from './FloatingStepControl';
+import StepControl, { useStepControlMode } from './StepControl';
 import OrphanList from './OrphanList';
 import Layer5Panel from './Layer5Panel';
-import { useFloatingSafeArea } from './useFloatingSafeArea';
 import QaFixModal, { type FixModalRequest, type FindingType } from './QaFixModal';
 import { useCanvasAutoRefresh } from './useCanvasAutoRefresh';
+import { ToastProvider, useToast } from './ToastSystem';
 
 type OrphanCategory = 'A' | 'B' | 'C' | 'D';
 
@@ -81,6 +81,14 @@ interface ReviewData {
 
 interface TutorialReviewCanvasProps {
   data: ReviewData;
+  /**
+   * PR-N1: caller-supplied re-fetch. Replaces `router.refresh()` which
+   * was a no-op against the page's `'use client'` useState. Called by
+   * the canvas after every successful mutation + by the auto-refresh
+   * hook on mtime change. If omitted (legacy callers), falls back to
+   * router.refresh() — but new code paths should always supply this.
+   */
+  onRefreshData?: () => void | Promise<void>;
 }
 
 // localStorage namespace so the "reviewed" set survives a refresh
@@ -88,9 +96,32 @@ const REVIEWED_KEY = (deviceId: string) => `tutorial-review:reviewed:${deviceId}
 const DISMISS_STALE_KEY = (deviceId: string, mtime: number | null | undefined) =>
   `canvas:dismiss-stale:${deviceId}:${mtime ?? 'n/a'}`;
 
-export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps) {
+/**
+ * PR-N2: outer wrapper installs ToastProvider so useToast() works
+ * everywhere inside the canvas tree (and any modal portal'd from it).
+ */
+export default function TutorialReviewCanvas(props: TutorialReviewCanvasProps) {
+  return (
+    <ToastProvider>
+      <TutorialReviewCanvasInner {...props} />
+    </ToastProvider>
+  );
+}
+
+function TutorialReviewCanvasInner({ data, onRefreshData }: TutorialReviewCanvasProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const toast = useToast();
+
+  /**
+   * PR-N1: single source of truth for "refresh canvas data". Always
+   * prefer onRefreshData (caller-supplied client re-fetch). Fall back
+   * to router.refresh() only when the prop is missing — legacy paths.
+   */
+  const refreshCanvas = useCallback(() => {
+    if (onRefreshData) void onRefreshData();
+    else router.refresh();
+  }, [onRefreshData, router]);
   const searchParams = useSearchParams();
   const compact = searchParams.get('compact') === '1';
   const toggleCompact = useCallback(() => {
@@ -191,11 +222,12 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const openFixModal = useCallback((request: FixModalRequest) => setFixModalRequest(request), []);
   const closeFixModal = useCallback(() => setFixModalRequest(null), []);
   const onFixApplied = useCallback(() => {
-    // Apply-side already re-runs deterministic QA; the canvas auto-refresh
-    // poll picks up the mtime change within 5s. Also force an immediate
-    // refresh so admin sees the change without waiting.
-    router.refresh();
-  }, [router]);
+    // Apply-side already re-runs deterministic QA. PR-N1: refreshCanvas
+    // re-fetches the page data so admin sees the change immediately
+    // (instead of waiting for the 5s auto-refresh poll).
+    refreshCanvas();
+    toast.success('Fix applied — tutorials.json updated');
+  }, [refreshCanvas, toast]);
 
   const orphanAction = useCallback(async (
     action: 'diagnose' | 'mark-intentional' | 'unmark-intentional' | 'delete',
@@ -204,6 +236,13 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   ) => {
     setOrphanActionInFlight(`${action}:${controlId}`);
     setOrphanActionError(null);
+
+    // PR-N2: in-progress toast for the slow agent call only
+    const progressKey = `orphan:${action}:${controlId}`;
+    if (action === 'diagnose') {
+      toast.progress(progressKey, `Diagnosing ${controlId}… (≈$0.20, ≈60s)`);
+    }
+
     try {
       // PR-J: delete dispatches to the dedicated manifest-control DELETE
       // route (writes manifest-editor.json + auto-exports). All other
@@ -218,18 +257,67 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action, controlId, intent }),
           });
+      const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        setOrphanActionError(body.error ?? `HTTP ${res.status}`);
+        const errMsg = body.error ?? `HTTP ${res.status}`;
+        setOrphanActionError(errMsg);
+        toast.error(`${action} failed: ${errMsg}`, { key: progressKey });
       } else {
-        router.refresh();
+        refreshCanvas();
+        // PR-N2: success toasts with appropriate next-step
+        if (action === 'diagnose' && body.diagnosis) {
+          const d = body.diagnosis as {
+            category: string; categoryName: string;
+            suggestedAction: 'delete' | 'mark-intentional' | 'suggest-tutorial';
+            pairedWith?: string | null; reason?: string;
+          };
+          const nextLabel = d.suggestedAction === 'delete' ? '🗑 Delete'
+            : d.suggestedAction === 'mark-intentional' ? '✓ Mark intentional'
+            : '✓ Accept gap';
+          toast.success(
+            `Diagnosed ${controlId} · Category ${d.category} (${d.categoryName})`,
+            {
+              key: progressKey,
+              duration: 8000,
+              action: {
+                label: nextLabel,
+                testid: `toast-action-diagnose-${controlId}`,
+                onClick: () => {
+                  if (d.suggestedAction === 'delete') {
+                    void orphanActionRef.current?.('delete', controlId);
+                  } else {
+                    void orphanActionRef.current?.('mark-intentional', controlId, {
+                      category: d.category as 'A' | 'B' | 'C' | 'D',
+                      pairedWith: d.pairedWith ?? null,
+                      reason: d.reason,
+                    });
+                  }
+                },
+              },
+            },
+          );
+        } else if (action === 'mark-intentional') {
+          toast.success(`Marked ${controlId} intentional`, { key: progressKey });
+        } else if (action === 'unmark-intentional') {
+          toast.success(`Re-flagged ${controlId} for triage`, { key: progressKey });
+        } else if (action === 'delete') {
+          toast.success(`Deleted ${controlId} from manifest (backup saved)`, { key: progressKey });
+        }
       }
     } catch (err) {
-      setOrphanActionError(err instanceof Error ? err.message : String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      setOrphanActionError(msg);
+      toast.error(`${action} error: ${msg}`, { key: progressKey });
     } finally {
       setOrphanActionInFlight(null);
     }
-  }, [deviceId, router]);
+  }, [deviceId, refreshCanvas, toast]);
+
+  // PR-N2: ref so the toast's action callback can dispatch back into
+  // orphanAction without circular dependency in useCallback.
+  const orphanActionRef = useRef<typeof orphanAction | null>(null);
+  useEffect(() => { orphanActionRef.current = orphanAction; }, [orphanAction]);
+
   const triggerRefreshFromEditor = useCallback(async () => {
     setRefreshInFlight(true);
     setRefreshError(null);
@@ -237,35 +325,45 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
       const res = await fetch(`/api/pipeline/${deviceId}/refresh-from-editor`, { method: 'POST' });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setRefreshError(body.error ?? `HTTP ${res.status}`);
+        const errMsg = body.error ?? `HTTP ${res.status}`;
+        setRefreshError(errMsg);
+        toast.error(`Refresh from editor failed: ${errMsg}`);
       } else {
-        router.refresh();
+        refreshCanvas();
+        toast.success('Refreshed canvas from editor');
       }
     } catch (err) {
-      setRefreshError(err instanceof Error ? err.message : String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      setRefreshError(msg);
+      toast.error(`Refresh from editor error: ${msg}`);
     } finally {
       setRefreshInFlight(false);
     }
-  }, [deviceId, router]);
+  }, [deviceId, refreshCanvas, toast]);
 
   const triggerVisualQa = useCallback(async () => {
     setQaRerunInFlight(true);
     setQaRerunError(null);
+    toast.progress('visual-qa', 'Running visual QA (Playwright)…');
     try {
       const res = await fetch(`/api/pipeline/${deviceId}/qa-rerun`, { method: 'POST' });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setQaRerunError(body.error ?? `HTTP ${res.status}`);
+        const errMsg = body.error ?? `HTTP ${res.status}`;
+        setQaRerunError(errMsg);
+        toast.error(`Visual QA failed: ${errMsg}`, { key: 'visual-qa' });
       } else {
-        // Re-fetch the page to pick up updated qa-report.json
-        router.refresh();
+        refreshCanvas();
+        toast.success('Visual QA complete — qa-report updated', { key: 'visual-qa' });
       }
     } catch (err) {
-      setQaRerunError(err instanceof Error ? err.message : String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      setQaRerunError(msg);
+      toast.error(`Visual QA error: ${msg}`, { key: 'visual-qa' });
     } finally {
       setQaRerunInFlight(false);
     }
-  }, [deviceId, router]);
+  }, [deviceId, refreshCanvas, toast]);
 
   // Persist reviewed set on change
   useEffect(() => {
@@ -318,11 +416,33 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.key === 'j' || e.key === 'J') { e.preventDefault(); nextStep(); }
-      else if (e.key === 'k' || e.key === 'K') { e.preventDefault(); prevStep(); }
-      else if (e.key === ']') { e.preventDefault(); cycleTutorial(1); }
-      else if (e.key === '[') { e.preventDefault(); cycleTutorial(-1); }
+      // PR-N3: comprehensive input-blocking guard so navigation keys never
+      // hijack text editing or modal-open contexts. Use HTMLElement guard
+      // because synthetic events can have `e.target` set to Window
+      // (which doesn't have `closest` / `isContentEditable`).
+      const t = e.target instanceof HTMLElement ? e.target : null;
+      if (t) {
+        if (
+          t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'
+          || t.isContentEditable
+          || t.closest('[role="textbox"]')
+        ) return;
+      }
+      // Modal-open guard runs whether or not target is an HTMLElement
+      if (document.querySelector('[data-testid="qa-fix-modal"]')) return;
+
+      // Navigate steps: ←/→ (PR-N3) AND j/k (PR-G-rev, vi-style, kept for habit)
+      if (e.key === 'j' || e.key === 'J' || e.key === 'ArrowRight') {
+        e.preventDefault(); nextStep();
+      } else if (e.key === 'k' || e.key === 'K' || e.key === 'ArrowLeft') {
+        e.preventDefault(); prevStep();
+      }
+      // Cycle tutorial: [/] AND ↑/↓
+      else if (e.key === ']' || e.key === 'ArrowDown') {
+        e.preventDefault(); cycleTutorial(1);
+      } else if (e.key === '[' || e.key === 'ArrowUp') {
+        e.preventDefault(); cycleTutorial(-1);
+      }
       else if (e.key === 'Escape') {
         // Compact mode: Esc exits compact first. Second Esc → /admin.
         if (compact) toggleCompact();
@@ -425,16 +545,11 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   const scaleApi = useCanvasScale({ deviceId, computeAutoFit });
   const panelScale = scaleApi.scale;
   const stepControl = useStepControlMode(deviceId);
-  // Dynamic safe-area for preview scroll: when step control is in
-  // floating/mini/hidden mode, its rendered root overlays the preview's
-  // bottom-right. The hook measures its rect via ResizeObserver and
-  // computes the padding needed to keep panel content scrollable above
-  // the floating UI.
-  const floatingControlRef = useRef<HTMLDivElement | HTMLButtonElement | null>(null);
-  const { paddingBottom: previewPadBottom, paddingTop: previewPadTop } = useFloatingSafeArea({
-    scrollRef: previewRef,
-    floatingRef: floatingControlRef,
-  });
+  // PR-N3: useFloatingSafeArea deleted along with floating step modes.
+  // The new StepControl is always in-flow (anchored or compact-strip),
+  // so no padding compensation is needed.
+  const previewPadBottom = 16;  // small default breathing room
+  const previewPadTop = 0;
 
   // Live auto-refresh poll — picks up upstream changes (editor save,
   // Fix apply, pull-from-hosted) without admin needing to reload.
@@ -447,6 +562,7 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   useCanvasAutoRefresh({
     deviceId,
     suppress: useCallback(() => suppressRef.current, []),
+    onRefresh: refreshCanvas,
   });
   // The suppress sync effect runs after all the modal/in-flight states
   // are declared further down — see the dedicated effect near the
@@ -513,7 +629,7 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
       }
       // Brief glow feedback so admin knows the toggle landed
       flashControlOnPanel(controlId);
-      router.refresh();
+      refreshCanvas();
     } catch (err) {
       setToggleError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -521,7 +637,7 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     }
   }, [
     editHighlightsMode, currentTutorial, currentStepIndex,
-    deviceId, flashControlOnPanel, router,
+    deviceId, flashControlOnPanel, refreshCanvas,
   ]);
 
   // ──────────── Render ────────────────────────────────────────────────────
@@ -1008,25 +1124,21 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
           </div>
 
           {/* ── End-user-feel zone: ProgressBar + StepContent + Nav ─
-             ── Anchored mode renders in-flow here; other modes render
-             via the second mount below the main grid (absolutely
-             positioned). ─────────────────────────────────────────── */}
-          {stepControl.mode === 'anchored' && (
-            <FloatingStepControl
-              deviceId={deviceId}
-              mode={stepControl.mode}
-              setMode={stepControl.setMode}
-              position={stepControl.position}
-              setPosition={stepControl.setPosition}
-              currentStepIndex={currentStepIndex}
-              totalSteps={totalSteps}
-              step={step}
-              steps={currentTutorial.steps}
-              onStepClick={goToStep}
-              onPrev={prevStep}
-              onNext={nextStep}
-            />
-          )}
+             ── PR-N3: StepControl always in-flow. Two modes (anchored /
+             compact-strip). No more floating overlay → no scroll-block,
+             no panel glitch, no arrow-key hijack. */}
+          <StepControl
+            deviceId={deviceId}
+            mode={stepControl.mode}
+            setMode={stepControl.setMode}
+            currentStepIndex={currentStepIndex}
+            totalSteps={totalSteps}
+            step={step}
+            steps={currentTutorial.steps}
+            onStepClick={goToStep}
+            onPrev={prevStep}
+            onNext={nextStep}
+          />
         </div>
 
         {/* ── Diagnostics ───────────────────────────────────────── */}
@@ -1038,28 +1150,6 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
           onJumpToStep={goToStep}
         />
       </div>
-
-      {/* ── Feedback modal ─────────────────────────────────────────── */}
-      {/* ── Floating / mini / hidden step control ───────────────────
-         Rendered at the canvas root (not inside the preview column)
-         so absolute positioning floats over the whole canvas. */}
-      {stepControl.mode !== 'anchored' && (
-        <FloatingStepControl
-          ref={floatingControlRef}
-          deviceId={deviceId}
-          mode={stepControl.mode}
-          setMode={stepControl.setMode}
-          position={stepControl.position}
-          setPosition={stepControl.setPosition}
-          currentStepIndex={currentStepIndex}
-          totalSteps={totalSteps}
-          step={step}
-          steps={currentTutorial.steps}
-          onStepClick={goToStep}
-          onPrev={prevStep}
-          onNext={nextStep}
-        />
-      )}
 
       {/* ── PR-I Fix modal (two-phase Propose/Apply for Layer 1a/3a/3b) */}
       <QaFixModal

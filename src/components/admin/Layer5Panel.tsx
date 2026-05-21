@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useToast } from './ToastSystem';
 
 interface CoherenceFinding {
   severity: 'fail' | 'warn' | 'info';
@@ -57,6 +58,7 @@ function ScoreBadge({ score, verdict }: { score: number; verdict: string }) {
 }
 
 export default function Layer5Panel({ deviceId, tutorials, openFixModal }: Props) {
+  const toast = useToast();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   // Cached coherence results keyed by tutorialId
@@ -86,6 +88,8 @@ export default function Layer5Panel({ deviceId, tutorials, openFixModal }: Props
   const assess = useCallback(async (tutorialId: string, force = false) => {
     setInFlight(tutorialId);
     setError(null);
+    const progressKey = `assess:${tutorialId}`;
+    toast.progress(progressKey, `Assessing ${tutorialId}… (≈$0.20, ≈60s)`);
     try {
       const res = await fetch(`/api/pipeline/${deviceId}/qa-assess-coherence`, {
         method: 'POST',
@@ -94,16 +98,42 @@ export default function Layer5Panel({ deviceId, tutorials, openFixModal }: Props
       });
       const body = await res.json();
       if (!res.ok || !body.ok) {
-        setError(body.error ?? `HTTP ${res.status}`);
+        const errMsg = body.error ?? `HTTP ${res.status}`;
+        setError(errMsg);
+        toast.error(`Assess failed for ${tutorialId}: ${errMsg}`, { key: progressKey });
         return;
       }
       setResults((prev) => ({ ...prev, [tutorialId]: { result: body.result, fresh: true, cachedAt: Date.now() } }));
+      // PR-N2: actionable toast — clicking "Open findings" scrolls + expands the row
+      const r = body.result as CoherenceResult;
+      toast.success(
+        `Assessed ${tutorialId} — ${r.coherenceScore}/5 ${r.verdict}`,
+        {
+          key: progressKey,
+          duration: 8000,
+          action: r.findings.length > 0 ? {
+            label: `📋 Open ${r.findings.length} finding${r.findings.length === 1 ? '' : 's'}`,
+            testid: `toast-action-assess-${tutorialId}`,
+            onClick: () => {
+              setOpen(true);
+              setExpanded(tutorialId);
+              // Best-effort scroll the row into view (defer until after render)
+              requestAnimationFrame(() => {
+                document.querySelector(`[data-testid="layer5-row-${tutorialId}"]`)
+                  ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              });
+            },
+          } : undefined,
+        },
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      toast.error(`Assess error for ${tutorialId}: ${msg}`, { key: progressKey });
     } finally {
       setInFlight(null);
     }
-  }, [deviceId]);
+  }, [deviceId, toast]);
 
   return (
     <div className="flex-shrink-0 border-t border-white/10 px-2 py-2 space-y-1.5" data-testid="layer5-panel">

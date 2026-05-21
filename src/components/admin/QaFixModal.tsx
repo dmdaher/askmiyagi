@@ -20,6 +20,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useToast } from './ToastSystem';
 
 export type FindingType = 'layer1a' | 'layer3a' | 'layer3b' | 'layer4' | 'layer5';
 export type Confidence = 'high' | 'medium' | 'low';
@@ -124,6 +125,7 @@ function PatchDiff({ ops }: { ops: FixStepPatchOp[] }) {
 }
 
 export default function QaFixModal({ open, request, onClose, onApplied }: Props) {
+  const toast = useToast();
   const [phase, setPhase] = useState<'proposing' | 'review' | 'applying' | 'cannotFix'>('proposing');
   // PR-L: cumulative-state violations from the apply endpoint (status 409)
   const [violations, setViolations] = useState<Array<{
@@ -227,13 +229,25 @@ export default function QaFixModal({ open, request, onClose, onApplied }: Props)
         return;
       }
       clearCached(request.deviceId, request);
+      // PR-N2: warning toast (sticky 8s) for applyAnyway overrides so
+      // admin sees the audit note. Plain Apply uses the success toast
+      // from canvas's onFixApplied.
+      if (applyAnyway) {
+        const vCount = body.violations?.length ?? 0;
+        toast.warning(
+          `⚠ Applied despite ${vCount} cumulative-state violation${vCount === 1 ? '' : 's'} — audit-logged`,
+          { duration: 8000 },
+        );
+      }
       onApplied();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      toast.error(`Apply failed: ${msg}`);
       setPhase('review');
     }
-  }, [request, proposal, onApplied, onClose]);
+  }, [request, proposal, onApplied, onClose, toast]);
 
   const handleAskAgain = useCallback(() => {
     if (!request) return;
