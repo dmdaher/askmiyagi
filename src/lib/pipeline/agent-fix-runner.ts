@@ -178,6 +178,33 @@ function readAgentOutput(
   return null;
 }
 
+/**
+ * CRITICAL — every agent invocation MUST call this first.
+ *
+ * Bug fixed by this function: last-output.json is a SHARED file used by
+ * all three agent modes (diagnose, fix-step, assess). If a prior run
+ * left content in it and the current run's agent fails (e.g., exit 1
+ * from budget cap or tool edge case), readAgentOutput would silently
+ * return the OLD content, attributing it to the new target.
+ *
+ * Real-world incident (2026-05-21): VINYL_CDJ_INDICATOR's diagnosis was
+ * served as the result for SOURCE_INDICATOR, HOT_CUE_F, and CALL_DELETE
+ * — all 4 cards displayed VINYL_CDJ_INDICATOR's reason text. The
+ * "diagnoses" were lies.
+ *
+ * Fix: delete the file before spawning the agent. If the agent fails
+ * to write, readAgentOutput returns null (handled by callers as a
+ * proper error).
+ */
+function clearAgentOutput(repoRoot: string, deviceId: string): void {
+  const outputPath = path.join(
+    repoRoot, '.pipeline', deviceId, 'agents', 'tutorial-fixer', 'last-output.json',
+  );
+  try {
+    if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+  } catch { /* ignore — best effort; readAgentOutput will fail-safe to null */ }
+}
+
 export async function runDiagnoseOrphan(
   input: DiagnoseOrphanInput,
 ): Promise<AgentRunResult<DiagnoseOrphanResult>> {
@@ -188,6 +215,9 @@ export async function runDiagnoseOrphan(
     input.repoRoot, '.pipeline', input.deviceId, 'agents', 'tutorial-fixer',
   );
   fs.mkdirSync(outDir, { recursive: true });
+  // CRITICAL: clear stale output BEFORE spawn so a failed agent run can't
+  // surface the previous call's result as this call's diagnosis.
+  clearAgentOutput(input.repoRoot, input.deviceId);
 
   let proc: { exitCode: number; stdout: string; stderr: string } | null = null;
   try {
@@ -298,6 +328,32 @@ export async function runDiagnoseOrphan(
       wallMs,
     };
   }
+  // DEFENSE IN DEPTH (2026-05-21 bug): even with clearAgentOutput, if some
+  // future regression resurrects the stale-output problem, validate the
+  // returned controlId matches what we asked about. Reject obvious
+  // misattribution before it pollutes orphan-diagnoses.json.
+  if (typeof (r as { controlId?: unknown }).controlId === 'string'
+      && (r as { controlId: string }).controlId !== input.controlId) {
+    return {
+      ok: false,
+      error: `Agent returned diagnosis for "${(r as { controlId: string }).controlId}" but we asked about "${input.controlId}" — likely stale output. Re-run.`,
+      wallMs,
+    };
+  }
+  // Reason text sanity check: if the reason mentions a completely different
+  // controlId in its FIRST words, it's almost certainly stale.
+  if (typeof r.reason === 'string') {
+    const firstChunk = r.reason.slice(0, 100);
+    // Look for "FOO_BAR is" or "FOO_BAR_BAZ is" — agent's signature opener
+    const m = firstChunk.match(/^([A-Z][A-Z0-9_]+)\s+is\b/);
+    if (m && m[1] !== input.controlId) {
+      return {
+        ok: false,
+        error: `Agent reason text talks about "${m[1]}" but we asked about "${input.controlId}" — stale output detected. Re-run.`,
+        wallMs,
+      };
+    }
+  }
 
   appendFixLog(input.repoRoot, input.deviceId, {
     ts: new Date().toISOString(),
@@ -407,6 +463,8 @@ export async function runFixStep(input: FixStepInput): Promise<AgentRunResult<Fi
     input.repoRoot, '.pipeline', input.deviceId, 'agents', 'tutorial-fixer',
   );
   fs.mkdirSync(outDir, { recursive: true });
+  // CRITICAL: clear stale output BEFORE spawn (see clearAgentOutput rationale)
+  clearAgentOutput(input.repoRoot, input.deviceId);
 
   let proc: { exitCode: number; stdout: string; stderr: string } | null = null;
   try {
@@ -840,6 +898,8 @@ export async function runAssessCoherence(
     input.repoRoot, '.pipeline', input.deviceId, 'agents', 'tutorial-fixer',
   );
   fs.mkdirSync(outDir, { recursive: true });
+  // CRITICAL: clear stale output BEFORE spawn (see clearAgentOutput rationale)
+  clearAgentOutput(input.repoRoot, input.deviceId);
 
   let proc: { exitCode: number; stdout: string; stderr: string } | null = null;
   try {
