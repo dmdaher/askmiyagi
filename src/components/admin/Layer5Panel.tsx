@@ -110,7 +110,8 @@ export default function Layer5Panel({ deviceId, tutorials, openFixModal }: Props
         `Assessed ${tutorialId} — ${r.coherenceScore}/5 ${r.verdict}`,
         {
           key: progressKey,
-          duration: 8000,
+          // PR-N follow-up: STICKY — agent results require admin attention.
+          duration: -1,
           action: r.findings.length > 0 ? {
             label: `📋 Open ${r.findings.length} finding${r.findings.length === 1 ? '' : 's'}`,
             testid: `toast-action-assess-${tutorialId}`,

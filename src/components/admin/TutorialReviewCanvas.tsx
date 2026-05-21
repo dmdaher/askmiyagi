@@ -226,7 +226,9 @@ function TutorialReviewCanvasInner({ data, onRefreshData }: TutorialReviewCanvas
     // re-fetches the page data so admin sees the change immediately
     // (instead of waiting for the 5s auto-refresh poll).
     refreshCanvas();
-    toast.success('Fix applied — tutorials.json updated');
+    // PR-N follow-up: STICKY — agent results require admin attention; don't
+    // disappear if admin was looking away.
+    toast.success('Fix applied — tutorials.json updated', { duration: -1 });
   }, [refreshCanvas, toast]);
 
   const orphanAction = useCallback(async (
@@ -278,7 +280,8 @@ function TutorialReviewCanvasInner({ data, onRefreshData }: TutorialReviewCanvas
             `Diagnosed ${controlId} · Category ${d.category} (${d.categoryName})`,
             {
               key: progressKey,
-              duration: 8000,
+              // PR-N follow-up: STICKY — agent results require admin attention.
+              duration: -1,
               action: {
                 label: nextLabel,
                 testid: `toast-action-diagnose-${controlId}`,
@@ -701,6 +704,18 @@ function TutorialReviewCanvasInner({ data, onRefreshData }: TutorialReviewCanvas
           >
             {compact ? '⤡ Exit compact' : '⛶ Compact'}
           </button>
+          {/* PR-N follow-up: Refresh from editor lives on the toolbar
+             (was buried at the bottom of QA Findings — bad discoverability). */}
+          <button
+            type="button"
+            onClick={triggerRefreshFromEditor}
+            disabled={refreshInFlight}
+            data-testid="toolbar-refresh-from-editor"
+            title="Re-export from manifest-editor.json, re-validate tutorials, re-run deterministic QA"
+            className="text-[11px] px-2 py-1 rounded font-medium border border-amber-500/40 text-amber-300 hover:bg-amber-500/15 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {refreshInFlight ? '⏳ Refreshing…' : '↻ Refresh'}
+          </button>
           {actionError && (
             <span className="text-[11px] text-red-400 mr-2 max-w-xs truncate" title={actionError}>
               {actionError}
@@ -998,18 +1013,10 @@ function TutorialReviewCanvasInner({ data, onRefreshData }: TutorialReviewCanvas
                     );
                   })}
 
-                  {/* Refresh from editor (fast — re-export + re-validate + re-QA) */}
+                  {/* Refresh from editor moved to the top toolbar (better
+                     discoverability — it's a global action). Visual QA stays
+                     here because it's QA-scoped. */}
                   <div className="pt-1 space-y-1">
-                    <button
-                      type="button"
-                      onClick={triggerRefreshFromEditor}
-                      disabled={refreshInFlight}
-                      data-testid="qa-refresh-from-editor-button"
-                      title="Re-export from manifest-editor.json, re-validate tutorials, re-run deterministic QA"
-                      className="w-full text-[10px] px-2 py-1.5 rounded border border-amber-700/40 bg-amber-900/20 text-amber-300 hover:bg-amber-800/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {refreshInFlight ? 'Refreshing…' : '↻ Refresh from editor'}
-                    </button>
                     {refreshError && (
                       <p className="text-[9px] text-red-400 px-1">{refreshError}</p>
                     )}

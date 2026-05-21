@@ -179,15 +179,19 @@ function OrphanRow({
 function IntentionalRow({ row, onUnmark, inFlightKey }: { row: OrphanDetail; onUnmark: () => void; inFlightKey: string | null }) {
   const unmarkKey = `unmark-intentional:${row.controlId}`;
   return (
-    <div className="rounded border border-white/5 bg-white/[0.01] px-2 py-1 flex items-center gap-2 text-[10px]" data-testid={`orphan-intentional-${row.controlId}`}>
+    <div
+      className="rounded border border-emerald-500/20 bg-emerald-500/[0.04] px-2 py-1 flex items-center gap-2 text-[10px]"
+      data-testid={`orphan-intentional-${row.controlId}`}
+    >
+      <span className="text-emerald-400 flex-shrink-0" title="Actioned by admin">✓</span>
       {row.intentional && <CategoryBadge category={row.intentional.category} />}
-      <code className="text-cyan-300/70 flex-1 min-w-0">{row.controlId}</code>
+      <code className="text-cyan-300/80 flex-1 min-w-0 truncate">{row.controlId}</code>
       {row.label && <span className="text-white/40 truncate">— {row.label}</span>}
       <button
         type="button"
         onClick={onUnmark}
         disabled={inFlightKey === unmarkKey}
-        className="text-[9px] px-1 py-0.5 rounded text-white/50 hover:bg-white/10 disabled:opacity-50"
+        className="text-[9px] px-1 py-0.5 rounded text-white/50 hover:bg-white/10 disabled:opacity-50 flex-shrink-0"
         title="Re-flag this orphan for triage"
       >{inFlightKey === unmarkKey ? '⏳' : '↺'} Un-mark</button>
     </div>
@@ -195,39 +199,57 @@ function IntentionalRow({ row, onUnmark, inFlightKey }: { row: OrphanDetail; onU
 }
 
 export default function OrphanList({ active, intentional, flashControl, onAction, inFlightKey, error }: Props) {
-  const [intentionalOpen, setIntentionalOpen] = useState(false);
+  // PR-N follow-up: "Resolved" section default-OPEN when admin has
+  // recently actioned items — makes the "I did something, where is it?"
+  // experience clear. Collapses to a count when section is empty or admin
+  // explicitly hides it.
+  const [resolvedOpen, setResolvedOpen] = useState(true);
   return (
-    <div className="border-t border-white/5 px-2 py-2 space-y-2">
+    <div className="border-t border-white/5 px-2 py-2 space-y-3">
       {error && (
         <div className="text-[10px] text-red-400 bg-red-500/10 border border-red-500/20 rounded px-1.5 py-1">{error}</div>
       )}
-      {active.length === 0 && (
-        <div className="text-[10px] text-white/40 italic px-1">No active orphan findings.</div>
-      )}
+
+      {/* ── Active orphans (needs admin action) ────────────────────────── */}
       <div className="space-y-1.5">
-        {active.map((row) => (
-          <OrphanRow
-            key={row.controlId}
-            row={row}
-            flashControl={flashControl}
-            onAction={onAction}
-            inFlightKey={inFlightKey}
-          />
-        ))}
+        <div className="text-[9px] uppercase tracking-wider text-white/40 font-semibold flex items-center justify-between">
+          <span>⚠ Needs review</span>
+          <span className="text-white/30 normal-case font-normal">{active.length}</span>
+        </div>
+        {active.length === 0 ? (
+          <div className="text-[10px] text-emerald-300/70 italic px-1">
+            ✓ All orphans reviewed — nothing to action.
+          </div>
+        ) : (
+          active.map((row) => (
+            <OrphanRow
+              key={row.controlId}
+              row={row}
+              flashControl={flashControl}
+              onAction={onAction}
+              inFlightKey={inFlightKey}
+            />
+          ))
+        )}
       </div>
+
+      {/* ── Resolved orphans (admin actioned: mark intentional / accept gap) ── */}
       {intentional.length > 0 && (
-        <div className="pt-1">
+        <div className="space-y-1.5 pt-1 border-t border-emerald-500/15">
           <button
             type="button"
-            onClick={() => setIntentionalOpen((v) => !v)}
-            className="text-[10px] text-white/45 hover:text-white/70 flex items-center gap-1"
+            onClick={() => setResolvedOpen((v) => !v)}
+            className="w-full text-[9px] uppercase tracking-wider text-emerald-300/80 hover:text-emerald-300 font-semibold flex items-center justify-between"
             data-testid="orphan-intentional-toggle"
           >
-            <span>{intentionalOpen ? '▾' : '▸'}</span>
-            <span>Show intentional ({intentional.length})</span>
+            <span className="flex items-center gap-1">
+              <span>{resolvedOpen ? '▾' : '▸'}</span>
+              <span>✓ Resolved</span>
+            </span>
+            <span className="text-emerald-300/60 normal-case font-normal">{intentional.length}</span>
           </button>
-          {intentionalOpen && (
-            <div className="mt-1 space-y-1">
+          {resolvedOpen && (
+            <div className="space-y-1">
               {intentional.map((row) => (
                 <IntentionalRow
                   key={row.controlId}

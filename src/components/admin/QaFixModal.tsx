@@ -236,7 +236,7 @@ export default function QaFixModal({ open, request, onClose, onApplied }: Props)
         const vCount = body.violations?.length ?? 0;
         toast.warning(
           `⚠ Applied despite ${vCount} cumulative-state violation${vCount === 1 ? '' : 's'} — audit-logged`,
-          { duration: 8000 },
+          { duration: -1 }, // PR-N follow-up: sticky — admin should consciously dismiss
         );
       }
       onApplied();

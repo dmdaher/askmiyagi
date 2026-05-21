@@ -158,14 +158,19 @@ async function main() {
         check('intentions.json contains the new entry on disk',
           ctrlId in afterIntentions && !(ctrlId in beforeIntentions));
 
-        // ASSERT 3: UI shows the orphan in "Show intentional" (toggle to view)
-        const toggle = page.locator('[data-testid="orphan-intentional-toggle"]');
-        if (await toggle.count() > 0) {
-          await toggle.click();
-          await page.waitForTimeout(300);
-          const intentionalRow = page.locator(`[data-testid="orphan-intentional-${ctrlId}"]`);
-          check('orphan now visible in "intentional" list', await intentionalRow.count() > 0);
+        // ASSERT 3: UI shows the orphan in the Resolved section. The section
+        // is open by default (PR-N follow-up); only click the toggle to expand
+        // if the row isn't already visible.
+        let intentionalRow = page.locator(`[data-testid="orphan-intentional-${ctrlId}"]`);
+        if (await intentionalRow.count() === 0) {
+          const toggle = page.locator('[data-testid="orphan-intentional-toggle"]');
+          if (await toggle.count() > 0) {
+            await toggle.click();
+            await page.waitForTimeout(300);
+            intentionalRow = page.locator(`[data-testid="orphan-intentional-${ctrlId}"]`);
+          }
         }
+        check('orphan now visible in Resolved section', await intentionalRow.count() > 0);
       } else {
         check('any orphan available to mark', false, '(0 orphans with suggested-mark — skipping)');
       }
@@ -209,13 +214,20 @@ async function main() {
     // ─── Test 3: Fix step Apply — uses cached proposal (avoids cost) ────
     console.log('\n── T3: Fix step Apply → modal closes + tutorials.json patched + toast ──');
     await openCanvas(page);
+    await page.waitForTimeout(500);
     // Find any Layer 3 fix button (testid format: fix-button-<tut>-<step>-<ctrl>)
-    const layer3aHeader = page.locator('text=/^3a\\./').first();
-    if (await layer3aHeader.count() > 0) {
-      await layer3aHeader.click();
-      await page.waitForTimeout(400);
+    // First check if fix buttons are already visible (Layer 3 expanded).
+    // If not, click the Layer 3a header to expand.
+    let anyFixBtn = page.locator('[data-testid^="fix-button-"]').first();
+    if (await anyFixBtn.count() === 0) {
+      const layer3aHeader = page.locator('text=/^3a\\./').first();
+      if (await layer3aHeader.count() > 0) {
+        await layer3aHeader.scrollIntoViewIfNeeded();
+        await layer3aHeader.click();
+        await page.waitForTimeout(600);
+        anyFixBtn = page.locator('[data-testid^="fix-button-"]').first();
+      }
     }
-    const anyFixBtn = page.locator('[data-testid^="fix-button-"]').first();
     if (await anyFixBtn.count() > 0) {
       const fixTestid = await anyFixBtn.getAttribute('data-testid');
       const parts = (fixTestid ?? '').replace('fix-button-', '').split('-');
