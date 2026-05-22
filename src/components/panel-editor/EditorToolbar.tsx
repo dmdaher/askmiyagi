@@ -222,9 +222,13 @@ export default function EditorToolbar({
   return (
     <>
     <ScaleContentsModal open={showScaleModal} onClose={() => setShowScaleModal(false)} />
-    <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2">
+    {/* 2-line toolbar (double-decker): row 1 = view + editing tools;
+        row 2 = canvas controls + actions. Switched from single line so
+        the right-side canvas inputs don't clip on narrower viewports. */}
+    <div className="flex flex-col">
+    <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2 overflow-x-auto">
 
-      {/* ── LEFT: Device + View ────────────────────────────────── */}
+      {/* ── ROW 1: Device + View + Edit + Overlays + Bulk ops ──── */}
 
       {/* Device name */}
       {deviceName && (
@@ -473,10 +477,9 @@ export default function EditorToolbar({
         </>
       )}
 
-      {/* ── SPACER ─────────────────────────────────────────────── */}
-      <div className="flex-1 min-w-2" />
-
-      {/* ── RIGHT: Actions ─────────────────────────────────────── */}
+    </div>
+    {/* ── ROW 2: Actions + Canvas + Save/Submit ──────────────── */}
+    <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2 overflow-x-auto">
 
       {/* Help — always visible (contractors need this) */}
       <button
@@ -658,6 +661,7 @@ export default function EditorToolbar({
           null
         )}
       </div>
+    </div>
     </div>
     </>
   );

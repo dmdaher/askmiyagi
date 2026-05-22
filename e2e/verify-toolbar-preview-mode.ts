@@ -23,16 +23,17 @@ const BASE = process.env.TEST_BASE_URL || 'http://localhost:3000';
   await page.waitForSelector('[data-control-id]', { timeout: 60_000, state: 'attached' });
   await page.waitForTimeout(1500);
 
-  // Find the actual editor toolbar bbox (the h-10 div with the gray-800 border)
+  // Find the toolbar wrapper (now 2-line / flex-col) and measure full height
   const toolbarBox = await page.evaluate(() => {
-    const el = document.querySelector('div.flex.h-10.items-center');
-    if (!el) return null;
-    const r = el.getBoundingClientRect();
-    return { x: r.x, y: r.y, w: r.width, h: r.height };
+    const rows = document.querySelectorAll('div.flex.h-10.items-center');
+    if (rows.length === 0) return null;
+    const first = (rows[0] as HTMLElement).getBoundingClientRect();
+    const last = (rows[rows.length - 1] as HTMLElement).getBoundingClientRect();
+    return { x: first.x, y: first.y, w: 1800, h: (last.y + last.height) - first.y };
   });
   if (!toolbarBox) throw new Error('Toolbar element not found');
-  console.log(`Toolbar at y=${toolbarBox.y.toFixed(0)}, height=${toolbarBox.h.toFixed(0)}`);
-  const clip = { x: 0, y: Math.max(0, toolbarBox.y - 2), width: Math.min(1800, toolbarBox.x + toolbarBox.w + 40), height: toolbarBox.h + 4 };
+  console.log(`Toolbar at y=${toolbarBox.y.toFixed(0)}, total height=${toolbarBox.h.toFixed(0)}`);
+  const clip = { x: 0, y: Math.max(0, toolbarBox.y - 2), width: 1800, height: toolbarBox.h + 4 };
 
   await page.screenshot({ path: '/tmp/toolbar-edit.png', clip });
   console.log('Edit mode toolbar saved');

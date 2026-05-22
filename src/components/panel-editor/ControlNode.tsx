@@ -42,33 +42,27 @@ function renderButtonLed(control: ControlDef) {
   // (face/integrated/label-backlit/edge-glow) renders inline via PanelButton.
   const style = control.ledStyle ?? 'dot';
   if (style !== 'dot') return null;
+  // EP-drift-fix: when ledPosition is 'inside', PanelButton's internal dot
+  // renders the LED inside the button. Skip the external dot here so editor
+  // and preview agree (PanelRenderer line 201's `ledPosition !== 'inside'`
+  // gate already excludes this case for preview).
+  if ((control.ledPosition as string | undefined) === 'inside') return null;
   const color = control.ledColor ?? '#22c55e';
-  const position = control.ledPosition ?? 'above';
 
-  const ledDot = (
-    <div
-      className="rounded-full"
-      style={{
-        width: 6,
-        height: 6,
-        backgroundColor: color,
-        boxShadow: `0 0 4px 1px ${color}`,
-      }}
-    />
-  );
-
-  // Position the LED relative to the button
-  if (position === 'inside') {
-    return (
-      <div className="absolute top-1 right-1" style={{ zIndex: 5 }}>
-        {ledDot}
-      </div>
-    );
-  }
-  // For 'above', 'below', 'ring' — render above the control as absolute overlay
+  // For 'above', 'below', 'ring' — render above the control as absolute overlay.
+  // (The 'inside' case is handled by PanelButton's internal dot via the
+  // hasLed gate; this function early-returns above for that case.)
   return (
     <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 5 }}>
-      {ledDot}
+      <div
+        className="rounded-full"
+        style={{
+          width: 6,
+          height: 6,
+          backgroundColor: color,
+          boxShadow: `0 0 4px 1px ${color}`,
+        }}
+      />
     </div>
   );
 }
@@ -153,12 +147,26 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             height={visH}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            // PR EP3: pass hasLed UNCHANGED. PanelButton's getLedStyleObject
-            // decides what to render based on ledStyle. Previously this was
-            // gated on ledStyle === 'integrated' which conflated "is there
-            // an LED?" with "how should it render?" — silently dropping
-            // hasLed for any non-integrated style.
-            hasLed={control.hasLed}
+            // EP-drift-fix: gate must MATCH PanelRenderer line 231 so editor
+            // and preview produce identical PanelButton DOM (same internal-
+            // dot rendering). Without this, editor passes hasLed=true to
+            // PanelButton for dot-style buttons → PanelButton renders an
+            // internal flex-sibling dot (~6px tall column addition), while
+            // preview passes hasLed=false → no internal dot → ~4px column
+            // height divergence that drift:ci catches as parity failure.
+            //
+            // Pass hasLed when:
+            //   (a) ledPosition === 'inside' → PanelButton's internal dot
+            //       is what should render (renderButtonLed skips this case)
+            //   (b) ledStyle is a non-dot style (face/label-backlit/edge-
+            //       glow) → PanelButton paints the full LED face
+            // For default dot LEDs (no ledPosition='inside'), pass false so
+            // PanelButton's internal dot is suppressed; renderButtonLed
+            // above renders the SINGLE external dot.
+            hasLed={!!control.hasLed && (
+              (control.ledPosition as string | undefined) === 'inside'
+              || (!!control.ledStyle && control.ledStyle !== 'dot')
+            )}
             ledColor={control.ledColor ?? undefined}
             ledOn={effectiveLedOn === true}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
