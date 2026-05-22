@@ -7,6 +7,7 @@ import VersionHistoryDropdown from './VersionHistoryDropdown';
 import ScaleContentsModal from './ScaleContentsModal';
 import SelectDropdown from './SelectDropdown';
 import ScaleDropdown from './ScaleDropdown';
+import MoreDropdown, { type MoreDropdownItem } from './MoreDropdown';
 import { isHosted } from '@/lib/env';
 import { buildSavePayload } from './hooks/useAutoSave';
 
@@ -222,13 +223,9 @@ export default function EditorToolbar({
   return (
     <>
     <ScaleContentsModal open={showScaleModal} onClose={() => setShowScaleModal(false)} />
-    {/* 2-line toolbar (double-decker): row 1 = view + editing tools;
-        row 2 = canvas controls + actions. Switched from single line so
-        the right-side canvas inputs don't clip on narrower viewports. */}
-    <div className="flex flex-col">
-    <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2 overflow-x-auto">
+    <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2">
 
-      {/* ── ROW 1: Device + View + Edit + Overlays + Bulk ops ──── */}
+      {/* ── LEFT: Device + View ────────────────────────────────── */}
 
       {/* Device name */}
       {deviceName && (
@@ -477,9 +474,10 @@ export default function EditorToolbar({
         </>
       )}
 
-    </div>
-    {/* ── ROW 2: Actions + Canvas + Save/Submit ──────────────── */}
-    <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2 overflow-x-auto">
+      {/* ── SPACER ─────────────────────────────────────────────── */}
+      <div className="flex-1 min-w-2" />
+
+      {/* ── RIGHT: Actions ─────────────────────────────────────── */}
 
       {/* Help — always visible (contractors need this) */}
       <button
@@ -489,34 +487,34 @@ export default function EditorToolbar({
         data-tutorial="help"
       >?</button>
 
-      {/* Report Issue — visible for contractors and admin (not sandbox) */}
-      {!isSandbox && onReportIssue && (
-        <button
-          onClick={onReportIssue}
-          className="flex h-6 items-center gap-1 rounded border border-gray-700 px-2 text-[10px] text-gray-400 transition-colors hover:bg-gray-800 hover:text-gray-300"
-          title="Report Issue"
-          data-tutorial="report"
-        >
-          <span className="text-xs">⚑</span>
-          Report Issue
-        </button>
-      )}
-
-      {/* History + Reset — local only. Reset is editing; History stays in preview. */}
+      {/* History — local only, available in preview too (read-only browsing) */}
       {!isHosted && !isSandbox && (
-        <>
-          <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
-
-          {/* Reset Sizes — editing-only */}
-          {!previewMode && (
-            <button
-              onClick={() => { pushSnapshot(); resetAllSizes(); }}
-              className="flex h-6 items-center rounded px-1.5 text-[9px] text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300 whitespace-nowrap"
-              title="Reset all controls to default sizes (undoable)"
-            >Reset Sizes</button>
-          )}
-        </>
+        <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
       )}
+
+      {/* More ▾ — overflow menu for less-frequent actions (Reset Sizes,
+          Report Issue). Keeps the toolbar single-line; items conditional
+          on environment + preview mode. */}
+      {(() => {
+        const moreItems: MoreDropdownItem[] = [];
+        if (!isSandbox && onReportIssue) {
+          moreItems.push({
+            label: 'Report Issue',
+            icon: '⚑',
+            title: 'Report Issue',
+            onClick: onReportIssue,
+          });
+        }
+        if (!isHosted && !isSandbox && !previewMode) {
+          moreItems.push({
+            label: 'Reset Sizes',
+            icon: '↺',
+            title: 'Reset all controls to default sizes (undoable)',
+            onClick: () => { pushSnapshot(); resetAllSizes(); },
+          });
+        }
+        return moreItems.length > 0 ? <MoreDropdown items={moreItems} /> : null;
+      })()}
 
       {divider}
 
@@ -661,7 +659,6 @@ export default function EditorToolbar({
           null
         )}
       </div>
-    </div>
     </div>
     </>
   );

@@ -117,22 +117,19 @@ export default function SelectDropdown() {
     setOpen(false);
   };
 
-  const label = selectedCount > 0
-    ? `Select Controls (${selectedCount} selected) ▾`
-    : 'Select Controls ▾';
-
   return (
     <div ref={wrapperRef} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors ${
+        className={`flex h-7 w-[78px] flex-col items-center justify-center rounded px-1 text-[10px] font-medium leading-tight transition-colors ${
           open
             ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
             : 'text-gray-300 hover:bg-gray-800 hover:text-gray-100 border border-gray-700'
         }`}
         title="Select controls by type (Cmd+A for all)"
       >
-        {label}
+        <span>Select</span>
+        <span>{selectedCount > 0 ? `(${selectedCount}) ▾` : 'Controls ▾'}</span>
       </button>
 
       {open && (

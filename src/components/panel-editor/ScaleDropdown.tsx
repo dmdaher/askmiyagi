@@ -91,16 +91,12 @@ export default function ScaleDropdown() {
     applyFactor(factor);
   };
 
-  const label = disabled
-    ? 'Scale Selected ▾'
-    : `Scale Selected (${selectedCount}) ▾`;
-
   return (
     <div ref={wrapperRef} className="relative">
       <button
         onClick={() => !disabled && setOpen((v) => !v)}
         disabled={disabled}
-        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+        className={`flex h-7 w-[78px] flex-col items-center justify-center rounded px-1 text-[10px] font-medium leading-tight transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
           open
             ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
             : 'text-gray-300 hover:bg-gray-800 hover:text-gray-100 border border-gray-700'
@@ -111,7 +107,8 @@ export default function ScaleDropdown() {
             : `Scale ${selectedCount} selected control${selectedCount === 1 ? '' : 's'}`
         }
       >
-        {label}
+        <span>Scale</span>
+        <span>{disabled ? 'Selected ▾' : `(${selectedCount}) ▾`}</span>
       </button>
 
       {open && !disabled && (
