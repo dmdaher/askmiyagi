@@ -319,6 +319,140 @@ Section frame changes accordingly in the panel preview
 
 ---
 
+### S20: 5-pill LED picker
+
+Tests that all 5 LED styles render distinctly + the picker UI works.
+
+```
+Open: /admin/<deviceId>/editor?nosave=true
+   ↓
+Click any button-type control on the canvas
+   ↓
+Properties panel shows: [None] [Dot] [Face] [Label] [Edge]
+   ↓
+Cycle through each pill:
+  - None   → no LED affordance (bare rectangle)
+  - Dot    → small placeholder dot near button
+  - Face   → dark face + subtle colored border (LED-capable baseline)
+  - Label  → label/text glows in ledColor; face stays dark
+  - Edge   → 2px colored border; face stays dark
+   ↓
+On a CIRCLE button, "Edge" should auto-render as a RING (border-radius:50%)
+```
+
+Automated: `npx tsx e2e/visual-led-styles.ts` (5 store-state assertions + screenshots)
+
+---
+
+### S21: Universal rotation — sliders flip as a unit
+
+```
+Open: /admin/deepmind-12/editor?nosave=true
+   ↓
+Click a vertical slider (e.g., arp-gate-time)
+   ↓
+Properties panel → click 90° quick button
+   ↓
+The slider FLIPS as a full component: bbox + visual both become horizontal.
+Wider than tall (~217 × 24 instead of 24 × 217). Track lays out left-to-right.
+   ↓
+Click 0° → flips back to vertical
+   ↓
+Type 45 in Custom angle → slider rotates 45° via CSS, bbox stays vertical
+   ↓
+Click 0° → back to vertical
+```
+
+Automated: `npx tsx e2e/visual-rotation.ts` (cardinal swap + custom angle + Shift+Alt+R)
+
+---
+
+### S22: Shift+Alt+R keyboard accelerator
+
+```
+Open editor → click any control → press Shift+Alt+R
+   ↓
+Control rotates 90° clockwise (sliders also auto-swap w↔h)
+   ↓
+Press Shift+Alt+R again → 180°
+   ↓
+Press Shift+Alt+R again → 270°
+   ↓
+Press Shift+Alt+R again → 0° (full cycle)
+```
+
+Multi-select supported — every selected control rotates by +90° from its current angle.
+
+---
+
+### S23: Select Controls ▾ dropdown — checkbox-toggle
+
+```
+Open editor with 60+ controls
+   ↓
+Click "Select Controls ▾" in toolbar
+   ↓
+Dropdown shows: All controls / By type (10 categories with live counts) / Clear
+   ↓
+Click "Buttons" row → checkbox fills, dropdown STAYS OPEN
+   ↓
+Click "Knobs" row → second checkbox fills, both types now in selection
+   ↓
+Click "Buttons" again → checkbox empties, only knobs selected
+   ↓
+Click outside → dropdown closes, selection preserved
+   ↓
+Cmd+A → every control selected (closes dropdown if open)
+```
+
+---
+
+### S24: Scale Selected ▾ — bulk shrink workflow
+
+The contractor-productivity headline. Tests that "all pads 25% too big" becomes 2 clicks.
+
+```
+Open: /admin/cdj-3000/editor?nosave=true
+   ↓
+Select Controls ▾ → Buttons → close dropdown
+   ↓
+Scale Selected ▾ becomes enabled, shows "(49 selected)"
+   ↓
+Click "Shrink to 75%"
+   ↓
+All 49 buttons scale: w' = w × 0.75, h' = h × 0.75
+Center preserved per control. Label font scales too (clamped 6px).
+Toast: "Scaled 49 controls to 75%"
+   ↓
+Cmd+Z → all 49 buttons restore to original w/h/x/y in ONE undo step
+   ↓
+Scale Selected ▾ → "Custom: 90" + Apply → all shrink to 90%
+   ↓
+Cmd+Z restores
+```
+
+Automated: `npx tsx e2e/editor-bulk-scale.ts` (49-button real-flow on cdj-3000)
+
+---
+
+### S25: Locked + screen controls skip scaling
+
+Confirms scale's "skip" guards work.
+
+```
+Open editor → lock one control (Properties → Lock → Full)
+   ↓
+Cmd+A to select everything (including the locked one + any screen/display)
+   ↓
+Scale Selected ▾ → Shrink to 50%
+   ↓
+Toast reports "Scaled N · 2 skipped (locked / fixed-aspect)"
+   ↓
+Locked control's w/h unchanged. Screens unchanged. Everything else 0.5×.
+```
+
+---
+
 ## 10-minute full smoke (the minimum that exercises everything)
 
 ```
