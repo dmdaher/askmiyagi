@@ -51,7 +51,7 @@ interface ManifestControl {
   positionLabels?: string[];
   rotation?: number;
   labelFontSize?: number;
-  ledStyle?: 'integrated' | 'dot';
+  ledStyle?: 'dot' | 'face' | 'integrated' | 'label-backlit' | 'edge-glow';
   labelAlign?: string;
   labelColor?: string;
   zOrder?: number;
@@ -163,7 +163,7 @@ function renderControl(
         const diameter = Math.min(w, h);
         return (
           <div className="relative" data-control-id={control.id}>
-            {control.hasLed && control.ledPosition !== 'inside' && control.ledStyle !== 'integrated' && (
+            {control.hasLed && control.ledPosition !== 'inside' && (control.ledStyle ?? 'dot') === 'dot' && (
               <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 1 }}>
                 <div className="rounded-full" style={{
                   width: 6, height: 6,
@@ -198,7 +198,7 @@ function renderControl(
       // Icons are rendered by the editorLabels section below — not inline here.
       return (
         <div className="relative">
-          {control.hasLed && control.ledPosition !== 'inside' && control.ledStyle !== 'integrated' && (
+          {control.hasLed && control.ledPosition !== 'inside' && (control.ledStyle ?? 'dot') === 'dot' && (
             <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 1 }}>
               <div className="rounded-full" style={{
                 width: 6, height: 6,
@@ -216,7 +216,22 @@ function renderControl(
             height={h}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            hasLed={control.hasLed && control.ledPosition === 'inside'}
+            // Pass hasLed to PanelButton when EITHER:
+            //   (a) ledPosition === 'inside' → PanelButton renders its
+            //       internal dot inside the button face, or
+            //   (b) ledStyle is a non-dot style (face / label-backlit /
+            //       edge-glow) → PanelButton renders the full LED face.
+            // For plain dot LEDs (ledStyle 'dot' or undefined) with
+            // ledPosition !== 'inside', the SEPARATE external dot at
+            // line ~201 above is the one that should show. Passing
+            // hasLed=false here suppresses PanelButton's own internal
+            // dot so we don't double up (was visible as 2 dots on
+            // CDJ-3000 BEAT_SYNC / MASTER / KEY_SYNC after the EP3b
+            // forge made hasLed=true for those buttons).
+            hasLed={!!control.hasLed && (
+              control.ledPosition === 'inside'
+              || (!!control.ledStyle && control.ledStyle !== 'dot')
+            )}
             ledOn={ledOn}
             ledColor={control.ledColor ?? undefined}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
@@ -240,7 +255,8 @@ function renderControl(
     case 'slider':
       return (
         <Slider id={control.id} label="" highlighted={highlighted}
-          trackHeight={Math.max(h - 10, 20)} trackWidth={Math.max(w - 4, 8)} />
+          trackHeight={Math.max(h - 10, 20)} trackWidth={Math.max(w - 4, 8)}
+          rotation={control.rotation} />
       );
     case 'led':
     case 'indicator': {
@@ -500,6 +516,10 @@ export default function PanelRenderer({
           displayState,
         );
         const rotation = ctrl.rotation;
+        // Faders re-lay-out natively for 90/270; skip the CSS rotation
+        // wrapper so the slider's own horizontal layout isn't double-rotated.
+        const isFader = ctrl.type === 'fader' || ctrl.type === 'slider';
+        const skipRotation = isFader && (rotation === 90 || rotation === 270);
         return (
           <div
             key={ctrl.id}
@@ -519,7 +539,7 @@ export default function PanelRenderer({
               zIndex: 200 + (ctrl.zOrder ?? 0),
             }}
           >
-            {rotation ? (
+            {rotation && !skipRotation ? (
               <div style={{ transform: `rotate(${rotation}deg)`, width: w, height: h,
                 display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {inner}

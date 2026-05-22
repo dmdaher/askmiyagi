@@ -42,6 +42,12 @@ export interface CanvasSlice {
    *  false, hidden sections are fully suppressed from the editor view
    *  too — use the Layers panel to re-select them. Defaults to true. */
   showHiddenSections: boolean;
+  /** EP3b: when true, every control with `hasLed: true` renders as if
+   *  `ledOn: true` so the contractor can visually verify all 5 LED
+   *  styles (especially label-backlit and edge-glow whose ON-state glow
+   *  is otherwise only visible during tutorials). Off by default.
+   *  Session-only — not persisted to manifest. */
+  testLedsActive: boolean;
   controlScale: number; // 0.3-1.0 — visual scale for controls in editor (positioning mode)
   photoMode: 'overlay' | 'side-by-side';
   photoOpacity: number;
@@ -97,6 +103,7 @@ export interface CanvasSlice {
   setSnapGrid: (g: SnapGrid) => void;
   toggleGrid: () => void;
   toggleHiddenSections: () => void;
+  toggleTestLeds: () => void;
   togglePhoto: () => void;
   toggleLayers: () => void;
   toggleLabels: () => void;
@@ -148,6 +155,7 @@ export const createCanvasSlice: StateCreator<
   snapGrid: 4,
   showGrid: true,
   showHiddenSections: true,
+  testLedsActive: false,
   showPhoto: false,
   showLayers: false, // Start collapsed for maximum canvas space
   showLabels: true, // Labels visible by default
@@ -179,6 +187,7 @@ export const createCanvasSlice: StateCreator<
 
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
   toggleHiddenSections: () => set((s) => ({ showHiddenSections: !s.showHiddenSections })),
+  toggleTestLeds: () => set((s) => ({ testLedsActive: !s.testLedsActive })),
   toggleLayers: () => set((s) => ({ showLayers: !s.showLayers })),
   toggleLabels: () => set((s) => ({ showLabels: !s.showLabels })),
   setControlScale: (s) => set({ controlScale: Math.max(0.2, Math.min(2, s)) }),

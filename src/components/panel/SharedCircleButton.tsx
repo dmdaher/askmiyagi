@@ -35,7 +35,10 @@
  *   only enters the style object when actually needed.
  */
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import { resolveDisplayContent } from '@/lib/render-helpers';
+import { getLedStyleObject } from '@/components/controls/ledStyles';
+import type { LEDStyle } from '@/types/manifest';
 
 // Same cyan pulse PanelButton uses (PanelButton.tsx:74). Kept verbatim so
 // circular transport buttons (PLAY_PAUSE, CUE_BTN, HOT_CUE_*, SLIP, etc.)
@@ -119,54 +122,32 @@ export default function SharedCircleButton({
   const { text, isIcon } = resolveDisplayContent({ label, icon, labelDisplay });
   const showInside = labelPosition === 'on-button' || labelDisplay === 'icon-only';
 
-  const isIntegrated = ledStyle === 'integrated' && !!hasLed;
-  const intColor = ledColor ?? '#22c55e';
+  // PR EP2: shared LED helper across 5 styles × 3 states.
+  // The circle button is shape-agnostic for LED rendering — the only
+  // shape-specific bit is `border-radius:50%` applied by the caller,
+  // which automatically turns edge-glow's border into a ring.
+  const ledResult = useMemo(
+    () => getLedStyleObject(ledStyle as LEDStyle | undefined, ledOn, ledColor ?? undefined, !!hasLed),
+    [ledStyle, ledOn, ledColor, hasLed],
+  );
+  const isLedStyled = !!ledResult.containerStyle;
 
-  // Base background color. React drops `undefined` style props, so when
-  // bgColor is undefined the prop is simply absent — this is intentional for
-  // the integrated-ledOn=true case where the radial gradient takes over.
-  const bgColor = isIntegrated
-    ? ledOn === true
-      ? undefined
-      : ledOn === false
-        ? '#2a2a2a'
-        : `${intColor}10`
-    : active
-      ? '#3a3a3a'
-      : '#2a2a2a';
-
-  // Integrated-LED radial gradient (conditional — see Bug 2 guard above).
-  const integratedGradient =
-    isIntegrated && ledOn === true
-      ? `radial-gradient(ellipse at 50% 40%, ${intColor}50 0%, ${intColor}25 50%, transparent 80%)`
-      : null;
-
-  const border = isIntegrated
-    ? ledOn === true
-      ? `1px solid ${intColor}`
-      : ledOn === false
-        ? `3px solid ${surfaceColor ?? '#444'}`
-        : `1px solid ${intColor}25`
-    : `3px solid ${surfaceColor ?? '#444'}`;
-
-  // boxShadow base mirrors the editor's pre-extraction code, which included
-  // a subtle 1px white highlight (preview was missing it pre-extraction —
-  // unifying through SharedCircleButton gives preview that highlight too).
-  // Drift PR will call this out as an intentional preview-side improvement.
-  const boxShadow =
-    isIntegrated && ledOn === true
-      ? `0 0 12px ${intColor}80, 0 0 4px ${intColor}60, inset 0 0 8px ${intColor}30`
-      : surfaceColor
-        ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${surfaceColor}40, 0 1px 0 rgba(255,255,255,0.05)`
-        : 'inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)';
+  // Base background for non-LED-styled buttons (regular active/inactive)
+  const baseBgColor = active ? '#3a3a3a' : '#2a2a2a';
+  // Base border + shadow for non-LED-styled buttons (with optional surfaceColor)
+  const baseBorder = `3px solid ${surfaceColor ?? '#444'}`;
+  const baseShadow = surfaceColor
+    ? `inset 0 2px 4px rgba(0,0,0,0.4), 0 0 8px ${surfaceColor}40, 0 1px 0 rgba(255,255,255,0.05)`
+    : 'inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)';
 
   const faceStyle: React.CSSProperties = {
     width: diameter,
     height: diameter,
-    ...(bgColor !== undefined && { backgroundColor: bgColor }),
-    ...(integratedGradient && { background: integratedGradient }),
-    border,
-    boxShadow,
+    // When LED-styled, the helper's containerStyle owns bg/border/boxShadow.
+    // When not, fall back to base button face.
+    ...(isLedStyled
+      ? ledResult.containerStyle!
+      : { backgroundColor: baseBgColor, border: baseBorder, boxShadow: baseShadow }),
     // Lift highlighted buttons so the cyan glow renders unclipped above
     // section frames + sibling controls (same pattern as PanelButton).
     ...(highlighted && { position: 'relative' as const, zIndex: 1000 }),
@@ -180,7 +161,10 @@ export default function SharedCircleButton({
       className={`font-medium uppercase text-center leading-tight ${isIcon ? 'whitespace-nowrap' : 'w-full px-1'}`}
       style={{
         fontSize,
-        color: labelColor ?? '#d1d5db',
+        // label-backlit overrides label color/glow via the helper; otherwise
+        // use admin-configured labelColor or default text grey.
+        color: ledResult.labelStyle?.color ?? labelColor ?? '#d1d5db',
+        ...(ledResult.labelStyle?.textShadow && { textShadow: ledResult.labelStyle.textShadow as string }),
         ...(isIcon ? {} : { overflowWrap: 'break-word' as const }),
       }}
     >

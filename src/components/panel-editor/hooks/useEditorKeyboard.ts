@@ -119,6 +119,28 @@ export function useEditorKeyboard() {
         return;
       }
 
+      // ── Select all controls: Cmd/Ctrl+A ───────────────────────────────────
+      // Input-guarded above so typing in text fields uses native select-all.
+      // EP7: matches the Select Controls ▾ dropdown's "All controls" row.
+      if (isMod && !e.shiftKey && (e.key === 'a' || e.key === 'A')) {
+        e.preventDefault();
+        store.selectAllControls();
+        return;
+      }
+
+      // ── Rotate selection 90° CW: Shift+Alt+R ─────────────────────────────
+      // `R` alone toggles rulers; Shift+Alt+R is the rotation accelerator.
+      // Each selected control rotates by +90° from its CURRENT angle (per-
+      // control delta — multiple selected controls with different rotations
+      // stay relatively offset). Faders/sliders auto-swap w↔h on cardinal
+      // crossings via the rotateSelected store action.
+      if (e.shiftKey && e.altKey && (e.key === 'R' || e.key === 'r')) {
+        e.preventDefault();
+        store.pushSnapshot();
+        store.rotateSelected(90);
+        return;
+      }
+
       // ── Zoom in: Cmd/Ctrl+= ──────────────────────────────────────────────
       if (isMod && (e.key === '=' || e.key === '+')) {
         e.preventDefault();

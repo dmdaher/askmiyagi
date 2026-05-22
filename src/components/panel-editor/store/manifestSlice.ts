@@ -21,6 +21,7 @@ import type {
   LEDBehavior,
   LEDPosition,
   LEDVariant,
+  LEDStyle,
   InteractionType,
 } from '@/types/manifest';
 
@@ -118,7 +119,7 @@ export interface ControlDef {
   ledBehavior?: LEDBehavior;
   ledPosition?: LEDPosition;
   ledVariant?: LEDVariant;
-  ledStyle?: 'integrated' | 'dot';  // integrated = button face glows, dot = separate LED dot above
+  ledStyle?: LEDStyle;  // 5 styles: dot, face (=integrated alias), label-backlit, edge-glow
 
   // Interaction Model (enriched fields)
   interactionType?: InteractionType;
@@ -259,6 +260,37 @@ export interface ManifestSlice {
   updateSection: (id: string, updates: Partial<SectionDef>) => void;
   moveSelectedControls: (dx: number, dy: number) => void;
   updateControlProp: (ids: string[], field: string, value: unknown) => void;
+  rotateSelected: (deltaDegrees: number) => void;
+  /**
+   * Select every control in the current device. Replaces the current
+   * selection. Sections, labels, and containers are NOT included.
+   */
+  selectAllControls: () => void;
+  /**
+   * Select all controls whose `type` is in the given list. Replaces
+   * the current selection by default (`append=false`); pass `true` to
+   * add to current selection (Shift+click in the Select Controls ▾
+   * dropdown).
+   */
+  selectControlsByType: (types: string[], append?: boolean) => void;
+  /**
+   * Scale every eligible selected control by `factor` (e.g., 0.75 to
+   * shrink to 75%, 1.25 to grow to 125%). Each control:
+   *   - w' = w * factor, h' = h * factor  (clamped to 8px min)
+   *   - x'/y' computed so the CENTER stays put
+   *   - labelFontSize * factor (clamped to 6px min) if set
+   * Skipped: locked + resizeLocked + screens/displays (fixed aspect).
+   * Returns counts (eligible, skipped, clamped) for toast reporting.
+   *
+   * One `set()` call → one render. Pair with `pushSnapshot()` at the
+   * UI layer for a single undo step.
+   */
+  scaleSelectedControls: (factor: number) => {
+    eligible: number;
+    skipped: number;
+    sizeClamped: number;
+    fontClamped: number;
+  };
   duplicateSelected: () => void;
   deleteSelected: () => void;
   toggleLock: (id: string) => void;
@@ -1287,6 +1319,119 @@ export const createManifestSlice: StateCreator<
     } else {
       set({ controls });
     }
+  },
+
+  selectAllControls: () => {
+    const ids = Object.keys(get().controls);
+    get().setSelectedIds(ids);
+  },
+
+  selectControlsByType: (types, append = false) => {
+    const typeSet = new Set(types);
+    const controls = get().controls;
+    const matchIds = Object.values(controls)
+      .filter((c) => c && typeSet.has(c.type))
+      .map((c) => c.id);
+    if (append) {
+      // Merge with current control selection (sections/labels stay as-is is hard
+      // here without poking at the unified selection — so simplest correct
+      // behavior: union with current control ids only, dropping non-controls).
+      const current = selectedControlIds(get().selection);
+      const merged = Array.from(new Set([...current, ...matchIds]));
+      get().setSelectedIds(merged);
+    } else {
+      get().setSelectedIds(matchIds);
+    }
+  },
+
+  scaleSelectedControls: (factor) => {
+    get().clearScaleBase();
+    const MIN_SIZE = 8;
+    const MIN_FONT = 6;
+    const { selection, lockedIds, controls } = get();
+    const selectedIds = selectedControlIds(selection);
+    const lockedSet = new Set(lockedIds);
+
+    let eligible = 0;
+    let skipped = 0;
+    let sizeClamped = 0;
+    let fontClamped = 0;
+
+    if (selectedIds.length === 0 || factor === 1 || !Number.isFinite(factor)) {
+      return { eligible: 0, skipped: 0, sizeClamped: 0, fontClamped: 0 };
+    }
+
+    const next = { ...controls };
+    for (const id of selectedIds) {
+      const c = controls[id];
+      if (!c) continue;
+      // Skip locked + resizeLocked + screen/display (display content can't
+      // rescale without breaking tutorial layouts).
+      const isLocked = lockedSet.has(id) || c.locked || c.resizeLocked;
+      const isFixed = c.type === 'screen' || c.type === 'display';
+      if (isLocked || isFixed) {
+        skipped++;
+        continue;
+      }
+
+      const rawW = c.w * factor;
+      const rawH = c.h * factor;
+      const newW = Math.max(MIN_SIZE, rawW);
+      const newH = Math.max(MIN_SIZE, rawH);
+      if (rawW < MIN_SIZE || rawH < MIN_SIZE) sizeClamped++;
+
+      // Center-preserving anchor — same shrink/grow point regardless of factor
+      const newX = c.x + (c.w - newW) / 2;
+      const newY = c.y + (c.h - newH) / 2;
+
+      const update: Partial<typeof c> = {
+        x: newX,
+        y: newY,
+        w: newW,
+        h: newH,
+      };
+
+      if (typeof c.labelFontSize === 'number') {
+        const rawFont = c.labelFontSize * factor;
+        const newFont = Math.max(MIN_FONT, rawFont);
+        if (rawFont < MIN_FONT) fontClamped++;
+        update.labelFontSize = newFont;
+      }
+
+      next[id] = { ...c, ...update };
+      eligible++;
+    }
+
+    set({ controls: next });
+    return { eligible, skipped, sizeClamped, fontClamped };
+  },
+
+  rotateSelected: (deltaDegrees) => {
+    get().clearScaleBase();
+    const state = get();
+    const selectedIds = selectedControlIds(state.selection);
+    if (selectedIds.length === 0) return;
+    set((s) => {
+      const next = { ...s.controls };
+      for (const id of selectedIds) {
+        const ctrl = next[id];
+        if (!ctrl || ctrl.locked) continue;
+        const oldRotation = ctrl.rotation ?? 0;
+        // Normalize to [0, 360)
+        const newRotation = (((oldRotation + deltaDegrees) % 360) + 360) % 360;
+        // Cross-cardinal swap (same rule as handleRotationChange in PropertiesPanel)
+        const oldIsCardinal = oldRotation === 90 || oldRotation === 270;
+        const newIsCardinal = newRotation === 90 || newRotation === 270;
+        const isFader = ctrl.type === 'fader' || ctrl.type === 'slider';
+        const shouldSwap = isFader && oldIsCardinal !== newIsCardinal;
+        next[id] = {
+          ...ctrl,
+          rotation: newRotation,
+          ...(shouldSwap ? { w: ctrl.h, h: ctrl.w } : {}),
+        };
+      }
+      return { controls: next };
+    });
   },
 
   duplicateSelected: () => {

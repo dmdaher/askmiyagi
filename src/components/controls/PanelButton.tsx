@@ -1,6 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
+import { getLedStyleObject } from './ledStyles';
 
 interface PanelButtonProps {
   id: string;
@@ -19,7 +21,7 @@ interface PanelButtonProps {
   iconContent?: string;
   svgIcon?: React.ReactNode;
   labelFontSize?: number;
-  ledStyle?: 'integrated' | 'dot';
+  ledStyle?: 'dot' | 'face' | 'integrated' | 'label-backlit' | 'edge-glow';
   labelAlign?: string;
   labelColor?: string;
   onClick?: () => void;
@@ -178,20 +180,14 @@ export default function PanelButton({
     transform: active ? 'translateY(1px)' : 'translateY(0)',
   };
 
-  // ── Integrated LED glow (button face illuminates in ledColor) ───────────
-  // Three states: ledOn=true (bright glow), ledOn=false (no glow), ledOn=undefined (editor hint)
-  const integratedGlow = (ledStyle === 'integrated' && hasLed && ledColor) ? (
-    ledOn === true ? {
-      // ON — full radial gradient glow, bright and visible
-      background: `radial-gradient(ellipse at 50% 40%, ${ledColor}50 0%, ${ledColor}25 50%, transparent 80%)`,
-      border: `1px solid ${ledColor}`,
-      boxShadow: `0 0 12px ${ledColor}80, 0 0 4px ${ledColor}60, inset 0 0 8px ${ledColor}30`,
-    } : ledOn === false ? undefined : {
-      // EDITOR HINT — very faint tint so contractor sees LED-capable buttons
-      backgroundColor: `${ledColor}10`,
-      border: `1px solid ${ledColor}25`,
-    }
-  ) : undefined;
+  // ── LED rendering — 5 styles × 3 states via pure helper ─────────────────
+  // See src/components/controls/ledStyles.ts for the full state table.
+  // Memoized: only recomputes when LED inputs change.
+  const ledStyleResult = useMemo(
+    () => getLedStyleObject(ledStyle, ledOn, ledColor, !!hasLed),
+    [ledStyle, ledOn, ledColor, hasLed],
+  );
+  const integratedGlow = ledStyleResult.containerStyle ?? undefined;
 
   // ── Fluid button style (inline, replaces Tailwind classes) ─────────────
   const fluidButtonStyle = isFluid ? {
@@ -209,18 +205,26 @@ export default function PanelButton({
 
   return (
     <div className="flex flex-col items-center" data-control-id={id}>
-      {/* Label above button (text only — icons positioned outside by parent) */}
+      {/* Label above button (text only — icons positioned outside by parent).
+          For label-backlit LED style, ledStyleResult.labelStyle adds the
+          glowing color + text-shadow (mirrors SharedCircleButton:166). */}
       {labelPosition === 'above' && label && (
         <span
           className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
-          style={textStyle}
+          style={{
+            ...textStyle,
+            ...(ledStyleResult.labelStyle?.color && { color: ledStyleResult.labelStyle.color as string }),
+            ...(ledStyleResult.labelStyle?.textShadow && { textShadow: ledStyleResult.labelStyle.textShadow as string }),
+          }}
         >
           {label}
         </span>
       )}
 
-      {/* LED dot indicator (dot style only — integrated LEDs glow via button face) */}
-      {hasLed && ledStyle !== 'integrated' && (
+      {/* LED dot indicator — only renders for ledStyle:'dot' (or legacy where
+         the pure helper says we should keep the dot). face/integrated/
+         label-backlit/edge-glow render their LED inside the button face. */}
+      {hasLed && !ledStyleResult.suppressDotIndicator && (
         <div
           className={`${isFluid ? '' : sizeStyle.led} rounded-full transition-all duration-150`}
           style={{
@@ -264,19 +268,32 @@ export default function PanelButton({
             {iconContent}
           </span>
         ) : labelPosition === 'on' ? (
+          // On-button label: for label-backlit LED style, override color
+          // with ledStyleResult.labelStyle (LED color + glow text-shadow);
+          // otherwise fall back to labelColor as before.
           <span
             className={`${textClass} font-medium leading-tight px-1 tracking-wide uppercase w-full${labelAlign && labelAlign !== 'center' ? ' overflow-hidden' : ''}`}
-            style={{ ...textStyle, color: labelColor ?? '#e5e7eb', textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center', overflowWrap: 'break-word' }}>
+            style={{
+              ...textStyle,
+              color: (ledStyleResult.labelStyle?.color as string | undefined) ?? labelColor ?? '#e5e7eb',
+              ...(ledStyleResult.labelStyle?.textShadow && { textShadow: ledStyleResult.labelStyle.textShadow as string }),
+              textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center',
+              overflowWrap: 'break-word',
+            }}>
             {label}
           </span>
         ) : null}
       </motion.button>
 
-      {/* Label below button (text only — icons positioned outside by parent) */}
+      {/* Label below button — same labelStyle merge as the "above" variant. */}
       {labelPosition === 'below' && label && (
         <span
           className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
-          style={textStyle}
+          style={{
+            ...textStyle,
+            ...(ledStyleResult.labelStyle?.color && { color: ledStyleResult.labelStyle.color as string }),
+            ...(ledStyleResult.labelStyle?.textShadow && { textShadow: ledStyleResult.labelStyle.textShadow as string }),
+          }}
         >
           {label}
         </span>

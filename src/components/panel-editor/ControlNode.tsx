@@ -6,6 +6,7 @@ import { useEditorStore } from './store';
 import type { ControlDef } from './store';
 import type { ControlGroup } from './store/historySlice';
 import { isControlSelected, selectedControlIds } from './store/selection-types';
+import { rotateAABB, rectsOverlap } from './geometry';
 import PanelButton from '@/components/controls/PanelButton';
 import Knob from '@/components/controls/Knob';
 import Slider from '@/components/controls/Slider';
@@ -31,11 +32,16 @@ interface ControlNodeProps {
   sectionId: string;
 }
 
-/** Render a small LED dot indicator for buttons with hasLed (dot style only) */
+/** Render a small LED dot indicator for buttons with hasLed (dot style only).
+ * PR EP3: skip the dot for any non-dot ledStyle — face/integrated/label-backlit/
+ * edge-glow all render their LED via PanelButton's styled face/border/label
+ * (handled by getLedStyleObject in src/components/controls/ledStyles.ts). */
 function renderButtonLed(control: ControlDef) {
   if (!control.hasLed || (control.type !== 'button' && control.type !== 'pad')) return null;
-  // Integrated LED buttons glow via PanelButton styling — no separate dot
-  if (control.ledStyle === 'integrated') return null;
+  // Only ledStyle='dot' uses this separate-dot path. Everything else
+  // (face/integrated/label-backlit/edge-glow) renders inline via PanelButton.
+  const style = control.ledStyle ?? 'dot';
+  if (style !== 'dot') return null;
   const color = control.ledColor ?? '#22c55e';
   const position = control.ledPosition ?? 'above';
 
@@ -72,6 +78,11 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
   // Visual size = container size = stored w/h * controlScale
   const visW = Math.round(control.w * controlScale);
   const visH = Math.round(control.h * controlScale);
+  // Editor reads ledOn from the control's stored editor-only field. The
+  // Test LEDs toolbar toggle is PREVIEW-MODE ONLY (see PanCanvas) so it
+  // never affects editor rendering — keeps the edit view a pure layout
+  // tool while preview becomes the LED verification surface.
+  const effectiveLedOn = control.ledOn;
   // Skip controls that are nested inside another control (e.g., display nested in jog wheel)
   if (control.nestedIn && allControls[control.nestedIn]) {
     // This control is part of a composite — it will be rendered by the parent
@@ -116,6 +127,10 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
               labelFontSize={control.labelFontSize}
               labelColor={control.labelColor}
               surfaceColor={control.surfaceColor}
+              hasLed={control.hasLed}
+              ledStyle={control.ledStyle}
+              ledColor={control.ledColor ?? undefined}
+              ledOn={effectiveLedOn === true}
             />
           </div>
         );
@@ -138,8 +153,14 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             height={visH}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            hasLed={control.hasLed && control.ledStyle === 'integrated'}
+            // PR EP3: pass hasLed UNCHANGED. PanelButton's getLedStyleObject
+            // decides what to render based on ledStyle. Previously this was
+            // gated on ledStyle === 'integrated' which conflated "is there
+            // an LED?" with "how should it render?" — silently dropping
+            // hasLed for any non-integrated style.
+            hasLed={control.hasLed}
             ledColor={control.ledColor ?? undefined}
+            ledOn={effectiveLedOn === true}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
             labelFontSize={control.labelFontSize}
             ledStyle={control.ledStyle}
@@ -172,6 +193,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           highlighted={isSelected}
           trackHeight={Math.max(visH - 10, 20)}
           trackWidth={Math.max(visW - 4, 8)}
+          rotation={control.rotation}
         />
       );
     case 'led':
@@ -189,7 +211,8 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
         control.ledVariant === 'dual-label' ? 'dual-label'
         : control.ledVariant === 'bar' ? 'bar'
         : 'dot';
-      const ledOnForDot = control.ledOn === true ? true : undefined;
+      // EP3b: Test LEDs toolbar toggle forces ledOn=true on every hasLed control
+      const ledOnForDot = effectiveLedOn === true ? true : undefined;
       return (
         <SharedLed
           width={visW}
@@ -513,10 +536,15 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         const cw = control?.w ?? 0;
         const ch = control?.h ?? 0;
 
-        // Find all controls whose bounding box overlaps with this control
+        // EP6-C: hit-test against the rotation-aware AABB so visually
+        // overlapping rotated controls cycle correctly. For axis-aligned
+        // controls (rotation 0/falsy) rotateAABB returns the input
+        // unchanged — same behavior as before.
+        const myAABB = rotateAABB({ x: cx, y: cy, w: cw, h: ch }, control?.rotation ?? 0);
         const overlapping = Object.values(allCtrls).filter((c: any) => {
           if (!c || c.id === controlId || c.nestedIn) return false;
-          return cx < c.x + c.w && cx + cw > c.x && cy < c.y + c.h && cy + ch > c.y;
+          const otherAABB = rotateAABB({ x: c.x, y: c.y, w: c.w, h: c.h }, c.rotation ?? 0);
+          return rectsOverlap(myAABB, otherAABB);
         });
 
         if (overlapping.length > 0) {
@@ -742,12 +770,18 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
         )}
 
         {/* Control rendering — fills the container (container = visual) */}
+        {/* Faders re-lay-out natively for 90/270; skip CSS rotation to avoid double-rotation. */}
         <div
           className="flex h-full w-full items-center justify-center pointer-events-none overflow-visible"
-          style={{
-            transform: control.rotation ? `rotate(${control.rotation}deg)` : undefined,
-            transformOrigin: control.rotation ? 'center' : undefined,
-          }}
+          style={(() => {
+            const isFader = control.type === 'fader' || control.type === 'slider';
+            const isCardinal = control.rotation === 90 || control.rotation === 270;
+            const skip = isFader && isCardinal;
+            return {
+              transform: !skip && control.rotation ? `rotate(${control.rotation}deg)` : undefined,
+              transformOrigin: !skip && control.rotation ? 'center' : undefined,
+            };
+          })()}
         >
           {renderControl(control, isSelected, allControls, controlScale)}
         </div>
