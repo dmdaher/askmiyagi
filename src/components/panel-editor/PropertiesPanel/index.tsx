@@ -103,6 +103,59 @@ function GapInput({
   );
 }
 
+function RotationInput({
+  value,
+  mixed,
+  onCommit,
+}: {
+  value: number;
+  mixed: boolean;
+  onCommit: (val: number) => void;
+}) {
+  const [localValue, setLocalValue] = useState<string>('');
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setLocalValue(mixed ? '' : String(value));
+    }
+  }, [value, mixed, isFocused]);
+
+  const commit = useCallback(() => {
+    const parsed = parseFloat(localValue);
+    if (!isNaN(parsed) && parsed !== value) {
+      onCommit(parsed);
+    } else {
+      setLocalValue(mixed ? '' : String(value));
+    }
+  }, [localValue, value, mixed, onCommit]);
+
+  return (
+    <div className="flex items-center gap-2">
+      <label className="text-[10px] text-gray-500 w-12">Custom</label>
+      <input
+        type="number"
+        value={localValue}
+        placeholder={mixed ? 'Mixed' : '0'}
+        step={1}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => { setIsFocused(false); commit(); }}
+        onChange={(e) => setLocalValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') { (e.target as HTMLInputElement).blur(); }
+          if (e.key === 'Escape') {
+            setLocalValue(mixed ? '' : String(value));
+            (e.target as HTMLInputElement).blur();
+          }
+        }}
+        className="h-7 flex-1 rounded border border-gray-700 bg-gray-900 px-2 text-xs text-gray-300 outline-none focus:border-blue-500 placeholder:text-gray-600"
+        title="Custom rotation angle (degrees)"
+      />
+      <span className="text-[10px] text-gray-500">°</span>
+    </div>
+  );
+}
+
 // ─── Section Properties ──────────────────────────────────────────────────────
 
 function SectionProperties({ section }: { section: SectionDef }) {
@@ -347,9 +400,19 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
   const handleRotationChange = useCallback(
     (degrees: number) => {
       pushSnapshot();
+      // Auto-swap w↔h for faders/sliders on cross-cardinal rotation transitions
+      // so the whole component rotates as a unit (bbox + visual together).
+      // 0/180 ↔ 90/270 crossing means orientation changed; non-cardinal angles
+      // (e.g., 33°) don't touch the bbox — they use CSS rotate() in the wrapper.
+      const oldIsCardinal = control.rotation === 90 || control.rotation === 270;
+      const newIsCardinal = degrees === 90 || degrees === 270;
+      const isFader = control.type === 'fader' || control.type === 'slider';
+      if (isFader && oldIsCardinal !== newIsCardinal) {
+        resizeControl(control.id, control.h, control.w);
+      }
       updateControlProp(ids, 'rotation', degrees);
     },
-    [ids, updateControlProp, pushSnapshot],
+    [ids, control, updateControlProp, resizeControl, pushSnapshot],
   );
 
   const handleXChange = useCallback(
@@ -627,43 +690,53 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         </>
       )}
 
-      {/* LED — unified selector for all buttons/pads */}
+      {/* LED — 5-style selector for all buttons/pads (PR EP3) */}
       {(control.type === 'button' || control.type === 'pad') && (
         <>
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase tracking-wide text-gray-500">LED</label>
-            <div className="flex gap-1">
+            {/* 5 pills in 2 rows (wraps via flex-wrap on narrow viewports) */}
+            <div className="grid grid-cols-3 gap-1">
               {([
-                ['none', 'None', null] as const,
-                ['dot', 'Dot', <div key="d" className="w-2 h-2 rounded-full bg-green-500" />] as const,
-                ['glow', 'Glow', <div key="g" className="w-3.5 h-2.5 rounded-sm border border-green-500 bg-green-500/20" />] as const,
-              ]).map(([mode, label, icon]) => {
-                const currentMode = !control.hasLed ? 'none' : control.ledStyle === 'integrated' ? 'glow' : 'dot';
-                const isActive = currentMode === mode;
+                // [mode-key, ledStyle-value-or-null, label, tooltip, icon]
+                ['none', null, 'None', 'No LED on this button',
+                  <div key="none-icon" className="w-3.5 h-2.5" />] as const,
+                ['dot', 'dot', 'Dot', 'Separate small LED indicator next to the button',
+                  <div key="dot-icon" className="w-2 h-2 rounded-full bg-green-500" />] as const,
+                ['face', 'face', 'Face', 'Whole button face lights up (e.g., DJS-1000 SAMPLING/FX/MUTE)',
+                  <div key="face-icon" className="w-3.5 h-2.5 rounded-sm bg-green-500/70" />] as const,
+                ['label-backlit', 'label-backlit', 'Label', 'Only the label/text glows; button face stays dark',
+                  <div key="label-icon" className="w-3.5 h-2.5 rounded-sm border border-gray-700 flex items-center justify-center text-[8px] font-bold text-green-400">A</div>] as const,
+                ['edge-glow', 'edge-glow', 'Edge', 'Border/ring lights up (auto-ring on circle buttons)',
+                  <div key="edge-icon" className="w-3.5 h-2.5 rounded-sm border-2 border-green-500" />] as const,
+              ]).map(([mode, ledStyleValue, label, tooltip, icon]) => {
+                // Active-detection: normalize integrated→face for display
+                const currentLedStyle = !control.hasLed
+                  ? null
+                  : control.ledStyle === 'integrated' ? 'face' : (control.ledStyle ?? 'dot');
+                const isActive = mode === 'none' ? !control.hasLed : currentLedStyle === ledStyleValue;
                 return (
                   <button
                     key={mode}
+                    title={tooltip}
                     onClick={() => {
                       pushSnapshot();
                       if (mode === 'none') {
                         updateControlProp(ids, 'hasLed', false);
                         updateControlProp(ids, 'ledStyle', undefined);
-                      } else if (mode === 'dot') {
-                        updateControlProp(ids, 'hasLed', true);
-                        updateControlProp(ids, 'ledStyle', 'dot');
                       } else {
                         updateControlProp(ids, 'hasLed', true);
-                        updateControlProp(ids, 'ledStyle', 'integrated');
+                        updateControlProp(ids, 'ledStyle', ledStyleValue);
                       }
                     }}
-                    className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                    className={`flex flex-col items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
                       isActive
                         ? 'border-blue-500 bg-blue-500/10 text-blue-400'
                         : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
                     }`}
                   >
                     {icon}
-                    {label}
+                    <span>{label}</span>
                   </button>
                 );
               })}
@@ -749,23 +822,30 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
       />
 
       {/* Rotation */}
-      <div className="flex items-center justify-between">
-        <label className="text-[10px] text-gray-500 uppercase tracking-wider">Rotate</label>
-        <div className="flex gap-1">
-          {[0, 90, 180, 270].map((deg) => (
-            <button
-              key={deg}
-              onClick={() => handleRotationChange(deg)}
-              className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
-                (control.rotation ?? 0) === deg
-                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                  : 'text-gray-500 hover:bg-white/5 hover:text-gray-300 border border-transparent'
-              }`}
-            >
-              {deg}°
-            </button>
-          ))}
+      <div className="space-y-1">
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] text-gray-500 uppercase tracking-wider">Rotate</label>
+          <div className="flex gap-1">
+            {[0, 90, 180, 270].map((deg) => (
+              <button
+                key={deg}
+                onClick={() => handleRotationChange(deg)}
+                className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
+                  (control.rotation ?? 0) === deg
+                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                    : 'text-gray-500 hover:bg-white/5 hover:text-gray-300 border border-transparent'
+                }`}
+              >
+                {deg}°
+              </button>
+            ))}
+          </div>
         </div>
+        <RotationInput
+          value={control.rotation ?? 0}
+          mixed={false}
+          onCommit={handleRotationChange}
+        />
       </div>
 
       {/* Divider */}
@@ -835,6 +915,7 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
 function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
   const snapGrid = useEditorStore((s) => s.snapGrid);
   const updateControlProp = useEditorStore((s) => s.updateControlProp);
+  const resizeControl = useEditorStore((s) => s.resizeControl);
   const pushSnapshot = useEditorStore((s) => s.pushSnapshot);
   const alignControls = useEditorStore((s) => s.alignControls);
   const distributeControls = useEditorStore((s) => s.distributeControls);
@@ -923,11 +1004,13 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
   const ys = controls.map((c) => c.y);
   const ws = controls.map((c) => c.w);
   const hs = controls.map((c) => c.h);
+  const rotations = controls.map((c) => c.rotation ?? 0);
 
   const typeMixed = !allSame(types);
   const labelMixed = !allSame(labels);
   const positionMixed = !allSame(positions);
   const secondaryMixed = !allSame(secondaryLabels);
+  const rotationMixed = !allSame(rotations);
 
   const handleTypeChange = useCallback(
     (type: string) => {
@@ -992,6 +1075,24 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
       updateControlProp(ids, 'h', Math.max(8, val));
     },
     [ids, updateControlProp, pushSnapshot],
+  );
+
+  const handleRotationChange = useCallback(
+    (degrees: number) => {
+      pushSnapshot();
+      const newIsCardinal = degrees === 90 || degrees === 270;
+      // Per-control: if a fader/slider crosses the cardinal boundary, swap w↔h
+      // so its bbox rotates as a unit with its visual.
+      for (const ctrl of controls) {
+        const oldIsCardinal = ctrl.rotation === 90 || ctrl.rotation === 270;
+        const isFader = ctrl.type === 'fader' || ctrl.type === 'slider';
+        if (isFader && oldIsCardinal !== newIsCardinal) {
+          resizeControl(ctrl.id, ctrl.h, ctrl.w);
+        }
+      }
+      updateControlProp(ids, 'rotation', degrees);
+    },
+    [ids, controls, updateControlProp, resizeControl, pushSnapshot],
   );
 
   return (
@@ -1075,6 +1176,33 @@ function MultiControlProperties({ controls }: { controls: ControlDef[] }) {
         onWChange={handleWChange}
         onHChange={handleHChange}
       />
+
+      {/* Rotation (multi-select: applies to all) */}
+      <div className="space-y-1">
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] text-gray-500 uppercase tracking-wider">Rotate</label>
+          <div className="flex gap-1">
+            {[0, 90, 180, 270].map((deg) => (
+              <button
+                key={deg}
+                onClick={() => handleRotationChange(deg)}
+                className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
+                  !rotationMixed && (rotations[0] ?? 0) === deg
+                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                    : 'text-gray-500 hover:bg-white/5 hover:text-gray-300 border border-transparent'
+                }`}
+              >
+                {deg}°
+              </button>
+            ))}
+          </div>
+        </div>
+        <RotationInput
+          value={rotationMixed ? 0 : (rotations[0] ?? 0)}
+          mixed={rotationMixed}
+          onCommit={handleRotationChange}
+        />
+      </div>
 
       {/* Match Sizes — sets all selected controls to the size of the first */}
       {controls.length > 1 && (!allSame(ws) || !allSame(hs)) && (

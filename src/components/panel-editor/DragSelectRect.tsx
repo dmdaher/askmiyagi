@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { useEditorStore } from './store';
+import { rotateAABB, rectsOverlap } from './geometry';
 
 interface Rect {
   x1: number;
@@ -92,14 +93,17 @@ export default function DragSelectRect() {
       const { controls, setSelectedIds } = useEditorStore.getState();
       const hitIds: string[] = [];
 
+      // Selection rectangle as an AABB
+      const selectionAABB = { x: sx1, y: sy1, w: sx2 - sx1, h: sy2 - sy1 };
       for (const ctrl of Object.values(controls)) {
-        const cx1 = ctrl.x;
-        const cy1 = ctrl.y;
-        const cx2 = ctrl.x + ctrl.w;
-        const cy2 = ctrl.y + ctrl.h;
-
-        // AABB intersection test
-        if (cx1 < sx2 && cx2 > sx1 && cy1 < sy2 && cy2 > sy1) {
+        // EP6-C: hit-test rotated controls against their rotation-aware
+        // AABB so rubber-band selection grabs what's visually inside the
+        // rectangle. For rotation 0/falsy, rotateAABB is identity.
+        const ctrlAABB = rotateAABB(
+          { x: ctrl.x, y: ctrl.y, w: ctrl.w, h: ctrl.h },
+          ctrl.rotation ?? 0,
+        );
+        if (rectsOverlap(selectionAABB, ctrlAABB)) {
           hitIds.push(ctrl.id);
         }
       }

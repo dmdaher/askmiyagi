@@ -14,6 +14,8 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { readOrphanIntentions, type OrphanIntentionMap } from './orphan-intentions';
+import { verifyCumulativeState, violationsToQaResults, type Violation } from './cumulative-state';
 
 export type Severity = 'fail' | 'warn' | 'ok';
 
@@ -23,6 +25,43 @@ export interface QaResult {
   severity: Severity;
   message: string;
   details?: unknown;
+}
+
+/**
+ * Layer 1b orphan detail row. May include an agent-produced diagnosis
+ * (category A/B/C/D + reason + recommended action). When diagnosis is
+ * absent the canvas renders a "Diagnose" button to invoke the agent.
+ */
+export interface OrphanDetail {
+  controlId: string;
+  label: string | null;
+  /** Heuristic hint visible before agent diagnosis (e.g., `-copy` suffix). */
+  hint?: string;
+  /** Agent-produced diagnosis (PR-H). Optional — canvas surfaces a button to fetch it when missing. */
+  diagnosis?: {
+    category: 'A' | 'B' | 'C' | 'D';
+    categoryName: string;
+    reason: string;
+    confidence: 'high' | 'medium' | 'low';
+    citation: string;
+    suggestedAction: 'delete' | 'mark-intentional' | 'suggest-tutorial';
+    pairedWith?: string | null;
+    suggestedTutorial?: {
+      title: string;
+      description: string;
+      estimatedSteps?: number;
+      manualPages?: string;
+      category?: string;
+    } | null;
+    diagnosedAt: string;
+  };
+  /** Set when admin has marked this orphan intentional (suppresses re-flagging). */
+  intentional?: {
+    category: 'A' | 'B' | 'C' | 'D';
+    pairedWith?: string | null;
+    reason?: string;
+    markedAt: string;
+  };
 }
 
 export interface QaReport {
@@ -80,7 +119,35 @@ export function loadTutorialsForDevice(deviceId: string, repoRoot: string): Tuto
 }
 
 // ── Layer 1: Reference integrity ────────────────────────────────────────
-export function layer1(manifest: Manifest, tutorials: Tutorial[]): QaResult[] {
+
+/**
+ * Read previously-cached diagnoses from disk. Stored alongside qa-report
+ * so a re-run of layer1 doesn't drop existing agent diagnoses.
+ */
+function readCachedDiagnoses(deviceId: string, repoRoot: string): Record<string, OrphanDetail['diagnosis']> {
+  const p = path.join(repoRoot, '.pipeline', deviceId, 'agents', 'tutorial-review', 'orphan-diagnoses.json');
+  if (!fs.existsSync(p)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(p, 'utf-8')) as Record<string, OrphanDetail['diagnosis']>;
+  } catch { return {}; }
+}
+
+export function writeCachedDiagnoses(
+  deviceId: string,
+  diagnoses: Record<string, OrphanDetail['diagnosis']>,
+  repoRoot = process.cwd(),
+): void {
+  const p = path.join(repoRoot, '.pipeline', deviceId, 'agents', 'tutorial-review', 'orphan-diagnoses.json');
+  fs.mkdirSync(path.dirname(p), { recursive: true });
+  fs.writeFileSync(p, JSON.stringify(diagnoses, null, 2));
+}
+
+interface Layer1Options {
+  deviceId?: string;
+  repoRoot?: string;
+}
+
+export function layer1(manifest: Manifest, tutorials: Tutorial[], opts: Layer1Options = {}): QaResult[] {
   const manifestIds = new Set(manifest.controls.map((c) => c.id));
   const referencedIds = new Set<string>();
   for (const tut of tutorials) {
@@ -89,8 +156,47 @@ export function layer1(manifest: Manifest, tutorials: Tutorial[]): QaResult[] {
     }
   }
   const missingFromManifest = [...referencedIds].filter((id) => !manifestIds.has(id));
-  const unreferenced = [...manifestIds].filter((id) => !referencedIds.has(id));
+  const unreferencedAll = [...manifestIds].filter((id) => !referencedIds.has(id));
   const labelLookup = new Map(manifest.controls.map((c) => [c.id, c.label ?? '(no label)']));
+
+  // Read intentions + cached diagnoses to enrich the orphan rows.
+  const intentions: OrphanIntentionMap = opts.deviceId
+    ? readOrphanIntentions(opts.deviceId, opts.repoRoot ?? process.cwd())
+    : {};
+  const diagnoses = opts.deviceId
+    ? readCachedDiagnoses(opts.deviceId, opts.repoRoot ?? process.cwd())
+    : {};
+
+  // Split active (no intention recorded yet) vs intentional (admin
+  // already triaged). Both surface on the canvas but in separate
+  // visual groupings.
+  const activeOrphans: OrphanDetail[] = [];
+  const intentionalOrphans: OrphanDetail[] = [];
+  for (const id of unreferencedAll) {
+    const row: OrphanDetail = {
+      controlId: id,
+      label: labelLookup.get(id) ?? null,
+      hint: /-copy$|-copy-\d+$/.test(id) ? 'looks like an editor duplicate — consider deleting from manifest' : undefined,
+    };
+    if (intentions[id]) {
+      row.intentional = { ...intentions[id] };
+      intentionalOrphans.push(row);
+      continue;
+    }
+    if (diagnoses[id]) {
+      row.diagnosis = diagnoses[id];
+    }
+    activeOrphans.push(row);
+  }
+
+  // Sort active by category-of-action urgency: A (delete) > C (gap) > B (decorative) > D (redundant) > undiagnosed last
+  const order: Record<string, number> = { A: 0, C: 1, B: 2, D: 3 };
+  activeOrphans.sort((a, b) => {
+    const aOrd = a.diagnosis ? order[a.diagnosis.category] ?? 4 : 5;
+    const bOrd = b.diagnosis ? order[b.diagnosis.category] ?? 4 : 5;
+    return aOrd - bOrd;
+  });
+
   return [
     {
       layer: 1,
@@ -105,19 +211,14 @@ export function layer1(manifest: Manifest, tutorials: Tutorial[]): QaResult[] {
     {
       layer: 1,
       name: '1b. manifest→tutorial coverage',
-      severity: unreferenced.length > 0 ? 'warn' : 'ok',
+      severity: activeOrphans.length > 0 ? 'warn' : 'ok',
       message:
-        unreferenced.length > 0
-          ? `${manifestIds.size - unreferenced.length} of ${manifestIds.size} controls referenced; ${unreferenced.length} unreferenced`
-          : `all ${manifestIds.size} controls are referenced by at least one tutorial`,
-      details: unreferenced.map((id) => ({
-        controlId: id,
-        label: labelLookup.get(id) ?? null,
-        // Surface obvious editor-garbage candidates with a hint
-        hint: /-copy$|-copy-\d+$/.test(id)
-          ? 'looks like an editor duplicate — consider deleting from manifest'
-          : undefined,
-      })),
+        activeOrphans.length > 0
+          ? `${manifestIds.size - unreferencedAll.length} of ${manifestIds.size} controls referenced; ${activeOrphans.length} need triage (${intentionalOrphans.length} already marked intentional)`
+          : intentionalOrphans.length > 0
+            ? `all unreferenced orphans (${intentionalOrphans.length}) marked intentional`
+            : `all ${manifestIds.size} controls are referenced by at least one tutorial`,
+      details: { active: activeOrphans, intentional: intentionalOrphans },
     },
   ];
 }
@@ -204,6 +305,60 @@ export function layer3(manifest: Manifest, tutorials: Tutorial[]): QaResult[] {
   ];
 }
 
+// ── Layer 4: Readability + cumulative state (PR-L) ──────────────────────
+
+const LAYER_4_INSTRUCTION_MAX_CHARS = 200;
+
+/**
+ * Layer 4 readability finding: for each step, flag:
+ *   - instruction text > 200 chars (admin should consider splitting)
+ *   - zero `highlightControls` AND no displayState change (likely dead step)
+ *
+ * Severity: warn (advisory). Threshold and rules are tunable.
+ */
+export function layer4Readability(tutorials: Tutorial[]): QaResult[] {
+  const longInstructions: Array<{ tutorial: string; step: number; chars: number }> = [];
+  const deadSteps: Array<{ tutorial: string; step: number; reason: string }> = [];
+
+  for (const tut of tutorials) {
+    for (let i = 0; i < tut.steps.length; i++) {
+      const step = tut.steps[i];
+      const stepNum = i + 1;
+      const instr = step.instruction ?? '';
+      if (instr.length > LAYER_4_INSTRUCTION_MAX_CHARS) {
+        longInstructions.push({ tutorial: tut.id, step: stepNum, chars: instr.length });
+      }
+      const noHighlights = !step.highlightControls || step.highlightControls.length === 0;
+      // displayState/panelStateChanges shape: any non-null object counts as a change.
+      const hasDisplay = !!(step as { displayState?: unknown }).displayState;
+      if (noHighlights && !hasDisplay) {
+        deadSteps.push({ tutorial: tut.id, step: stepNum, reason: 'no highlights, no displayState' });
+      }
+    }
+  }
+
+  const results: QaResult[] = [];
+  if (longInstructions.length > 0) {
+    results.push({
+      layer: 4,
+      name: `4a. step instruction exceeds ${LAYER_4_INSTRUCTION_MAX_CHARS} chars (readability)`,
+      severity: 'warn',
+      message: `${longInstructions.length} step${longInstructions.length === 1 ? '' : 's'} exceed the suggested readability threshold. Consider splitting into multiple steps.`,
+      details: longInstructions,
+    });
+  }
+  if (deadSteps.length > 0) {
+    results.push({
+      layer: 4,
+      name: `4b. step has no highlights AND no displayState (likely dead step)`,
+      severity: 'warn',
+      message: `${deadSteps.length} step${deadSteps.length === 1 ? '' : 's'} have neither highlighted controls nor a display screen change. Confirm these aren't placeholder steps.`,
+      details: deadSteps,
+    });
+  }
+  return results;
+}
+
 // ── Orchestration ───────────────────────────────────────────────────────
 export interface RunDeterministicQaOptions {
   deviceId: string;
@@ -217,7 +372,23 @@ export function runDeterministicQa(opts: RunDeterministicQaOptions): QaReport {
   const manifest = loadManifest(deviceId, repoRoot);
   const tutorials = loadTutorialsForDevice(deviceId, repoRoot);
 
-  const results = [...layer1(manifest, tutorials), ...layer3(manifest, tutorials)];
+  // PR-L: aggregate cumulative-state violations across all tutorials
+  // and surface as Layer 4 findings.
+  const allViolations: Violation[] = [];
+  for (const tut of tutorials) {
+    const r = verifyCumulativeState(tut as Parameters<typeof verifyCumulativeState>[0], manifest);
+    // Tag violations with tutorial id so admin can locate them
+    for (const v of r.violations) {
+      allViolations.push({ ...v, message: `[${tut.id}] ${v.message}` });
+    }
+  }
+
+  const results = [
+    ...layer1(manifest, tutorials, { deviceId, repoRoot }),
+    ...layer3(manifest, tutorials),
+    ...layer4Readability(tutorials),
+    ...violationsToQaResults(allViolations),
+  ];
   const report: QaReport = {
     deviceId,
     generatedAt: new Date().toISOString(),

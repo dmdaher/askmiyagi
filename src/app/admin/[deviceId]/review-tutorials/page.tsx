@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import type { Tutorial } from '@/types/tutorial';
 import type { TutorialReviewSummary } from '@/lib/pipeline/tutorial-validators';
@@ -23,24 +23,36 @@ export default function ReviewTutorialsPage() {
   const [data, setData] = useState<ReviewData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`/api/pipeline/${deviceId}/review-tutorials`, { cache: 'no-store' })
-      .then(async (res) => {
-        if (cancelled) return;
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          setError(body.error ?? `HTTP ${res.status}`);
-          return;
-        }
-        const json: ReviewData = await res.json();
-        setData(json);
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
-      });
-    return () => { cancelled = true; };
+  /**
+   * PR-N1: refreshData is the single re-fetch path. Called by:
+   *   - mount (initial load)
+   *   - canvas action handlers after a successful mutation
+   *   - useCanvasAutoRefresh hook on mtime change
+   *
+   * Replaces router.refresh() which was a no-op against this client
+   * component's useState. Bug: orphan-action buttons appeared to "do
+   * nothing" because the page never re-fetched its data.
+   */
+  const refreshData = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/pipeline/${deviceId}/review-tutorials`,
+        { cache: 'no-store' },
+      );
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(body.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      const json: ReviewData = await res.json();
+      setData(json);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
   }, [deviceId]);
+
+  useEffect(() => { void refreshData(); }, [refreshData]);
 
   if (error) {
     return (
@@ -67,5 +79,5 @@ export default function ReviewTutorialsPage() {
     );
   }
 
-  return <TutorialReviewCanvas data={data} />;
+  return <TutorialReviewCanvas data={data} onRefreshData={refreshData} />;
 }

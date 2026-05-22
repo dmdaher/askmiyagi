@@ -51,6 +51,7 @@ import {
 import * as validators from '../src/lib/pipeline/checkpoint-validators';
 import * as coverageScorer from '../src/lib/pipeline/coverage-scorer';
 import { pipelinePaths, agentPath, inputPath } from '../src/lib/pipeline/paths';
+import { regenerateTutorialsFromCanvas } from '../src/lib/pipeline/regenerate-tutorial-ts';
 
 const deviceId = process.argv[2];
 if (!deviceId) {
@@ -2947,6 +2948,40 @@ async function doTutorialPR(state: PipelineState) {
   appendLog(deviceId, { level: 'info', message: 'Creating tutorial PR...' });
 
   try {
+    // PR-J: regenerate src/data/tutorials/<id>/*.ts from the canvas's
+    // tutorials.json snapshot so any 🛠 Fix → Apply patches reach the
+    // opened PR. Without this, admin's PR-I fixes are silently dropped.
+    const regen = regenerateTutorialsFromCanvas({ deviceId, repoRoot: worktreeCwd });
+    if (!regen.ok) {
+      appendLog(deviceId, {
+        level: 'warn',
+        message: `tutorial regeneration skipped: ${regen.error ?? 'unknown'}`,
+      });
+    } else {
+      appendLog(deviceId, {
+        level: 'info',
+        message: `Regenerated ${regen.tutorialCount} tutorials → ${regen.outDir}`,
+      });
+      // Stage the regenerated files so they're included in the commit.
+      try {
+        execSync(`git add src/data/tutorials/${deviceId}`, {
+          encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd,
+        });
+        // Only commit if there are actually staged changes (avoid empty commit).
+        const status = execSync('git status --porcelain', { encoding: 'utf-8', cwd: worktreeCwd });
+        if (status.trim().length > 0) {
+          execSync(
+            `git commit -m "tutorials(${deviceId}): regenerate from canvas state (PR-J)"`,
+            { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd },
+          );
+          appendLog(deviceId, { level: 'info', message: 'Committed regenerated tutorials' });
+        }
+      } catch (gitErr) {
+        const m = gitErr instanceof Error ? gitErr.message : String(gitErr);
+        appendLog(deviceId, { level: 'warn', message: `git stage/commit of regenerated tutorials failed: ${m}` });
+      }
+    }
+
     // Push the worktree branch to remote before creating PR
     execSync('git push -u origin HEAD', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], cwd: worktreeCwd });
 

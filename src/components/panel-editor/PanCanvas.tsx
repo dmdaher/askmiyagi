@@ -29,18 +29,93 @@ export default function PanCanvas() {
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
   const previewMode = useEditorStore((s) => s.previewMode);
   const showHiddenSections = useEditorStore((s) => s.showHiddenSections);
+  const testLedsActive = useEditorStore((s) => s.testLedsActive);
+  const controls = useEditorStore((s) => s.controls);
 
   // Sort sections by area: largest first (rendered at bottom), smallest last (on top).
   const sectionEntries = Object.values(sections).sort(
     (a, b) => (b.w * b.h) - (a.w * a.h)
   );
 
-  // Build manifest for PanelRenderer in preview mode
+  // Build manifest for PanelRenderer in preview mode. When Test LEDs is on,
+  // forge LED fields on every LED-capable control so the renderer's gate
+  // `if (!hasLed || !ledColor) return empty` doesn't skip rendering.
+  // Default ledColor when not set: green (#22c55e) — common LED indicator color.
   const manifest = useMemo(() => {
     if (!previewMode) return null;
-    return storeToManifest(useEditorStore.getState());
+    const base = storeToManifest(useEditorStore.getState());
+    if (!testLedsActive) return base;
+
+    const isLedCapable = (c: { hasLed?: boolean; type?: string; ledColor?: string; ledStyle?: string; ledVariant?: string }) =>
+      c.hasLed === true
+      || c.type === 'led'
+      || c.type === 'indicator'
+      || c.type === 'pad'
+      || !!c.ledColor
+      || !!c.ledStyle
+      || !!c.ledVariant;
+
+    // Force hasLed=true + a default ledColor on every LED-capable control
+    // so the production rendering paths actually fire. Manifest is locally
+    // synthesized for preview only — never written to disk.
+    const forgedControls = (base.controls ?? []).map((c: any) => {
+      if (!isLedCapable(c)) return c;
+      return {
+        ...c,
+        hasLed: true,
+        ledColor: c.ledColor ?? '#22c55e',
+      };
+    });
+    return { ...base, controls: forgedControls };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [previewMode, sections]);
+  }, [previewMode, testLedsActive, sections]);
+
+  // EP3b: when Test LEDs is on in preview mode, build a synthetic panelState
+  // that flips ledOn=true for every LED-capable control. "LED-capable" is
+  // inferred from ANY of these signals (real manifests are inconsistent —
+  // some controls have ledColor/ledVariant set without hasLed=true, but
+  // they still render LEDs):
+  //
+  //   - `hasLed: true`             — explicit declaration
+  //   - `type: 'led' | 'indicator'` — the LED IS the control (synth LFO LEDs,
+  //                                   voice LEDs, octave LEDs — 31 on deepmind-12)
+  //   - `ledColor` is set          — implies LED hardware (e.g., cdj-3000
+  //                                   BEAT_SYNC, KEY_SYNC, MASTER all have
+  //                                   ledColor but no explicit hasLed)
+  //   - `ledStyle` or `ledVariant` is set — same reasoning
+  //   - `type: 'pad'`              — performance pads almost always have
+  //                                   RGB-pad LEDs even when hasLed is omitted
+  //
+  // PanelRenderer consumes panelState exactly as it would a tutorial-driven
+  // state, so the rendering goes through the production code path — what
+  // you see is truly production-real.
+  const testLedsPanelState = useMemo(() => {
+    if (!previewMode || !testLedsActive) return undefined;
+    const state: Record<string, { active: boolean; ledOn: boolean; ledColor?: string }> = {};
+    for (const c of Object.values(controls)) {
+      if (!c) continue;
+      const isLedCapable =
+        c.hasLed === true
+        || c.type === 'led'
+        || c.type === 'indicator'
+        || c.type === 'pad'
+        || !!c.ledColor
+        || !!c.ledStyle
+        || !!c.ledVariant;
+      if (isLedCapable) {
+        // Pads render their LIT state via `active: true` (the face becomes
+        // colored with the pad's `color`); the button-LED rendering paths
+        // use `ledOn: true`. Indicators/LEDs use ledOn too. To light EVERY
+        // LED-capable control regardless of type, set BOTH.
+        state[c.id] = {
+          active: c.type === 'pad',
+          ledOn: true,
+          ledColor: c.ledColor ?? undefined,
+        };
+      }
+    }
+    return state;
+  }, [previewMode, testLedsActive, controls]);
 
   return (
     <div
@@ -63,8 +138,9 @@ export default function PanCanvas() {
       }}
     >
       {previewMode && manifest ? (
-        /* Preview mode — PanelRenderer shows exact production output */
-        <PanelRenderer manifest={manifest} />
+        /* Preview mode — PanelRenderer shows exact production output.
+           When Test LEDs is on, panelState forces ledOn=true on hasLed controls. */
+        <PanelRenderer manifest={manifest} panelState={testLedsPanelState} />
       ) : (
         <>
           {/* Canvas background */}

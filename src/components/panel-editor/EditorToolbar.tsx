@@ -5,6 +5,9 @@ import { useEditorStore } from './store';
 import type { SnapGrid } from './store';
 import VersionHistoryDropdown from './VersionHistoryDropdown';
 import ScaleContentsModal from './ScaleContentsModal';
+import SelectDropdown from './SelectDropdown';
+import ScaleDropdown from './ScaleDropdown';
+import MoreDropdown, { type MoreDropdownItem } from './MoreDropdown';
 import { isHosted } from '@/lib/env';
 import { buildSavePayload } from './hooks/useAutoSave';
 
@@ -164,6 +167,8 @@ export default function EditorToolbar({
   const toggleLabels = useEditorStore((s) => s.toggleLabels);
   const showHiddenSections = useEditorStore((s) => s.showHiddenSections);
   const toggleHiddenSections = useEditorStore((s) => s.toggleHiddenSections);
+  const testLedsActive = useEditorStore((s) => s.testLedsActive);
+  const toggleTestLeds = useEditorStore((s) => s.toggleTestLeds);
   const past = useEditorStore((s) => s.past);
   const future = useEditorStore((s) => s.future);
 
@@ -253,15 +258,18 @@ export default function EditorToolbar({
         </div>
       )}
 
-      {/* Undo / Redo */}
-      <button onClick={undo} disabled={past.length === 0} className={iconBtn} title="Undo (Cmd+Z)">
-        <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.5 2L1 5.5 4.5 9V6.5C8.5 6.5 11 8 12.5 11c-1-3.5-3.5-6-8-6.5V2z" /></svg>
-      </button>
-      <button onClick={redo} disabled={future.length === 0} className={iconBtn} title="Redo (Cmd+Shift+Z)">
-        <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 2L15 5.5 11.5 9V6.5C7.5 6.5 5 8 3.5 11c1-3.5 3.5-6 8-6.5V2z" /></svg>
-      </button>
-
-      {divider}
+      {/* Undo / Redo — editing-only, hidden in preview */}
+      {!previewMode && (
+        <>
+          <button onClick={undo} disabled={past.length === 0} className={iconBtn} title="Undo (Cmd+Z)">
+            <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.5 2L1 5.5 4.5 9V6.5C8.5 6.5 11 8 12.5 11c-1-3.5-3.5-6-8-6.5V2z" /></svg>
+          </button>
+          <button onClick={redo} disabled={future.length === 0} className={iconBtn} title="Redo (Cmd+Shift+Z)">
+            <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 2L15 5.5 11.5 9V6.5C7.5 6.5 5 8 3.5 11c1-3.5 3.5-6 8-6.5V2z" /></svg>
+          </button>
+          {divider}
+        </>
+      )}
 
       {/* Zoom */}
       <div className="flex items-center gap-0.5">
@@ -274,89 +282,112 @@ export default function EditorToolbar({
 
       {/* ── MIDDLE: Overlays ───────────────────────────────────── */}
 
-      {/* Grid toggle + snap size — grouped so the relationship is obvious */}
-      <div className="flex items-center gap-0.5" data-tutorial="grid">
-        <button onClick={toggleGrid} className={toggleBtn(showGrid)} title="Grid (G)" disabled={previewMode}>Grid</button>
-        <button onClick={toggleRulers} className={toggleBtn(showRulers)} title="Rulers (R)" disabled={previewMode}>Ruler</button>
-        <select
-          value={snapGrid}
-          onChange={(e) => setSnapGrid(Number(e.target.value) as SnapGrid)}
-          className="h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none"
-          title="Snap grid size — controls snap to this interval when dragging"
-          disabled={previewMode}
+      {/* Editing-only overlays — all hidden in preview mode */}
+      {!previewMode && (
+        <>
+          {/* Grid toggle + snap size — grouped so the relationship is obvious */}
+          <div className="flex items-center gap-0.5" data-tutorial="grid">
+            <button onClick={toggleGrid} className={toggleBtn(showGrid)} title="Grid (G)">Grid</button>
+            <button onClick={toggleRulers} className={toggleBtn(showRulers)} title="Rulers (R)">Ruler</button>
+            <select
+              value={snapGrid}
+              onChange={(e) => setSnapGrid(Number(e.target.value) as SnapGrid)}
+              className="h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[10px] text-gray-300 outline-none"
+              title="Snap grid size — controls snap to this interval when dragging"
+            >
+              {SNAP_OPTIONS.map((v) => (
+                <option key={v} value={v}>{v}px</option>
+              ))}
+            </select>
+          </div>
+
+          <button onClick={toggleLabels} className={toggleBtn(showLabels)} title="Labels (T)">Labels</button>
+
+          {/* Hidden-section ghost visibility — when off, hidden sections vanish
+              from the editor (use Layers panel to find them). When on, they
+              render as faint amber ghost frames so contractor can re-select. */}
+          <button
+            onClick={toggleHiddenSections}
+            className={toggleBtn(showHiddenSections)}
+            title={showHiddenSections
+              ? 'Hidden sections are visible as ghost frames — click to hide them from the editor'
+              : 'Hidden sections are suppressed — click to show ghost frames'}
+          >
+            Hide Section
+          </button>
+
+        </>
+      )}
+
+      {/* EP3b: Test LEDs — PREVIEW-MODE ONLY. Force every hasLed control to
+          render as ledOn=true via the panelState override in PanCanvas so the
+          contractor can visually verify all 5 LED styles without launching a
+          tutorial or using devtools. Session-only, never persists. */}
+      {previewMode && (
+        <button
+          onClick={toggleTestLeds}
+          className={toggleBtn(testLedsActive)}
+          title={testLedsActive
+            ? 'Test LEDs ON — every LED-capable control rendering as if lit. Click to turn off.'
+            : 'Test LEDs OFF — click to light up every LED-capable control in preview (no manifest writes)'}
         >
-          {SNAP_OPTIONS.map((v) => (
-            <option key={v} value={v}>{v}px</option>
-          ))}
-        </select>
-      </div>
+          ✨ Test LEDs
+        </button>
+      )}
 
-      <button onClick={toggleLabels} className={toggleBtn(showLabels)} title="Labels (T)" disabled={previewMode}>Labels</button>
-
-      {/* Hidden-section ghost visibility — when off, hidden sections vanish
-          from the editor (use Layers panel to find them). When on, they
-          render as faint amber ghost frames so contractor can re-select. */}
-      <button
-        onClick={toggleHiddenSections}
-        className={toggleBtn(showHiddenSections)}
-        title={showHiddenSections
-          ? 'Hidden sections are visible as ghost frames — click to hide them from the editor'
-          : 'Hidden sections are suppressed — click to show ghost frames'}
-        disabled={previewMode}
-      >
-        Hide Section
-      </button>
-
-      {/* Add standalone label */}
-      <button
-        onClick={() => {
-          pushSnapshot();
-          // Create at center of canvas area; flash + scroll-to so the
-          // contractor sees where the new label landed (matches the
-          // new-container pattern in ContextMenu.tsx).
-          const newId = addStandaloneLabel(canvasWidth / 2 - 30, canvasHeight / 2);
-          const store = useEditorStore.getState();
-          store.flashLabelCreated(newId);
-          store.setSelectedLabel(newId);
-          if (typeof document !== 'undefined') {
-            setTimeout(() => {
-              const el = document.querySelector(`[data-label-id="${newId}"]`);
-              if (el && 'scrollIntoView' in el) {
-                el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+      {/* +L Add label, +B Add banner, Label size — all editing-only */}
+      {!previewMode && (
+        <>
+          {/* Add standalone label */}
+          <button
+            onClick={() => {
+              pushSnapshot();
+              // Create at center of canvas area; flash + scroll-to so the
+              // contractor sees where the new label landed (matches the
+              // new-container pattern in ContextMenu.tsx).
+              const newId = addStandaloneLabel(canvasWidth / 2 - 30, canvasHeight / 2);
+              const store = useEditorStore.getState();
+              store.flashLabelCreated(newId);
+              store.setSelectedLabel(newId);
+              if (typeof document !== 'undefined') {
+                setTimeout(() => {
+                  const el = document.querySelector(`[data-label-id="${newId}"]`);
+                  if (el && 'scrollIntoView' in el) {
+                    el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+                  }
+                }, 50);
               }
-            }, 50);
-          }
-        }}
-        disabled={previewMode}
-        className={iconBtn}
-        title="Add standalone label at canvas center"
-      >
-        +L
-      </button>
+            }}
+            className={iconBtn}
+            title="Add standalone label at canvas center"
+          >
+            +L
+          </button>
 
-      {/* Add polish banner — decorative overlay spanning the panel */}
-      <button
-        onClick={() => {
-          pushSnapshot();
-          const newId = useEditorStore.getState().addPolishBanner();
-          if (typeof document !== 'undefined') {
-            setTimeout(() => {
-              const el = document.querySelector(`[data-banner-id="${newId}"]`);
-              if (el && 'scrollIntoView' in el) {
-                el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+          {/* Add polish banner — decorative overlay spanning the panel */}
+          <button
+            onClick={() => {
+              pushSnapshot();
+              const newId = useEditorStore.getState().addPolishBanner();
+              if (typeof document !== 'undefined') {
+                setTimeout(() => {
+                  const el = document.querySelector(`[data-banner-id="${newId}"]`);
+                  if (el && 'scrollIntoView' in el) {
+                    el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+                  }
+                }, 50);
               }
-            }, 50);
-          }
-        }}
-        disabled={previewMode}
-        className={iconBtn}
-        title="Add polish banner (decorative overlay) at top of panel"
-      >
-        +B
-      </button>
+            }}
+            className={iconBtn}
+            title="Add polish banner (decorative overlay) at top of panel"
+          >
+            +B
+          </button>
+        </>
+      )}
 
-      {/* Label size (only when labels visible) */}
-      {showLabels && (
+      {/* Label size (only when labels visible and not in preview) */}
+      {!previewMode && showLabels && (
         <select
           value=""
           onChange={(e) => {
@@ -432,6 +463,17 @@ export default function EditorToolbar({
         )}
       </div>
 
+      {/* Select / Scale dropdowns — editing-only */}
+      {!previewMode && (
+        <>
+          {divider}
+          {/* Select Controls ▾ — bulk-select by type (EP7) */}
+          <SelectDropdown />
+          {/* Scale Selected ▾ — bulk factor-scale (EP8) */}
+          <ScaleDropdown />
+        </>
+      )}
+
       {/* ── SPACER ─────────────────────────────────────────────── */}
       <div className="flex-1 min-w-2" />
 
@@ -445,33 +487,34 @@ export default function EditorToolbar({
         data-tutorial="help"
       >?</button>
 
-      {/* Report Issue — visible for contractors and admin (not sandbox) */}
-      {!isSandbox && onReportIssue && (
-        <button
-          onClick={onReportIssue}
-          className="flex h-6 items-center gap-1 rounded border border-gray-700 px-2 text-[10px] text-gray-400 transition-colors hover:bg-gray-800 hover:text-gray-300"
-          title="Report Issue"
-          data-tutorial="report"
-        >
-          <span className="text-xs">⚑</span>
-          Report Issue
-        </button>
-      )}
-
-      {/* History + Reset — local only */}
+      {/* History — local only, available in preview too (read-only browsing) */}
       {!isHosted && !isSandbox && (
-        <>
-          <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
-
-          {/* Reset Sizes */}
-          <button
-            onClick={() => { pushSnapshot(); resetAllSizes(); }}
-            disabled={previewMode}
-            className="flex h-6 items-center rounded px-1.5 text-[9px] text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300 disabled:opacity-30 whitespace-nowrap"
-            title="Reset all controls to default sizes (undoable)"
-          >Reset Sizes</button>
-        </>
+        <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
       )}
+
+      {/* More ▾ — overflow menu for less-frequent actions (Reset Sizes,
+          Report Issue). Keeps the toolbar single-line; items conditional
+          on environment + preview mode. */}
+      {(() => {
+        const moreItems: MoreDropdownItem[] = [];
+        if (!isSandbox && onReportIssue) {
+          moreItems.push({
+            label: 'Report Issue',
+            icon: '⚑',
+            title: 'Report Issue',
+            onClick: onReportIssue,
+          });
+        }
+        if (!isHosted && !isSandbox && !previewMode) {
+          moreItems.push({
+            label: 'Reset Sizes',
+            icon: '↺',
+            title: 'Reset all controls to default sizes (undoable)',
+            onClick: () => { pushSnapshot(); resetAllSizes(); },
+          });
+        }
+        return moreItems.length > 0 ? <MoreDropdown items={moreItems} /> : null;
+      })()}
 
       {divider}
 
@@ -489,7 +532,9 @@ export default function EditorToolbar({
 
       {divider}
 
-      {/* Two distinct clusters:
+      {/* Two distinct clusters — Scale stays visible in preview (useful to
+          shrink/grow the whole panel while inspecting it); Canvas W/H inputs
+          stay too (resize the canvas without scaling contents).
           1. "Scale" cluster — proportional scaling (-/+ shortcuts + ⤢ modal)
           2. "Canvas" cluster — W/H inputs that resize without scaling contents */}
       <div className="flex items-center gap-1 flex-shrink-0">
@@ -497,14 +542,12 @@ export default function EditorToolbar({
         <span className="text-[9px] text-gray-500">Scale:</span>
         <button
           onClick={() => { pushSnapshot(); scaleCanvas(0.8); }}
-          disabled={previewMode}
-          className="flex h-6 w-6 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30"
+          className="flex h-6 w-6 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-800 hover:text-gray-200"
           title="Scale all contents down to 80%"
         >−</button>
         <button
           onClick={() => { pushSnapshot(); scaleCanvas(1.25); }}
-          disabled={previewMode}
-          className="flex h-6 w-6 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30"
+          className="flex h-6 w-6 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-800 hover:text-gray-200"
           title="Scale all contents up to 125%"
         >+</button>
         <button
@@ -549,13 +592,16 @@ export default function EditorToolbar({
               }
             }}
             onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-            disabled={previewMode}
-            className="w-12 h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 text-center outline-none focus:border-blue-500 disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-12 h-6 rounded border border-gray-700 bg-gray-900 px-1 text-[9px] text-gray-300 text-center outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             title="Canvas height in pixels — resizes the canvas only. Controls keep their position. Min 300."
             placeholder="H"
           />
         </div>
+      </div>
 
+      {/* Hosted save/submit cluster + History — informational always visible;
+          Save and Submit buttons inside hide in preview mode. */}
+      <div className="flex items-center gap-1 flex-shrink-0">
         {isSandbox ? (
           <span className="flex h-7 items-center px-3 text-[10px] font-medium text-violet-400 border border-violet-500/30 bg-violet-600/15 rounded whitespace-nowrap">
             Practice Mode
@@ -589,17 +635,19 @@ export default function EditorToolbar({
                 Reload
               </button>
             )}
-            {onSaveNow && saveStatus !== 'conflict' && (
+            {!previewMode && onSaveNow && saveStatus !== 'conflict' && (
               <button
                 onClick={onSaveNow}
-                disabled={previewMode || saveStatus === 'saving'}
+                disabled={saveStatus === 'saving'}
                 className="rounded border border-gray-600 bg-gray-800 px-2.5 py-1 text-[10px] font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors disabled:opacity-50"
                 title="Save now (flushes to cloud)"
               >
                 Save
               </button>
             )}
-            <SubmitForReviewButton deviceId={deviceId} disabled={previewMode || saveStatus === 'conflict'} />
+            {!previewMode && (
+              <SubmitForReviewButton deviceId={deviceId} disabled={saveStatus === 'conflict'} />
+            )}
             {/* History dropdown — same component as admin sees, now reads hosted Blob backups */}
             <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
           </div>

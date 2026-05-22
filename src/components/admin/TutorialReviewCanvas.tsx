@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import type { Tutorial } from '@/types/tutorial';
 import type { TutorialReviewSummary, TutorialIssue } from '@/lib/pipeline/tutorial-validators';
@@ -13,6 +13,39 @@ import TutorialDiagnosticsPanel from './TutorialDiagnosticsPanel';
 import ProgressBar from '@/components/tutorial/ProgressBar';
 import StepContent from '@/components/tutorial/StepContent';
 import NavigationControls from '@/components/tutorial/NavigationControls';
+import CanvasScaleControlToolbar, { useCanvasScale } from './CanvasScaleControl';
+import CanvasScaleModal from './CanvasScaleModal';
+import StepControl, { useStepControlMode } from './StepControl';
+import OrphanList from './OrphanList';
+import Layer5Panel from './Layer5Panel';
+import QaFixModal, { type FixModalRequest, type FindingType } from './QaFixModal';
+import { useCanvasAutoRefresh } from './useCanvasAutoRefresh';
+import { ToastProvider, useToast } from './ToastSystem';
+
+type OrphanCategory = 'A' | 'B' | 'C' | 'D';
+
+interface OrphanDetail {
+  controlId: string;
+  label: string | null;
+  hint?: string;
+  diagnosis?: {
+    category: OrphanCategory;
+    categoryName: string;
+    reason: string;
+    confidence: 'high' | 'medium' | 'low';
+    citation: string;
+    suggestedAction: 'delete' | 'mark-intentional' | 'suggest-tutorial';
+    pairedWith?: string | null;
+    suggestedTutorial?: { title: string; description: string; estimatedSteps?: number; manualPages?: string; category?: string } | null;
+    diagnosedAt: string;
+  };
+  intentional?: {
+    category: OrphanCategory;
+    pairedWith?: string | null;
+    reason?: string;
+    markedAt: string;
+  };
+}
 
 interface QaFinding {
   layer: number;
@@ -48,16 +81,56 @@ interface ReviewData {
 
 interface TutorialReviewCanvasProps {
   data: ReviewData;
+  /**
+   * PR-N1: caller-supplied re-fetch. Replaces `router.refresh()` which
+   * was a no-op against the page's `'use client'` useState. Called by
+   * the canvas after every successful mutation + by the auto-refresh
+   * hook on mtime change. If omitted (legacy callers), falls back to
+   * router.refresh() — but new code paths should always supply this.
+   */
+  onRefreshData?: () => void | Promise<void>;
 }
 
 // localStorage namespace so the "reviewed" set survives a refresh
 const REVIEWED_KEY = (deviceId: string) => `tutorial-review:reviewed:${deviceId}`;
-const FIT_KEY = 'canvas:fit-to-viewport';
 const DISMISS_STALE_KEY = (deviceId: string, mtime: number | null | undefined) =>
   `canvas:dismiss-stale:${deviceId}:${mtime ?? 'n/a'}`;
 
-export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps) {
+/**
+ * PR-N2: outer wrapper installs ToastProvider so useToast() works
+ * everywhere inside the canvas tree (and any modal portal'd from it).
+ */
+export default function TutorialReviewCanvas(props: TutorialReviewCanvasProps) {
+  return (
+    <ToastProvider>
+      <TutorialReviewCanvasInner {...props} />
+    </ToastProvider>
+  );
+}
+
+function TutorialReviewCanvasInner({ data, onRefreshData }: TutorialReviewCanvasProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const toast = useToast();
+
+  /**
+   * PR-N1: single source of truth for "refresh canvas data". Always
+   * prefer onRefreshData (caller-supplied client re-fetch). Fall back
+   * to router.refresh() only when the prop is missing — legacy paths.
+   */
+  const refreshCanvas = useCallback(() => {
+    if (onRefreshData) void onRefreshData();
+    else router.refresh();
+  }, [onRefreshData, router]);
+  const searchParams = useSearchParams();
+  const compact = searchParams.get('compact') === '1';
+  const toggleCompact = useCallback(() => {
+    const next = new URLSearchParams(searchParams.toString());
+    if (compact) next.delete('compact');
+    else next.set('compact', '1');
+    const q = next.toString();
+    router.push(`${pathname}${q ? `?${q}` : ''}`);
+  }, [compact, searchParams, router, pathname]);
   const {
     tutorials,
     summary,
@@ -82,13 +155,10 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
   });
   const [diagnosticsCollapsed, setDiagnosticsCollapsed] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [scaleModalOpen, setScaleModalOpen] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
   const [actionInFlight, setActionInFlight] = useState<'approve' | 'changes' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [fitToViewport, setFitToViewport] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    try { return sessionStorage.getItem(FIT_KEY) === '1'; } catch { return false; }
-  });
   const [staleDismissed, setStaleDismissed] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     if (!manifestStaleWarning) return false;
@@ -124,6 +194,133 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
 
   const [refreshInFlight, setRefreshInFlight] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [orphanActionInFlight, setOrphanActionInFlight] = useState<string | null>(null);
+  const [orphanActionError, setOrphanActionError] = useState<string | null>(null);
+
+  // PR-M: Edit Highlights mode. When ON, clicking a control on the
+  // preview panel toggles it in the current step's highlightControls
+  // via a no-agent qa-fix-apply call. Default OFF — preserves the
+  // existing flashControl behavior for non-edit clicks.
+  const EDIT_HIGHLIGHTS_KEY = (id: string) => `canvas:edit-highlights:${id}`;
+  const [editHighlightsMode, setEditHighlightsMode] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try { return localStorage.getItem(EDIT_HIGHLIGHTS_KEY(deviceId)) === '1'; }
+    catch { return false; }
+  });
+  const toggleEditHighlights = useCallback(() => {
+    setEditHighlightsMode((v) => {
+      const next = !v;
+      try { localStorage.setItem(EDIT_HIGHLIGHTS_KEY(deviceId), next ? '1' : '0'); } catch { /* ignore */ }
+      return next;
+    });
+  }, [deviceId]);
+  const [toggleInFlight, setToggleInFlight] = useState<string | null>(null);
+  const [toggleError, setToggleError] = useState<string | null>(null);
+
+  // PR-I two-phase Fix modal (for Layer 1a / 3a / 3b agent fixes)
+  const [fixModalRequest, setFixModalRequest] = useState<FixModalRequest | null>(null);
+  const openFixModal = useCallback((request: FixModalRequest) => setFixModalRequest(request), []);
+  const closeFixModal = useCallback(() => setFixModalRequest(null), []);
+  const onFixApplied = useCallback(() => {
+    // Apply-side already re-runs deterministic QA. PR-N1: refreshCanvas
+    // re-fetches the page data so admin sees the change immediately
+    // (instead of waiting for the 5s auto-refresh poll).
+    refreshCanvas();
+    // PR-N follow-up: STICKY — agent results require admin attention; don't
+    // disappear if admin was looking away.
+    toast.success('Fix applied — tutorials.json updated', { duration: -1 });
+  }, [refreshCanvas, toast]);
+
+  const orphanAction = useCallback(async (
+    action: 'diagnose' | 'mark-intentional' | 'unmark-intentional' | 'delete',
+    controlId: string,
+    intent?: { category: 'A' | 'B' | 'C' | 'D'; pairedWith?: string | null; reason?: string },
+  ) => {
+    setOrphanActionInFlight(`${action}:${controlId}`);
+    setOrphanActionError(null);
+
+    // PR-N2: in-progress toast for the slow agent call only
+    const progressKey = `orphan:${action}:${controlId}`;
+    if (action === 'diagnose') {
+      toast.progress(progressKey, `Diagnosing ${controlId}… (≈$0.20, ≈60s)`);
+    }
+
+    try {
+      // PR-J: delete dispatches to the dedicated manifest-control DELETE
+      // route (writes manifest-editor.json + auto-exports). All other
+      // orphan actions stay on the orphan-action POST route.
+      const res = action === 'delete'
+        ? await fetch(
+            `/api/pipeline/${deviceId}/manifest-control/${encodeURIComponent(controlId)}`,
+            { method: 'DELETE' },
+          )
+        : await fetch(`/api/pipeline/${deviceId}/orphan-action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, controlId, intent }),
+          });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errMsg = body.error ?? `HTTP ${res.status}`;
+        setOrphanActionError(errMsg);
+        toast.error(`${action} failed: ${errMsg}`, { key: progressKey });
+      } else {
+        refreshCanvas();
+        // PR-N2: success toasts with appropriate next-step
+        if (action === 'diagnose' && body.diagnosis) {
+          const d = body.diagnosis as {
+            category: string; categoryName: string;
+            suggestedAction: 'delete' | 'mark-intentional' | 'suggest-tutorial';
+            pairedWith?: string | null; reason?: string;
+          };
+          const nextLabel = d.suggestedAction === 'delete' ? '🗑 Delete'
+            : d.suggestedAction === 'mark-intentional' ? '✓ Mark intentional'
+            : '✓ Accept gap';
+          toast.success(
+            `Diagnosed ${controlId} · Category ${d.category} (${d.categoryName})`,
+            {
+              key: progressKey,
+              // PR-N follow-up: STICKY — agent results require admin attention.
+              duration: -1,
+              action: {
+                label: nextLabel,
+                testid: `toast-action-diagnose-${controlId}`,
+                onClick: () => {
+                  if (d.suggestedAction === 'delete') {
+                    void orphanActionRef.current?.('delete', controlId);
+                  } else {
+                    void orphanActionRef.current?.('mark-intentional', controlId, {
+                      category: d.category as 'A' | 'B' | 'C' | 'D',
+                      pairedWith: d.pairedWith ?? null,
+                      reason: d.reason,
+                    });
+                  }
+                },
+              },
+            },
+          );
+        } else if (action === 'mark-intentional') {
+          toast.success(`Marked ${controlId} intentional`, { key: progressKey });
+        } else if (action === 'unmark-intentional') {
+          toast.success(`Re-flagged ${controlId} for triage`, { key: progressKey });
+        } else if (action === 'delete') {
+          toast.success(`Deleted ${controlId} from manifest (backup saved)`, { key: progressKey });
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setOrphanActionError(msg);
+      toast.error(`${action} error: ${msg}`, { key: progressKey });
+    } finally {
+      setOrphanActionInFlight(null);
+    }
+  }, [deviceId, refreshCanvas, toast]);
+
+  // PR-N2: ref so the toast's action callback can dispatch back into
+  // orphanAction without circular dependency in useCallback.
+  const orphanActionRef = useRef<typeof orphanAction | null>(null);
+  useEffect(() => { orphanActionRef.current = orphanAction; }, [orphanAction]);
+
   const triggerRefreshFromEditor = useCallback(async () => {
     setRefreshInFlight(true);
     setRefreshError(null);
@@ -131,35 +328,45 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
       const res = await fetch(`/api/pipeline/${deviceId}/refresh-from-editor`, { method: 'POST' });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setRefreshError(body.error ?? `HTTP ${res.status}`);
+        const errMsg = body.error ?? `HTTP ${res.status}`;
+        setRefreshError(errMsg);
+        toast.error(`Refresh from editor failed: ${errMsg}`);
       } else {
-        router.refresh();
+        refreshCanvas();
+        toast.success('Refreshed canvas from editor');
       }
     } catch (err) {
-      setRefreshError(err instanceof Error ? err.message : String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      setRefreshError(msg);
+      toast.error(`Refresh from editor error: ${msg}`);
     } finally {
       setRefreshInFlight(false);
     }
-  }, [deviceId, router]);
+  }, [deviceId, refreshCanvas, toast]);
 
   const triggerVisualQa = useCallback(async () => {
     setQaRerunInFlight(true);
     setQaRerunError(null);
+    toast.progress('visual-qa', 'Running visual QA (Playwright)…');
     try {
       const res = await fetch(`/api/pipeline/${deviceId}/qa-rerun`, { method: 'POST' });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setQaRerunError(body.error ?? `HTTP ${res.status}`);
+        const errMsg = body.error ?? `HTTP ${res.status}`;
+        setQaRerunError(errMsg);
+        toast.error(`Visual QA failed: ${errMsg}`, { key: 'visual-qa' });
       } else {
-        // Re-fetch the page to pick up updated qa-report.json
-        router.refresh();
+        refreshCanvas();
+        toast.success('Visual QA complete — qa-report updated', { key: 'visual-qa' });
       }
     } catch (err) {
-      setQaRerunError(err instanceof Error ? err.message : String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      setQaRerunError(msg);
+      toast.error(`Visual QA error: ${msg}`, { key: 'visual-qa' });
     } finally {
       setQaRerunInFlight(false);
     }
-  }, [deviceId, router]);
+  }, [deviceId, refreshCanvas, toast]);
 
   // Persist reviewed set on change
   useEffect(() => {
@@ -168,10 +375,19 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     } catch { /* localStorage unavailable */ }
   }, [reviewed, deviceId]);
 
-  // Persist fit toggle
+  // Sync the auto-refresh suppression flag with modal / in-flight state.
+  // We don't want polling to refresh the page mid-modal or mid-action.
   useEffect(() => {
-    try { sessionStorage.setItem(FIT_KEY, fitToViewport ? '1' : '0'); } catch { /* ignore */ }
-  }, [fitToViewport]);
+    suppressRef.current =
+      feedbackOpen ||
+      scaleModalOpen ||
+      fixModalRequest !== null ||
+      actionInFlight !== null ||
+      refreshInFlight ||
+      qaRerunInFlight;
+  }, [feedbackOpen, scaleModalOpen, fixModalRequest, actionInFlight, refreshInFlight, qaRerunInFlight]);
+
+
 
   // ──────────── Tutorial loading ──────────────────────────────────────────
   const currentTutorial = useMemo(
@@ -203,16 +419,42 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.key === 'j' || e.key === 'J') { e.preventDefault(); nextStep(); }
-      else if (e.key === 'k' || e.key === 'K') { e.preventDefault(); prevStep(); }
-      else if (e.key === ']') { e.preventDefault(); cycleTutorial(1); }
-      else if (e.key === '[') { e.preventDefault(); cycleTutorial(-1); }
-      else if (e.key === 'Escape') router.push(`/admin/${deviceId}`);
+      // PR-N3: comprehensive input-blocking guard so navigation keys never
+      // hijack text editing or modal-open contexts. Use HTMLElement guard
+      // because synthetic events can have `e.target` set to Window
+      // (which doesn't have `closest` / `isContentEditable`).
+      const t = e.target instanceof HTMLElement ? e.target : null;
+      if (t) {
+        if (
+          t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'
+          || t.isContentEditable
+          || t.closest('[role="textbox"]')
+        ) return;
+      }
+      // Modal-open guard runs whether or not target is an HTMLElement
+      if (document.querySelector('[data-testid="qa-fix-modal"]')) return;
+
+      // Navigate steps: ←/→ (PR-N3) AND j/k (PR-G-rev, vi-style, kept for habit)
+      if (e.key === 'j' || e.key === 'J' || e.key === 'ArrowRight') {
+        e.preventDefault(); nextStep();
+      } else if (e.key === 'k' || e.key === 'K' || e.key === 'ArrowLeft') {
+        e.preventDefault(); prevStep();
+      }
+      // Cycle tutorial: [/] AND ↑/↓
+      else if (e.key === ']' || e.key === 'ArrowDown') {
+        e.preventDefault(); cycleTutorial(1);
+      } else if (e.key === '[' || e.key === 'ArrowUp') {
+        e.preventDefault(); cycleTutorial(-1);
+      }
+      else if (e.key === 'Escape') {
+        // Compact mode: Esc exits compact first. Second Esc → /admin.
+        if (compact) toggleCompact();
+        else router.push(`/admin/${deviceId}`);
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [nextStep, prevStep, cycleTutorial, router, deviceId]);
+  }, [nextStep, prevStep, cycleTutorial, router, deviceId, compact, toggleCompact]);
 
   // ──────────── Action handlers ───────────────────────────────────────────
   const submitResolution = useCallback(async (resolution: string) => {
@@ -267,10 +509,9 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     });
   }, []);
 
-  // ──────────── Panel scaling ─────────────────────────────────────────────
-  // Default = native size (production fidelity, vertical+horizontal scroll
-  // if it doesn't fit). Fit-to-viewport (god-mode toggle) computes a single
-  // scale that fits both dimensions of the preview area. NO double-transform.
+  // ──────────── Panel scaling (editor-parity continuous zoom) ─────────────
+  // CSS transform-scale on the panel wrapper. Persisted per device.
+  // See CanvasScaleControl.tsx for the slider/buttons/keyboard/wheel UX.
   const previewRef = useRef<HTMLDivElement | null>(null);
   const [previewSize, setPreviewSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
 
@@ -285,13 +526,122 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
     return () => ro.disconnect();
   }, []);
 
-  const panelScale = useMemo(() => {
-    if (!fitToViewport || !manifest || previewSize.w === 0 || previewSize.h === 0) return 1;
+  // computeAutoFit — first-visit default when no persisted scale yet.
+  // Fits panel into the preview area on whichever dimension is more
+  // constrained, with a minimum of 50% so the panel stays readable.
+  // For tall panels (cdj-3000 at 1469×1842) at 1400-wide viewport with
+  // sidebar+diagnostics chrome, the preview area is ~820w × ~408h with
+  // the anchored step block, so height is the binding constraint and
+  // we'd fit to ~22% — overridden by the 50% floor so the panel remains
+  // readable. Admin scrolls vertically to see the rest, OR can switch
+  // step control to "floating"/"mini"/"hidden" to reclaim viewport.
+  const computeAutoFit = useCallback((): number | null => {
+    if (!manifest || previewSize.w === 0 || previewSize.h === 0) return null;
     const PAD = 48;
     const fitW = (previewSize.w - PAD) / manifest.panelWidth;
     const fitH = (previewSize.h - PAD) / manifest.panelHeight;
-    return Math.min(fitW, fitH, 1);
-  }, [fitToViewport, manifest, previewSize]);
+    const fit = Math.min(fitW, fitH);
+    // Clamp: ≥ 50% (readable), ≤ 100% (don't blow up small panels)
+    return Math.max(0.5, Math.min(fit, 1));
+  }, [manifest, previewSize]);
+
+  const scaleApi = useCanvasScale({ deviceId, computeAutoFit });
+  const panelScale = scaleApi.scale;
+  const stepControl = useStepControlMode(deviceId);
+  // PR-N3: useFloatingSafeArea deleted along with floating step modes.
+  // The new StepControl is always in-flow (anchored or compact-strip),
+  // so no padding compensation is needed.
+  const previewPadBottom = 16;  // small default breathing room
+  const previewPadTop = 0;
+
+  // Live auto-refresh poll — picks up upstream changes (editor save,
+  // Fix apply, pull-from-hosted) without admin needing to reload.
+  // Suppressed while feedback modal is open so admin's review isn't
+  // yanked out from under them.
+  // The suppress callback must be stable across renders so the polling
+  // hook doesn't restart its timer on every state change. We read the
+  // current value via a ref instead.
+  const suppressRef = useRef<boolean>(false);
+  useCanvasAutoRefresh({
+    deviceId,
+    suppress: useCallback(() => suppressRef.current, []),
+    onRefresh: refreshCanvas,
+  });
+  // The suppress sync effect runs after all the modal/in-flight states
+  // are declared further down — see the dedicated effect near the
+  // bottom of the component body.
+
+  // Bind Cmd+wheel inside the preview scroll area only (browser zoom
+  // works normally everywhere else).
+  useEffect(() => {
+    return scaleApi.bindWheelTo(previewRef.current);
+  }, [scaleApi]);
+
+  // PR-M: handler for click-to-toggle highlight (only fires when
+  // editHighlightsMode is ON). Builds a single-op patch and POSTs to
+  // qa-fix-apply, reusing PR-I infrastructure + PR-L cumulative-state
+  // gate. On 409 violations, surface a toast — admin can re-toggle
+  // with override via the existing QaFixModal flow (Layer 1a, etc.)
+  // or click again to invert their first attempt.
+  const handlePanelControlClick = useCallback(async (controlId: string) => {
+    if (!editHighlightsMode) {
+      // Default: just flash the control (preserves PR-H/I behavior).
+      flashControlOnPanel(controlId);
+      return;
+    }
+    if (!currentTutorial) return;
+    const step = currentTutorial.steps[currentStepIndex];
+    if (!step) return;
+    const currentHighlights = step.highlightControls ?? [];
+    const isOn = currentHighlights.includes(controlId);
+    setToggleInFlight(controlId);
+    setToggleError(null);
+    try {
+      const patchOp = isOn
+        ? {
+            op: 'remove' as const,
+            path: `/highlightControls/${currentHighlights.indexOf(controlId)}`,
+          }
+        : { op: 'add' as const, path: '/highlightControls/-', value: controlId };
+      const res = await fetch(`/api/pipeline/${deviceId}/qa-fix-apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          result: {
+            tutorialId: currentTutorial.id,
+            stepIndex: currentStepIndex,
+            findingType: 'layer3b',
+            patch: [patchOp],
+            explanation: `Direct admin toggle (PR-M): ${isOn ? 'removed' : 'added'} ${controlId}`,
+            confidence: 'high',
+            citation: 'admin click',
+            alternatives: [],
+          },
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 409 && Array.isArray(body.violations) && body.violations.length > 0) {
+        setToggleError(
+          `Cumulative-state violation: ${body.violations[0].message}. Click 🛠 Fix on the related finding to override.`,
+        );
+        return;
+      }
+      if (!res.ok || !body.ok) {
+        setToggleError(body.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      // Brief glow feedback so admin knows the toggle landed
+      flashControlOnPanel(controlId);
+      refreshCanvas();
+    } catch (err) {
+      setToggleError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setToggleInFlight(null);
+    }
+  }, [
+    editHighlightsMode, currentTutorial, currentStepIndex,
+    deviceId, flashControlOnPanel, refreshCanvas,
+  ]);
 
   // ──────────── Render ────────────────────────────────────────────────────
   if (!currentTutorial) {
@@ -339,19 +689,32 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
+          <CanvasScaleControlToolbar api={scaleApi} onOpenModal={() => setScaleModalOpen(true)} />
           <button
             type="button"
-            onClick={() => setFitToViewport(v => !v)}
-            data-testid="fit-toggle"
-            aria-pressed={fitToViewport}
-            className={`text-[11px] px-2.5 py-1 rounded font-medium border transition-colors cursor-pointer ${
-              fitToViewport
-                ? 'border-[#00aaff]/40 bg-[#00aaff]/20 text-[#00ccff]'
-                : 'border-white/20 text-white/70 hover:bg-white/10'
+            onClick={toggleCompact}
+            data-testid="compact-toggle"
+            title={compact ? 'Exit compact mode (Esc)' : 'Compact mode — hide admin chrome'}
+            aria-pressed={compact}
+            className={`text-[11px] px-2 py-1 rounded font-medium border transition-colors cursor-pointer ${
+              compact
+                ? 'border-cyan-500/40 bg-cyan-500/20 text-cyan-300'
+                : 'border-white/15 text-white/70 hover:bg-white/10'
             }`}
-            title="Fit panel to viewport (god-mode). Off = native size with scroll."
           >
-            {fitToViewport ? '✓ Fit' : 'Fit'}
+            {compact ? '⤡ Exit compact' : '⛶ Compact'}
+          </button>
+          {/* PR-N follow-up: Refresh from editor lives on the toolbar
+             (was buried at the bottom of QA Findings — bad discoverability). */}
+          <button
+            type="button"
+            onClick={triggerRefreshFromEditor}
+            disabled={refreshInFlight}
+            data-testid="toolbar-refresh-from-editor"
+            title="Re-export from manifest-editor.json, re-validate tutorials, re-run deterministic QA"
+            className="text-[11px] px-2 py-1 rounded font-medium border border-amber-500/40 text-amber-300 hover:bg-amber-500/15 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {refreshInFlight ? '⏳ Refreshing…' : '↻ Refresh'}
           </button>
           {actionError && (
             <span className="text-[11px] text-red-400 mr-2 max-w-xs truncate" title={actionError}>
@@ -426,9 +789,43 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
             : '260px 1fr 320px',
         }}
       >
-        {/* ── Sidebar: tutorial list + reviewer notes ──────────────── */}
-        <div className="flex flex-col overflow-hidden border-r border-white/10 bg-[#0c0c18]">
-          <div className="flex-1 overflow-y-auto">
+        {/* ── Sidebar: tutorial list + QA findings + reviewer notes ──
+           Single scroll context at the sidebar root. Children flow
+           naturally; sticky section headers preserve orientation.
+           See ~/.claude/plans/prancy-dreaming-comet.md (PR-Scroll) for
+           the architectural rationale. */}
+        <div className="flex flex-col overflow-y-auto border-r border-white/10 bg-[#0c0c18]" data-testid="canvas-sidebar">
+          {/* PR-M: Edit Highlights mode toggle */}
+          <div className="flex-shrink-0 px-2 py-1.5 border-b border-white/10 bg-[#0a0a14]">
+            <button
+              type="button"
+              onClick={toggleEditHighlights}
+              className={`w-full flex items-center justify-between text-[10px] px-2 py-1.5 rounded border transition-colors ${
+                editHighlightsMode
+                  ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'
+                  : 'border-white/10 bg-white/[0.02] text-white/60 hover:bg-white/5'
+              }`}
+              data-testid="edit-highlights-toggle"
+              title="When ON, clicking a control on the panel toggles its highlight on the current step. When OFF, clicks flash the control (default)."
+            >
+              <span className="flex items-center gap-1.5">
+                <span>{editHighlightsMode ? '🟢' : '⚪'}</span>
+                <span>Edit Highlights mode</span>
+              </span>
+              <span className="text-[9px] opacity-70">{editHighlightsMode ? 'ON' : 'OFF'}</span>
+            </button>
+            {toggleInFlight && (
+              <div className="text-[9px] text-cyan-300/70 mt-1 px-2" data-testid="edit-highlights-in-flight">
+                ⏳ toggling {toggleInFlight}…
+              </div>
+            )}
+            {toggleError && (
+              <div className="text-[9px] text-red-300 mt-1 px-2 py-1 rounded bg-red-500/10 border border-red-500/30" data-testid="edit-highlights-error">
+                {toggleError}
+              </div>
+            )}
+          </div>
+          <div className="flex-shrink-0">
             <TutorialListPanel
               tutorials={tutorials}
               summary={summary}
@@ -441,11 +838,11 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
 
           {/* QA Findings (auto-generated by pipeline at tutorial-review pause) */}
           {qaReport && (
-            <div className="flex-shrink-0 border-t border-white/10 bg-[#0a0a14]" data-testid="qa-findings-section">
+            <div className="flex-shrink-0 border-t border-white/10" data-testid="qa-findings-section">
               <button
                 type="button"
                 onClick={() => setQaOpen((v) => !v)}
-                className={`w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold transition-colors flex items-center justify-between ${
+                className={`w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold transition-colors flex items-center justify-between sticky top-0 z-10 bg-[#0a0a14] ${
                   qaReport.hasFailures
                     ? 'text-red-300 hover:bg-red-500/5'
                     : qaHasIssues
@@ -462,14 +859,21 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                 <span className="text-white/40">{qaOpen ? '▾' : '▸'}</span>
               </button>
               {qaOpen && (
-                <div className="max-h-[50vh] overflow-y-auto px-3 pb-3 space-y-2">
+                <div className="px-3 pb-3 space-y-2">
                   <p className="text-[10px] text-white/40 leading-snug">
                     Auto-generated at pipeline pause. {qaReport.visualVerified ? 'Includes visual highlight verification.' : 'Deterministic layers only — click "Run Visual QA" below to verify highlights end-to-end.'}
                   </p>
                   {qaReport.results.map((finding, idx) => {
                     const key = `${finding.layer}-${idx}`;
                     const expanded = expandedQaFinding === key;
+                    // Layer 1b uses a structured shape { active, intentional };
+                    // older layers use arrays.
+                    const isLayer1b = finding.layer === 1 && finding.name.startsWith('1b');
+                    const layer1bDetails = isLayer1b && finding.details && typeof finding.details === 'object' && !Array.isArray(finding.details)
+                      ? (finding.details as { active: OrphanDetail[]; intentional: OrphanDetail[] })
+                      : null;
                     const detailsArr = Array.isArray(finding.details) ? finding.details : [];
+                    const hasDetails = layer1bDetails ? (layer1bDetails.active.length + layer1bDetails.intentional.length) > 0 : detailsArr.length > 0;
                     const sym = finding.severity === 'fail' ? '🔴'
                       : finding.severity === 'warn' ? '🟡' : '🟢';
                     return (
@@ -482,19 +886,29 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                           type="button"
                           onClick={() => setExpandedQaFinding((c) => c === key ? null : key)}
                           className="w-full text-left px-2 py-1.5 text-[11px] font-medium text-white/85 hover:bg-white/5 flex items-start gap-1.5 transition-colors"
-                          disabled={detailsArr.length === 0}
+                          disabled={!hasDetails}
                         >
                           <span className="flex-shrink-0">{sym}</span>
                           <span className="flex-1 min-w-0">
                             <div className="font-semibold">{finding.name}</div>
                             <div className="text-[10px] text-white/55 mt-0.5 leading-snug">{finding.message}</div>
                           </span>
-                          {detailsArr.length > 0 && (
+                          {hasDetails && (
                             <span className="text-white/40 flex-shrink-0 text-[10px]">{expanded ? '▾' : '▸'}</span>
                           )}
                         </button>
-                        {expanded && detailsArr.length > 0 && (
-                          <div className="border-t border-white/5 px-2 py-2 space-y-1 max-h-[30vh] overflow-y-auto">
+                        {expanded && layer1bDetails && (
+                          <OrphanList
+                            active={layer1bDetails.active}
+                            intentional={layer1bDetails.intentional}
+                            flashControl={flashControlOnPanel}
+                            onAction={orphanAction}
+                            inFlightKey={orphanActionInFlight}
+                            error={orphanActionError}
+                          />
+                        )}
+                        {expanded && !layer1bDetails && detailsArr.length > 0 && (
+                          <div className="border-t border-white/5 px-2 py-2 space-y-1">
                             {detailsArr.slice(0, 100).map((d, i) => {
                               // Layer 1b: { controlId, label, hint } — click flashes panel
                               if (d && typeof d === 'object' && 'controlId' in (d as object)) {
@@ -516,27 +930,75 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                               // Layer 3a/3b: { tutorial, step, control, label } — click jumps to step
                               if (d && typeof d === 'object' && 'tutorial' in (d as object) && 'step' in (d as object)) {
                                 const dd = d as { tutorial: string; step: number; control: string; label?: string | null };
+                                // findingType inferred from finding.name ("3a." or "3b.")
+                                const layer3Type: FindingType = finding.name.startsWith('3a') ? 'layer3a' : 'layer3b';
+                                const payloadKey = layer3Type === 'layer3a' ? 'mentionedControlId' : 'highlightedControlId';
                                 return (
-                                  <button
-                                    key={i}
-                                    type="button"
-                                    onClick={() => {
-                                      setCurrentTutorialId(dd.tutorial);
-                                      // Step click after tutorial loads
-                                      setTimeout(() => goToStep(dd.step - 1), 250);
-                                    }}
-                                    className="block w-full text-left text-[10px] text-white/70 hover:bg-white/5 px-1.5 py-1 rounded transition-colors"
-                                  >
-                                    <code className="text-cyan-300">{dd.control}</code>
-                                    <span className="text-white/40"> · {dd.tutorial} step {dd.step}</span>
-                                  </button>
+                                  <div key={i} className="flex items-center gap-1 text-[10px] text-white/70 px-1.5 py-1 rounded hover:bg-white/5 transition-colors">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setCurrentTutorialId(dd.tutorial);
+                                        setTimeout(() => goToStep(dd.step - 1), 250);
+                                      }}
+                                      className="flex-1 text-left"
+                                      title="Jump to this step"
+                                    >
+                                      <code className="text-cyan-300">{dd.control}</code>
+                                      <span className="text-white/40"> · {dd.tutorial} step {dd.step}</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => openFixModal({
+                                        deviceId,
+                                        findingType: layer3Type,
+                                        tutorialId: dd.tutorial,
+                                        stepIndex: dd.step - 1,
+                                        payload: { [payloadKey]: dd.control, controlLabel: dd.label ?? null },
+                                        label: `${dd.control} on ${dd.tutorial} step ${dd.step}`,
+                                      })}
+                                      data-testid={`fix-button-${dd.tutorial}-${dd.step}-${dd.control}`}
+                                      title="Ask agent to fix (≈$0.20, ≈60s)"
+                                      className="text-[9px] px-1.5 py-0.5 rounded text-cyan-300 hover:bg-cyan-500/10 border border-cyan-500/30"
+                                    >🛠 Fix</button>
+                                  </div>
                                 );
                               }
                               // Layer 1a: plain string IDs (missing-from-manifest hard fails)
                               if (typeof d === 'string') {
+                                // Find which tutorial+step uses this bad ID so the Fix button can target it.
+                                const usage = (() => {
+                                  for (const t of tutorials) {
+                                    for (let si = 0; si < t.steps.length; si++) {
+                                      if ((t.steps[si].highlightControls ?? []).includes(d)) {
+                                        return { tutorialId: t.id, stepIndex: si };
+                                      }
+                                    }
+                                  }
+                                  return null;
+                                })();
                                 return (
-                                  <div key={i} className="text-[10px] text-red-300 px-1.5 py-1">
-                                    <code>{d}</code>
+                                  <div key={i} className="flex items-center gap-1 text-[10px] text-red-300 px-1.5 py-1">
+                                    <code className="flex-1">{d}</code>
+                                    {usage && (
+                                      <>
+                                        <span className="text-red-300/60 text-[9px]">{usage.tutorialId} step {usage.stepIndex + 1}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => openFixModal({
+                                            deviceId,
+                                            findingType: 'layer1a',
+                                            tutorialId: usage.tutorialId,
+                                            stepIndex: usage.stepIndex,
+                                            payload: { badControlId: d },
+                                            label: `${d} in ${usage.tutorialId} step ${usage.stepIndex + 1}`,
+                                          })}
+                                          data-testid={`fix-button-layer1a-${d}`}
+                                          title="Ask agent to fix (≈$0.20, ≈60s)"
+                                          className="text-[9px] px-1.5 py-0.5 rounded text-cyan-300 hover:bg-cyan-500/10 border border-cyan-500/30"
+                                        >🛠 Fix</button>
+                                      </>
+                                    )}
                                   </div>
                                 );
                               }
@@ -551,18 +1013,10 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                     );
                   })}
 
-                  {/* Refresh from editor (fast — re-export + re-validate + re-QA) */}
+                  {/* Refresh from editor moved to the top toolbar (better
+                     discoverability — it's a global action). Visual QA stays
+                     here because it's QA-scoped. */}
                   <div className="pt-1 space-y-1">
-                    <button
-                      type="button"
-                      onClick={triggerRefreshFromEditor}
-                      disabled={refreshInFlight}
-                      data-testid="qa-refresh-from-editor-button"
-                      title="Re-export from manifest-editor.json, re-validate tutorials, re-run deterministic QA"
-                      className="w-full text-[10px] px-2 py-1.5 rounded border border-amber-700/40 bg-amber-900/20 text-amber-300 hover:bg-amber-800/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {refreshInFlight ? 'Refreshing…' : '↻ Refresh from editor'}
-                    </button>
                     {refreshError && (
                       <p className="text-[9px] text-red-400 px-1">{refreshError}</p>
                     )}
@@ -585,20 +1039,27 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
             </div>
           )}
 
+          {/* PR-K: Layer 5 Conceptual Coherence */}
+          <Layer5Panel
+            deviceId={deviceId}
+            tutorials={tutorials.map((t) => ({ id: t.id, title: t.title }))}
+            openFixModal={openFixModal}
+          />
+
           {/* Reviewer prose accordion (god-mode) */}
           {reviewerNoteEntries.length > 0 && (
-            <div className="flex-shrink-0 border-t border-white/10 bg-[#0a0a14]" data-testid="reviewer-notes-section">
+            <div className="flex-shrink-0 border-t border-white/10" data-testid="reviewer-notes-section">
               <button
                 type="button"
                 onClick={() => setReviewerNotesOpen(v => !v)}
-                className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between"
+                className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between sticky top-0 z-10 bg-[#0a0a14]"
                 data-testid="reviewer-notes-toggle"
               >
                 <span>Reviewer Notes · {reviewerNoteEntries.length} batches</span>
                 <span className="text-white/40">{reviewerNotesOpen ? '▾' : '▸'}</span>
               </button>
               {reviewerNotesOpen && (
-                <div className="max-h-[40vh] overflow-y-auto px-3 pb-3 space-y-2">
+                <div className="px-3 pb-3 space-y-2">
                   {reviewerNoteEntries.map(([batchId, content]) => (
                     <div key={batchId} className="rounded border border-white/10 bg-white/[0.02]" data-testid={`reviewer-note-${batchId}`}>
                       <button
@@ -610,7 +1071,7 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                         <span className="text-white/40">{expandedNoteBatch === batchId ? '▾' : '▸'}</span>
                       </button>
                       {expandedNoteBatch === batchId && (
-                        <pre className="px-2 py-2 text-[10px] text-white/70 whitespace-pre-wrap font-mono leading-snug border-t border-white/5 max-h-[30vh] overflow-y-auto">
+                        <pre className="px-2 py-2 text-[10px] text-white/70 whitespace-pre-wrap font-mono leading-snug border-t border-white/5">
                           {content}
                         </pre>
                       )}
@@ -623,12 +1084,13 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         </div>
 
         {/* ── Preview area ──────────────────────────────────────── */}
-        <div className="flex flex-col min-h-0 bg-gradient-to-br from-[#0a0a14] to-[#0d1424]">
+        <div className="flex flex-col min-h-0 min-w-0 bg-gradient-to-br from-[#0a0a14] to-[#0d1424]">
           {/* Panel viewer */}
           <div
             ref={previewRef}
             data-testid="panel-preview-scroll"
             className="flex-1 overflow-auto p-6 min-h-0"
+            style={{ paddingBottom: previewPadBottom, paddingTop: previewPadTop > 0 ? previewPadTop : undefined }}
           >
             {manifest ? (
               <div
@@ -659,6 +1121,7 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
                         ? [...highlightedControls, transientHighlight]
                         : highlightedControls
                     }
+                    onButtonClick={handlePanelControlClick}
                   />
                 </div>
               </div>
@@ -667,36 +1130,22 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
             )}
           </div>
 
-          {/* ── End-user-feel zone: ProgressBar + StepContent + Nav ── */}
-          <div className="flex-shrink-0 border-t border-white/10 bg-[#0f0f1a]">
-            <div className="max-w-[1100px] mx-auto px-6 pt-4 pb-2 flex items-center gap-4">
-              <p
-                className="text-[10px] uppercase tracking-wider text-white/40 flex-shrink-0"
-                data-testid="current-step-num"
-              >
-                Step {currentStepIndex + 1} / {totalSteps}
-              </p>
-              <div className="flex-1 min-w-0">
-                <ProgressBar
-                  progress={((currentStepIndex + 1) / totalSteps) * 100}
-                  steps={totalSteps}
-                  currentStep={currentStepIndex}
-                  onStepClick={goToStep}
-                />
-              </div>
-              <div className="flex-shrink-0">
-                <NavigationControls
-                  onPrev={prevStep}
-                  onNext={nextStep}
-                  isPrevDisabled={currentStepIndex === 0}
-                  isNextDisabled={currentStepIndex >= totalSteps - 1}
-                />
-              </div>
-            </div>
-            <div data-testid="step-content-wrapper">
-              {step && <StepContent step={step} />}
-            </div>
-          </div>
+          {/* ── End-user-feel zone: ProgressBar + StepContent + Nav ─
+             ── PR-N3: StepControl always in-flow. Two modes (anchored /
+             compact-strip). No more floating overlay → no scroll-block,
+             no panel glitch, no arrow-key hijack. */}
+          <StepControl
+            deviceId={deviceId}
+            mode={stepControl.mode}
+            setMode={stepControl.setMode}
+            currentStepIndex={currentStepIndex}
+            totalSteps={totalSteps}
+            step={step}
+            steps={currentTutorial.steps}
+            onStepClick={goToStep}
+            onPrev={prevStep}
+            onNext={nextStep}
+          />
         </div>
 
         {/* ── Diagnostics ───────────────────────────────────────── */}
@@ -709,7 +1158,22 @@ export default function TutorialReviewCanvas({ data }: TutorialReviewCanvasProps
         />
       </div>
 
-      {/* ── Feedback modal ─────────────────────────────────────────── */}
+      {/* ── PR-I Fix modal (two-phase Propose/Apply for Layer 1a/3a/3b) */}
+      <QaFixModal
+        open={fixModalRequest !== null}
+        request={fixModalRequest}
+        onClose={closeFixModal}
+        onApplied={onFixApplied}
+      />
+
+      {/* ── Scale modal ──────────────────────────────────────────── */}
+      <CanvasScaleModal
+        open={scaleModalOpen}
+        currentScale={scaleApi.scale}
+        onApply={(s) => scaleApi.setScale(s)}
+        onClose={() => setScaleModalOpen(false)}
+      />
+
       {feedbackOpen && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60"

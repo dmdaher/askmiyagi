@@ -147,32 +147,42 @@ describe('SharedCircleButton — integrated LED tristate', () => {
     expect(html).toContain('border:1px solid #22c55e');
   });
 
-  it('ledOn=false: solid #2a2a2a backgroundColor (explicitly off)', () => {
+  // PR EP2: OFF state — unified LED-capable baseline (was #2a2a2a + 3px
+  // surfaceColor border; now #1a1a1e + 1px ledColor*40 border to make
+  // LED-capable buttons visually distinct from non-LED buttons even when
+  // not lit). Matches the photo's unlit MUTE/HOT SLICE on DJS-1000.
+  it('ledOn=false: dark face baseline (LED-capable but not lit)', () => {
     const html = render({ ...base, ledOn: false });
-    expect(html).toContain('background-color:#2a2a2a');
+    expect(html).toContain('background-color:#1a1a1e');
     // No gradient when off
     expect(html).not.toContain('radial-gradient');
   });
 
-  it('ledOn=false: thick 3px border in surfaceColor (or default #444)', () => {
+  it('ledOn=false: thin 1px border in ledColor*40 alpha', () => {
     const html = render({ ...base, ledOn: false });
-    expect(html).toContain('border:3px solid #444');
+    expect(html).toContain('border:1px solid #22c55e40');
   });
 
-  it('ledOn=false: surfaceColor override applies to the off-state border', () => {
+  it('ledOn=false: surfaceColor does NOT override the LED baseline (LED takes priority)', () => {
+    // Old behavior used surfaceColor for the off border. New behavior: LED
+    // is the dominant visual cue for LED-capable buttons. surfaceColor
+    // applies only to non-LED buttons.
     const html = render({ ...base, ledOn: false, surfaceColor: '#abcdef' });
-    expect(html).toContain('border:3px solid #abcdef');
+    expect(html).toContain('border:1px solid #22c55e40');
+    expect(html).not.toContain('border:3px solid #abcdef');
   });
 
-  it('ledOn=undefined: tinted faded backgroundColor (no-state, default look)', () => {
+  // PR EP2: EDITOR state — slightly more visible than OFF (2px border)
+  // so contractor can scan and see "these buttons have LEDs" at a glance.
+  it('ledOn=undefined: dark face baseline (editor hint)', () => {
     const html = render({ ...base });
-    expect(html).toContain('background-color:#22c55e10');
+    expect(html).toContain('background-color:#1a1a1e');
     expect(html).not.toContain('radial-gradient');
   });
 
-  it('ledOn=undefined: thin 1px tinted border', () => {
+  it('ledOn=undefined: thicker 2px border in ledColor*40 alpha (more visible than OFF)', () => {
     const html = render({ ...base });
-    expect(html).toContain('border:1px solid #22c55e25');
+    expect(html).toContain('border:2px solid #22c55e40');
   });
 
   it('NEVER emits `background:undefined` (Bug 2 guard)', () => {

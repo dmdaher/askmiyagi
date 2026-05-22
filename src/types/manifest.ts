@@ -34,7 +34,19 @@ export type LabelDisplay = 'on-button' | 'above' | 'below' | 'left' | 'right' | 
 export type LEDBehavior = 'steady' | 'blink-on-activity' | 'dynamic-color';
 export type LEDPosition = 'above' | 'below' | 'inside' | 'ring';
 export type LEDVariant = 'dot' | 'dual-label' | 'bar';
-export type LEDStyle = 'integrated' | 'dot';
+/**
+ * LED rendering styles. Renderer treats `integrated` and `face` as the same
+ * (face is the preferred name; integrated kept for backwards-compat with
+ * existing gatekeeper data on cdj-3000, fantom-06, dj-djs-1000, etc.).
+ *
+ * - `dot`           — small separate indicator above/beside the button
+ * - `face`          — whole button face glows uniformly (preferred name)
+ * - `integrated`    — alias for `face` (legacy gatekeeper output)
+ * - `label-backlit` — only the label/text glows through; button face stays dark
+ * - `edge-glow`     — only the border/edge lights up;
+ *                     auto-renders as RING on circle-shaped buttons
+ */
+export type LEDStyle = 'dot' | 'face' | 'integrated' | 'label-backlit' | 'edge-glow';
 export type InteractionType = 'momentary' | 'toggle' | 'hold' | 'rotary' | 'slide' | 'touch';
 
 export type SubZone = string[] | { controls: string[]; direction: 'row' | 'column' };

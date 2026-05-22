@@ -85,6 +85,32 @@ function GuideTab() {
         <p>Toggle with <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">P</kbd>.</p>
       </CollapsibleSection>
 
+      <CollapsibleSection title="Selecting Controls">
+        <p><strong className="text-white/80">Click</strong> &mdash; selects a single control (replaces any prior selection).</p>
+        <p><strong className="text-white/80">Shift+Click</strong> &mdash; adds to / removes from the selection. Works for controls AND labels (mixed selection supported).</p>
+        <p><strong className="text-white/80">Cmd+Click</strong> &mdash; toggles a control in/out of the selection.</p>
+        <p><strong className="text-white/80">Option+Click (Alt+Click)</strong> &mdash; cycles through overlapping controls under the cursor (e.g., a control nested visually behind another). Falls back to selecting the container behind a control if no overlap.</p>
+        <p><strong className="text-white/80">Rubber-band</strong> &mdash; click on empty canvas and drag. A dashed selection rectangle appears; everything inside it on release becomes the selection. Works correctly with rotated controls (uses each control&rsquo;s rotated bounding box).</p>
+        <p><strong className="text-white/80">Select Controls ▾ dropdown (NEW)</strong> &mdash; toolbar button. Three regions in the dropdown:</p>
+        <p>&bull; <strong className="text-white/80">All controls</strong> &mdash; one-click select every control on the device (same as <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Cmd+A</kbd>). Closes the dropdown.</p>
+        <p>&bull; <strong className="text-white/80">By type</strong> &mdash; checkbox rows for each category (Pads / Buttons / Knobs / Sliders+Faders / Encoders / Wheels / LEDs / Screens / Switches / Ports). Each row shows the live count. Click a row to <em>toggle</em> that type in/out of the selection &mdash; the dropdown <strong>stays open</strong> so you can layer multiple types (e.g., select all Knobs, then click Pads to add). The checkbox shows fully-checked when every control of that type is selected, half-checked when some are. Zero-count rows are greyed out.</p>
+        <p>&bull; <strong className="text-white/80">Clear selection</strong> &mdash; empties the selection (same as <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">Esc</kbd>). Closes the dropdown.</p>
+        <p>Pairs with the upcoming Scale Selected ▾ dropdown so &ldquo;all pads 25% too big&rdquo; becomes two clicks.</p>
+        <p><strong className="text-white/80">Cmd+A</strong> &mdash; selects every control (same as Select Controls ▾ → All).</p>
+        <p><strong className="text-white/80">Escape</strong> &mdash; clears the current selection.</p>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Scaling Selected Controls">
+        <p><strong className="text-white/80">Scale Selected ▾ dropdown (NEW)</strong> &mdash; toolbar button beside Select Controls ▾. Disabled until you have at least one control selected.</p>
+        <p><strong className="text-white/80">Presets</strong> &mdash; one-click factor scaling: <em>Shrink to 50% / 75% / 90%</em>, <em>Grow to 110% / 125%</em>. Each preset applies the factor to W and H of every selected control. Positions shift so each control stays centered on its original midpoint.</p>
+        <p><strong className="text-white/80">Custom %</strong> &mdash; type any percentage between 10 and 500 (e.g., <code>72</code>) and hit Enter or click Apply. Out-of-range or non-numeric input is rejected with a toast.</p>
+        <p><strong className="text-white/80">What also scales</strong> &mdash; <em>labelFontSize</em> scales by the same factor (clamped to 6px minimum so labels don&rsquo;t disappear).</p>
+        <p><strong className="text-white/80">What&rsquo;s skipped</strong> &mdash; <em>locked</em> + <em>resize-locked</em> controls (per the Lock pill), and <em>screens / displays</em> (their content has fixed aspect for tutorial rendering). A toast reports how many were skipped vs scaled.</p>
+        <p><strong className="text-white/80">Undo</strong> &mdash; one undo step restores every scaled control&rsquo;s prior W / H / x / y / labelFontSize together. Chain multiple scales (e.g., 90% then 90% again = 81%) and undo unwinds them one step at a time.</p>
+        <p><strong className="text-white/80">Canvas size unchanged</strong> &mdash; only individual control W/H change. The overall canvas + section frames stay the same. (To rescale the WHOLE panel, use the toolbar&rsquo;s ⤢ Scale Contents modal instead.)</p>
+        <p><strong className="text-white/80">Typical workflow</strong>: open Select Controls ▾, check &ldquo;Pads&rdquo; (or &ldquo;All controls&rdquo; for the whole panel), close the dropdown; then click Scale Selected ▾ → &ldquo;Shrink to 75%&rdquo;. Two clicks to resize 80 controls.</p>
+      </CollapsibleSection>
+
       <CollapsibleSection title="Layers Panel">
         <p>Press <kbd className="rounded bg-white/10 px-1 text-[11px] font-mono">L</kbd> to open. Shows all sections, controls, containers, and labels in a tree view.</p>
         <p><strong className="text-white/80">Sections</strong> &mdash; Logical groups like &ldquo;MIXER&rdquo;, &ldquo;TRANSPORT&rdquo;, &ldquo;EFFECTS&rdquo;. Click the arrow to expand and see child controls.</p>
@@ -99,7 +125,8 @@ function GuideTab() {
         <p>Appears on the right when you select a control. Shows and lets you edit all properties.</p>
         <p><strong className="text-white/80">Type</strong> &mdash; Change what kind of control this is (button, knob, slider, pad, etc.).</p>
         <p><strong className="text-white/80">Shape</strong> &mdash; For buttons only: rectangle or circle.</p>
-        <p><strong className="text-white/80">LED</strong> &mdash; All buttons and pads have a 3-option LED selector: <em>None</em> (no LED), <em>Dot</em> (separate LED dot above the button), <em>Glow</em> (button face illuminates in LED color, like PLAY/CUE on a CDJ). When Dot or Glow is selected, a LED Color picker appears with 9 presets (white, gray, amber, cyan, green, red, blue, pink, custom hex).</p>
+        <p><strong className="text-white/80">✨ Test LEDs toolbar toggle (NEW)</strong> &mdash; In the toolbar there&rsquo;s a <em>Test LEDs</em> button. Click it ON to force every LED-capable control to render as if <code>ledOn: true</code> &mdash; useful for visually verifying that <em>label-backlit</em> labels glow correctly in your chosen ledColor, and that <em>edge-glow</em> borders are visible against your background. Toggle OFF to return to the design-time view (label-backlit shows 60%-alpha label text as a hint). Session-only &mdash; never written to the manifest. Disabled while in Preview mode.</p>
+        <p><strong className="text-white/80">LED</strong> &mdash; All buttons and pads have a <strong>5-pill</strong> LED selector: <em>None</em> (no LED), <em>Dot</em> (separate small LED indicator near the button &mdash; e.g., synth LFO waveform LEDs), <em>Face</em> (whole button face glows uniformly &mdash; e.g., PLAY / CUE / HOT CUE on Pioneer DJ gear; alias of legacy <code>integrated</code>), <em>Label</em> (label/icon glows through cutouts while the face stays dark &mdash; Pioneer DJM mixers, NI Maschine transport), <em>Edge</em> (border/ring glows; on circle buttons automatically renders as a ring). When any LED style is selected, a LED Color picker appears with 9 presets (white, gray, amber, cyan, green, red, blue, pink, custom hex). The OFF state always renders an LED-capable baseline (dark face + subtle colored border) so contractors can tell at a glance which buttons have LEDs.</p>
         <p><strong className="text-white/80">LED default state (NEW)</strong> &mdash; For LED and indicator controls, the Properties panel has an Off / On toggle that sets how the LED appears at rest. <em>Off</em> renders dim/inactive; <em>On</em> renders fully lit in the chosen LED color. Use this to mark which LEDs are normally illuminated on the hardware (e.g., POWER LED = On).</p>
         <p><strong className="text-white/80">LED Variant (led/indicator type only)</strong> &mdash; When a control&rsquo;s type is set to &ldquo;led&rdquo; or &ldquo;indicator&rdquo;, a variant selector appears: <em>Dot</em> (single LED circle), <em>Dual</em> (two-row indicator like VINYL/CDJ with separate top and bottom labels).</p>
         <p><strong className="text-white/80">Dual Label</strong> &mdash; When a control has the Dual LED variant, two separate text inputs appear for the top and bottom rows (e.g., &ldquo;VINYL&rdquo; on top, &ldquo;CDJ&rdquo; on bottom).</p>
@@ -107,7 +134,8 @@ function GuideTab() {
         <p><strong className="text-white/80">Label</strong> &mdash; Edit label text and choose position: above, below, left, right, on the button, or hidden. Secondary label adds a second line (e.g., &ldquo;PLAY/CUE&rdquo;). Font size slider adjusts label size for all positions.</p>
         <p><strong className="text-white/80">Label Alignment</strong> &mdash; When label is set to &ldquo;on-button&rdquo;, a 3&times;3 dot grid appears. Click any dot to position text within the button face: top-left, center, bottom-right, etc. Default is center for buttons, bottom-right for pads.</p>
         <p><strong className="text-white/80">Label Color</strong> &mdash; Pick from 6 preset colors (white, gray, amber, cyan, green, red) or enter a custom hex value. Changes the on-button text color to match the hardware&rsquo;s silk-screen printing.</p>
-        <p><strong className="text-white/80">Rotation</strong> &mdash; Rotate a control: 0&deg;, 90&deg;, 180&deg;, or 270&deg;.</p>
+        <p><strong className="text-white/80">Rotation</strong> &mdash; Quick buttons for 0&deg;, 90&deg;, 180&deg;, 270&deg;, plus a <strong>Custom</strong> angle input for any value (e.g., 33&deg;, 45&deg;, -15&deg;). Works on multi-select &mdash; applies the same angle to all selected controls. For non-fader controls (knobs, buttons, pads), rotation applies a CSS transform &mdash; the visual rotates while the bounding box stays put.</p>
+        <p><strong className="text-white/80">Rotation &mdash; Faders / sliders (auto-swap)</strong> &mdash; Faders rotate as a full unit: clicking 90&deg; or 270&deg; swaps the bounding box width &harr; height AND re-lays out the track horizontally in one motion (so a vertical fader becomes a clean horizontal fader). Going back to 0&deg; or 180&deg; swaps the bbox back. The auto-swap only fires on cross-cardinal transitions (0/180 &harr; 90/270); free-angle values like 45&deg; render as a rotated vertical fader. Note: sliders already at 90&deg; from earlier sessions may need a one-time &ldquo;0&deg; then 90&deg;&rdquo; click to trigger the swap on their stored bbox.</p>
         <p><strong className="text-white/80">X, Y, W, H</strong> &mdash; Set exact pixel position and size. Good for fine-tuning after dragging.</p>
         <p><strong className="text-white/80">Lock</strong> &mdash; Three modes: <em>Unlocked</em> (free move &amp; resize), <em>Size</em> (can move but can&rsquo;t resize), <em>Full</em> (frozen &mdash; can&rsquo;t move, resize, or delete). Use to protect controls you&rsquo;re happy with.</p>
         <p><strong className="text-white/80">Layer</strong> &mdash; Shows the control&rsquo;s z-order position. Use the up/down arrows to move controls forward or backward in the stack. Higher numbers render on top.</p>
@@ -203,8 +231,17 @@ function ShortcutsTab() {
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">General</h4>
         <ShortcutRow action="Undo" keys="Cmd+Z" />
         <ShortcutRow action="Redo" keys="Cmd+Shift+Z" />
-        <ShortcutRow action="Delete selection" keys="Backspace" />
-        <ShortcutRow action="Duplicate" keys="Cmd+D" />
+        <ShortcutRow action="Delete selection" keys="Backspace / Delete" />
+        <ShortcutRow action="Clear selection" keys="Escape" />
+      </div>
+      <div>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Selection</h4>
+        <ShortcutRow action="Select all controls" keys="Cmd+A" />
+        <ShortcutRow action="Select by type (Pads, Knobs, Faders…)" keys="Select Controls ▾ (toolbar) — click rows to toggle" />
+        <ShortcutRow action="Add to selection" keys="Shift+Click" />
+        <ShortcutRow action="Toggle in selection" keys="Cmd+Click" />
+        <ShortcutRow action="Rubber-band (drag rectangle)" keys="Click empty canvas + drag" />
+        <ShortcutRow action="Cycle overlapping controls" keys="Option+Click (Alt+Click)" />
         <ShortcutRow action="Clear selection" keys="Escape" />
       </div>
       <div>
@@ -214,6 +251,7 @@ function ShortcutsTab() {
         <ShortcutRow action="Photo overlay" keys="P" />
         <ShortcutRow action="Layers panel" keys="L" />
         <ShortcutRow action="Labels" keys="T" />
+        <ShortcutRow action="Test LEDs (force ledOn=true on all LEDs)" keys="✨ Test LEDs (toolbar)" />
         <ShortcutRow action="Zoom in" keys="Cmd+=" />
         <ShortcutRow action="Zoom out" keys="Cmd+-" />
         <ShortcutRow action="Open help" keys="?" />
@@ -243,6 +281,12 @@ function ShortcutsTab() {
         <ShortcutRow action="Ungroup" keys="Cmd+Shift+G" />
         <ShortcutRow action="Select container behind control" keys="Option+Click (Alt+Click)" />
       </div>
+      <div>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Rotation</h4>
+        <ShortcutRow action="Rotate selection 90° clockwise" keys="Shift+Alt+R" />
+        <ShortcutRow action="Quick rotation buttons (0/90/180/270)" keys="Properties panel" />
+        <ShortcutRow action="Free-angle (any value)" keys="Properties → Custom °" />
+      </div>
     </div>
   );
 }
@@ -252,6 +296,9 @@ function WorkflowTab() {
     { title: 'Open the photo overlay', desc: 'Press P or click the Photo button. Switch to Overlay mode and set opacity to around 40-50% so you can see the real hardware under your controls.' },
     { title: 'Adjust canvas size', desc: 'Set the W and H values in the toolbar to match the photo proportions. This ensures controls are positioned at the right scale.' },
     { title: 'Position controls on the photo', desc: 'Drag each control to match its real position on the hardware. Start with the big, obvious ones (knobs, sliders, screens) then refine smaller controls.' },
+    { title: 'Bulk-select by type', desc: 'Use the Select Controls ▾ dropdown in the toolbar to select all controls of one kind (Pads, Knobs, Sliders, etc.) in one click. Click multiple type rows to layer the selection — the dropdown stays open and shows a checkbox per type. Cmd+A selects every control. Counts are live.' },
+    { title: 'Bulk-scale the selection', desc: 'With one or more controls selected, open Scale Selected ▾ in the toolbar and pick a preset (50/75/90% to shrink, 110/125% to grow) or type a Custom %. Every selected control scales by that factor — W, H, and labelFontSize together — staying centered on its original midpoint. Locked controls and screens are skipped. One undo restores everything.' },
+    { title: 'Rotate controls (any angle)', desc: 'In the Properties panel, use the quick buttons (0°/90°/180°/270°) or type a Custom angle (45°, 33°, -15°). Shift+Alt+R rotates the selection 90° clockwise. For faders/sliders, rotating to 90° or 270° also flips the bbox so the full component rotates as a unit.' },
     { title: 'Align rows and columns', desc: 'Select a row of controls, press Shift+H to align their centers. Select a column, press Shift+V. This straightens everything into clean lines.' },
     { title: 'Distribute for even spacing', desc: 'Select 3+ controls in a row/column, then Cmd+Shift+H (horizontal) or Cmd+Shift+V (vertical) to space them equally.' },
     { title: 'Fine-tune with Gap inputs', desc: 'In the Properties panel, use the Gap (H/V) inputs to set exact pixel spacing between controls. Good for knob rows that need uniform gaps.' },
