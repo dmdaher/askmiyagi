@@ -22,7 +22,7 @@ export const devices: DeviceRegistry = {
     name: 'Behringer DeepMind 12',
     manufacturer: 'Behringer',
     description: '12-voice analog polyphonic synthesizer with dual oscillators, VCF, three envelopes, two LFOs, built-in effects, and 49-key keyboard.',
-    available: true,
+    available: false,
     categories: ['basics', 'synthesis', 'modulation', 'effects', 'presets'],
   },
 };
