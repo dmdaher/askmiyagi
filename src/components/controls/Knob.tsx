@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import LEDRing from './LEDRing';
 
 interface KnobProps {
   id: string;
@@ -11,6 +12,12 @@ interface KnobProps {
   outerSize?: number;
   innerSize?: number;
   indicatorSize?: number;
+  /** Optional LED ring around the knob (rare hardware pattern — Pioneer rotary
+   *  selector LED rings). Renders behind the knob; does NOT push layout. */
+  hasLed?: boolean;
+  ledColor?: string;
+  /** undefined treated as lit (editor design-viz); true = lit; false = dim. */
+  ledOn?: boolean;
 }
 
 const sizeConfig = {
@@ -42,6 +49,9 @@ export default function Knob({
   outerSize,
   innerSize,
   indicatorSize,
+  hasLed,
+  ledColor,
+  ledOn,
 }: KnobProps) {
   const clampedValue = Math.max(0, Math.min(127, value));
   // Map 0-127 to -135deg to +135deg
@@ -49,6 +59,7 @@ export default function Knob({
   const cfg = outerSize !== undefined
     ? { outer: outerSize, inner: innerSize ?? outerSize * 0.76, indicator: indicatorSize ?? outerSize * 0.32, label: 'text-[9px]' }
     : sizeConfig[size];
+  const ringActive = hasLed && !!ledColor && ledOn !== false;
 
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
@@ -64,6 +75,28 @@ export default function Knob({
         }}
         {...(highlighted ? highlightAnimation : {})}
       >
+        {/* LED ring around the knob — rare (Pioneer rotary selectors etc).
+            Positioned behind via inset:-8px so it doesn't push layout. */}
+        {hasLed && ledColor && (
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              top: -8,
+              left: -8,
+              right: -8,
+              bottom: -8,
+              zIndex: 0,
+              opacity: ringActive ? 1 : 0.25,
+            }}
+          >
+            <LEDRing
+              id={`${id}-knob-ring`}
+              color={ledColor}
+              innerDiameter={cfg.outer}
+              outerDiameter={cfg.outer + 16}
+            />
+          </div>
+        )}
         {/* Inner ring / cap */}
         <div
           className="absolute rounded-full"

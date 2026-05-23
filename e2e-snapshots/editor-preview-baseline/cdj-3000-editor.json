@@ -10,7 +10,7 @@
     "width": 1203,
     "height": 1641
   },
-  "capturedAt": "2026-05-22T21:43:33.329Z",
+  "capturedAt": "2026-05-23T03:05:13.317Z",
   "elements": {
     "label:label-USB_STOP": {
       "id": "label-USB_STOP",
@@ -1096,14 +1096,14 @@
       "id": "label-VINYL_SPEED_ADJ",
       "kind": "label",
       "rect": {
-        "left": 1089,
-        "top": 765,
+        "left": 1090,
+        "top": 766,
         "width": 100.42,
         "height": 30
       },
       "innerRect": {
-        "left": 1095,
-        "top": 769,
+        "left": 1096,
+        "top": 770,
         "width": 88.42,
         "height": 11
       },
@@ -2177,13 +2177,13 @@
       "kind": "control",
       "rect": {
         "left": 150,
-        "top": 701,
+        "top": 704,
         "width": 66,
-        "height": 37
+        "height": 31
       },
       "innerRect": {
         "left": 151,
-        "top": 716.88,
+        "top": 713.88,
         "width": 64,
         "height": 11.25
       },
@@ -2966,13 +2966,13 @@
       "id": "JOG_DISPLAY",
       "kind": "control",
       "rect": {
-        "left": 519.5,
+        "left": 514.5,
         "top": 1244,
         "width": 248,
         "height": 248
       },
       "innerRect": {
-        "left": 580.98,
+        "left": 575.98,
         "top": 1406.42,
         "width": 125.02,
         "height": 44.64

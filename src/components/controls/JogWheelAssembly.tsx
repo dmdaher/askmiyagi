@@ -11,6 +11,9 @@ interface JogWheelAssemblyProps {
   wheelSize?: number;
   displaySize?: number;
   ringColor?: string;
+  /** undefined or true = ring lit (default — preserves all current devices).
+   *  false = ring dim (used by preview Test LEDs toggle to dim the ring). */
+  ledOn?: boolean;
   highlighted?: boolean;
 }
 
@@ -35,10 +38,12 @@ export default function JogWheelAssembly({
   wheelSize = 160,
   displaySize = 60,
   ringColor,
+  ledOn,
   highlighted = false,
 }: JogWheelAssemblyProps) {
   const ringOuter = ringColor ? wheelSize + 16 : wheelSize;
   const totalSize = ringColor ? ringOuter : wheelSize;
+  const ringLit = ledOn !== false;
 
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
@@ -57,6 +62,7 @@ export default function JogWheelAssembly({
             style={{
               top: 0,
               left: 0,
+              opacity: ringLit ? 1 : 0.25,
             }}
           >
             <LEDRing

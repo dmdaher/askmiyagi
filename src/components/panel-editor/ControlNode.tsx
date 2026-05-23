@@ -26,6 +26,8 @@ import {
 } from '@/lib/render-helpers';
 import SharedCircleButton from '@/components/panel/SharedCircleButton';
 import SharedLed from '@/components/panel/SharedLed';
+import SharedLedDot from '@/components/panel/SharedLedDot';
+import { panelButtonHasLed } from '@/lib/led-gate';
 
 interface ControlNodeProps {
   controlId: string;
@@ -33,36 +35,21 @@ interface ControlNodeProps {
 }
 
 /** Render a small LED dot indicator for buttons with hasLed (dot style only).
- * PR EP3: skip the dot for any non-dot ledStyle — face/integrated/label-backlit/
- * edge-glow all render their LED via PanelButton's styled face/border/label
- * (handled by getLedStyleObject in src/components/controls/ledStyles.ts). */
+ * Editor design-viz: always lit (no ledOn check) so contractor sees the dot. */
 function renderButtonLed(control: ControlDef) {
   if (!control.hasLed || (control.type !== 'button' && control.type !== 'pad')) return null;
   // Only ledStyle='dot' uses this separate-dot path. Everything else
   // (face/integrated/label-backlit/edge-glow) renders inline via PanelButton.
   const style = control.ledStyle ?? 'dot';
   if (style !== 'dot') return null;
-  // EP-drift-fix: when ledPosition is 'inside', PanelButton's internal dot
-  // renders the LED inside the button. Skip the external dot here so editor
-  // and preview agree (PanelRenderer line 201's `ledPosition !== 'inside'`
-  // gate already excludes this case for preview).
+  // When ledPosition is 'inside', PanelButton's internal dot renders the LED
+  // inside the button. Skip the external dot here so editor and preview agree.
   if ((control.ledPosition as string | undefined) === 'inside') return null;
   const color = control.ledColor ?? '#22c55e';
 
-  // For 'above', 'below', 'ring' — render above the control as absolute overlay.
-  // (The 'inside' case is handled by PanelButton's internal dot via the
-  // hasLed gate; this function early-returns above for that case.)
   return (
     <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 5 }}>
-      <div
-        className="rounded-full"
-        style={{
-          width: 6,
-          height: 6,
-          backgroundColor: color,
-          boxShadow: `0 0 4px 1px ${color}`,
-        }}
-      />
+      <SharedLedDot color={color} />
     </div>
   );
 }
@@ -147,26 +134,10 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
             height={visH}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            // EP-drift-fix: gate must MATCH PanelRenderer line 231 so editor
-            // and preview produce identical PanelButton DOM (same internal-
-            // dot rendering). Without this, editor passes hasLed=true to
-            // PanelButton for dot-style buttons → PanelButton renders an
-            // internal flex-sibling dot (~6px tall column addition), while
-            // preview passes hasLed=false → no internal dot → ~4px column
-            // height divergence that drift:ci catches as parity failure.
-            //
-            // Pass hasLed when:
-            //   (a) ledPosition === 'inside' → PanelButton's internal dot
-            //       is what should render (renderButtonLed skips this case)
-            //   (b) ledStyle is a non-dot style (face/label-backlit/edge-
-            //       glow) → PanelButton paints the full LED face
-            // For default dot LEDs (no ledPosition='inside'), pass false so
-            // PanelButton's internal dot is suppressed; renderButtonLed
-            // above renders the SINGLE external dot.
-            hasLed={!!control.hasLed && (
-              (control.ledPosition as string | undefined) === 'inside'
-              || (!!control.ledStyle && control.ledStyle !== 'dot')
-            )}
+            // Gate logic lives in panelButtonHasLed() — see src/lib/led-gate.ts.
+            // Both ControlNode (editor) and PanelRenderer (preview) consume the
+            // same helper so the editor↔preview parity gate cannot drift.
+            hasLed={panelButtonHasLed(control)}
             ledColor={control.ledColor ?? undefined}
             ledOn={effectiveLedOn === true}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
@@ -189,6 +160,9 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           highlighted={isSelected}
           outerSize={knobSize}
           innerSize={knobSize * 0.7}
+          hasLed={control.hasLed}
+          ledColor={control.ledColor ?? undefined}
+          // ledOn omitted → SharedLedDot/LEDRing treat undefined as lit (editor design-viz).
         />
       );
     }

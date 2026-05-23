@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 import { getLedStyleObject } from './ledStyles';
+import SharedLedDot from '@/components/panel/SharedLedDot';
 
 interface PanelButtonProps {
   id: string;
@@ -223,15 +224,15 @@ export default function PanelButton({
 
       {/* LED dot indicator — only renders for ledStyle:'dot' (or legacy where
          the pure helper says we should keep the dot). face/integrated/
-         label-backlit/edge-glow render their LED inside the button face. */}
+         label-backlit/edge-glow render their LED inside the button face.
+         Uses SharedLedDot 'internal' variant: '#1a1a1a' + inset shadow when off. */}
       {hasLed && !ledStyleResult.suppressDotIndicator && (
-        <div
-          className={`${isFluid ? '' : sizeStyle.led} rounded-full transition-all duration-150`}
-          style={{
-            ...(isFluid ? { width: fluidLedSize, height: fluidLedSize } : {}),
-            backgroundColor: ledOn ? ledColor : '#1a1a1a',
-            boxShadow: ledOn ? `0 0 6px 2px ${ledColor}` : 'inset 0 1px 2px rgba(0,0,0,0.5)',
-          }}
+        <SharedLedDot
+          color={ledColor}
+          ledOn={ledOn}
+          variant="internal"
+          size={isFluid ? fluidLedSize : undefined}
+          className={isFluid ? '' : sizeStyle.led}
         />
       )}
 
