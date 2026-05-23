@@ -1,0 +1,67 @@
+{
+  "sections": [
+    {
+      "sectionId": "common",
+      "archetype": "stacked-rows",
+      "parameters": {
+        "gap": 1
+      },
+      "confidence": 0.8
+    },
+    {
+      "sectionId": "controller",
+      "archetype": "grid-NxM",
+      "parameters": {
+        "gridCols": 4,
+        "gridRows": 2,
+        "gap": 0
+      },
+      "confidence": 0.9
+    },
+    {
+      "sectionId": "pad",
+      "archetype": "grid-NxM",
+      "parameters": {
+        "gridCols": 5,
+        "gridRows": 5,
+        "gap": 0
+      },
+      "confidence": 0.9
+    },
+    {
+      "sectionId": "scene",
+      "archetype": "single-column",
+      "parameters": {
+        "gap": 4,
+        "alignment": "center"
+      },
+      "confidence": 0.95
+    },
+    {
+      "sectionId": "sequencer",
+      "archetype": "stacked-rows",
+      "parameters": {
+        "gap": 1
+      },
+      "confidence": 0.8
+    },
+    {
+      "sectionId": "synth",
+      "archetype": "grid-NxM",
+      "parameters": {
+        "gridCols": 5,
+        "gridRows": 3,
+        "gap": 0
+      },
+      "confidence": 0.9
+    },
+    {
+      "sectionId": "zone",
+      "archetype": "stacked-rows",
+      "parameters": {
+        "gap": 1
+      },
+      "confidence": 0.8
+    }
+  ]
+}

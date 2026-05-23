@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tutorial } from '@/types/tutorial';
 import { GlossaryTerm } from '@/types/glossary';
 import { useTutorialEngine } from '@/hooks/useTutorialEngine';
-import { PANEL_NATURAL_WIDTH, PANEL_NATURAL_HEIGHT } from '@/lib/constants';
 import StepContent from './StepContent';
 import NavigationControls from './NavigationControls';
 import ProgressBar from './ProgressBar';
@@ -19,6 +18,8 @@ interface TutorialRunnerProps {
   tutorial: Tutorial;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   DevicePanel: React.ComponentType<any>;
+  panelWidth: number;
+  panelHeight: number;
   allTutorials?: Tutorial[];
   deviceName?: string;
   glossary?: GlossaryTerm[];
@@ -33,6 +34,8 @@ const SPEED_OPTIONS = [
 export default function TutorialRunner({
   tutorial,
   DevicePanel,
+  panelWidth,
+  panelHeight,
   allTutorials,
   deviceName,
   glossary,
@@ -40,28 +43,11 @@ export default function TutorialRunner({
   const store = useTutorialEngine(tutorial);
   const router = useRouter();
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showHint, setShowHint] = useState(true);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [scale, setScale] = useState(() => {
-    const w = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    return Math.min(w / PANEL_NATURAL_WIDTH, 1) * 0.99;
-  });
-
-  const updateScale = useCallback((width: number) => {
-    if (width > 0) setScale(Math.min(width / PANEL_NATURAL_WIDTH, 1) * 0.99);
-  }, []);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver((entries) => updateScale(entries[0].contentRect.width));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [updateScale]);
 
   useEffect(() => {
     if (store.currentStepIndex > 0) setShowHint(false);
@@ -97,11 +83,11 @@ export default function TutorialRunner({
     <div className="fixed inset-0 z-40 flex flex-col bg-[#0a0a14]">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-2.5 border-b border-white/10 bg-[#0f0f1a] flex-shrink-0">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
             onClick={handleClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
             aria-label="Close tutorial"
           >
             <svg
@@ -118,18 +104,18 @@ export default function TutorialRunner({
             </svg>
           </button>
 
-          <div>
-            <h1 className="text-sm font-semibold text-white leading-tight">
+          <div className="min-w-0">
+            <h1 className="text-sm font-semibold text-white leading-tight truncate">
               {tutorial.title}
             </h1>
-            <p className="text-[10px] text-white/40 mt-0.5">
+            <p className="text-[10px] text-white/40 mt-0.5 truncate">
               {tutorial.category} &middot; {tutorial.difficulty} &middot;{' '}
               {tutorial.estimatedTime}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-shrink-0">
           <div className="text-xs text-white/40 font-medium">
             {store.currentStepIndex + 1} / {totalSteps}
           </div>
@@ -179,26 +165,15 @@ export default function TutorialRunner({
       {/* Full-page scrollable area */}
       <div className="flex-1 overflow-y-auto" ref={scrollRef}>
         {/* Panel area */}
-        <div className="flex flex-col items-center p-3 pb-0">
-          <div ref={containerRef} className="w-full overflow-x-auto rounded-lg">
-            <div style={{
-              width: PANEL_NATURAL_WIDTH * scale,
-              height: PANEL_NATURAL_HEIGHT * scale,
-              overflow: 'hidden',
-            }}>
-              <div style={{
-                width: PANEL_NATURAL_WIDTH,
-                height: PANEL_NATURAL_HEIGHT,
-                transformOrigin: 'top left',
-                transform: `scale(${scale})`,
-              }}>
-                <DevicePanel
-                  panelState={store.panelState}
-                  displayState={store.displayState}
-                  highlightedControls={store.highlightedControls}
-                  zones={store.zones}
-                />
-              </div>
+        <div className="p-3 pb-0">
+          <div className="rounded-lg" style={{ overflowX: 'scroll', overflowY: 'hidden' }}>
+            <div style={{ width: panelWidth + 200, padding: '0 100px 20px 20px' }}>
+              <DevicePanel
+                panelState={store.panelState}
+                displayState={store.displayState}
+                highlightedControls={store.highlightedControls}
+                zones={store.zones}
+              />
             </div>
           </div>
           {store.zones.length > 0 && (

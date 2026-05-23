@@ -7,6 +7,8 @@ interface ValueDialProps {
   label?: string;
   highlighted?: boolean;
   size?: 'sm' | 'lg';
+  outerSize?: number;
+  hasPush?: boolean;
 }
 
 const DIAL_SIZES = { sm: 48, lg: 96 };
@@ -32,12 +34,15 @@ export default function ValueDial({
   label,
   highlighted = false,
   size = 'sm',
+  outerSize,
+  hasPush = false,
 }: ValueDialProps) {
-  const DIAL_SIZE = DIAL_SIZES[size];
-  const capInset = size === 'lg' ? 20 : 8;
-  const centerDot = size === 'lg' ? 10 : 6;
-  const ridgeHeight = size === 'lg' ? 6 : 4;
-  const highlightRidgeHeight = size === 'lg' ? 5 : 3;
+  const DIAL_SIZE = outerSize ?? DIAL_SIZES[size];
+  // Scale internal proportions from DIAL_SIZE for fluid rendering at any size
+  const capInset = Math.max(Math.round(DIAL_SIZE * 0.17), 3);
+  const centerDot = Math.max(Math.round(DIAL_SIZE * 0.12), 3);
+  const ridgeHeight = Math.max(Math.round(DIAL_SIZE * 0.08), 2);
+  const highlightRidgeHeight = Math.max(Math.round(DIAL_SIZE * 0.06), 2);
 
   // Generate ridge lines around circumference
   const ridges = Array.from({ length: RIDGE_COUNT }, (_, i) => {
@@ -123,6 +128,22 @@ export default function ValueDial({
             boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.4)',
           }}
         />
+
+        {/* Push indicator ring (shown when hasPush is true) */}
+        {hasPush && (
+          <div
+            className="absolute rounded-full"
+            style={{
+              width: centerDot + 8,
+              height: centerDot + 8,
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              boxShadow: 'inset 0 0 3px rgba(255,255,255,0.05)',
+            }}
+          />
+        )}
       </motion.div>
 
       {/* Label */}

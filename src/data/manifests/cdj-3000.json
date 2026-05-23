@@ -1,0 +1,1799 @@
+{
+  "deviceId": "cdj-3000",
+  "deviceName": "CDJ-3000 Multi Player",
+  "manufacturer": "Pioneer DJ",
+  "panelWidth": 752,
+  "panelHeight": 943,
+  "controlScale": 1,
+  "keyboard": null,
+  "editorSections": [
+    {
+      "id": "BROWSE",
+      "headerLabel": "Navigation Bar",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 117.55554224989149,
+      "y": -1.9999949265899657,
+      "w": 524,
+      "h": 88
+    },
+    {
+      "id": "MEDIA",
+      "headerLabel": "USB/SD Media Ports",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": -0.44446946885850735,
+      "y": 63.444434678819455,
+      "w": 120,
+      "h": 256
+    },
+    {
+      "id": "DISPLAY",
+      "headerLabel": "9-inch Touch Display",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 148,
+      "y": 60,
+      "w": 478,
+      "h": 207
+    },
+    {
+      "id": "SELECTOR",
+      "headerLabel": "Browse Selector",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 642.4443943956163,
+      "y": 63.44445115831163,
+      "w": 120,
+      "h": 256
+    },
+    {
+      "id": "HOT_CUE",
+      "headerLabel": "Performance Pads & Mode Buttons",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 124.44444664380327,
+      "y": 354.0000067770326,
+      "w": 516,
+      "h": 572
+    },
+    {
+      "id": "JOG_CONTROLS",
+      "headerLabel": "Jog Wheel Settings",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 637.2222270806205,
+      "y": 341.4444648668078,
+      "w": 128,
+      "h": 204
+    },
+    {
+      "id": "LOOP",
+      "headerLabel": "Loop Controls",
+      "frameMode": "full",
+      "x": 945.7777777777792,
+      "y": 193.66666666666725,
+      "w": 216,
+      "h": 56
+    },
+    {
+      "id": "CUE_MEMORY",
+      "headerLabel": "Cue/Loop Memory Controls",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 377.00005249023405,
+      "y": 484.999968261719,
+      "w": 252,
+      "h": 80
+    },
+    {
+      "id": "SYNC",
+      "headerLabel": "Beat Sync Controls",
+      "x": 860.5555579969617,
+      "y": 823.3332710774743,
+      "w": 72,
+      "h": 72
+    },
+    {
+      "id": "TRANSPORT",
+      "headerLabel": "Transport Controls",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 18.333333330579123,
+      "y": 643.7777436206733,
+      "w": 176,
+      "h": 396
+    },
+    {
+      "id": "JOG_WHEEL",
+      "headerLabel": "Jog Wheel",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 122.77777795172808,
+      "y": 538.8888888888891,
+      "w": 512,
+      "h": 460
+    },
+    {
+      "id": "TEMPO",
+      "headerLabel": "Tempo Controls",
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 635.777731391059,
+      "y": 557.888897433811,
+      "w": 124,
+      "h": 376
+    }
+  ],
+  "controls": [
+    {
+      "id": "SOURCE",
+      "type": "button",
+      "label": "SOURCE",
+      "editorPosition": {
+        "x": 149.55542547211184,
+        "y": 31.22213026638454,
+        "w": 64,
+        "h": 18
+      },
+      "shape": "rectangle",
+      "buttonStyle": "flat-key",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false
+    },
+    {
+      "id": "BROWSE_BTN",
+      "type": "button",
+      "label": "BROWSE",
+      "editorPosition": {
+        "x": 228.55541488560849,
+        "y": 31.222141002875443,
+        "w": 64,
+        "h": 18
+      },
+      "shape": "rectangle",
+      "buttonStyle": "flat-key",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false
+    },
+    {
+      "id": "TAG_LIST",
+      "type": "button",
+      "label": "TAG LIST",
+      "editorPosition": {
+        "x": 307.55542626256164,
+        "y": 31.222141002875443,
+        "w": 64,
+        "h": 18
+      },
+      "shape": "rectangle",
+      "buttonStyle": "flat-key",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false
+    },
+    {
+      "id": "SOURCE_INDICATOR",
+      "type": "led",
+      "label": "",
+      "editorPosition": {
+        "x": 660.4442886421658,
+        "y": 88.55537410877261,
+        "w": 24,
+        "h": 20
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true
+    },
+    {
+      "id": "PLAYLIST",
+      "type": "button",
+      "label": "PLAYLIST",
+      "editorPosition": {
+        "x": 386.5552884390748,
+        "y": 31.2221371576606,
+        "w": 64,
+        "h": 18
+      },
+      "shape": "rectangle",
+      "buttonStyle": "flat-key",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false
+    },
+    {
+      "id": "SEARCH_BTN",
+      "type": "button",
+      "label": "SEARCH",
+      "editorPosition": {
+        "x": 465.5552691214475,
+        "y": 31.22216383002387,
+        "w": 64,
+        "h": 18
+      },
+      "shape": "rectangle",
+      "buttonStyle": "flat-key",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false
+    },
+    {
+      "id": "MENU_UTILITY",
+      "type": "button",
+      "label": "MENU",
+      "editorPosition": {
+        "x": 544.5553658769494,
+        "y": 31.222148940429673,
+        "w": 64,
+        "h": 18
+      },
+      "shape": "rectangle",
+      "buttonStyle": "flat-key",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false
+    },
+    {
+      "id": "SD_INDICATOR",
+      "type": "led",
+      "label": "SD memory card indicator",
+      "editorPosition": {
+        "x": 828.2221964337998,
+        "y": 218.66668702161456,
+        "w": 76,
+        "h": 40
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "ledVariant": "dot",
+      "ledColor": "#f59e0b",
+      "hasLed": true,
+      "labelFontSize": 7
+    },
+    {
+      "id": "SD_SLOT",
+      "type": "slot",
+      "label": "SD memory card slot",
+      "editorPosition": {
+        "x": 22.000130670865715,
+        "y": 175.22216802444643,
+        "w": 96,
+        "h": 36
+      },
+      "shape": "rectangle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "hasLed": false
+    },
+    {
+      "id": "USB_STOP",
+      "type": "button",
+      "label": "USB STOP",
+      "editorPosition": {
+        "x": 82.88887796753983,
+        "y": 135.22218331004956,
+        "w": 28,
+        "h": 28
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "USB_PORT",
+      "type": "port",
+      "label": "USB port",
+      "editorPosition": {
+        "x": 22.555580072821535,
+        "y": 91.77780119322355,
+        "w": 44,
+        "h": 36
+      },
+      "shape": "rectangle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "hasLed": false
+    },
+    {
+      "id": "USB_INDICATOR",
+      "type": "led",
+      "label": "USB indicator",
+      "editorPosition": {
+        "x": 828.0000171220398,
+        "y": 145.8888081918674,
+        "w": 76,
+        "h": 28
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "labelFontSize": 6
+    },
+    {
+      "id": "TOUCH_DISPLAY",
+      "type": "screen",
+      "label": "Touch display",
+      "editorPosition": {
+        "x": 163.88901007422328,
+        "y": 90.55551481640676,
+        "w": 432,
+        "h": 256
+      },
+      "shape": "rectangle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "hasLed": false
+    },
+    {
+      "id": "BACK",
+      "type": "button",
+      "label": "BACK",
+      "editorPosition": {
+        "x": 622.3325030264422,
+        "y": 118.66680589103285,
+        "w": 44,
+        "h": 48
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false,
+      "labelFontSize": 6,
+      "labelAlign": "top-center"
+    },
+    {
+      "id": "TAG_TRACK_REMOVE",
+      "type": "button",
+      "label": "TAG TRACK/ REMOVE",
+      "editorPosition": {
+        "x": 665.3324365011869,
+        "y": 118.66671982708371,
+        "w": 44,
+        "h": 48
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false,
+      "labelFontSize": 6,
+      "labelAlign": "top-center"
+    },
+    {
+      "id": "ROTARY_SELECTOR",
+      "type": "encoder",
+      "label": "Rotary selector",
+      "editorPosition": {
+        "x": 464.2227203089759,
+        "y": 154.0000341056642,
+        "w": 400,
+        "h": 132
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "hasLed": false,
+      "zOrder": 7
+    },
+    {
+      "id": "SLIP",
+      "type": "button",
+      "label": "SLIP",
+      "editorPosition": {
+        "x": 20.000003493443636,
+        "y": 317.00027373247303,
+        "w": 48,
+        "h": 20
+      },
+      "shape": "rectangle",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "above",
+      "ledVariant": "dot",
+      "ledColor": "#3b82f6",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelColor": "#ef4444"
+    },
+    {
+      "id": "QUANTIZE",
+      "type": "button",
+      "label": "QUANTIZE",
+      "editorPosition": {
+        "x": 74.0000154019712,
+        "y": 317.0002405271929,
+        "w": 48,
+        "h": 20
+      },
+      "shape": "rectangle",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "above",
+      "ledVariant": "dot",
+      "ledColor": "#ef4444",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelColor": "#ef4444"
+    },
+    {
+      "id": "TIME_MODE_AUTO_CUE",
+      "type": "button",
+      "label": "Auto Cue",
+      "editorPosition": {
+        "x": 54.33296738790086,
+        "y": 248.77735136233656,
+        "w": 28,
+        "h": 28
+      },
+      "shape": "circle",
+      "buttonStyle": "rubber",
+      "labelPosition": "hidden",
+      "labelDisplay": "above",
+      "secondaryLabel": "AUTO CUE",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": false
+    },
+    {
+      "id": "HOT_CUE_A",
+      "type": "button",
+      "label": "A",
+      "editorPosition": {
+        "x": 146.00009765624998,
+        "y": 374.5550945808539,
+        "w": 50,
+        "h": 28
+      },
+      "shape": "rectangle",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "below",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "zOrder": 3,
+      "labelAlign": "top-left",
+      "labelColor": "#ef4444"
+    },
+    {
+      "id": "HOT_CUE_B",
+      "type": "button",
+      "label": "B",
+      "editorPosition": {
+        "x": 206.000048828125,
+        "y": 374.55509553512906,
+        "w": 50,
+        "h": 28
+      },
+      "shape": "square",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "below",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "top-left",
+      "labelColor": "#22d3ee"
+    },
+    {
+      "id": "HOT_CUE_C",
+      "type": "button",
+      "label": "C",
+      "editorPosition": {
+        "x": 266.000048828125,
+        "y": 374.5550879238098,
+        "w": 50,
+        "h": 28
+      },
+      "shape": "square",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "below",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "top-left",
+      "labelColor": "#88ad17"
+    },
+    {
+      "id": "HOT_CUE_D",
+      "type": "button",
+      "label": "D",
+      "editorPosition": {
+        "x": 326.000048828125,
+        "y": 374.5551001019206,
+        "w": 50,
+        "h": 28
+      },
+      "shape": "square",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "below",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "top-left",
+      "labelColor": "#b798d0"
+    },
+    {
+      "id": "HOT_CUE_E",
+      "type": "button",
+      "label": "E",
+      "editorPosition": {
+        "x": 386.000048828125,
+        "y": 374.5550879238098,
+        "w": 50,
+        "h": 28
+      },
+      "shape": "square",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "below",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "top-left",
+      "labelColor": "#22c55e"
+    },
+    {
+      "id": "HOT_CUE_F",
+      "type": "button",
+      "label": "F",
+      "editorPosition": {
+        "x": 446.000048828125,
+        "y": 374.55510192863716,
+        "w": 50,
+        "h": 28
+      },
+      "shape": "rectangle",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "below",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "top-left",
+      "labelColor": "#f59e0b"
+    },
+    {
+      "id": "HOT_CUE_G",
+      "type": "button",
+      "label": "G",
+      "editorPosition": {
+        "x": 506.000048828125,
+        "y": 374.5551001019206,
+        "w": 50,
+        "h": 28
+      },
+      "shape": "square",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "below",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "top-left",
+      "labelColor": "#175db3"
+    },
+    {
+      "id": "HOT_CUE_H",
+      "type": "button",
+      "label": "H",
+      "editorPosition": {
+        "x": 566.000048828125,
+        "y": 374.55520819214564,
+        "w": 50,
+        "h": 28
+      },
+      "shape": "rectangle",
+      "buttonStyle": "rubber",
+      "labelPosition": "on-button",
+      "labelDisplay": "below",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "top-left",
+      "labelColor": "#e2e244"
+    },
+    {
+      "id": "TRACK_FILTER_EDIT",
+      "type": "button",
+      "label": "TRACK FILTER\n/EDIT",
+      "editorPosition": {
+        "x": 622.3323497042921,
+        "y": 270.22192549637964,
+        "w": 44,
+        "h": 48
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false,
+      "labelFontSize": 6,
+      "labelAlign": "bottom-center"
+    },
+    {
+      "id": "SHORTCUT",
+      "type": "button",
+      "label": "SHORT\nCUT",
+      "editorPosition": {
+        "x": 665.3320529204472,
+        "y": 270.2218081743333,
+        "w": 44,
+        "h": 48
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "hasLed": false,
+      "labelFontSize": 6,
+      "labelAlign": "bottom-center"
+    },
+    {
+      "id": "VINYL_SPEED_ADJ",
+      "type": "knob",
+      "label": "VINYL SPEED ADJ. TOUCH/BRAKE",
+      "editorPosition": {
+        "x": 680.8892864970211,
+        "y": 376.4444353536434,
+        "w": 28,
+        "h": 28
+      },
+      "shape": "circle",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "secondaryLabel": "TOUCH/BRAKE",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "JOG_MODE",
+      "type": "button",
+      "label": "JOG MODE",
+      "editorPosition": {
+        "x": 693.000390943362,
+        "y": 421.00010388435123,
+        "w": 40,
+        "h": 36
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "above",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "VINYL_CDJ_INDICATOR",
+      "type": "led",
+      "label": "VINYL\nCDJ",
+      "editorPosition": {
+        "x": 650.9998763431294,
+        "y": 421.0003305693751,
+        "w": 40,
+        "h": 36
+      },
+      "shape": "rectangle",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "ledVariant": "dual-label",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "JOG_ADJUST",
+      "type": "knob",
+      "label": "JOG ADJUST",
+      "editorPosition": {
+        "x": 557.333985666212,
+        "y": 483.6653364522277,
+        "w": 36,
+        "h": 36
+      },
+      "shape": "circle",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "LOOP_IN_CUE",
+      "type": "button",
+      "label": "IN/CUE",
+      "editorPosition": {
+        "x": 19.999987418821483,
+        "y": 426.9999361732179,
+        "w": 30,
+        "h": 30
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "secondaryLabel": "IN ADJUST",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "LOOP_OUT",
+      "type": "button",
+      "label": "OUT",
+      "editorPosition": {
+        "x": 75.99996415220804,
+        "y": 426.9999361732179,
+        "w": 30,
+        "h": 30
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "secondaryLabel": "OUT ADJUST",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "RELOOP_EXIT",
+      "type": "button",
+      "label": "LOOP RELOOP/EXIT",
+      "editorPosition": {
+        "x": 137.00056534991722,
+        "y": 426.9999361732179,
+        "w": 30,
+        "h": 30
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "FOUR_BEAT_LOOP",
+      "type": "button",
+      "label": "4",
+      "editorPosition": {
+        "x": 21,
+        "y": 487.66548530555184,
+        "w": 28,
+        "h": 28
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "above",
+      "secondaryLabel": "1/2X",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "EIGHT_BEAT_LOOP",
+      "type": "button",
+      "label": "8",
+      "editorPosition": {
+        "x": 77,
+        "y": 487.6657537869145,
+        "w": 28,
+        "h": 28
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "above",
+      "secondaryLabel": "2X",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "CUE_LOOP_CALL_BACK",
+      "type": "button",
+      "label": "CUE/LOOP CALL",
+      "editorPosition": {
+        "x": 480.9999228584191,
+        "y": 427.0000229588217,
+        "w": 24,
+        "h": 24
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "hidden",
+      "labelDisplay": "icon-only",
+      "icon": "arrow-left",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "CUE_LOOP_CALL_FWD",
+      "type": "button",
+      "label": "CUE/LOOP CALL ",
+      "editorPosition": {
+        "x": 519.9999757368171,
+        "y": 427.0000229588217,
+        "w": 24,
+        "h": 24
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "icon-only",
+      "icon": "arrow-right",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "DELETE",
+      "type": "button",
+      "label": "DELETE",
+      "editorPosition": {
+        "x": 558.9998393586914,
+        "y": 427.0000229588217,
+        "w": 24,
+        "h": 24
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "MEMORY",
+      "type": "button",
+      "label": "MEMORY",
+      "editorPosition": {
+        "x": 597.9999204483254,
+        "y": 427.0000229588217,
+        "w": 24,
+        "h": 24
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "MASTER",
+      "type": "button",
+      "label": "MASTER",
+      "editorPosition": {
+        "x": 695.0006886650334,
+        "y": 487.6653322826947,
+        "w": 38,
+        "h": 32
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": false,
+      "labelFontSize": 6,
+      "labelColor": "#f59e0b"
+    },
+    {
+      "id": "KEY_SYNC",
+      "type": "button",
+      "label": "KEY SYNC",
+      "editorPosition": {
+        "x": 665.0002292728426,
+        "y": 529.1112651476196,
+        "w": 48,
+        "h": 20
+      },
+      "shape": "rectangle",
+      "surfaceColor": "#ec4899",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "ledVariant": "dot",
+      "ledColor": "#ec4899",
+      "hasLed": false,
+      "labelFontSize": 6,
+      "labelColor": "#1f69ab"
+    },
+    {
+      "id": "BEAT_SYNC_INST_DOUBLES",
+      "type": "button",
+      "label": "Beat Sync",
+      "editorPosition": {
+        "x": 651.0009565369742,
+        "y": 487.6652706081149,
+        "w": 38,
+        "h": 32
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "secondaryLabel": "",
+      "ledVariant": "dot",
+      "ledColor": "#3b82f6",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "BEAT_JUMP_BACK",
+      "type": "button",
+      "label": "BEAT JUMP ◄",
+      "editorPosition": {
+        "x": 19.99999670605031,
+        "y": 536.4435377537973,
+        "w": 30,
+        "h": 30
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "hidden",
+      "labelDisplay": "icon-only",
+      "icon": "arrow-left",
+      "hasLed": false
+    },
+    {
+      "id": "BEAT_JUMP_FWD",
+      "type": "button",
+      "label": "BEAT JUMP ►",
+      "editorPosition": {
+        "x": 76,
+        "y": 536.4444207306345,
+        "w": 30,
+        "h": 30
+      },
+      "shape": "rectangle",
+      "buttonStyle": "raised",
+      "labelPosition": "hidden",
+      "labelDisplay": "icon-only",
+      "icon": "arrow-right",
+      "hasLed": false
+    },
+    {
+      "id": "CUE_BTN",
+      "type": "button",
+      "label": "CUE",
+      "editorPosition": {
+        "x": 25.999985918511392,
+        "y": 772.6665239347245,
+        "w": 76,
+        "h": 72
+      },
+      "shape": "circle",
+      "surfaceColor": "#f59e0b",
+      "buttonStyle": "transport",
+      "labelPosition": "on-button",
+      "labelDisplay": "on-button",
+      "ledVariant": "dot",
+      "ledColor": "#f59e0b",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "DIRECTION_LEVER",
+      "type": "button",
+      "label": "SLIPREV\nFWD \nREV",
+      "editorPosition": {
+        "x": 66.00011144970293,
+        "y": 588.8893291647146,
+        "w": 40,
+        "h": 44
+      },
+      "shape": "rectangle",
+      "labelPosition": "on-button",
+      "labelDisplay": "above",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6,
+      "labelAlign": "middle-left"
+    },
+    {
+      "id": "PLAY_PAUSE",
+      "type": "button",
+      "label": "PLAY/PAUSE ►/II",
+      "editorPosition": {
+        "x": 25.9999929617451,
+        "y": 864.4443904100884,
+        "w": 76,
+        "h": 72
+      },
+      "shape": "circle",
+      "surfaceColor": "#22c55e",
+      "buttonStyle": "transport",
+      "labelPosition": "above",
+      "labelDisplay": "icon-only",
+      "icon": "play-pause",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "SEARCH_BACK",
+      "type": "button",
+      "label": "Search",
+      "editorPosition": {
+        "x": 13.999842806643954,
+        "y": 721.889113170656,
+        "w": 52,
+        "h": 40
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "hidden",
+      "labelDisplay": "icon-only",
+      "icon": "rewind",
+      "hasLed": false
+    },
+    {
+      "id": "SEARCH_FWD",
+      "type": "button",
+      "label": "Search",
+      "editorPosition": {
+        "x": 57.999753189465196,
+        "y": 721.8890344738219,
+        "w": 52,
+        "h": 40
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "hidden",
+      "labelDisplay": "icon-only",
+      "icon": "fast-forward",
+      "hasLed": false
+    },
+    {
+      "id": "TRACK_SEARCH_BACK",
+      "type": "button",
+      "label": "Track/Search",
+      "editorPosition": {
+        "x": 13.999990714849206,
+        "y": 662.1125218850964,
+        "w": 52,
+        "h": 40
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "hidden",
+      "labelDisplay": "icon-only",
+      "icon": "skip-backward",
+      "hasLed": false
+    },
+    {
+      "id": "TRACK_SEARCH_FWD",
+      "type": "button",
+      "label": "Track/Search",
+      "editorPosition": {
+        "x": 57.99996932025089,
+        "y": 662.1124605314586,
+        "w": 52,
+        "h": 40
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "hidden",
+      "labelDisplay": "icon-only",
+      "icon": "skip-forward",
+      "hasLed": false
+    },
+    {
+      "id": "JOG_DISPLAY",
+      "type": "screen",
+      "label": "Jog display",
+      "editorPosition": {
+        "x": 293.55723521987284,
+        "y": 628.889347291449,
+        "w": 172,
+        "h": 140
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "hasLed": false,
+      "zOrder": 5
+    },
+    {
+      "id": "JOG_WHEEL",
+      "type": "wheel",
+      "label": "Jog wheel (–REV/+FWD)",
+      "editorPosition": {
+        "x": 151.11151781155849,
+        "y": 487.2213401136239,
+        "w": 460,
+        "h": 428
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "ledVariant": "bar",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "zOrder": 0
+    },
+    {
+      "id": "TEMPO_RANGE",
+      "type": "button",
+      "label": "TEMPO",
+      "editorPosition": {
+        "x": 677.000230068028,
+        "y": 616.4456693281692,
+        "w": 28,
+        "h": 28
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "secondaryLabel": "±6/±10/±16/WIDE",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "MASTER_TEMPO",
+      "type": "button",
+      "label": "MASTER TEMPO",
+      "editorPosition": {
+        "x": 677.000228701433,
+        "y": 675.3349152755968,
+        "w": 28,
+        "h": 28
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "ledVariant": "dot",
+      "ledColor": "#f59e0b",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "TEMPO_SLIDER",
+      "type": "fader",
+      "label": "TEMPO",
+      "editorPosition": {
+        "x": 667.000059437319,
+        "y": 720.0006409139638,
+        "w": 44,
+        "h": 200
+      },
+      "shape": "rectangle",
+      "labelPosition": "below",
+      "labelDisplay": "above",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "TEMPO_RESET",
+      "type": "button",
+      "label": "TEMPO\n \nRESET",
+      "editorPosition": {
+        "x": 609.6663887005274,
+        "y": 797.3328097666044,
+        "w": 28,
+        "h": 28
+      },
+      "shape": "circle",
+      "buttonStyle": "raised",
+      "labelPosition": "above",
+      "labelDisplay": "above",
+      "hasLed": false,
+      "labelFontSize": 6
+    },
+    {
+      "id": "TEMPO_RESET_INDICATOR",
+      "type": "led",
+      "label": "TEMPO RESET indicator",
+      "editorPosition": {
+        "x": 880.8885838650172,
+        "y": 719.8888422390407,
+        "w": 20,
+        "h": 24
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true
+    },
+    {
+      "id": "DIRECTION_LEVER-copy",
+      "type": "slider",
+      "label": "SLIP REV FWD REV",
+      "editorPosition": {
+        "x": 19.0001137168263,
+        "y": 586.88928098687,
+        "w": 44,
+        "h": 52
+      },
+      "shape": "rectangle",
+      "labelPosition": "on-button",
+      "labelDisplay": "above",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "ledStyle": "integrated",
+      "labelFontSize": 6
+    },
+    {
+      "id": "CALL_DELETE",
+      "type": "button",
+      "label": "CALL/DELETE",
+      "editorPosition": {
+        "x": 20.00002675895747,
+        "y": 374.5546872275999,
+        "w": 55,
+        "h": 28
+      },
+      "shape": "rectangle",
+      "buttonStyle": "flat-key",
+      "labelPosition": "above",
+      "labelDisplay": "on-button",
+      "hasLed": false,
+      "labelFontSize": 6
+    }
+  ],
+  "editorLabels": [
+    {
+      "id": "label-USB_STOP",
+      "text": "USB \nSTOP",
+      "x": 67,
+      "y": 112,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-JOG_ADJUST",
+      "text": "JOG ADJUST",
+      "x": 545,
+      "y": 473,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-LOOP_IN_CUE",
+      "text": "IN/CUE",
+      "x": 5,
+      "y": 413,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-LOOP_OUT",
+      "text": "OUT",
+      "x": 61,
+      "y": 413,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-RELOOP_EXIT",
+      "text": "LOOP RELOOP/EXIT",
+      "x": 122,
+      "y": 413,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-DELETE",
+      "text": "DELETE",
+      "x": 541,
+      "y": 413,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-MEMORY",
+      "text": "MEMORY",
+      "x": 580,
+      "y": 413,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-TEMPO_RANGE",
+      "text": "        TEMPO \n±6/±10/±16/WIDE",
+      "x": 661,
+      "y": 593,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-MASTER_TEMPO",
+      "text": "MASTER \nTEMPO",
+      "x": 661,
+      "y": 653,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-TEMPO_RESET",
+      "text": "TEMPO \nRESET",
+      "x": 594,
+      "y": 774,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-USB_INDICATOR",
+      "text": "USB indicator",
+      "x": 829,
+      "y": 188,
+      "w": 64,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": true,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-SD_INDICATOR",
+      "text": "SD memory card indicator",
+      "x": 828,
+      "y": 266,
+      "w": 84,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": true,
+      "lineHeight": 10
+    },
+    {
+      "id": "label-standalone-1776874509600",
+      "text": "",
+      "x": 830,
+      "y": 442,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 10
+    },
+    {
+      "id": "label-standalone-1776874519111",
+      "text": "INST. DOUBLES",
+      "x": 660,
+      "y": 473,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776874534812",
+      "text": "1/2X",
+      "x": 6,
+      "y": 519,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776874538023",
+      "text": "BEAT LOOP",
+      "x": 124,
+      "y": 495,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776874539262",
+      "text": "LOOP",
+      "x": 184,
+      "y": 436,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776978973334",
+      "text": "— UTILITY",
+      "x": 550,
+      "y": 20,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776979109267",
+      "text": "5V — 1A",
+      "x": 13,
+      "y": 130,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776979174170",
+      "text": "SD",
+      "x": 33,
+      "y": 218,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776979211589",
+      "text": ".\nTIME \nMODE",
+      "x": 6,
+      "y": 244,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776979438275",
+      "text": "—\nAUTO \nCUE",
+      "x": 69,
+      "y": 245,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776980037736",
+      "text": "MP3/AAC/WAV/\nAIFF/FLAC/ALAC",
+      "x": 662,
+      "y": 333,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776983124658",
+      "text": "HOT CUE",
+      "x": 352,
+      "y": 359,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776983452284",
+      "text": "IN ADJUST",
+      "x": 5,
+      "y": 460,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776983535255",
+      "text": "OUT ADJUST",
+      "x": 62,
+      "y": 460,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776983723119",
+      "text": "2X",
+      "x": 61,
+      "y": 519,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776983787260",
+      "text": "BEAT\nJUMP",
+      "x": 34,
+      "y": 540,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776990995424",
+      "text": "DIRECTION",
+      "x": 33,
+      "y": 576,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776992586519",
+      "text": "SEARCH",
+      "x": 33,
+      "y": 711,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776992587188",
+      "text": "TRACK SEARCH",
+      "x": 33,
+      "y": 650,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-PLAY_PAUSE",
+      "text": "PLAY/PAUSE ",
+      "x": 34,
+      "y": 851,
+      "w": 65,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776996922195",
+      "text": "Label",
+      "x": 884,
+      "y": 446,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 10
+    },
+    {
+      "id": "label-standalone-1777319576555",
+      "text": "LIGHT",
+      "x": 526,
+      "y": 514,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1777319604547",
+      "text": "HEAVY",
+      "x": 566,
+      "y": 514,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-CUE_LOOP_CALL_FWD",
+      "text": "CUE/LOOP CALL ",
+      "x": 486,
+      "y": 413,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-VINYL_SPEED_ADJ",
+      "text": "VINYL SPEED ADJ.\n TOUCH/BRAKE",
+      "x": 664,
+      "y": 355,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-CALL_DELETE",
+      "text": "CALL/DELETE",
+      "x": 18,
+      "y": 364,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-TEMPO_SLIDER",
+      "text": "TEMPO",
+      "x": 659,
+      "y": 923,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    }
+  ],
+  "groupLabels": [],
+  "controlContainers": [
+    {
+      "id": "container-1777590101813",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 0.9999286516729372,
+      "y": 361.0008402858263,
+      "w": 752,
+      "h": 584,
+      "borderRadius": 4
+    },
+    {
+      "id": "container-1778700489230",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 1.3997863769685943,
+      "y": 82.40003988650462,
+      "w": 144,
+      "h": 280,
+      "borderRadius": 4
+    },
+    {
+      "id": "container-1778700518727",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 140.99992636703905,
+      "y": 81.0000045837539,
+      "w": 480,
+      "h": 280,
+      "borderRadius": 4
+    },
+    {
+      "id": "container-1778700742294",
+      "controlIds": [],
+      "style": "recessed",
+      "x": -863.5999999999999,
+      "y": -235.8,
+      "w": 120,
+      "h": 80,
+      "borderRadius": 4
+    },
+    {
+      "id": "container-1778700973333",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 617.0002745073693,
+      "y": 80.99995991537844,
+      "w": 136,
+      "h": 280,
+      "borderRadius": 4
+    },
+    {
+      "id": "container-1778701336253",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 140.00001576688095,
+      "y": -1.999969482423125,
+      "w": 480,
+      "h": 88,
+      "borderRadius": 4
+    },
+    {
+      "id": "container-1778725385769",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 649.0001890966796,
+      "y": 486.0001182523437,
+      "w": 84,
+      "h": 68,
+      "borderRadius": 4
+    }
+  ]
+}

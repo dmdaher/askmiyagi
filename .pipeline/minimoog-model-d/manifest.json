@@ -1,0 +1,1102 @@
+{
+  "deviceId": "minimoog-model-d",
+  "deviceName": "Minimoog Model D",
+  "manufacturer": "Moog",
+  "layoutType": "asymmetric",
+  "densityTargets": {
+    "vertical": "comfortable",
+    "horizontal": "comfortable",
+    "horizontalDeadSpaceMax": 0.05
+  },
+  "sections": [
+    {
+      "id": "controllers",
+      "headerLabel": "CONTROLLERS",
+      "archetype": "dual-column",
+      "panelBoundingBox": {
+        "x": 0,
+        "y": 0,
+        "w": 17,
+        "h": 100
+      },
+      "controls": [
+        "ctrl-tune",
+        "ctrl-glide",
+        "ctrl-mod-mix",
+        "ctrl-osc3-filtereg-switch",
+        "ctrl-noise-lfo-switch"
+      ],
+      "containerAssignment": {
+        "anchor": [
+          "ctrl-tune"
+        ],
+        "cluster": {
+          "knob-row": {
+            "controls": [
+              "ctrl-glide",
+              "ctrl-mod-mix"
+            ],
+            "direction": "row"
+          },
+          "switch-row": {
+            "controls": [
+              "ctrl-osc3-filtereg-switch",
+              "ctrl-noise-lfo-switch"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "heightSplits": {
+        "cluster": 55,
+        "anchor": 40,
+        "gap": 5
+      },
+      "widthPercent": 17,
+      "complexity": "LOW"
+    },
+    {
+      "id": "oscillator-bank",
+      "headerLabel": "OSCILLATOR BANK",
+      "archetype": "dual-column",
+      "panelBoundingBox": {
+        "x": 17,
+        "y": 0,
+        "w": 30,
+        "h": 100
+      },
+      "controls": [
+        "osc-modulation-switch",
+        "osc3-control-switch",
+        "osc1-range",
+        "osc1-waveform",
+        "osc2-range",
+        "osc2-frequency",
+        "osc2-waveform",
+        "osc3-range",
+        "osc3-frequency",
+        "osc3-waveform"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "osc-modulation-switch",
+          "osc3-control-switch"
+        ],
+        "right-column": {
+          "osc1": {
+            "controls": [
+              "osc1-range",
+              "osc1-waveform"
+            ],
+            "direction": "row"
+          },
+          "osc2": {
+            "controls": [
+              "osc2-range",
+              "osc2-frequency",
+              "osc2-waveform"
+            ],
+            "direction": "row"
+          },
+          "osc3": {
+            "controls": [
+              "osc3-range",
+              "osc3-frequency",
+              "osc3-waveform"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "widthPercent": 30,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "mixer",
+      "headerLabel": "MIXER",
+      "archetype": "dual-column",
+      "panelBoundingBox": {
+        "x": 47,
+        "y": 0,
+        "w": 16,
+        "h": 100
+      },
+      "controls": [
+        "mixer-osc1-vol",
+        "mixer-osc1-on",
+        "mixer-osc2-vol",
+        "mixer-osc2-on",
+        "mixer-osc3-vol",
+        "mixer-osc3-on",
+        "mixer-ext-vol",
+        "mixer-ext-on",
+        "mixer-noise-vol",
+        "mixer-noise-on",
+        "mixer-overload",
+        "mixer-white-pink"
+      ],
+      "containerAssignment": {
+        "left-column": {
+          "ch1": {
+            "controls": [
+              "mixer-osc1-vol",
+              "mixer-osc1-on"
+            ],
+            "direction": "row"
+          },
+          "ch2": {
+            "controls": [
+              "mixer-osc2-vol",
+              "mixer-osc2-on"
+            ],
+            "direction": "row"
+          },
+          "ch3": {
+            "controls": [
+              "mixer-osc3-vol",
+              "mixer-osc3-on"
+            ],
+            "direction": "row"
+          },
+          "ch4": {
+            "controls": [
+              "mixer-ext-vol",
+              "mixer-ext-on"
+            ],
+            "direction": "row"
+          },
+          "ch5": {
+            "controls": [
+              "mixer-noise-vol",
+              "mixer-noise-on"
+            ],
+            "direction": "row"
+          }
+        },
+        "right-column": [
+          "mixer-overload",
+          "mixer-white-pink"
+        ]
+      },
+      "widthPercent": 16,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "modifiers",
+      "headerLabel": "MODIFIERS",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 63,
+        "y": 0,
+        "w": 25,
+        "h": 100
+      },
+      "controls": [
+        "mod-filter-modulation",
+        "mod-keyboard-ctrl-1",
+        "mod-keyboard-ctrl-2",
+        "mod-cutoff-freq",
+        "mod-emphasis",
+        "mod-amount-contour",
+        "mod-filter-attack",
+        "mod-filter-decay",
+        "mod-filter-sustain",
+        "mod-loud-attack",
+        "mod-loud-decay",
+        "mod-loud-sustain"
+      ],
+      "containerAssignment": {
+        "row-filter": {
+          "switches": [
+            "mod-filter-modulation",
+            "mod-keyboard-ctrl-1",
+            "mod-keyboard-ctrl-2"
+          ],
+          "knobs": {
+            "controls": [
+              "mod-cutoff-freq",
+              "mod-emphasis",
+              "mod-amount-contour"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-filter-contour": {
+          "knobs": {
+            "controls": [
+              "mod-filter-attack",
+              "mod-filter-decay",
+              "mod-filter-sustain"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-loudness-contour": {
+          "knobs": {
+            "controls": [
+              "mod-loud-attack",
+              "mod-loud-decay",
+              "mod-loud-sustain"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "widthPercent": 25,
+      "complexity": "HIGH"
+    },
+    {
+      "id": "output",
+      "headerLabel": "OUTPUT",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 88,
+        "y": 0,
+        "w": 12,
+        "h": 100
+      },
+      "controls": [
+        "out-volume",
+        "out-main-switch",
+        "out-a440",
+        "out-phones-volume",
+        "out-phones-jack",
+        "out-power-led",
+        "out-power-switch"
+      ],
+      "containerAssignment": {
+        "row-main": {
+          "pair": {
+            "controls": [
+              "out-volume",
+              "out-main-switch"
+            ],
+            "direction": "row"
+          }
+        },
+        "row-a440": {
+          "single": [
+            "out-a440"
+          ]
+        },
+        "row-phones-power": {
+          "phones": {
+            "controls": [
+              "out-phones-volume",
+              "out-phones-jack"
+            ],
+            "direction": "row"
+          },
+          "power": [
+            "out-power-led",
+            "out-power-switch"
+          ]
+        }
+      },
+      "widthPercent": 12,
+      "complexity": "LOW"
+    },
+    {
+      "id": "left-hand-keyboard-panel",
+      "headerLabel": null,
+      "archetype": "dual-column",
+      "panelBoundingBox": {
+        "x": 0,
+        "y": 100,
+        "w": 15,
+        "h": 50
+      },
+      "controls": [
+        "lhk-lfo-rate",
+        "lhk-glide-switch",
+        "lhk-decay-switch",
+        "lhk-pitch-wheel",
+        "lhk-mod-wheel"
+      ],
+      "containerAssignment": {
+        "cluster": {
+          "knob": [
+            "lhk-lfo-rate"
+          ],
+          "switches": [
+            "lhk-glide-switch",
+            "lhk-decay-switch"
+          ]
+        },
+        "anchor": {
+          "wheels": {
+            "controls": [
+              "lhk-pitch-wheel",
+              "lhk-mod-wheel"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "heightSplits": {
+        "cluster": 40,
+        "anchor": 55,
+        "gap": 5
+      },
+      "widthPercent": 15,
+      "complexity": "LOW"
+    },
+    {
+      "id": "keyboard",
+      "headerLabel": null,
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 15,
+        "y": 100,
+        "w": 85,
+        "h": 50
+      },
+      "controls": [
+        "keyboard"
+      ],
+      "widthPercent": 85,
+      "complexity": "LOW"
+    }
+  ],
+  "controls": [
+    {
+      "id": "ctrl-tune",
+      "verbatimLabel": "TUNE",
+      "type": "knob",
+      "section": "controllers",
+      "functionalGroup": "controllers",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "ctrl-glide",
+        "left": null,
+        "right": null
+      }
+    },
+    {
+      "id": "ctrl-glide",
+      "verbatimLabel": "GLIDE",
+      "type": "knob",
+      "section": "controllers",
+      "functionalGroup": "controllers",
+      "spatialNeighbors": {
+        "above": "ctrl-tune",
+        "below": "ctrl-osc3-filtereg-switch",
+        "left": null,
+        "right": "ctrl-mod-mix"
+      }
+    },
+    {
+      "id": "ctrl-mod-mix",
+      "verbatimLabel": "MODULATION MIX",
+      "type": "knob",
+      "section": "controllers",
+      "functionalGroup": "controllers",
+      "spatialNeighbors": {
+        "above": "ctrl-tune",
+        "below": "ctrl-noise-lfo-switch",
+        "left": "ctrl-glide",
+        "right": null
+      }
+    },
+    {
+      "id": "ctrl-osc3-filtereg-switch",
+      "verbatimLabel": "OSC. 3 / FILTER EG",
+      "type": "switch",
+      "section": "controllers",
+      "functionalGroup": "controllers",
+      "spatialNeighbors": {
+        "above": "ctrl-glide",
+        "below": null,
+        "left": null,
+        "right": "ctrl-noise-lfo-switch"
+      }
+    },
+    {
+      "id": "ctrl-noise-lfo-switch",
+      "verbatimLabel": "NOISE / LFO",
+      "type": "switch",
+      "section": "controllers",
+      "functionalGroup": "controllers",
+      "spatialNeighbors": {
+        "above": "ctrl-mod-mix",
+        "below": null,
+        "left": "ctrl-osc3-filtereg-switch",
+        "right": null
+      }
+    },
+    {
+      "id": "osc-modulation-switch",
+      "verbatimLabel": "OSCILLATOR MODULATION",
+      "type": "switch",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-routing",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc3-control-switch",
+        "left": null,
+        "right": "osc1-range"
+      }
+    },
+    {
+      "id": "osc3-control-switch",
+      "verbatimLabel": "OSC. 3 CONTROL",
+      "type": "switch",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-routing",
+      "spatialNeighbors": {
+        "above": "osc-modulation-switch",
+        "below": "osc3-range",
+        "left": null,
+        "right": "osc2-range"
+      }
+    },
+    {
+      "id": "osc1-range",
+      "verbatimLabel": "RANGE",
+      "type": "switch",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-1",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc2-range",
+        "left": "osc-modulation-switch",
+        "right": "osc1-waveform"
+      }
+    },
+    {
+      "id": "osc1-waveform",
+      "verbatimLabel": "WAVEFORM",
+      "type": "switch",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-1",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc2-waveform",
+        "left": "osc1-range",
+        "right": null
+      }
+    },
+    {
+      "id": "osc2-range",
+      "verbatimLabel": "RANGE",
+      "type": "switch",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-2",
+      "spatialNeighbors": {
+        "above": "osc1-range",
+        "below": "osc3-range",
+        "left": "osc3-control-switch",
+        "right": "osc2-frequency"
+      }
+    },
+    {
+      "id": "osc2-frequency",
+      "verbatimLabel": "FREQUENCY",
+      "type": "knob",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-2",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc3-frequency",
+        "left": "osc2-range",
+        "right": "osc2-waveform"
+      }
+    },
+    {
+      "id": "osc2-waveform",
+      "verbatimLabel": "WAVEFORM",
+      "type": "switch",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-2",
+      "spatialNeighbors": {
+        "above": "osc1-waveform",
+        "below": "osc3-waveform",
+        "left": "osc2-frequency",
+        "right": null
+      }
+    },
+    {
+      "id": "osc3-range",
+      "verbatimLabel": "RANGE",
+      "type": "switch",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-3",
+      "spatialNeighbors": {
+        "above": "osc2-range",
+        "below": null,
+        "left": null,
+        "right": "osc3-frequency"
+      }
+    },
+    {
+      "id": "osc3-frequency",
+      "verbatimLabel": "FREQUENCY",
+      "type": "knob",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-3",
+      "spatialNeighbors": {
+        "above": "osc2-frequency",
+        "below": null,
+        "left": "osc3-range",
+        "right": "osc3-waveform"
+      }
+    },
+    {
+      "id": "osc3-waveform",
+      "verbatimLabel": "WAVEFORM",
+      "type": "switch",
+      "section": "oscillator-bank",
+      "functionalGroup": "oscillator-3",
+      "spatialNeighbors": {
+        "above": "osc2-waveform",
+        "below": null,
+        "left": "osc3-frequency",
+        "right": null
+      }
+    },
+    {
+      "id": "mixer-osc1-vol",
+      "verbatimLabel": "VOLUME",
+      "type": "knob",
+      "section": "mixer",
+      "functionalGroup": "mixer-osc1",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "mixer-osc2-vol",
+        "left": null,
+        "right": "mixer-osc1-on"
+      }
+    },
+    {
+      "id": "mixer-osc1-on",
+      "verbatimLabel": "ON",
+      "type": "switch",
+      "section": "mixer",
+      "functionalGroup": "mixer-osc1",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "mixer-osc2-on",
+        "left": "mixer-osc1-vol",
+        "right": null
+      }
+    },
+    {
+      "id": "mixer-osc2-vol",
+      "verbatimLabel": "VOLUME",
+      "type": "knob",
+      "section": "mixer",
+      "functionalGroup": "mixer-osc2",
+      "spatialNeighbors": {
+        "above": "mixer-osc1-vol",
+        "below": "mixer-osc3-vol",
+        "left": null,
+        "right": "mixer-osc2-on"
+      }
+    },
+    {
+      "id": "mixer-osc2-on",
+      "verbatimLabel": "ON",
+      "type": "switch",
+      "section": "mixer",
+      "functionalGroup": "mixer-osc2",
+      "spatialNeighbors": {
+        "above": "mixer-osc1-on",
+        "below": "mixer-osc3-on",
+        "left": "mixer-osc2-vol",
+        "right": "mixer-overload"
+      }
+    },
+    {
+      "id": "mixer-osc3-vol",
+      "verbatimLabel": "VOLUME",
+      "type": "knob",
+      "section": "mixer",
+      "functionalGroup": "mixer-osc3",
+      "spatialNeighbors": {
+        "above": "mixer-osc2-vol",
+        "below": "mixer-ext-vol",
+        "left": null,
+        "right": "mixer-osc3-on"
+      }
+    },
+    {
+      "id": "mixer-osc3-on",
+      "verbatimLabel": "ON",
+      "type": "switch",
+      "section": "mixer",
+      "functionalGroup": "mixer-osc3",
+      "spatialNeighbors": {
+        "above": "mixer-osc2-on",
+        "below": "mixer-ext-on",
+        "left": "mixer-osc3-vol",
+        "right": "mixer-overload"
+      }
+    },
+    {
+      "id": "mixer-ext-vol",
+      "verbatimLabel": "EXTERNAL INPUT VOLUME",
+      "type": "knob",
+      "section": "mixer",
+      "functionalGroup": "mixer-external",
+      "spatialNeighbors": {
+        "above": "mixer-osc3-vol",
+        "below": "mixer-noise-vol",
+        "left": null,
+        "right": "mixer-ext-on"
+      }
+    },
+    {
+      "id": "mixer-ext-on",
+      "verbatimLabel": "ON",
+      "type": "switch",
+      "section": "mixer",
+      "functionalGroup": "mixer-external",
+      "spatialNeighbors": {
+        "above": "mixer-osc3-on",
+        "below": "mixer-noise-on",
+        "left": "mixer-ext-vol",
+        "right": null
+      }
+    },
+    {
+      "id": "mixer-noise-vol",
+      "verbatimLabel": "NOISE VOLUME",
+      "type": "knob",
+      "section": "mixer",
+      "functionalGroup": "mixer-noise",
+      "spatialNeighbors": {
+        "above": "mixer-ext-vol",
+        "below": null,
+        "left": null,
+        "right": "mixer-noise-on"
+      }
+    },
+    {
+      "id": "mixer-noise-on",
+      "verbatimLabel": "ON",
+      "type": "switch",
+      "section": "mixer",
+      "functionalGroup": "mixer-noise",
+      "spatialNeighbors": {
+        "above": "mixer-ext-on",
+        "below": null,
+        "left": "mixer-noise-vol",
+        "right": "mixer-white-pink"
+      }
+    },
+    {
+      "id": "mixer-overload",
+      "verbatimLabel": "OVERLOAD",
+      "type": "led",
+      "section": "mixer",
+      "functionalGroup": "mixer-utility",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "mixer-white-pink",
+        "left": "mixer-osc2-on",
+        "right": null
+      }
+    },
+    {
+      "id": "mixer-white-pink",
+      "verbatimLabel": "WHITE / PINK",
+      "type": "switch",
+      "section": "mixer",
+      "functionalGroup": "mixer-utility",
+      "spatialNeighbors": {
+        "above": "mixer-overload",
+        "below": null,
+        "left": "mixer-noise-on",
+        "right": null
+      }
+    },
+    {
+      "id": "mod-filter-modulation",
+      "verbatimLabel": "FILTER MODULATION",
+      "type": "switch",
+      "section": "modifiers",
+      "functionalGroup": "filter",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "mod-keyboard-ctrl-1",
+        "left": null,
+        "right": "mod-cutoff-freq"
+      }
+    },
+    {
+      "id": "mod-keyboard-ctrl-1",
+      "verbatimLabel": "KEYBOARD CONTROL 1",
+      "type": "switch",
+      "section": "modifiers",
+      "functionalGroup": "filter",
+      "spatialNeighbors": {
+        "above": "mod-filter-modulation",
+        "below": "mod-keyboard-ctrl-2",
+        "left": null,
+        "right": "mod-filter-attack"
+      }
+    },
+    {
+      "id": "mod-keyboard-ctrl-2",
+      "verbatimLabel": "KEYBOARD CONTROL 2",
+      "type": "switch",
+      "section": "modifiers",
+      "functionalGroup": "filter",
+      "spatialNeighbors": {
+        "above": "mod-keyboard-ctrl-1",
+        "below": null,
+        "left": null,
+        "right": "mod-filter-attack"
+      }
+    },
+    {
+      "id": "mod-cutoff-freq",
+      "verbatimLabel": "CUTOFF FREQUENCY",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "filter",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "mod-filter-attack",
+        "left": "mod-filter-modulation",
+        "right": "mod-emphasis"
+      }
+    },
+    {
+      "id": "mod-emphasis",
+      "verbatimLabel": "EMPHASIS",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "filter",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "mod-filter-decay",
+        "left": "mod-cutoff-freq",
+        "right": "mod-amount-contour"
+      }
+    },
+    {
+      "id": "mod-amount-contour",
+      "verbatimLabel": "AMOUNT OF CONTOUR",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "filter",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "mod-filter-sustain",
+        "left": "mod-emphasis",
+        "right": null
+      }
+    },
+    {
+      "id": "mod-filter-attack",
+      "verbatimLabel": "ATTACK TIME",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "filter-contour",
+      "spatialNeighbors": {
+        "above": "mod-cutoff-freq",
+        "below": "mod-loud-attack",
+        "left": "mod-keyboard-ctrl-2",
+        "right": "mod-filter-decay"
+      }
+    },
+    {
+      "id": "mod-filter-decay",
+      "verbatimLabel": "DECAY TIME",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "filter-contour",
+      "spatialNeighbors": {
+        "above": "mod-emphasis",
+        "below": "mod-loud-decay",
+        "left": "mod-filter-attack",
+        "right": "mod-filter-sustain"
+      }
+    },
+    {
+      "id": "mod-filter-sustain",
+      "verbatimLabel": "SUSTAIN LEVEL",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "filter-contour",
+      "spatialNeighbors": {
+        "above": "mod-amount-contour",
+        "below": "mod-loud-sustain",
+        "left": "mod-filter-decay",
+        "right": null
+      }
+    },
+    {
+      "id": "mod-loud-attack",
+      "verbatimLabel": "ATTACK TIME",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "loudness-contour",
+      "spatialNeighbors": {
+        "above": "mod-filter-attack",
+        "below": null,
+        "left": null,
+        "right": "mod-loud-decay"
+      }
+    },
+    {
+      "id": "mod-loud-decay",
+      "verbatimLabel": "DECAY TIME",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "loudness-contour",
+      "spatialNeighbors": {
+        "above": "mod-filter-decay",
+        "below": null,
+        "left": "mod-loud-attack",
+        "right": "mod-loud-sustain"
+      }
+    },
+    {
+      "id": "mod-loud-sustain",
+      "verbatimLabel": "SUSTAIN LEVEL",
+      "type": "knob",
+      "section": "modifiers",
+      "functionalGroup": "loudness-contour",
+      "spatialNeighbors": {
+        "above": "mod-filter-sustain",
+        "below": null,
+        "left": "mod-loud-decay",
+        "right": null
+      }
+    },
+    {
+      "id": "out-volume",
+      "verbatimLabel": "VOLUME",
+      "type": "knob",
+      "section": "output",
+      "functionalGroup": "main-output",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "out-a440",
+        "left": null,
+        "right": "out-main-switch"
+      }
+    },
+    {
+      "id": "out-main-switch",
+      "verbatimLabel": "MAIN OUTPUT",
+      "type": "switch",
+      "section": "output",
+      "functionalGroup": "main-output",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "out-power-led",
+        "left": "out-volume",
+        "right": null
+      }
+    },
+    {
+      "id": "out-a440",
+      "verbatimLabel": "A-440",
+      "type": "switch",
+      "section": "output",
+      "functionalGroup": "tuner",
+      "spatialNeighbors": {
+        "above": "out-volume",
+        "below": "out-phones-volume",
+        "left": null,
+        "right": null
+      }
+    },
+    {
+      "id": "out-phones-volume",
+      "verbatimLabel": "VOLUME",
+      "type": "knob",
+      "section": "output",
+      "functionalGroup": "phones-output",
+      "spatialNeighbors": {
+        "above": "out-a440",
+        "below": null,
+        "left": null,
+        "right": "out-phones-jack"
+      }
+    },
+    {
+      "id": "out-phones-jack",
+      "verbatimLabel": "PHONES",
+      "type": "button",
+      "section": "output",
+      "functionalGroup": "phones-output",
+      "spatialNeighbors": {
+        "above": "out-a440",
+        "below": null,
+        "left": "out-phones-volume",
+        "right": "out-power-switch"
+      }
+    },
+    {
+      "id": "out-power-led",
+      "verbatimLabel": "POWER",
+      "type": "led",
+      "section": "output",
+      "functionalGroup": "power",
+      "spatialNeighbors": {
+        "above": "out-main-switch",
+        "below": "out-power-switch",
+        "left": "out-a440",
+        "right": null
+      }
+    },
+    {
+      "id": "out-power-switch",
+      "verbatimLabel": "POWER",
+      "type": "switch",
+      "section": "output",
+      "functionalGroup": "power",
+      "spatialNeighbors": {
+        "above": "out-power-led",
+        "below": null,
+        "left": "out-phones-jack",
+        "right": null
+      }
+    },
+    {
+      "id": "lhk-lfo-rate",
+      "verbatimLabel": "LFO RATE",
+      "type": "knob",
+      "section": "left-hand-keyboard-panel",
+      "functionalGroup": "lfo",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lhk-pitch-wheel",
+        "left": null,
+        "right": "lhk-glide-switch"
+      }
+    },
+    {
+      "id": "lhk-glide-switch",
+      "verbatimLabel": "GLIDE",
+      "type": "switch",
+      "section": "left-hand-keyboard-panel",
+      "functionalGroup": "performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lhk-decay-switch",
+        "left": "lhk-lfo-rate",
+        "right": null
+      }
+    },
+    {
+      "id": "lhk-decay-switch",
+      "verbatimLabel": "DECAY",
+      "type": "switch",
+      "section": "left-hand-keyboard-panel",
+      "functionalGroup": "performance",
+      "spatialNeighbors": {
+        "above": "lhk-glide-switch",
+        "below": "lhk-mod-wheel",
+        "left": "lhk-lfo-rate",
+        "right": null
+      }
+    },
+    {
+      "id": "lhk-pitch-wheel",
+      "verbatimLabel": "PITCH",
+      "type": "wheel",
+      "section": "left-hand-keyboard-panel",
+      "functionalGroup": "wheels",
+      "spatialNeighbors": {
+        "above": "lhk-lfo-rate",
+        "below": null,
+        "left": null,
+        "right": "lhk-mod-wheel"
+      }
+    },
+    {
+      "id": "lhk-mod-wheel",
+      "verbatimLabel": "MOD.",
+      "type": "wheel",
+      "section": "left-hand-keyboard-panel",
+      "functionalGroup": "wheels",
+      "spatialNeighbors": {
+        "above": "lhk-decay-switch",
+        "below": null,
+        "left": "lhk-pitch-wheel",
+        "right": null
+      }
+    },
+    {
+      "id": "keyboard",
+      "verbatimLabel": "KEYBOARD",
+      "type": "pad",
+      "section": "keyboard",
+      "functionalGroup": "keyboard",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      }
+    }
+  ],
+  "sharedElements": [],
+  "alignmentAnchors": [
+    {
+      "sourceId": "osc1-range",
+      "targetId": "osc2-range",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "osc2-range",
+      "targetId": "osc3-range",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "osc1-waveform",
+      "targetId": "osc2-waveform",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "osc2-waveform",
+      "targetId": "osc3-waveform",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "mod-filter-attack",
+      "targetId": "mod-loud-attack",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "mod-filter-decay",
+      "targetId": "mod-loud-decay",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "mod-filter-sustain",
+      "targetId": "mod-loud-sustain",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "mixer-osc1-vol",
+      "targetId": "mixer-osc2-vol",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "mixer-osc2-vol",
+      "targetId": "mixer-osc3-vol",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "out-volume",
+      "targetId": "out-phones-volume",
+      "axis": "x",
+      "tolerancePx": 4
+    }
+  ]
+}

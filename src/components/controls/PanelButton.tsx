@@ -1,21 +1,34 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
+import { getLedStyleObject } from './ledStyles';
+import SharedLedDot from '@/components/panel/SharedLedDot';
 
 interface PanelButtonProps {
   id: string;
   label: string;
-  variant?: 'standard' | 'zone' | 'scene' | 'category' | 'function' | 'menu';
+  variant?: 'standard' | 'zone' | 'scene' | 'category' | 'function' | 'menu' | 'flat-key' | 'transport' | 'rubber';
   size?: 'sm' | 'md' | 'lg';
+  width?: number;   // Fluid mode: explicit pixel width (overrides size preset)
+  height?: number;  // Fluid mode: explicit pixel height (overrides size preset)
   active?: boolean;
   hasLed?: boolean;
   ledOn?: boolean;
   ledColor?: string;
   highlighted?: boolean;
-  labelPosition?: 'on' | 'above';
+  labelPosition?: 'on' | 'above' | 'below';
+  surfaceColor?: string;
+  iconContent?: string;
+  svgIcon?: React.ReactNode;
+  labelFontSize?: number;
+  ledStyle?: 'dot' | 'face' | 'integrated' | 'label-backlit' | 'edge-glow';
+  labelAlign?: string;
+  labelColor?: string;
   onClick?: () => void;
 }
 
+// Preset sizes (backward compat with Fantom-08 hand-built panel)
 const sizeClasses: Record<string, { button: string; text: string; led: string }> = {
   sm: { button: 'w-8 h-6', text: 'text-[8px]', led: 'w-2 h-2' },
   md: { button: 'w-10 h-7', text: 'text-[9px]', led: 'w-2.5 h-2.5' },
@@ -47,6 +60,18 @@ const variantStyles: Record<string, { base: string; active: string }> = {
     base: 'bg-gradient-to-b from-[#444444] to-[#2a2a2a] border-[#181818]',
     active: 'bg-gradient-to-b from-[#666666] to-[#4a4a4a] border-[#383838]',
   },
+  'flat-key': {
+    base: 'bg-gradient-to-b from-[#333333] to-[#262626] border-[#151515]',
+    active: 'bg-gradient-to-b from-[#4a4a4a] to-[#3a3a3a] border-[#2a2a2a]',
+  },
+  transport: {
+    base: 'bg-gradient-to-b from-[#3a3a3a] to-[#1e1e1e] border-[#111111]',
+    active: 'bg-gradient-to-b from-[#4a4a4a] to-[#333333] border-[#222222]',
+  },
+  rubber: {
+    base: 'bg-gradient-to-b from-[#353535] to-[#282828] border-[#181818]',
+    active: 'bg-gradient-to-b from-[#4a4a4a] to-[#3e3e3e] border-[#2a2a2a]',
+  },
 };
 
 const highlightAnimation = {
@@ -69,35 +94,146 @@ export default function PanelButton({
   label,
   variant = 'standard',
   size = 'md',
+  width,
+  height,
   active = false,
   hasLed = false,
   ledOn = false,
   ledColor = '#00ff44',
   highlighted = false,
   labelPosition = 'on',
+  surfaceColor,
+  iconContent,
+  svgIcon,
+  labelFontSize,
+  ledStyle,
+  labelAlign,
+  labelColor,
   onClick,
 }: PanelButtonProps) {
+  // Fluid mode: when width/height are provided, compute all visuals proportionally.
+  // Preset mode: when only size is provided, use Tailwind classes (Fantom-08 compat).
+  const isFluid = width != null && height != null;
   const sizeStyle = sizeClasses[size];
   const variantStyle = variantStyles[variant];
 
-  return (
-    <div className="flex flex-col items-center gap-0.5" data-control-id={id}>
-      {/* LED indicator */}
-      {hasLed && (
-        <div
-          className={`${sizeStyle.led} rounded-full transition-all duration-150`}
-          style={{
-            backgroundColor: ledOn ? ledColor : '#1a1a1a',
-            boxShadow: ledOn ? `0 0 6px 2px ${ledColor}` : 'inset 0 1px 2px rgba(0,0,0,0.5)',
-          }}
-        />
-      )}
+  const isTransport = variant === 'transport';
+  const isRubber = variant === 'rubber';
+  const isFlatKey = variant === 'flat-key';
 
-      {/* Label above button (panel-printed text) */}
-      {labelPosition === 'above' && (
-        <span className={`${sizeStyle.text} font-bold text-neutral-300 leading-tight text-center tracking-wide uppercase`}>
+  // ── Fluid sizing computations ──────────────────────────────────────────
+  const fluidFontSize = isFluid ? (labelFontSize ?? Math.max(Math.round(height! * 0.35), 6)) : undefined;
+  const fluidBorderRadius = isFluid
+    ? (isTransport ? '50%' : Math.max(Math.round(Math.min(width!, height!) * 0.15), 2))
+    : undefined;
+  const fluidLedSize = isFluid ? Math.max(Math.min(Math.round(height! * 0.2), 8), 3) : undefined;
+
+  // Fluid shadow scales with height
+  const fluidShadow = isFluid
+    ? (active
+        ? `inset 0 ${Math.round(height! * 0.05)}px ${Math.round(height! * 0.1)}px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)`
+        : `0 ${Math.round(height! * 0.1)}px ${Math.round(height! * 0.2)}px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)`)
+    : undefined;
+
+  // ── Transport style ────────────────────────────────────────────────────
+  const transportW = isFluid ? width! : 40;
+  const transportH = isFluid ? height! : 40;
+  const transportStyle = isTransport
+    ? {
+        borderRadius: '50%',
+        width: transportW,
+        height: transportH,
+        border: surfaceColor ? `3px solid ${surfaceColor}` : '3px solid #555',
+        boxShadow: active
+          ? `inset 0 2px 4px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)${surfaceColor ? `, 0 0 8px ${surfaceColor}44` : ''}`
+          : `0 3px 8px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)`,
+        transform: active ? 'translateY(1px)' : 'translateY(0)',
+      }
+    : undefined;
+
+  // ── Rubber style ───────────────────────────────────────────────────────
+  const rubberStyle = isRubber
+    ? {
+        borderRadius: isFluid ? fluidBorderRadius : 4,
+        boxShadow: active
+          ? 'inset 0 2px 3px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.04)'
+          : '0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.06)',
+        transform: active ? 'translateY(1px)' : 'translateY(0)',
+      }
+    : undefined;
+
+  // ── Flat-key style ─────────────────────────────────────────────────────
+  const flatKeyStyle = isFlatKey
+    ? {
+        boxShadow: active
+          ? 'inset 0 1px 2px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.03)'
+          : '0 2px 3px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.06)',
+        borderWidth: 1,
+        transform: active ? 'translateY(1px)' : 'translateY(0)',
+      }
+    : undefined;
+
+  // ── Default style ──────────────────────────────────────────────────────
+  const customStyle = transportStyle ?? rubberStyle ?? flatKeyStyle ?? {
+    boxShadow: isFluid ? fluidShadow : (active
+      ? 'inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)'
+      : '0 3px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)'),
+    transform: active ? 'translateY(1px)' : 'translateY(0)',
+  };
+
+  // ── LED rendering — 5 styles × 3 states via pure helper ─────────────────
+  // See src/components/controls/ledStyles.ts for the full state table.
+  // Memoized: only recomputes when LED inputs change.
+  const ledStyleResult = useMemo(
+    () => getLedStyleObject(ledStyle, ledOn, ledColor, !!hasLed),
+    [ledStyle, ledOn, ledColor, hasLed],
+  );
+  const integratedGlow = ledStyleResult.containerStyle ?? undefined;
+
+  // ── Fluid button style (inline, replaces Tailwind classes) ─────────────
+  const fluidButtonStyle = isFluid ? {
+    width: width!,
+    height: height!,
+    borderRadius: fluidBorderRadius,
+    overflow: 'hidden' as const,
+    ...customStyle,
+    ...integratedGlow,
+  } : { ...customStyle, ...integratedGlow };
+
+  // Text style — fluid or preset
+  const textClass = isFluid ? '' : sizeStyle.text;
+  const textStyle = isFluid ? { fontSize: fluidFontSize } : undefined;
+
+  return (
+    <div className="flex flex-col items-center" data-control-id={id}>
+      {/* Label above button (text only — icons positioned outside by parent).
+          For label-backlit LED style, ledStyleResult.labelStyle adds the
+          glowing color + text-shadow (mirrors SharedCircleButton:166). */}
+      {labelPosition === 'above' && label && (
+        <span
+          className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
+          style={{
+            ...textStyle,
+            ...(ledStyleResult.labelStyle?.color && { color: ledStyleResult.labelStyle.color as string }),
+            ...(ledStyleResult.labelStyle?.textShadow && { textShadow: ledStyleResult.labelStyle.textShadow as string }),
+          }}
+        >
           {label}
         </span>
+      )}
+
+      {/* LED dot indicator — only renders for ledStyle:'dot' (or legacy where
+         the pure helper says we should keep the dot). face/integrated/
+         label-backlit/edge-glow render their LED inside the button face.
+         Uses SharedLedDot 'internal' variant: '#1a1a1a' + inset shadow when off. */}
+      {hasLed && !ledStyleResult.suppressDotIndicator && (
+        <SharedLedDot
+          color={ledColor}
+          ledOn={ledOn}
+          variant="internal"
+          size={isFluid ? fluidLedSize : undefined}
+          className={isFluid ? '' : sizeStyle.led}
+        />
       )}
 
       {/* Button */}
@@ -105,28 +241,64 @@ export default function PanelButton({
         type="button"
         onClick={onClick}
         className={[
-          sizeStyle.button,
-          'rounded-md border',
+          isFluid ? '' : (isTransport ? '' : sizeStyle.button),
+          isFluid ? '' : (isTransport ? '' : 'rounded-md'),
+          'border',
           'cursor-pointer select-none',
-          'flex items-center justify-center',
+          'flex',
+          labelAlign?.startsWith('top') ? 'items-start pt-1' : labelAlign?.startsWith('bottom') ? 'items-end pb-1' : 'items-center',
+          labelAlign?.endsWith('left') ? 'justify-start pl-1.5' : labelAlign?.endsWith('right') ? 'justify-end pr-1.5' : 'justify-center',
           'transition-colors duration-100',
           active ? variantStyle.active : variantStyle.base,
         ].join(' ')}
-        style={{
-          boxShadow: active
-            ? 'inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05)'
-            : '0 3px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)',
-          transform: active ? 'translateY(1px)' : 'translateY(0)',
-        }}
+        // z-index lifts the highlighted button above container/section frames so
+        // the cyan glow box-shadow renders unclipped during tutorial steps.
+        // Same applies during ledOn transitions to keep the integrated glow visible.
+        style={{ ...fluidButtonStyle, position: 'relative', zIndex: highlighted ? 1000 : (ledOn ? 10 : undefined) }}
         {...(highlighted ? highlightAnimation : {})}
-        whileTap={{ scale: 0.95, y: 2 }}
+        whileTap={{ scale: isTransport ? 0.92 : 0.95, y: 2 }}
       >
-        {labelPosition === 'on' && (
-          <span className={`${sizeStyle.text} font-medium text-gray-200 leading-tight text-center px-1 tracking-wide uppercase`}>
+        {svgIcon ? (
+          <div className="flex items-center justify-center text-gray-200 select-none"
+            style={{ width: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, height: isFluid ? Math.round(Math.min(width!, height!) * 0.6) : 20, color: labelColor }}>
+            {svgIcon}
+          </div>
+        ) : iconContent ? (
+          <span className="text-gray-200 leading-none text-center select-none"
+            style={{ fontSize: isFluid ? Math.max(Math.round(Math.min(width!, height!) * 0.4), 8) : (isTransport ? 18 : 16), color: labelColor }}>
+            {iconContent}
+          </span>
+        ) : labelPosition === 'on' ? (
+          // On-button label: for label-backlit LED style, override color
+          // with ledStyleResult.labelStyle (LED color + glow text-shadow);
+          // otherwise fall back to labelColor as before.
+          <span
+            className={`${textClass} font-medium leading-tight px-1 tracking-wide uppercase w-full${labelAlign && labelAlign !== 'center' ? ' overflow-hidden' : ''}`}
+            style={{
+              ...textStyle,
+              color: (ledStyleResult.labelStyle?.color as string | undefined) ?? labelColor ?? '#e5e7eb',
+              ...(ledStyleResult.labelStyle?.textShadow && { textShadow: ledStyleResult.labelStyle.textShadow as string }),
+              textAlign: labelAlign?.endsWith('left') ? 'left' : labelAlign?.endsWith('right') ? 'right' : 'center',
+              overflowWrap: 'break-word',
+            }}>
             {label}
           </span>
-        )}
+        ) : null}
       </motion.button>
+
+      {/* Label below button — same labelStyle merge as the "above" variant. */}
+      {labelPosition === 'below' && label && (
+        <span
+          className={`${textClass} font-bold text-neutral-300 leading-none text-center tracking-wide uppercase whitespace-nowrap`}
+          style={{
+            ...textStyle,
+            ...(ledStyleResult.labelStyle?.color && { color: ledStyleResult.labelStyle.color as string }),
+            ...(ledStyleResult.labelStyle?.textShadow && { textShadow: ledStyleResult.labelStyle.textShadow as string }),
+          }}
+        >
+          {label}
+        </span>
+      )}
     </div>
   );
 }

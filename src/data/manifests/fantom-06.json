@@ -1,0 +1,2793 @@
+{
+  "deviceId": "fantom-06",
+  "deviceName": "FANTOM-06",
+  "manufacturer": "Roland",
+  "panelWidth": 1875,
+  "panelHeight": 564,
+  "controlScale": 0.3,
+  "keyboard": {
+    "keys": 61,
+    "startNote": "C2",
+    "type": "standard",
+    "panelHeightPercent": 53.7,
+    "leftPercent": 9.5,
+    "widthPercent": 90.5
+  },
+  "editorSections": [
+    {
+      "id": "controller",
+      "x": 1,
+      "y": 3,
+      "w": 176,
+      "h": 564
+    },
+    {
+      "id": "zone",
+      "headerLabel": "ZONE",
+      "x": 178,
+      "y": 1,
+      "w": 500,
+      "h": 304
+    },
+    {
+      "id": "common",
+      "headerLabel": "COMMON",
+      "x": 681,
+      "y": 1,
+      "w": 516,
+      "h": 304
+    },
+    {
+      "id": "scene",
+      "hidden": true,
+      "x": 1040,
+      "y": 1,
+      "w": 160,
+      "h": 304
+    },
+    {
+      "id": "synth",
+      "headerLabel": "SYNTH CTRL",
+      "hidden": false,
+      "x": 1201,
+      "y": 0,
+      "w": 676,
+      "h": 304
+    },
+    {
+      "id": "sequencer",
+      "headerLabel": "SEQUENCER",
+      "hidden": true,
+      "x": 1386,
+      "y": -1,
+      "w": 259,
+      "h": 304
+    },
+    {
+      "id": "pad",
+      "headerLabel": "PAD",
+      "hidden": true,
+      "x": 1649,
+      "y": -1,
+      "w": 230,
+      "h": 304
+    }
+  ],
+  "controls": [
+    {
+      "id": "wheel-1",
+      "type": "wheel",
+      "label": "WHEEL1",
+      "editorPosition": {
+        "x": 60.999991368103025,
+        "y": 86.00003468017577,
+        "w": 68,
+        "h": 333
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "wheel-2",
+      "type": "wheel",
+      "label": "WHEEL2",
+      "editorPosition": {
+        "x": 123.00004526367186,
+        "y": 86.00003468017577,
+        "w": 68,
+        "h": 333
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "s1",
+      "type": "button",
+      "label": "S1",
+      "editorPosition": {
+        "x": 41.36365047801625,
+        "y": 338.00009846801754,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "s2",
+      "type": "button",
+      "label": "S2",
+      "editorPosition": {
+        "x": 90.00001525878902,
+        "y": 338.0001023559569,
+        "w": 107,
+        "h": 67
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "pitch-bend-lever",
+      "type": "lever",
+      "label": "PITCH BEND/MOD",
+      "editorPosition": {
+        "x": 60.99999174804687,
+        "y": 378.0001023193359,
+        "w": 288,
+        "h": 288
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "split",
+      "type": "button",
+      "label": "SPLIT",
+      "editorPosition": {
+        "x": 210.00007467651366,
+        "y": 190.00018157958982,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "chord-memory",
+      "type": "button",
+      "label": "CHORD\nMEMORY",
+      "editorPosition": {
+        "x": 250.00014234924316,
+        "y": 190.00017050170896,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "arpeggio",
+      "type": "button",
+      "label": "ARPEGGIO",
+      "editorPosition": {
+        "x": 289.99999837951657,
+        "y": 190.00017048339842,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "transpose",
+      "type": "button",
+      "label": "TRANSPOSE",
+      "editorPosition": {
+        "x": 210.00002859802245,
+        "y": 230.0000289855957,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "octave-down",
+      "type": "button",
+      "label": "DOWN",
+      "editorPosition": {
+        "x": 250.00001736450196,
+        "y": 230.00001599121092,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "octave-up",
+      "type": "button",
+      "label": "UP",
+      "editorPosition": {
+        "x": 289.0000785797119,
+        "y": 230.00002897338865,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "knob-1",
+      "type": "knob",
+      "label": "1",
+      "editorPosition": {
+        "x": 338.0001159973144,
+        "y": 66.0000333251953,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "knob-2",
+      "type": "knob",
+      "label": "2",
+      "editorPosition": {
+        "x": 380,
+        "y": 66,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "knob-3",
+      "type": "knob",
+      "label": "3",
+      "editorPosition": {
+        "x": 422,
+        "y": 66,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "knob-4",
+      "type": "knob",
+      "label": "4",
+      "editorPosition": {
+        "x": 464,
+        "y": 66,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "knob-5",
+      "type": "knob",
+      "label": "5",
+      "editorPosition": {
+        "x": 507,
+        "y": 66,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "knob-6",
+      "type": "knob",
+      "label": "6",
+      "editorPosition": {
+        "x": 549,
+        "y": 66,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "knob-7",
+      "type": "knob",
+      "label": "7",
+      "editorPosition": {
+        "x": 591.0000366210937,
+        "y": 66.00000610351562,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "knob-8",
+      "type": "knob",
+      "label": "8",
+      "editorPosition": {
+        "x": 632.9999877929687,
+        "y": 66.00000610351562,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "master-volume",
+      "type": "knob",
+      "label": "MASTER VOLUME",
+      "editorPosition": {
+        "x": 201.00006076049806,
+        "y": 109.00002238769531,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "slider-1",
+      "type": "slider",
+      "label": "1",
+      "editorPosition": {
+        "x": 341.0000061035156,
+        "y": 161.72729714133524,
+        "w": 67,
+        "h": 307
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "slider-2",
+      "type": "slider",
+      "label": "2",
+      "editorPosition": {
+        "x": 385.0000061035156,
+        "y": 161.72729714133524,
+        "w": 68,
+        "h": 308
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "slider-3",
+      "type": "slider",
+      "label": "3",
+      "editorPosition": {
+        "x": 428.0000061035156,
+        "y": 161.72729714133524,
+        "w": 68,
+        "h": 308
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "slider-4",
+      "type": "slider",
+      "label": "4",
+      "editorPosition": {
+        "x": 470.0000061035156,
+        "y": 161.72729714133524,
+        "w": 68,
+        "h": 308
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "slider-5",
+      "type": "slider",
+      "label": "5",
+      "editorPosition": {
+        "x": 513.0000061035156,
+        "y": 161.72729714133524,
+        "w": 68,
+        "h": 308
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "slider-6",
+      "type": "slider",
+      "label": "6",
+      "editorPosition": {
+        "x": 554.0000061035156,
+        "y": 161.72729714133524,
+        "w": 68,
+        "h": 308
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "slider-7",
+      "type": "slider",
+      "label": "7",
+      "editorPosition": {
+        "x": 595.0000061035156,
+        "y": 161.72729714133524,
+        "w": 68,
+        "h": 308
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "slider-8",
+      "type": "slider",
+      "label": "8",
+      "editorPosition": {
+        "x": 638.0000672912597,
+        "y": 161.72730995871802,
+        "w": 68,
+        "h": 308
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "pan-level",
+      "type": "button",
+      "label": "PAN/\nLEVEL",
+      "editorPosition": {
+        "x": 250.0000535797119,
+        "y": 71.00008878173827,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "ctrl",
+      "type": "button",
+      "label": "CTRL",
+      "editorPosition": {
+        "x": 289.000026095581,
+        "y": 71.00008864135742,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "assign",
+      "type": "button",
+      "label": "ASSIGN",
+      "editorPosition": {
+        "x": 289.000026095581,
+        "y": 111.00008879394531,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-9-16",
+      "type": "button",
+      "label": "ZONE 9-16",
+      "editorPosition": {
+        "x": 250.0000535736084,
+        "y": 151.0001456298828,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-select",
+      "type": "button",
+      "label": "ZONE\nSELECT",
+      "editorPosition": {
+        "x": 289.000026095581,
+        "y": 151.00011776123046,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-int-ext-1",
+      "type": "button",
+      "label": "1",
+      "editorPosition": {
+        "x": 338.6364107860219,
+        "y": 126.36365162242542,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-int-ext-2",
+      "type": "button",
+      "label": "2",
+      "editorPosition": {
+        "x": 380.6363819469104,
+        "y": 126.36363636363636,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-int-ext-3",
+      "type": "button",
+      "label": "3",
+      "editorPosition": {
+        "x": 422.6363636363635,
+        "y": 126.36363636363636,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-int-ext-4",
+      "type": "button",
+      "label": "4",
+      "editorPosition": {
+        "x": 464.6363636363635,
+        "y": 126.36363636363636,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-int-ext-5",
+      "type": "button",
+      "label": "5",
+      "editorPosition": {
+        "x": 507.6363636363635,
+        "y": 126.36363636363636,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-int-ext-6",
+      "type": "button",
+      "label": "6",
+      "editorPosition": {
+        "x": 549.6363636363635,
+        "y": 126.36363636363636,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-int-ext-7",
+      "type": "button",
+      "label": "7",
+      "editorPosition": {
+        "x": 591.6363636363635,
+        "y": 126.36363636363636,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-int-ext-8",
+      "type": "button",
+      "label": "8",
+      "editorPosition": {
+        "x": 633.6363880504261,
+        "y": 126.36363636363636,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "display",
+      "type": "screen",
+      "label": "Display",
+      "editorPosition": {
+        "x": 752.0000122070312,
+        "y": 48.99999389648437,
+        "w": 800,
+        "h": 507
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "scene-select",
+      "type": "button",
+      "label": "SCENE SELECT",
+      "editorPosition": {
+        "x": 1033.0005234374962,
+        "y": 71.00006103515602,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "scene-chain",
+      "type": "button",
+      "label": "SCENE CHAIN",
+      "editorPosition": {
+        "x": 1033.0003831054685,
+        "y": 111.0000352416992,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "zone-view",
+      "type": "button",
+      "label": "ZONE VIEW",
+      "editorPosition": {
+        "x": 1033.000383300781,
+        "y": 151.00003265380857,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "single-tone",
+      "type": "button",
+      "label": "SINGLE TONE",
+      "editorPosition": {
+        "x": 1033.0003798828122,
+        "y": 191.0000627441406,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "cutoff",
+      "type": "knob",
+      "label": "CUTOFF",
+      "editorPosition": {
+        "x": 1285.9999755859374,
+        "y": 53.00000305175781,
+        "w": 200,
+        "h": 188
+      },
+      "labelPosition": "below",
+      "labelFontSize": 5
+    },
+    {
+      "id": "resonance",
+      "type": "knob",
+      "label": "RESONANCE",
+      "editorPosition": {
+        "x": 1215,
+        "y": 122.72727272727272,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 5
+    },
+    {
+      "id": "osc",
+      "type": "button",
+      "label": "OSC",
+      "editorPosition": {
+        "x": 1215,
+        "y": 66.00000610351562,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "filter-type",
+      "type": "button",
+      "label": "FILTER TYPE",
+      "editorPosition": {
+        "x": 1299.000144165039,
+        "y": 191.00003604125976,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "param",
+      "type": "button",
+      "label": "PARAM",
+      "editorPosition": {
+        "x": 1215.0001140594482,
+        "y": 191.00006228149414,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "amp",
+      "type": "button",
+      "label": "AMP",
+      "editorPosition": {
+        "x": 1408.0000488281248,
+        "y": 66.00002001953125,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "fx",
+      "type": "button",
+      "label": "FX",
+      "editorPosition": {
+        "x": 1460.9999755859374,
+        "y": 66.00001953124999,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "lfo",
+      "type": "button",
+      "label": "LFO",
+      "editorPosition": {
+        "x": 1513.9999951171878,
+        "y": 66.00002075195313,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "pattern",
+      "type": "button",
+      "label": "PATTERN",
+      "editorPosition": {
+        "x": 1407.0002993164062,
+        "y": 119.00002215576171,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "group",
+      "type": "button",
+      "label": "GROUP",
+      "editorPosition": {
+        "x": 1463.0002768554687,
+        "y": 119.00002215576171,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "song",
+      "type": "button",
+      "label": "SONG",
+      "editorPosition": {
+        "x": 1514.0001325683593,
+        "y": 119.00002072143553,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tr-rec",
+      "type": "button",
+      "label": "TR-REC",
+      "editorPosition": {
+        "x": 1408.0001547851562,
+        "y": 156.0000635986328,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "rhythm-ptn",
+      "type": "button",
+      "label": "RHYTHM PTN",
+      "editorPosition": {
+        "x": 1514.00013203125,
+        "y": 156.00006077880857,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "stop",
+      "type": "button",
+      "label": "STOP",
+      "editorPosition": {
+        "x": 1404.0003393554684,
+        "y": 191.00010925292963,
+        "w": 136,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "play",
+      "type": "button",
+      "label": "PLAY",
+      "editorPosition": {
+        "x": 1458.0001953124997,
+        "y": 191.00007324218745,
+        "w": 136,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "rec",
+      "type": "button",
+      "label": "",
+      "editorPosition": {
+        "x": 1511.0004248046873,
+        "y": 191.00014404296874,
+        "w": 136,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-1",
+      "type": "button",
+      "label": "A.PIANO",
+      "editorPosition": {
+        "x": 1215.0001220703125,
+        "y": 231.00003601074218,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-2",
+      "type": "button",
+      "label": "E.PIANO",
+      "editorPosition": {
+        "x": 1254,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-3",
+      "type": "button",
+      "label": "ORGAN",
+      "editorPosition": {
+        "x": 1293,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-4",
+      "type": "button",
+      "label": "KEYS",
+      "editorPosition": {
+        "x": 1333,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-5",
+      "type": "button",
+      "label": "GUITAR",
+      "editorPosition": {
+        "x": 1372,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-6",
+      "type": "button",
+      "label": "BASS",
+      "editorPosition": {
+        "x": 1411,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-7",
+      "type": "button",
+      "label": "STRINGS",
+      "editorPosition": {
+        "x": 1450,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-8",
+      "type": "button",
+      "label": "BRASS",
+      "editorPosition": {
+        "x": 1489,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-9",
+      "type": "button",
+      "label": "WIND",
+      "editorPosition": {
+        "x": 1529,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-10",
+      "type": "button",
+      "label": "CHOIR",
+      "editorPosition": {
+        "x": 1568,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-11",
+      "type": "button",
+      "label": "SYNTH",
+      "editorPosition": {
+        "x": 1607,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-12",
+      "type": "button",
+      "label": "PAD",
+      "editorPosition": {
+        "x": 1646,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-13",
+      "type": "button",
+      "label": "FX",
+      "editorPosition": {
+        "x": 1685.0000976562499,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-14",
+      "type": "button",
+      "label": "DRUMS",
+      "editorPosition": {
+        "x": 1725,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-15",
+      "type": "button",
+      "label": "USER",
+      "editorPosition": {
+        "x": 1764,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tone-cat-16",
+      "type": "button",
+      "label": "ASSIGN",
+      "editorPosition": {
+        "x": 1803,
+        "y": 230.99999999999997,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "sampling",
+      "type": "button",
+      "label": "SAMPLING",
+      "editorPosition": {
+        "x": 1603.0000444335935,
+        "y": 48.99999444580078,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "pad-mode",
+      "type": "button",
+      "label": "PAD MODE",
+      "editorPosition": {
+        "x": 1603.0000444335935,
+        "y": 83.99999444580078,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "clip-board",
+      "type": "button",
+      "label": "CLIP BOARD",
+      "editorPosition": {
+        "x": 1603.0000444335935,
+        "y": 118.99999307250977,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "bank",
+      "type": "button",
+      "label": "BANK",
+      "editorPosition": {
+        "x": 1603.0000444335935,
+        "y": 154.00002221679685,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "hold",
+      "type": "button",
+      "label": "HOLD",
+      "editorPosition": {
+        "x": 1603.0000444335935,
+        "y": 189.00002221679685,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "pad-1",
+      "type": "pad",
+      "label": "1",
+      "editorPosition": {
+        "x": 1680.0004005432118,
+        "y": 43.000133972166715,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-2",
+      "type": "pad",
+      "label": "2",
+      "editorPosition": {
+        "x": 1720.0002403259268,
+        "y": 43.000074768066405,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-3",
+      "type": "pad",
+      "label": "3",
+      "editorPosition": {
+        "x": 1763.0005918884299,
+        "y": 43.0000747680665,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-4",
+      "type": "pad",
+      "label": "4",
+      "editorPosition": {
+        "x": 1805.0001602172852,
+        "y": 43.000074157714856,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-5",
+      "type": "pad",
+      "label": "5",
+      "editorPosition": {
+        "x": 1680.0003204345671,
+        "y": 88.0000020141595,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-6",
+      "type": "pad",
+      "label": "6",
+      "editorPosition": {
+        "x": 1720.0002403259273,
+        "y": 88.00001861572267,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-7",
+      "type": "pad",
+      "label": "7",
+      "editorPosition": {
+        "x": 1763.0000938415524,
+        "y": 88.00001861572267,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-8",
+      "type": "pad",
+      "label": "8",
+      "editorPosition": {
+        "x": 1805.0002403259275,
+        "y": 88.00001495361329,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-9",
+      "type": "pad",
+      "label": "9",
+      "editorPosition": {
+        "x": 1680.0003204345694,
+        "y": 133.00005200195307,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-10",
+      "type": "pad",
+      "label": "10",
+      "editorPosition": {
+        "x": 1720.0002403259273,
+        "y": 133.00003729248047,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-11",
+      "type": "pad",
+      "label": "11",
+      "editorPosition": {
+        "x": 1763.0000938415524,
+        "y": 133.00001861572267,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-12",
+      "type": "pad",
+      "label": "12",
+      "editorPosition": {
+        "x": 1805.0002403259273,
+        "y": 133.00001861572267,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-13",
+      "type": "pad",
+      "label": "13",
+      "editorPosition": {
+        "x": 1680.0002281188963,
+        "y": 178.00001904296874,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "top-center"
+    },
+    {
+      "id": "pad-14",
+      "type": "pad",
+      "label": "14",
+      "editorPosition": {
+        "x": 1720.000240325927,
+        "y": 178.00003436279295,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "top-center"
+    },
+    {
+      "id": "pad-15",
+      "type": "pad",
+      "label": "15",
+      "editorPosition": {
+        "x": 1763.0002835845946,
+        "y": 178.0000164489746,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "center"
+    },
+    {
+      "id": "pad-16",
+      "type": "pad",
+      "label": "16",
+      "editorPosition": {
+        "x": 1805.0002403259275,
+        "y": 178.00003326416018,
+        "w": 100,
+        "h": 100
+      },
+      "labelPosition": "on-button",
+      "labelFontSize": 6,
+      "labelAlign": "top-center"
+    },
+    {
+      "id": "write",
+      "type": "button",
+      "label": "WRITE",
+      "editorPosition": {
+        "x": 695.0004139233399,
+        "y": 71.00004882812502,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "master-fx",
+      "type": "button",
+      "label": "MASTER FX",
+      "editorPosition": {
+        "x": 695.0000704406737,
+        "y": 111.00001998291013,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "motional-pad",
+      "type": "button",
+      "label": "MOTIONAL PAD",
+      "editorPosition": {
+        "x": 695.0000689025877,
+        "y": 151.00004791259764,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 5
+    },
+    {
+      "id": "daw-ctrl",
+      "type": "button",
+      "label": "DAW CTRL",
+      "editorPosition": {
+        "x": 695.0000722656252,
+        "y": 191.0000439453126,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 5
+    },
+    {
+      "id": "menu",
+      "type": "button",
+      "label": "MENU",
+      "editorPosition": {
+        "x": 695.0000722656252,
+        "y": 231.0000512695313,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 5
+    },
+    {
+      "id": "e1",
+      "type": "knob",
+      "label": "E1",
+      "editorPosition": {
+        "x": 757.7273337624285,
+        "y": 220.36388196910497,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "e2",
+      "type": "knob",
+      "label": "E2",
+      "editorPosition": {
+        "x": 797.7272727272724,
+        "y": 220.36393860972998,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "e3",
+      "type": "knob",
+      "label": "E3",
+      "editorPosition": {
+        "x": 837.7272727272724,
+        "y": 220.36393860972998,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "e4",
+      "type": "knob",
+      "label": "E4",
+      "editorPosition": {
+        "x": 877.7272727272724,
+        "y": 220.36393860972998,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "e5",
+      "type": "knob",
+      "label": "E5",
+      "editorPosition": {
+        "x": 917.7273282137782,
+        "y": 220.36394719282663,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "e6",
+      "type": "knob",
+      "label": "E6",
+      "editorPosition": {
+        "x": 957.7272727272727,
+        "y": 220.363994029652,
+        "w": 108,
+        "h": 108
+      },
+      "labelPosition": "below",
+      "labelFontSize": 6
+    },
+    {
+      "id": "tempo",
+      "type": "button",
+      "label": "TEMPO",
+      "editorPosition": {
+        "x": 1033.0004296875015,
+        "y": 231.0000512695313,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "value-dial",
+      "type": "encoder",
+      "label": "Value",
+      "editorPosition": {
+        "x": 1094.0000283203124,
+        "y": 50.090900912198144,
+        "w": 250,
+        "h": 240
+      },
+      "labelPosition": "hidden",
+      "labelFontSize": 5
+    },
+    {
+      "id": "dec",
+      "type": "button",
+      "label": "DEC",
+      "editorPosition": {
+        "x": 1086.0004325408934,
+        "y": 151.00011602783198,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "inc",
+      "type": "button",
+      "label": "INC",
+      "editorPosition": {
+        "x": 1154.000446014405,
+        "y": 151.00011810302777,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "cursor-up",
+      "type": "button",
+      "label": "",
+      "editorPosition": {
+        "x": 1120.0004240417488,
+        "y": 151.00012145996146,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "cursor-down",
+      "type": "button",
+      "label": "",
+      "editorPosition": {
+        "x": 1120.0005383300786,
+        "y": 191.00018164062521,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "cursor-left",
+      "type": "button",
+      "label": "",
+      "editorPosition": {
+        "x": 1086.0005462646484,
+        "y": 191.00014052734372,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "cursor-right",
+      "type": "button",
+      "label": "",
+      "editorPosition": {
+        "x": 1154.0007156372076,
+        "y": 191.00018518066415,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "shift",
+      "type": "button",
+      "label": "SHIFT",
+      "editorPosition": {
+        "x": 1085.99998046875,
+        "y": 231.00003417968747,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "exit",
+      "type": "button",
+      "label": "EXIT",
+      "editorPosition": {
+        "x": 1120,
+        "y": 231.0000244140624,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    },
+    {
+      "id": "enter",
+      "type": "button",
+      "label": "ENTER",
+      "editorPosition": {
+        "x": 1154.0000244140624,
+        "y": 231.00003417968747,
+        "w": 108,
+        "h": 68
+      },
+      "labelPosition": "above",
+      "labelFontSize": 6
+    }
+  ],
+  "editorLabels": [
+    {
+      "id": "label-wheel-1",
+      "text": "WHEEL1",
+      "x": 41,
+      "y": 189,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-wheel-2",
+      "text": "WHEEL2",
+      "x": 103,
+      "y": 189,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-s1",
+      "text": "S1",
+      "x": 27,
+      "y": 327,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-s2",
+      "text": "S2",
+      "x": 76,
+      "y": 327,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-pitch-bend-lever",
+      "text": "PITCH BEND/MOD",
+      "x": 61,
+      "y": 468,
+      "w": 86,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-split",
+      "text": "SPLIT",
+      "x": 196,
+      "y": 180,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-chord-memory",
+      "text": "CHORD\nMEMORY",
+      "x": 236,
+      "y": 173,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-arpeggio",
+      "text": "ARPEGGIO",
+      "x": 276,
+      "y": 180,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-transpose",
+      "text": "TRANSPOSE",
+      "x": 196,
+      "y": 220,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-octave-down",
+      "text": "DOWN",
+      "x": 236,
+      "y": 220,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-octave-up",
+      "text": "UP",
+      "x": 275,
+      "y": 220,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-master-volume",
+      "text": "MASTER \nVOLUME",
+      "x": 187,
+      "y": 91,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-pan-level",
+      "text": "PAN/\nLEVEL",
+      "x": 236,
+      "y": 54,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-ctrl",
+      "text": "CTRL",
+      "x": 275,
+      "y": 61,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-assign",
+      "text": "ASSIGN",
+      "x": 275,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-9-16",
+      "text": "ZONE 9-16",
+      "x": 236,
+      "y": 141,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-select",
+      "text": "ZONE\nSELECT",
+      "x": 275,
+      "y": 134,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-int-ext-1",
+      "text": "1",
+      "x": 325,
+      "y": 116,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-int-ext-2",
+      "text": "2",
+      "x": 367,
+      "y": 116,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-int-ext-3",
+      "text": "3",
+      "x": 409,
+      "y": 116,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-int-ext-4",
+      "text": "4",
+      "x": 451,
+      "y": 116,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-int-ext-5",
+      "text": "5",
+      "x": 494,
+      "y": 116,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-int-ext-6",
+      "text": "6",
+      "x": 536,
+      "y": 116,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-int-ext-7",
+      "text": "7",
+      "x": 578,
+      "y": 116,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-zone-int-ext-8",
+      "text": "8",
+      "x": 620,
+      "y": 116,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-scene-select",
+      "text": "SCENE SELECT",
+      "x": 1019,
+      "y": 60,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-scene-chain",
+      "text": "SCENE CHAIN",
+      "x": 1019,
+      "y": 100,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-zone-view",
+      "text": "ZONE VIEW",
+      "x": 1019,
+      "y": 139,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-single-tone",
+      "text": "SINGLE TONE",
+      "x": 1019,
+      "y": 180,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-cutoff",
+      "text": "CUTOFF",
+      "x": 1286,
+      "y": 113,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-resonance",
+      "text": "RESONANCE",
+      "x": 1201,
+      "y": 153,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-osc",
+      "text": "OSC",
+      "x": 1201,
+      "y": 56,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-filter-type",
+      "text": "FILTER TYPE",
+      "x": 1285,
+      "y": 180,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-param",
+      "text": "PARAM",
+      "x": 1201,
+      "y": 181,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-amp",
+      "text": "AMP",
+      "x": 1394,
+      "y": 56,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-fx",
+      "text": "FX",
+      "x": 1447,
+      "y": 56,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-lfo",
+      "text": "LFO",
+      "x": 1500,
+      "y": 56,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-pattern",
+      "text": "PATTERN",
+      "x": 1393,
+      "y": 109,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-group",
+      "text": "GROUP",
+      "x": 1449,
+      "y": 109,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-song",
+      "text": "SONG",
+      "x": 1500,
+      "y": 109,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tr-rec",
+      "text": "TR-REC",
+      "x": 1394,
+      "y": 146,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-rhythm-ptn",
+      "text": "RHYTHM PTN",
+      "x": 1500,
+      "y": 146,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-stop",
+      "text": "",
+      "icon": "stop",
+      "x": 1418,
+      "y": 181,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-play",
+      "text": "",
+      "icon": "play",
+      "x": 1472,
+      "y": 181,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-rec",
+      "text": "",
+      "icon": "record",
+      "x": 1525,
+      "y": 181,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-1",
+      "text": "A.PIANO",
+      "x": 1201,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-2",
+      "text": "E.PIANO",
+      "x": 1240,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-3",
+      "text": "ORGAN",
+      "x": 1279,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-4",
+      "text": "KEYS",
+      "x": 1319,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-5",
+      "text": "GUITAR",
+      "x": 1358,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-6",
+      "text": "BASS",
+      "x": 1397,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-7",
+      "text": "STRINGS",
+      "x": 1436,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-8",
+      "text": "BRASS",
+      "x": 1475,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-9",
+      "text": "WIND",
+      "x": 1515,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-10",
+      "text": "CHOIR",
+      "x": 1554,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-11",
+      "text": "SYNTH",
+      "x": 1593,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-12",
+      "text": "PAD",
+      "x": 1632,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-13",
+      "text": "FX",
+      "x": 1671,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-14",
+      "text": "DRUMS",
+      "x": 1711,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-15",
+      "text": "USER",
+      "x": 1750,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tone-cat-16",
+      "text": "ASSIGN",
+      "x": 1789,
+      "y": 254,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-sampling",
+      "text": "SAMPLING",
+      "x": 1589,
+      "y": 39,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-pad-mode",
+      "text": "PAD MODE",
+      "x": 1589,
+      "y": 74,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-clip-board",
+      "text": "CLIP BOARD",
+      "x": 1589,
+      "y": 109,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-bank",
+      "text": "BANK",
+      "x": 1589,
+      "y": 144,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-hold",
+      "text": "HOLD",
+      "x": 1589,
+      "y": 179,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-write",
+      "text": "WRITE",
+      "x": 681,
+      "y": 60,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-motional-pad",
+      "text": "MOTIONAL PAD",
+      "x": 681,
+      "y": 139,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-daw-ctrl",
+      "text": "DAW CTRL",
+      "x": 681,
+      "y": 180,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-e2",
+      "text": "E2",
+      "x": 784,
+      "y": 256,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-e3",
+      "text": "E3",
+      "x": 824,
+      "y": 256,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-e4",
+      "text": "E4",
+      "x": 864,
+      "y": 256,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-e5",
+      "text": "E5",
+      "x": 904,
+      "y": 256,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-e6",
+      "text": "E6",
+      "x": 944,
+      "y": 256,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-tempo",
+      "text": "TEMPO",
+      "x": 1019,
+      "y": 220,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-inc",
+      "text": "INC",
+      "x": 1140,
+      "y": 141,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-cursor-down",
+      "text": "",
+      "icon": "arrow-down",
+      "x": 1130,
+      "y": 181,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-cursor-left",
+      "text": "",
+      "icon": "arrow-left",
+      "x": 1096,
+      "y": 181,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-cursor-right",
+      "text": "",
+      "icon": "arrow-right",
+      "x": 1164,
+      "y": 181,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-shift",
+      "text": "SHIFT",
+      "x": 1072,
+      "y": 220,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-exit",
+      "text": "EXIT",
+      "x": 1106,
+      "y": 220,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-enter",
+      "text": "ENTER",
+      "x": 1140,
+      "y": 220,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-master-fx",
+      "text": "MASTER FX",
+      "x": 681,
+      "y": 100,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-menu",
+      "text": "MENU",
+      "x": 681,
+      "y": 220,
+      "w": 60,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-e1",
+      "text": "E1",
+      "x": 744,
+      "y": 256,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-dec",
+      "text": "DEC",
+      "x": 1072,
+      "y": 141,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-cursor-up",
+      "text": "",
+      "icon": "arrow-up",
+      "x": 1130,
+      "y": 140,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-knob-1",
+      "text": "attack",
+      "x": 324,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-knob-2",
+      "text": "release",
+      "x": 366,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-knob-3",
+      "text": "reverb",
+      "x": 408,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-knob-4",
+      "text": "chorus",
+      "x": 450,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-knob-5",
+      "text": "low gain",
+      "x": 493,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-knob-6",
+      "text": "mid gain",
+      "x": 535,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-knob-7",
+      "text": "high gain",
+      "x": 577,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-knob-8",
+      "text": "eq cw",
+      "x": 619,
+      "y": 101,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-display",
+      "text": "Display",
+      "x": 752,
+      "y": 207,
+      "w": 265,
+      "fontSize": 5,
+      "align": "center",
+      "hidden": true,
+      "lineHeight": 7
+    },
+    {
+      "id": "label-standalone-1776706641251",
+      "text": "SEQUENCER",
+      "x": 1446,
+      "y": 94,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 10
+    },
+    {
+      "id": "label-standalone-1776712007845",
+      "text": "LPF",
+      "icon": "record",
+      "x": 1284,
+      "y": 129,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776712113344",
+      "text": "hpf",
+      "icon": "record",
+      "x": 1285,
+      "y": 141,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776712261118",
+      "text": "bpf",
+      "icon": "record",
+      "x": 1285,
+      "y": 153,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    },
+    {
+      "id": "label-standalone-1776712289600",
+      "text": "phs",
+      "icon": "record",
+      "x": 1285,
+      "y": 165,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8
+    }
+  ],
+  "groupLabels": [],
+  "controlContainers": []
+}

@@ -172,3 +172,84 @@
 - **Root cause**: Written from general synth knowledge without verifying the exact tab structure against the manual. The tab count (17) was correct but the names were wrong.
 - **Prevention rule**: System-level parameter lists, menu structures, and tab names must be copied verbatim from the manual. Never invent or guess menu item names, even if you know the count. A correct count with wrong names is worse than no list at all.
 - **Automated check**: Manual — PRE-BUILD gate question 5 ("Are parameter names verified against the Parameter Guide?").
+
+---
+
+## Pattern: Circular Validation (Gatekeeper Template Bias)
+
+- **Mistake**: All QA agents validated against the Gatekeeper's template instead of independently verifying against the hardware. The Gatekeeper described the PROG rotary encoder below the LCD. All agents scored 10/10. The encoder should have been to the RIGHT of the LCD.
+- **Root cause**: Anchor bias — once the Gatekeeper says something is correct, downstream agents validate against the template, not the source material. The PQ read the Gatekeeper first, anchoring its assessment.
+- **Prevention rule**: PQ must generate its own position map from photos/manual BEFORE reading the Gatekeeper template (Adversarial Blindness Protocol). Gatekeeper must produce ASCII map + coarse grid + cardinal neighbors so there are 3 independent representations to cross-check.
+- **Automated check**: Orchestrator cross-modality consistency check — compares Gatekeeper's cardinal neighbors against PQ's independent position map. Disagreement = HALT.
+
+---
+
+## Pattern: Inventory Checking Instead of Topology Verification
+
+- **Mistake**: 3 rounds of QA passed the CDJ-3000 RIGHT-TEMPO section while 6 of 11 controls overflowed the section boundary. Agents checked "does the button exist?" and "does the label match?" but never checked "is the button inside its section?"
+- **Root cause**: Inventory checks are computationally cheaper than topology checks. Agents default to the easy check. No rule required topology verification before scoring.
+- **Prevention rule**: Agents must produce a Cardinal Neighbor Table (N/S/E/W for all controls) BEFORE scoring. Checking font-size, color, or padding before topology = Priority Inversion = automatic (-3.0) deduction. Orchestrator scans for styling keywords before topology is verified.
+- **Automated check**: Orchestrator Priority Inversion detection — rejects scores that mention styling keywords without a completed Cardinal Neighbor Table.
+
+---
+
+## Pattern: Label Overflow (Boundary Violation)
+
+- **Mistake**: PQ scored 10/10 on CDJ-3000 RIGHT-TEMPO despite "BEAT SYNC/INST.DOUBLES" text overflowing the 32px button face. PQ dismissed it as "still legible."
+- **Root cause**: PQ's rubric had no explicit deduction for label overflow. "Legible" is too low a bar. Physical hardware never has text spilling outside a button.
+- **Prevention rule**: Any label/icon that overflows its container = (-1.0) Boundary Violation. "Still legible" is NOT sufficient. Fix by resizing container, reducing font, using labelPosition="above" (silkscreen style), or multi-line treatment.
+- **Automated check**: SI measures all label bounding rects against section boundaries. Critic can veto PQ scores that miss overflows.
+
+---
+
+## Pattern: Skipped QA Pipeline (Throughput Over Process)
+
+- **Mistake**: CDJ-3000 panel was built and 18 tutorials were created without running Gatekeeper, SI, PQ, or Critic. The orchestrator agent was never invoked. QA was run after the fact and found the panel scored 0.0/5.5.
+- **Root cause**: The orchestrating agent optimized for speed and skipped every gate. The pipeline is documented but there's nothing that forces compliance without the orchestrator.
+- **Prevention rule**: The Orchestrator is the ROOT PROCESS. No QA agent runs without orchestrator managing phase transitions. Standalone runs are "draft only" and cannot vault. Design phases must complete before tutorial phases. User must approve panel visually before tutorials are built.
+- **Automated check**: Tutorial-builder pre-conditions must verify critic checkpoint exists with score ≥9.5 before proceeding.
+
+---
+
+## Pattern: Sieve Extraction (Hallucination Over Long Manual Reads)
+
+- **Mistake**: Manual extractor paraphrased parameter names and fabricated menu structures when reading large page ranges. Context drift over 89+ page manuals causes the agent to "remember" details incorrectly.
+- **Root cause**: Reading and interpreting simultaneously over large volumes. By the time the agent processes page 80, details from page 20 are fading from context.
+- **Prevention rule**: Separate Perception from Cognition. Read in 10-page buckets: Sieve (raw extraction) → Verify (re-read same pages) → Anchor (cross-reference constants) → Checkpoint. Only after the entire manual is sieved does the agent design curriculum.
+- **Automated check**: Manual extractor checkpoint must include per-bucket verification status. Coverage auditor independently verifies.
+
+---
+
+## Pattern: Textual Gravity (Vertical-Stack Bias in Template Writing)
+
+- **Mistake**: RIGHT-TEMPO section was written as a vertical stack (single column of controls) when the hardware clearly shows a 2-column grid layout with a fader below. The Gatekeeper's text-based template writing defaulted to listing controls top-to-bottom, which the Panel Builder interpreted as a single column.
+- **Root cause**: When an LLM writes a template (text output), it naturally serializes controls top-to-bottom — the structure of text itself creates a vertical bias. A 2D grid arrangement gets compressed into a 1D list, losing the horizontal relationships. This is "Textual Gravity" — text pulls everything into a vertical stack because text IS a vertical stack.
+- **Prevention rule**: The Gatekeeper no longer writes templates. The Diagram Parser extracts 2D geometry from photos (centroids, grids), the Gatekeeper reconciles text+geometry into a manifest with archetype selections, and the Layout Engine (a deterministic TypeScript script) maps archetypes to CSS. No LLM writes layout templates.
+- **Automated check**: Layout Engine throws LayoutEngineError for unknown archetypes. Three-Point Validation (topology, ordinal, proportional) catches manifest-vs-geometry mismatches before any code is written.
+
+---
+
+## Pattern: Creator-Critic Conflict (Judge Who Also Creates)
+
+- **Mistake**: The Gatekeeper was both JUDGING data (reconciling manual text with photos) AND CREATING output (writing section templates, ASCII maps, CSS architecture). When conflicts arose between text and geometry, the Gatekeeper "smoothed" — resolving ambiguity by hallucinating plausible layouts instead of flagging the conflict.
+- **Root cause**: A single agent performing both judgment and creation has an incentive to smooth conflicts rather than flag them, because flagging means admitting uncertainty (which feels like failure), while smoothing produces a complete output (which feels like success). The judge and creator roles have conflicting objectives.
+- **Prevention rule**: Full Split Architecture — the Gatekeeper is the JUDGE (reconciliation only, selects archetypes from a fixed library, flags conflicts). The Layout Engine is the CREATOR (deterministic script, maps archetypes to CSS, cannot smooth because it's a switch statement). Neither role can leak into the other.
+- **Automated check**: Gatekeeper SOUL has a (-1.0) deduction for "Contains ASCII maps, CSS decisions, or section templates (JUDGE BOUNDARY VIOLATION)". Layout Engine throws hard errors for unknown archetypes. Orchestrator validates manifest against Parser geometry before Layout Engine runs.
+
+---
+
+## Pattern: Accountant's Trap (Inventory Without Topology)
+
+- **Mistake**: 3 rounds of QA passed CDJ-3000 RIGHT-TEMPO while 6 of 11 controls overflowed the section boundary. Agents checked "does the button exist?" and "does the label match?" (inventory) but never checked "is the button inside its section?" or "are buttons in the right spatial arrangement?" (topology). The agents were accountants counting inventory, not inspectors checking structure.
+- **Root cause**: Inventory checks are computationally cheap and produce high scores quickly. Topology checks require spatial reasoning (comparing centroids, verifying grid alignment) which is harder. Without an explicit rule requiring topology BEFORE inventory, agents default to the easy check and score high.
+- **Prevention rule**: Agents must produce a Cardinal Neighbor Table (N/S/E/W for all controls) BEFORE scoring any other dimension. The Orchestrator scans agent outputs for styling keywords (font-size, color, padding) appearing before topology is verified — if found, it's a Priority Inversion and the score is invalidated. The Critic has a Physical Impossibility Veto that catches topology errors the other agents missed.
+- **Automated check**: Orchestrator Priority Inversion detection — rejects scores that mention styling keywords without a completed Cardinal Neighbor Table. Critic's Physical Impossibility Veto is a (-5.0) deduction per instance with automatic pipeline halt.
+
+---
+
+## Pattern: Wrong LED Color (Unchecked Hardware Assumption)
+
+- **Mistake**: CDJ-3000 MASTER TEMPO LED was coded as green (`CDJ_COLORS.ledGreen`). Hardware uses orange/amber — visually distinct from the blue sync group LEDs. No agent caught this in 3 QA rounds.
+- **Root cause**: LED color was assumed, not verified against hardware. Standard QA checked "does the LED exist?" not "is it the right color?"
+- **Prevention rule**: Every LED color must be verified against hardware photos or manual descriptions. The Critic deep review specifically checks LED colors against hardware. Different functional groups should use visually distinct LED colors.
+- **Automated check**: Critic includes LED color verification in its per-control audit. Panel builder must document LED color source (manual page or photo) for each LED.

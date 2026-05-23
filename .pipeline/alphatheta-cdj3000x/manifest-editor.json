@@ -1,0 +1,1479 @@
+{
+  "sections": {
+    "source-bar": {
+      "id": "source-bar",
+      "headerLabel": null,
+      "archetype": "single-row",
+      "x": 168.00000000000003,
+      "y": 0,
+      "w": 855.7333333333331,
+      "h": 56,
+      "childIds": [
+        "source-btn",
+        "browse-btn",
+        "tag-list-btn",
+        "playlist-btn",
+        "search-nav-btn",
+        "menu-btn"
+      ],
+      "widthPercent": 74,
+      "complexity": "LOW"
+    },
+    "usb": {
+      "id": "usb",
+      "headerLabel": null,
+      "archetype": "stacked-rows",
+      "x": 0,
+      "y": 82.5,
+      "w": 106.4,
+      "h": 342.45,
+      "childIds": [
+        "usb1-port",
+        "usb1-indicator",
+        "usb1-stop",
+        "usb2-port",
+        "usb2-indicator",
+        "usb2-stop"
+      ],
+      "containerAssignment": {
+        "row-1": [
+          "usb1-port",
+          "usb1-indicator"
+        ],
+        "row-2": [
+          "usb1-stop"
+        ],
+        "row-3": [
+          "usb2-port",
+          "usb2-indicator"
+        ],
+        "row-4": [
+          "usb2-stop"
+        ]
+      },
+      "widthPercent": 10,
+      "complexity": "LOW"
+    },
+    "display": {
+      "id": "display",
+      "headerLabel": null,
+      "archetype": "single-row",
+      "x": 120,
+      "y": 66,
+      "w": 672,
+      "h": 435.6,
+      "childIds": [
+        "touchscreen"
+      ],
+      "widthPercent": 70,
+      "complexity": "LOW"
+    },
+    "browse": {
+      "id": "browse",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "x": 960,
+      "y": 82.5,
+      "w": 163.20000000000005,
+      "h": 504.32000000000005,
+      "childIds": [
+        "back-btn",
+        "tag-track-btn",
+        "rotary-selector",
+        "track-filter-btn",
+        "shortcut-btn"
+      ],
+      "widthPercent": 17,
+      "complexity": "LOW"
+    },
+    "hot-cue": {
+      "id": "hot-cue",
+      "headerLabel": "HOT CUE",
+      "archetype": "dual-column",
+      "x": 36,
+      "y": 610.5,
+      "w": 776,
+      "h": 188,
+      "childIds": [
+        "quantize-btn",
+        "slip-btn",
+        "hot-cue-a",
+        "hot-cue-b",
+        "hot-cue-c",
+        "hot-cue-d",
+        "hot-cue-e",
+        "hot-cue-f",
+        "hot-cue-g",
+        "hot-cue-h"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "quantize-btn",
+          "slip-btn"
+        ],
+        "right-column": {
+          "pads": {
+            "controls": [
+              "hot-cue-a",
+              "hot-cue-b",
+              "hot-cue-c",
+              "hot-cue-d",
+              "hot-cue-e",
+              "hot-cue-f",
+              "hot-cue-g",
+              "hot-cue-h"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "widthPercent": 72,
+      "complexity": "MEDIUM"
+    },
+    "loop": {
+      "id": "loop",
+      "headerLabel": "LOOP",
+      "archetype": "stacked-rows",
+      "x": 36,
+      "y": 726,
+      "w": 412.26666666666665,
+      "h": 148.5,
+      "childIds": [
+        "loop-in-btn",
+        "loop-out-btn",
+        "reloop-exit-btn",
+        "four-beat-loop-btn",
+        "eight-beat-loop-btn"
+      ],
+      "containerAssignment": {
+        "row-1": [
+          "loop-in-btn",
+          "loop-out-btn",
+          "reloop-exit-btn"
+        ],
+        "row-2": [
+          "four-beat-loop-btn",
+          "eight-beat-loop-btn"
+        ]
+      },
+      "widthPercent": 37,
+      "complexity": "MEDIUM"
+    },
+    "cue-memory": {
+      "id": "cue-memory",
+      "headerLabel": null,
+      "archetype": "single-row",
+      "x": 624,
+      "y": 726,
+      "w": 302,
+      "h": 105.60000000000002,
+      "childIds": [
+        "cue-loop-call-prev",
+        "cue-loop-call-next",
+        "delete-btn",
+        "memory-btn"
+      ],
+      "widthPercent": 26,
+      "complexity": "LOW"
+    },
+    "beat-jump": {
+      "id": "beat-jump",
+      "headerLabel": "BEAT JUMP",
+      "archetype": "cluster-above-anchor",
+      "x": 36,
+      "y": 891.0000000000001,
+      "w": 203.60000000000002,
+      "h": 178.9999999999999,
+      "childIds": [
+        "beat-jump-prev",
+        "beat-jump-next",
+        "slip-rev-fwd-rev"
+      ],
+      "containerAssignment": {
+        "cluster": [
+          "beat-jump-prev",
+          "beat-jump-next"
+        ],
+        "anchor": [
+          "slip-rev-fwd-rev"
+        ]
+      },
+      "heightSplits": {
+        "cluster": 0.4,
+        "anchor": 0.5,
+        "gap": 0.1
+      },
+      "gridCols": 2,
+      "gridRows": 1,
+      "widthPercent": 19,
+      "complexity": "LOW"
+    },
+    "transport": {
+      "id": "transport",
+      "headerLabel": null,
+      "archetype": "stacked-rows",
+      "x": 36,
+      "y": 1089,
+      "w": 203.60000000000002,
+      "h": 499.20000000000005,
+      "childIds": [
+        "track-search-prev",
+        "track-search-next",
+        "search-rew",
+        "search-ff",
+        "cue-btn",
+        "play-pause-btn"
+      ],
+      "containerAssignment": {
+        "row-1": [
+          "track-search-prev",
+          "track-search-next"
+        ],
+        "row-2": [
+          "search-rew",
+          "search-ff"
+        ],
+        "row-3": [
+          "cue-btn"
+        ],
+        "row-4": [
+          "play-pause-btn"
+        ]
+      },
+      "widthPercent": 19,
+      "complexity": "MEDIUM"
+    },
+    "jog": {
+      "id": "jog",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "x": 240,
+      "y": 825,
+      "w": 556.8000000000001,
+      "h": 660.0666666666668,
+      "childIds": [
+        "jog-wheel",
+        "jog-display",
+        "jog-ring"
+      ],
+      "widthPercent": 58,
+      "complexity": "LOW"
+    },
+    "jog-controls": {
+      "id": "jog-controls",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "x": 936,
+      "y": 610.5,
+      "w": 182.4000000000001,
+      "h": 303.125,
+      "childIds": [
+        "vinyl-speed-adjust",
+        "jog-mode-btn",
+        "vinyl-cdj-indicator",
+        "jog-feel-knob"
+      ],
+      "widthPercent": 19,
+      "complexity": "LOW"
+    },
+    "sync-tempo": {
+      "id": "sync-tempo",
+      "headerLabel": null,
+      "archetype": "dual-column",
+      "x": 936,
+      "y": 924.0000000000001,
+      "w": 203.5999999999999,
+      "h": 655.9499999999999,
+      "childIds": [
+        "master-btn",
+        "key-sync-btn",
+        "beat-sync-btn",
+        "tempo-range-btn",
+        "master-tempo-btn",
+        "tempo-slider",
+        "tempo-reset-indicator",
+        "tempo-reset-btn"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "master-btn",
+          "key-sync-btn",
+          "beat-sync-btn",
+          "tempo-range-btn",
+          "master-tempo-btn"
+        ],
+        "right-column": [
+          "tempo-slider",
+          "tempo-reset-indicator",
+          "tempo-reset-btn"
+        ]
+      },
+      "widthPercent": 19,
+      "complexity": "HIGH"
+    }
+  },
+  "controls": {
+    "source-btn": {
+      "id": "source-btn",
+      "label": "SOURCE button",
+      "type": "button",
+      "x": 176.00000000000003,
+      "y": 8,
+      "w": 113.06666666666666,
+      "h": 40,
+      "sectionId": "source-bar",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "browse-btn"
+      },
+      "functionalGroup": "source-selection"
+    },
+    "browse-btn": {
+      "id": "browse-btn",
+      "label": "BROWSE button",
+      "type": "button",
+      "x": 321.33333333333337,
+      "y": 8,
+      "w": 113.06666666666666,
+      "h": 40,
+      "sectionId": "source-bar",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "source-btn",
+        "right": "tag-list-btn"
+      },
+      "functionalGroup": "source-selection"
+    },
+    "tag-list-btn": {
+      "id": "tag-list-btn",
+      "label": "TAG LIST button",
+      "type": "button",
+      "x": 466.6666666666667,
+      "y": 8,
+      "w": 113.06666666666666,
+      "h": 40,
+      "sectionId": "source-bar",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "browse-btn",
+        "right": "playlist-btn"
+      },
+      "functionalGroup": "source-selection"
+    },
+    "playlist-btn": {
+      "id": "playlist-btn",
+      "label": "PLAYLIST button",
+      "type": "button",
+      "x": 612,
+      "y": 8,
+      "w": 113.06666666666666,
+      "h": 40,
+      "sectionId": "source-bar",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "tag-list-btn",
+        "right": "search-nav-btn"
+      },
+      "functionalGroup": "source-selection"
+    },
+    "search-nav-btn": {
+      "id": "search-nav-btn",
+      "label": "SEARCH button",
+      "type": "button",
+      "x": 757.3333333333333,
+      "y": 8,
+      "w": 113.06666666666666,
+      "h": 40,
+      "sectionId": "source-bar",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "playlist-btn",
+        "right": "menu-btn"
+      },
+      "functionalGroup": "source-selection"
+    },
+    "menu-btn": {
+      "id": "menu-btn",
+      "label": "MENU button",
+      "type": "button",
+      "x": 902.6666666666665,
+      "y": 8,
+      "w": 113.06666666666666,
+      "h": 40,
+      "sectionId": "source-bar",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "search-nav-btn",
+        "right": null
+      },
+      "functionalGroup": "source-selection"
+    },
+    "usb1-port": {
+      "id": "usb1-port",
+      "label": "USB1 port",
+      "type": "button",
+      "x": 8,
+      "y": 90.5,
+      "w": 48,
+      "h": 66.2,
+      "sectionId": "usb",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "usb1-stop",
+        "left": null,
+        "right": "usb1-indicator"
+      },
+      "functionalGroup": "media-connection"
+    },
+    "usb1-indicator": {
+      "id": "usb1-indicator",
+      "label": "USB1 indicator",
+      "type": "led",
+      "x": 60,
+      "y": 90.5,
+      "w": 38.400000000000006,
+      "h": 66.2,
+      "sectionId": "usb",
+      "labelPosition": "right",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "usb1-port",
+        "right": null
+      },
+      "functionalGroup": "media-connection"
+    },
+    "usb1-stop": {
+      "id": "usb1-stop",
+      "label": "USB1 STOP button",
+      "type": "button",
+      "x": 8,
+      "y": 177.25,
+      "w": 80,
+      "h": 66.2,
+      "sectionId": "usb",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "usb1-port",
+        "below": "usb2-port",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "media-connection"
+    },
+    "usb2-port": {
+      "id": "usb2-port",
+      "label": "USB2 port",
+      "type": "button",
+      "x": 8,
+      "y": 264,
+      "w": 48,
+      "h": 66.2,
+      "sectionId": "usb",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "usb1-stop",
+        "below": "usb2-stop",
+        "left": null,
+        "right": "usb2-indicator"
+      },
+      "functionalGroup": "media-connection"
+    },
+    "usb2-indicator": {
+      "id": "usb2-indicator",
+      "label": "USB2 indicator",
+      "type": "led",
+      "x": 60,
+      "y": 264,
+      "w": 38.400000000000006,
+      "h": 66.2,
+      "sectionId": "usb",
+      "labelPosition": "right",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "usb2-port",
+        "right": null
+      },
+      "functionalGroup": "media-connection"
+    },
+    "usb2-stop": {
+      "id": "usb2-stop",
+      "label": "USB2 STOP button",
+      "type": "button",
+      "x": 8,
+      "y": 350.75,
+      "w": 80,
+      "h": 66.2,
+      "sectionId": "usb",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "usb2-port",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "media-connection"
+    },
+    "touchscreen": {
+      "id": "touchscreen",
+      "label": "Touchscreen",
+      "type": "screen",
+      "x": 128,
+      "y": 74,
+      "w": 656,
+      "h": 419.6,
+      "sectionId": "display",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "display"
+    },
+    "back-btn": {
+      "id": "back-btn",
+      "label": "BACK button",
+      "type": "button",
+      "x": 968,
+      "y": 90.5,
+      "w": 147.20000000000002,
+      "h": 78.72000000000001,
+      "sectionId": "browse",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tag-track-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "browse-navigation"
+    },
+    "tag-track-btn": {
+      "id": "tag-track-btn",
+      "label": "TAG TRACK/REMOVE button",
+      "type": "button",
+      "x": 968,
+      "y": 192.9,
+      "w": 147.20000000000002,
+      "h": 78.72000000000001,
+      "sectionId": "browse",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "back-btn",
+        "below": "rotary-selector",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "browse-navigation"
+    },
+    "rotary-selector": {
+      "id": "rotary-selector",
+      "label": "Rotary selector",
+      "type": "encoder",
+      "x": 968,
+      "y": 295.3,
+      "w": 147.20000000000002,
+      "h": 78.72000000000001,
+      "sectionId": "browse",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tag-track-btn",
+        "below": "track-filter-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "browse-navigation"
+    },
+    "track-filter-btn": {
+      "id": "track-filter-btn",
+      "label": "TRACK FILTER/EDIT button",
+      "type": "button",
+      "x": 968,
+      "y": 397.70000000000005,
+      "w": 147.20000000000002,
+      "h": 78.72000000000001,
+      "sectionId": "browse",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "rotary-selector",
+        "below": "shortcut-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "browse-navigation"
+    },
+    "shortcut-btn": {
+      "id": "shortcut-btn",
+      "label": "SHORTCUT button",
+      "type": "button",
+      "x": 968,
+      "y": 500.1,
+      "w": 147.20000000000002,
+      "h": 78.72000000000001,
+      "sectionId": "browse",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "track-filter-btn",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "browse-navigation"
+    },
+    "quantize-btn": {
+      "id": "quantize-btn",
+      "label": "QUANTIZE button",
+      "type": "button",
+      "x": 44,
+      "y": 634.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "slip-btn",
+        "left": null,
+        "right": "hot-cue-a"
+      },
+      "functionalGroup": "playback-mode"
+    },
+    "slip-btn": {
+      "id": "slip-btn",
+      "label": "SLIP button",
+      "type": "button",
+      "x": 468,
+      "y": 634.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "quantize-btn",
+        "below": null,
+        "left": null,
+        "right": "hot-cue-a"
+      },
+      "functionalGroup": "playback-mode"
+    },
+    "hot-cue-a": {
+      "id": "hot-cue-a",
+      "label": "HOT CUE A button",
+      "type": "pad",
+      "x": 45,
+      "y": 667.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "slip-btn",
+        "right": "hot-cue-b"
+      },
+      "functionalGroup": "performance-pads"
+    },
+    "hot-cue-b": {
+      "id": "hot-cue-b",
+      "label": "HOT CUE B button",
+      "type": "pad",
+      "x": 468,
+      "y": 666.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "hot-cue-a",
+        "right": "hot-cue-c"
+      },
+      "functionalGroup": "performance-pads"
+    },
+    "hot-cue-c": {
+      "id": "hot-cue-c",
+      "label": "HOT CUE C button",
+      "type": "pad",
+      "x": 44,
+      "y": 698.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "hot-cue-b",
+        "right": "hot-cue-d"
+      },
+      "functionalGroup": "performance-pads"
+    },
+    "hot-cue-d": {
+      "id": "hot-cue-d",
+      "label": "HOT CUE D button",
+      "type": "pad",
+      "x": 468,
+      "y": 698.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "hot-cue-c",
+        "right": "hot-cue-e"
+      },
+      "functionalGroup": "performance-pads"
+    },
+    "hot-cue-e": {
+      "id": "hot-cue-e",
+      "label": "HOT CUE E button",
+      "type": "pad",
+      "x": 44,
+      "y": 730.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "hot-cue-d",
+        "right": "hot-cue-f"
+      },
+      "functionalGroup": "performance-pads"
+    },
+    "hot-cue-f": {
+      "id": "hot-cue-f",
+      "label": "HOT CUE F button",
+      "type": "pad",
+      "x": 468,
+      "y": 730.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "hot-cue-e",
+        "right": "hot-cue-g"
+      },
+      "functionalGroup": "performance-pads"
+    },
+    "hot-cue-g": {
+      "id": "hot-cue-g",
+      "label": "HOT CUE G button",
+      "type": "pad",
+      "x": 44,
+      "y": 762.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "hot-cue-f",
+        "right": "hot-cue-h"
+      },
+      "functionalGroup": "performance-pads"
+    },
+    "hot-cue-h": {
+      "id": "hot-cue-h",
+      "label": "HOT CUE H button",
+      "type": "pad",
+      "x": 468,
+      "y": 762.5,
+      "w": 336,
+      "h": 28,
+      "sectionId": "hot-cue",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "hot-cue-g",
+        "right": null
+      },
+      "functionalGroup": "performance-pads"
+    },
+    "loop-in-btn": {
+      "id": "loop-in-btn",
+      "label": "LOOP IN/CUE (IN ADJUST) button",
+      "type": "button",
+      "x": 44,
+      "y": 750,
+      "w": 110.93333333333334,
+      "h": 50,
+      "sectionId": "loop",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "four-beat-loop-btn",
+        "left": null,
+        "right": "loop-out-btn"
+      },
+      "functionalGroup": "looping"
+    },
+    "loop-out-btn": {
+      "id": "loop-out-btn",
+      "label": "LOOP OUT (OUT ADJUST) button",
+      "type": "button",
+      "x": 186.66666666666666,
+      "y": 750,
+      "w": 110.93333333333334,
+      "h": 50,
+      "sectionId": "loop",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "eight-beat-loop-btn",
+        "left": "loop-in-btn",
+        "right": "reloop-exit-btn"
+      },
+      "functionalGroup": "looping"
+    },
+    "reloop-exit-btn": {
+      "id": "reloop-exit-btn",
+      "label": "LOOP RELOOP/EXIT button",
+      "type": "button",
+      "x": 329.3333333333333,
+      "y": 750,
+      "w": 110.93333333333334,
+      "h": 50,
+      "sectionId": "loop",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "loop-out-btn",
+        "right": null
+      },
+      "functionalGroup": "looping"
+    },
+    "four-beat-loop-btn": {
+      "id": "four-beat-loop-btn",
+      "label": "4 BEAT LOOP (1/2X) button",
+      "type": "button",
+      "x": 44,
+      "y": 816.5,
+      "w": 168,
+      "h": 50,
+      "sectionId": "loop",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "loop-in-btn",
+        "below": null,
+        "left": null,
+        "right": "eight-beat-loop-btn"
+      },
+      "functionalGroup": "looping"
+    },
+    "eight-beat-loop-btn": {
+      "id": "eight-beat-loop-btn",
+      "label": "8 BEAT LOOP (2X) button",
+      "type": "button",
+      "x": 258,
+      "y": 816.5,
+      "w": 168,
+      "h": 50,
+      "sectionId": "loop",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "loop-out-btn",
+        "below": null,
+        "left": "four-beat-loop-btn",
+        "right": null
+      },
+      "functionalGroup": "looping"
+    },
+    "cue-loop-call-prev": {
+      "id": "cue-loop-call-prev",
+      "label": "CUE/LOOP CALL ◀ button",
+      "type": "button",
+      "x": 632,
+      "y": 734,
+      "w": 64,
+      "h": 89.60000000000001,
+      "sectionId": "cue-memory",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "cue-loop-call-next"
+      },
+      "functionalGroup": "cue-management"
+    },
+    "cue-loop-call-next": {
+      "id": "cue-loop-call-next",
+      "label": "CUE/LOOP CALL ▶ button",
+      "type": "button",
+      "x": 706,
+      "y": 734,
+      "w": 64,
+      "h": 89.60000000000001,
+      "sectionId": "cue-memory",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "cue-loop-call-prev",
+        "right": "delete-btn"
+      },
+      "functionalGroup": "cue-management"
+    },
+    "delete-btn": {
+      "id": "delete-btn",
+      "label": "DELETE button",
+      "type": "button",
+      "x": 780,
+      "y": 734,
+      "w": 64,
+      "h": 89.60000000000001,
+      "sectionId": "cue-memory",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "cue-loop-call-next",
+        "right": "memory-btn"
+      },
+      "functionalGroup": "cue-management"
+    },
+    "memory-btn": {
+      "id": "memory-btn",
+      "label": "MEMORY button",
+      "type": "button",
+      "x": 854,
+      "y": 734,
+      "w": 64,
+      "h": 89.60000000000001,
+      "sectionId": "cue-memory",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "delete-btn",
+        "right": null
+      },
+      "functionalGroup": "cue-management"
+    },
+    "beat-jump-prev": {
+      "id": "beat-jump-prev",
+      "label": "BEAT JUMP ◀ button",
+      "type": "button",
+      "x": 44,
+      "y": 915.0000000000001,
+      "w": 81.60000000000001,
+      "h": 49.92000000000001,
+      "sectionId": "beat-jump",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "slip-rev-fwd-rev",
+        "left": null,
+        "right": "beat-jump-next"
+      },
+      "functionalGroup": "beat-navigation"
+    },
+    "beat-jump-next": {
+      "id": "beat-jump-next",
+      "label": "BEAT JUMP ▶ button",
+      "type": "button",
+      "x": 150,
+      "y": 915.0000000000001,
+      "w": 81.60000000000001,
+      "h": 49.92000000000001,
+      "sectionId": "beat-jump",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "slip-rev-fwd-rev",
+        "left": "beat-jump-prev",
+        "right": null
+      },
+      "functionalGroup": "beat-navigation"
+    },
+    "slip-rev-fwd-rev": {
+      "id": "slip-rev-fwd-rev",
+      "label": "SLIP REV, FWD, REV lever",
+      "type": "switch",
+      "x": 44,
+      "y": 998.0000000000001,
+      "w": 166.4,
+      "h": 64,
+      "sectionId": "beat-jump",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "beat-jump-prev",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "playback-direction"
+    },
+    "track-search-prev": {
+      "id": "track-search-prev",
+      "label": "TRACK SEARCH |◀◀ button",
+      "type": "button",
+      "x": 44,
+      "y": 1097,
+      "w": 81.60000000000001,
+      "h": 99.2,
+      "sectionId": "transport",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "search-rew",
+        "left": null,
+        "right": "track-search-next"
+      },
+      "functionalGroup": "transport"
+    },
+    "track-search-next": {
+      "id": "track-search-next",
+      "label": "TRACK SEARCH ▶▶| button",
+      "type": "button",
+      "x": 150,
+      "y": 1097,
+      "w": 81.60000000000001,
+      "h": 99.2,
+      "sectionId": "transport",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "search-ff",
+        "left": "track-search-prev",
+        "right": null
+      },
+      "functionalGroup": "transport"
+    },
+    "search-rew": {
+      "id": "search-rew",
+      "label": "SEARCH ◀◀ button",
+      "type": "button",
+      "x": 44,
+      "y": 1225,
+      "w": 81.60000000000001,
+      "h": 99.2,
+      "sectionId": "transport",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "track-search-prev",
+        "below": "cue-btn",
+        "left": null,
+        "right": "search-ff"
+      },
+      "functionalGroup": "transport"
+    },
+    "search-ff": {
+      "id": "search-ff",
+      "label": "SEARCH ▶▶ button",
+      "type": "button",
+      "x": 150,
+      "y": 1225,
+      "w": 81.60000000000001,
+      "h": 99.2,
+      "sectionId": "transport",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "track-search-next",
+        "below": "cue-btn",
+        "left": "search-rew",
+        "right": null
+      },
+      "functionalGroup": "transport"
+    },
+    "cue-btn": {
+      "id": "cue-btn",
+      "label": "CUE button",
+      "type": "button",
+      "x": 44,
+      "y": 1353,
+      "w": 166.4,
+      "h": 99.2,
+      "sectionId": "transport",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "search-rew",
+        "below": "play-pause-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "transport"
+    },
+    "play-pause-btn": {
+      "id": "play-pause-btn",
+      "label": "▶/II button",
+      "type": "button",
+      "x": 45,
+      "y": 1482,
+      "w": 166.4,
+      "h": 99.2,
+      "sectionId": "transport",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "cue-btn",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "transport",
+      "shape": "circle"
+    },
+    "jog-wheel": {
+      "id": "jog-wheel",
+      "label": "Jog wheel",
+      "type": "wheel",
+      "x": 248,
+      "y": 833,
+      "w": 540.8000000000001,
+      "h": 181.73333333333335,
+      "sectionId": "jog",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "jog-wheel"
+    },
+    "jog-display": {
+      "id": "jog-display",
+      "label": "Jog display",
+      "type": "screen",
+      "x": 248,
+      "y": 1064.1666666666667,
+      "w": 540.8000000000001,
+      "h": 181.73333333333335,
+      "sectionId": "jog",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "jog-wheel"
+    },
+    "jog-ring": {
+      "id": "jog-ring",
+      "label": "Jog ring illumination",
+      "type": "led",
+      "x": 248,
+      "y": 1295.3333333333335,
+      "w": 540.8000000000001,
+      "h": 181.73333333333335,
+      "sectionId": "jog",
+      "labelPosition": "right",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "jog-wheel"
+    },
+    "vinyl-speed-adjust": {
+      "id": "vinyl-speed-adjust",
+      "label": "VINYL SPEED ADJUST knob",
+      "type": "knob",
+      "x": 944,
+      "y": 618.5,
+      "w": 166.4,
+      "h": 64,
+      "sectionId": "jog-controls",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "jog-mode-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "jog-settings"
+    },
+    "jog-mode-btn": {
+      "id": "jog-mode-btn",
+      "label": "JOG MODE button",
+      "type": "button",
+      "x": 944,
+      "y": 692.875,
+      "w": 166.4,
+      "h": 56.300000000000004,
+      "sectionId": "jog-controls",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "vinyl-speed-adjust",
+        "below": "vinyl-cdj-indicator",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "jog-settings"
+    },
+    "vinyl-cdj-indicator": {
+      "id": "vinyl-cdj-indicator",
+      "label": "VINYL/CDJ indicator",
+      "type": "led",
+      "x": 944,
+      "y": 767.25,
+      "w": 166.4,
+      "h": 56.300000000000004,
+      "sectionId": "jog-controls",
+      "labelPosition": "right",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "jog-mode-btn",
+        "below": "jog-feel-knob",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "jog-settings"
+    },
+    "jog-feel-knob": {
+      "id": "jog-feel-knob",
+      "label": "JOG FEEL knob",
+      "type": "knob",
+      "x": 944,
+      "y": 841.625,
+      "w": 166.4,
+      "h": 64,
+      "sectionId": "jog-controls",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "vinyl-cdj-indicator",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "jog-settings"
+    },
+    "master-btn": {
+      "id": "master-btn",
+      "label": "MASTER button",
+      "type": "button",
+      "x": 944,
+      "y": 932.0000000000001,
+      "w": 81.60000000000001,
+      "h": 132.20000000000002,
+      "sectionId": "sync-tempo",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "key-sync-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "sync"
+    },
+    "key-sync-btn": {
+      "id": "key-sync-btn",
+      "label": "KEY SYNC button",
+      "type": "button",
+      "x": 1050,
+      "y": 932.0000000000001,
+      "w": 81.60000000000001,
+      "h": 132.20000000000002,
+      "sectionId": "sync-tempo",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "master-btn",
+        "below": "beat-sync-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "sync"
+    },
+    "beat-sync-btn": {
+      "id": "beat-sync-btn",
+      "label": "BEAT SYNC/INST.DOUBLES button",
+      "type": "button",
+      "x": 944,
+      "y": 1101.25,
+      "w": 81.60000000000001,
+      "h": 132.20000000000002,
+      "sectionId": "sync-tempo",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "key-sync-btn",
+        "below": "tempo-range-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "sync"
+    },
+    "tempo-range-btn": {
+      "id": "tempo-range-btn",
+      "label": "TEMPO ±6/±10/±16/WIDE button",
+      "type": "button",
+      "x": 1050,
+      "y": 1101.25,
+      "w": 81.60000000000001,
+      "h": 132.20000000000002,
+      "sectionId": "sync-tempo",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "beat-sync-btn",
+        "below": "master-tempo-btn",
+        "left": null,
+        "right": "tempo-slider"
+      },
+      "functionalGroup": "tempo"
+    },
+    "master-tempo-btn": {
+      "id": "master-tempo-btn",
+      "label": "MASTER TEMPO button",
+      "type": "button",
+      "x": 944,
+      "y": 1270.5,
+      "w": 81.60000000000001,
+      "h": 132.20000000000002,
+      "sectionId": "sync-tempo",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tempo-range-btn",
+        "below": null,
+        "left": null,
+        "right": "tempo-slider"
+      },
+      "functionalGroup": "tempo"
+    },
+    "tempo-slider": {
+      "id": "tempo-slider",
+      "label": "TEMPO slider",
+      "type": "slider",
+      "x": 1050,
+      "y": 1270.5,
+      "w": 81.60000000000001,
+      "h": 160,
+      "sectionId": "sync-tempo",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tempo-reset-indicator",
+        "left": "tempo-range-btn",
+        "right": null
+      },
+      "functionalGroup": "tempo"
+    },
+    "tempo-reset-indicator": {
+      "id": "tempo-reset-indicator",
+      "label": "TEMPO RESET indicator",
+      "type": "led",
+      "x": 944,
+      "y": 1439.75,
+      "w": 81.60000000000001,
+      "h": 132.20000000000002,
+      "sectionId": "sync-tempo",
+      "labelPosition": "right",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tempo-slider",
+        "below": "tempo-reset-btn",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "tempo"
+    },
+    "tempo-reset-btn": {
+      "id": "tempo-reset-btn",
+      "label": "TEMPO RESET button",
+      "type": "button",
+      "x": 1050,
+      "y": 1439.75,
+      "w": 81.60000000000001,
+      "h": 132.20000000000002,
+      "sectionId": "sync-tempo",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tempo-reset-indicator",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "tempo"
+    }
+  },
+  "canvasWidth": 1200,
+  "canvasHeight": 1650
+}

@@ -3,19 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
+    "dev:fresh": "rm -rf .next node_modules/.cache && next dev --webpack",
+    "dev:turbo": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check-git-health": "tsx scripts/check-git-health.ts",
+    "install-hooks": "bash scripts/install-git-hooks.sh",
+    "prepare": "bash scripts/install-git-hooks.sh",
+    "regression:layers": "tsx e2e/regression-layers-panel-many-labels.ts",
+    "drift:capture": "tsx e2e/editor-preview-baseline.ts --capture",
+    "drift:verify": "tsx e2e/editor-preview-baseline.ts --verify",
+    "drift:report": "tsx e2e/editor-preview-baseline.ts --report",
+    "drift:ci": "tsx e2e/editor-preview-baseline.ts --ci",
+    "drift:containment": "tsx e2e/containment-check.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
+    "@vercel/blob": "^2.3.3",
     "framer-motion": "^12.34.3",
-    "next": "16.1.6",
+    "next": "16.2.6",
+    "posthog-js": "^1.376.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-joyride": "^3.0.0",
+    "react-rnd": "^10.5.3",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
@@ -32,6 +47,7 @@
     "jsdom": "^28.1.0",
     "playwright": "^1.58.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.0.18"
   }

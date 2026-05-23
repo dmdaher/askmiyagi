@@ -1,0 +1,172 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+
+interface StatusEvent {
+  type: string;
+  timestamp: string;
+  note?: string;
+  by: 'admin' | 'contractor';
+}
+
+interface DeviceSummary {
+  deviceId: string;
+  deviceName: string;
+  manufacturer: string;
+  status: string;
+  updatedAt: string;
+  adminNote?: string;
+  contractorNote?: string;
+  events?: StatusEvent[];
+}
+
+const STATUS_CONFIG: Record<string, { label: string; dot: string }> = {
+  ready: { label: 'Ready for editing', dot: 'bg-gray-400' },
+  'in-progress': { label: 'In Progress', dot: 'bg-blue-400' },
+  submitted: { label: 'Submitted — waiting for review', dot: 'bg-amber-400' },
+  approved: { label: 'Approved', dot: 'bg-green-400' },
+};
+
+export default function EditorListPage() {
+  const [devices, setDevices] = useState<DeviceSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/hosted/panels')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => { setDevices(Array.isArray(data) ? data : []); setLoading(false); })
+      .catch(() => { setError(true); setLoading(false); });
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#0d0d1a] p-8">
+      <div className="max-w-2xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-200 mb-1">Instrument Editor</h1>
+            <p className="text-sm text-gray-500">Select an instrument to edit</p>
+          </div>
+          <button
+            onClick={() => {
+              document.cookie = 'contractor_access=; path=/; max-age=0';
+              window.location.href = '/signin?role=contractor';
+            }}
+            className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
+
+        {/* Practice Editor link */}
+        <Link
+          href="/editor/practice"
+          className="flex items-center gap-3 rounded-lg border border-violet-500/20 bg-violet-900/10 px-5 py-3 mb-4 transition-colors hover:border-violet-500/40 hover:bg-violet-900/20"
+        >
+          <div className="w-2 h-2 rounded-full bg-violet-400" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-violet-300">Practice Editor</p>
+            <p className="text-[11px] text-gray-500">Learn the tools without affecting real instruments</p>
+          </div>
+          <span className="text-xs text-violet-400">→</span>
+        </Link>
+
+        {loading ? (
+          <div className="text-gray-500 text-sm">Loading...</div>
+        ) : error ? (
+          <div className="rounded-lg border border-red-800 bg-red-900/20 p-8 text-center">
+            <p className="text-red-400">Could not load panels — try refreshing</p>
+          </div>
+        ) : devices.length === 0 ? (
+          <div className="rounded-lg border border-gray-800 bg-[#111122] p-8 text-center">
+            <p className="text-gray-400">No panels available yet</p>
+            <p className="text-sm text-gray-600 mt-1">You'll be notified when one is ready</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {devices.map((d) => {
+              const cfg = STATUS_CONFIG[d.status] ?? STATUS_CONFIG.ready;
+              const hasNote = d.adminNote && (d.status === 'in-progress' || d.status === 'ready');
+              return (
+                <div
+                  key={d.deviceId}
+                  className="rounded-lg border border-gray-800 bg-[#111122] px-5 py-4 transition-colors hover:border-gray-700"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${cfg.dot}`} />
+                      <div>
+                        <h2 className="text-sm font-semibold text-gray-200">
+                          {d.manufacturer} {d.deviceName}
+                        </h2>
+                        <p className="text-[11px] text-gray-500 mt-0.5">{cfg.label}</p>
+                      </div>
+                    </div>
+
+                    {(d.status === 'ready' || d.status === 'in-progress' || d.status === 'submitted') && (
+                      <div className="flex items-center gap-2">
+                        {d.status === 'submitted' && (
+                          <span className="text-[11px] text-amber-400">Submitted</span>
+                        )}
+                        <Link
+                          href={`/editor/${d.deviceId}`}
+                          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 transition-colors"
+                        >
+                          {d.status === 'ready' ? 'Edit →' : 'Continue →'}
+                        </Link>
+                      </div>
+                    )}
+                    {d.status === 'approved' && (
+                      <span className="text-[11px] text-green-400">✓ Complete</span>
+                    )}
+                  </div>
+
+                  {/* Feedback note from admin */}
+                  {hasNote && (
+                    <div className="mt-3 rounded border border-amber-600/30 bg-amber-900/15 px-3 py-2">
+                      <p className="text-[10px] text-amber-400 font-medium mb-0.5">Feedback from reviewer:</p>
+                      <p className="text-xs text-amber-300/80 whitespace-pre-wrap">{d.adminNote}</p>
+                    </div>
+                  )}
+
+                  {/* Timeline */}
+                  {(d.events ?? []).length > 0 && (
+                    <div className="mt-3 space-y-1">
+                      <p className="text-[10px] text-gray-500 font-medium">Activity</p>
+                      {[...(d.events ?? [])].reverse().slice(0, 5).map((ev, i) => (
+                        <div key={i} className="flex items-start gap-2 text-[10px]">
+                          <span className={`mt-0.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                            ev.type === 'submitted' ? 'bg-blue-400'
+                            : ev.type === 'approved' ? 'bg-green-400'
+                            : ev.type === 'changes-requested' ? 'bg-amber-400'
+                            : 'bg-gray-400'
+                          }`} />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-gray-400">
+                              {ev.by === 'contractor' ? 'You' : 'Reviewer'}
+                              {ev.type === 'submitted' ? ' submitted'
+                                : ev.type === 'approved' ? ' approved'
+                                : ev.type === 'changes-requested' ? ' requested changes'
+                                : ' sent to you'}
+                            </span>
+                            <span className="text-gray-600 ml-1">
+                              {new Date(ev.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            {ev.note && (
+                              <p className="text-gray-500 truncate mt-0.5">{ev.note}</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

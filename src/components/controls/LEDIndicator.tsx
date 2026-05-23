@@ -7,6 +7,7 @@ interface LEDIndicatorProps {
   on?: boolean;
   color?: string;
   highlighted?: boolean;
+  size?: number;
 }
 
 const highlightAnimation = {
@@ -29,6 +30,7 @@ export default function LEDIndicator({
   on = false,
   color = '#00ff44',
   highlighted = false,
+  size = 8,
 }: LEDIndicatorProps) {
   // Derive a dark version of the color for the "off" state
   const offColor = '#1a1a1a';
@@ -38,8 +40,8 @@ export default function LEDIndicator({
       className="rounded-full"
       data-control-id={id}
       style={{
-        width: 8,
-        height: 8,
+        width: size,
+        height: size,
         backgroundColor: on ? color : offColor,
         boxShadow: on
           ? `0 0 4px 1px ${color}, 0 0 8px 3px ${color}66, inset 0 -1px 1px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3)`

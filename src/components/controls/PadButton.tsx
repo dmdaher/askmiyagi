@@ -9,6 +9,11 @@ interface PadButtonProps {
   color?: string;
   highlighted?: boolean;
   onClick?: () => void;
+  width?: number;
+  height?: number;
+  labelFontSize?: number;
+  labelAlign?: string;
+  labelColor?: string;
 }
 
 const highlightAnimation = {
@@ -33,14 +38,21 @@ export default function PadButton({
   color = '#4488ff',
   highlighted = false,
   onClick,
+  width = 64,
+  height = 64,
+  labelFontSize,
+  labelAlign,
+  labelColor,
 }: PadButtonProps) {
   return (
       <motion.button
         type="button"
         data-control-id={id}
         onClick={onClick}
-        className="w-16 h-16 rounded-lg cursor-pointer select-none relative"
+        className="rounded-lg cursor-pointer select-none relative"
         style={{
+          width,
+          height,
           background: active
             ? `linear-gradient(145deg, ${color} 0%, ${color}cc 60%, ${color}99 100%)`
             : 'linear-gradient(145deg, #3a3a3a 0%, #2a2a2a 50%, #222 100%)',
@@ -64,7 +76,20 @@ export default function PadButton({
               : 'radial-gradient(circle at 40% 35%, rgba(255,255,255,0.06) 0%, transparent 60%)',
           }}
         />
-        <span className="absolute bottom-1.5 right-2 text-[11px] font-bold text-gray-400 z-10">
+        <span
+          className={`absolute font-bold z-10 overflow-hidden ${
+            labelAlign === 'top-left' ? 'top-2 left-2' :
+            labelAlign === 'top-center' ? 'top-2 left-0 right-0 text-center' :
+            labelAlign === 'top-right' ? 'top-2 right-2' :
+            labelAlign === 'middle-left' ? 'top-1/2 -translate-y-1/2 left-2' :
+            labelAlign === 'center' ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' :
+            labelAlign === 'middle-right' ? 'top-1/2 -translate-y-1/2 right-2' :
+            labelAlign === 'bottom-left' ? 'bottom-2 left-2' :
+            labelAlign === 'bottom-center' ? 'bottom-2 left-0 right-0 text-center' :
+            'bottom-2 right-2'
+          }`}
+          style={{ fontSize: labelFontSize ?? 11, color: labelColor ?? undefined, overflowWrap: 'break-word' }}
+        >
           {label}
         </span>
       </motion.button>

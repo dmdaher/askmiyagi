@@ -1,0 +1,3721 @@
+{
+  "sections": {
+    "controller": {
+      "id": "controller",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "x": 66,
+      "y": 23,
+      "w": 175,
+      "h": 531,
+      "childIds": [
+        "wheel-1",
+        "wheel-2",
+        "s1",
+        "s2",
+        "pitch-bend-lever"
+      ]
+    },
+    "zone": {
+      "id": "zone",
+      "headerLabel": "ZONE",
+      "archetype": "stacked-rows",
+      "x": 243,
+      "y": 10,
+      "w": 498,
+      "h": 293,
+      "childIds": [
+        "master-volume",
+        "pan-level",
+        "ctrl",
+        "assign",
+        "zone-9-16",
+        "zone-select",
+        "knob-1",
+        "knob-2",
+        "knob-3",
+        "knob-4",
+        "knob-5",
+        "knob-6",
+        "knob-7",
+        "knob-8",
+        "zone-int-ext-1",
+        "zone-int-ext-2",
+        "zone-int-ext-3",
+        "zone-int-ext-4",
+        "zone-int-ext-5",
+        "zone-int-ext-6",
+        "zone-int-ext-7",
+        "zone-int-ext-8",
+        "slider-1",
+        "slider-2",
+        "slider-3",
+        "slider-4",
+        "slider-5",
+        "slider-6",
+        "slider-7",
+        "slider-8",
+        "split",
+        "chord-memory",
+        "arpeggio",
+        "transpose",
+        "octave-down",
+        "octave-up"
+      ],
+      "containerAssignment": {
+        "master-volume": [
+          "master-volume"
+        ],
+        "top-buttons": {
+          "row": {
+            "controls": [
+              "pan-level",
+              "ctrl",
+              "assign",
+              "zone-9-16",
+              "zone-select"
+            ],
+            "direction": "row"
+          }
+        },
+        "knobs-row": {
+          "row": {
+            "controls": [
+              "knob-1",
+              "knob-2",
+              "knob-3",
+              "knob-4",
+              "knob-5",
+              "knob-6",
+              "knob-7",
+              "knob-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "zone-buttons-row": {
+          "row": {
+            "controls": [
+              "zone-int-ext-1",
+              "zone-int-ext-2",
+              "zone-int-ext-3",
+              "zone-int-ext-4",
+              "zone-int-ext-5",
+              "zone-int-ext-6",
+              "zone-int-ext-7",
+              "zone-int-ext-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "sliders-row": {
+          "row": {
+            "controls": [
+              "slider-1",
+              "slider-2",
+              "slider-3",
+              "slider-4",
+              "slider-5",
+              "slider-6",
+              "slider-7",
+              "slider-8"
+            ],
+            "direction": "row"
+          }
+        },
+        "bottom-buttons": {
+          "row": {
+            "controls": [
+              "split",
+              "chord-memory",
+              "arpeggio",
+              "transpose",
+              "octave-down",
+              "octave-up"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    "common": {
+      "id": "common",
+      "headerLabel": null,
+      "archetype": "anchor-layout",
+      "x": 741,
+      "y": 10,
+      "w": 375,
+      "h": 156,
+      "childIds": [
+        "write",
+        "master-fx",
+        "motional-pad",
+        "daw-ctrl",
+        "menu",
+        "display",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "tempo",
+        "value-dial",
+        "dec",
+        "inc",
+        "cursor-up",
+        "cursor-down",
+        "cursor-left",
+        "cursor-right",
+        "shift",
+        "exit",
+        "enter"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "write",
+          "master-fx",
+          "motional-pad",
+          "daw-ctrl",
+          "menu"
+        ],
+        "anchor": [
+          "display"
+        ],
+        "function-knobs": {
+          "row": {
+            "controls": [
+              "e1",
+              "e2",
+              "e3",
+              "e4",
+              "e5",
+              "e6"
+            ],
+            "direction": "row"
+          }
+        },
+        "bottom-left": [
+          "tempo"
+        ],
+        "nav-right": {
+          "value-dial": [
+            "value-dial"
+          ],
+          "inc-dec": {
+            "controls": [
+              "dec",
+              "inc"
+            ],
+            "direction": "row"
+          },
+          "cursor-cross": [
+            "cursor-up",
+            "cursor-left",
+            "cursor-right",
+            "cursor-down"
+          ],
+          "bottom-nav": {
+            "controls": [
+              "shift",
+              "exit",
+              "enter"
+            ],
+            "direction": "row"
+          }
+        }
+      }
+    },
+    "scene": {
+      "id": "scene",
+      "headerLabel": "SCENE CTRL",
+      "archetype": "single-column",
+      "x": 1098,
+      "y": 3,
+      "w": 125,
+      "h": 220,
+      "childIds": [
+        "scene-select",
+        "scene-chain",
+        "zone-view",
+        "single-tone"
+      ]
+    },
+    "synth": {
+      "id": "synth",
+      "headerLabel": "SYNTH CTRL",
+      "archetype": "cluster-below-anchor",
+      "x": 1225,
+      "y": 3,
+      "w": 198,
+      "h": 181,
+      "childIds": [
+        "cutoff",
+        "resonance",
+        "osc",
+        "filter-type",
+        "param",
+        "amp",
+        "fx",
+        "lfo"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "knob-row": {
+            "controls": [
+              "cutoff",
+              "resonance"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "osc",
+          "filter-type",
+          "param",
+          "amp",
+          "fx",
+          "lfo"
+        ]
+      },
+      "gridCols": 3,
+      "gridRows": 2
+    },
+    "sequencer": {
+      "id": "sequencer",
+      "headerLabel": "SEQUENCER",
+      "archetype": "cluster-below-anchor",
+      "x": 1379,
+      "y": 25,
+      "w": 280,
+      "h": 288,
+      "childIds": [
+        "pattern",
+        "group",
+        "song",
+        "tr-rec",
+        "rhythm-ptn",
+        "stop",
+        "play",
+        "rec",
+        "tone-cat-1",
+        "tone-cat-2",
+        "tone-cat-3",
+        "tone-cat-4",
+        "tone-cat-5",
+        "tone-cat-6",
+        "tone-cat-7",
+        "tone-cat-8",
+        "tone-cat-9",
+        "tone-cat-10",
+        "tone-cat-11",
+        "tone-cat-12",
+        "tone-cat-13",
+        "tone-cat-14",
+        "tone-cat-15",
+        "tone-cat-16"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "nav-row": {
+            "controls": [
+              "pattern",
+              "group",
+              "song"
+            ],
+            "direction": "row"
+          },
+          "mode-row": {
+            "controls": [
+              "tr-rec",
+              "rhythm-ptn"
+            ],
+            "direction": "row"
+          },
+          "transport-row": {
+            "controls": [
+              "stop",
+              "play",
+              "rec"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "tone-cat-1",
+          "tone-cat-2",
+          "tone-cat-3",
+          "tone-cat-4",
+          "tone-cat-5",
+          "tone-cat-6",
+          "tone-cat-7",
+          "tone-cat-8",
+          "tone-cat-9",
+          "tone-cat-10",
+          "tone-cat-11",
+          "tone-cat-12",
+          "tone-cat-13",
+          "tone-cat-14",
+          "tone-cat-15",
+          "tone-cat-16"
+        ]
+      },
+      "gridCols": 4,
+      "gridRows": 4
+    },
+    "pad": {
+      "id": "pad",
+      "headerLabel": "PAD",
+      "archetype": "cluster-below-anchor",
+      "x": 1641,
+      "y": 25,
+      "w": 230,
+      "h": 288,
+      "childIds": [
+        "sampling",
+        "pad-mode",
+        "clip-board",
+        "bank",
+        "hold",
+        "pad-1",
+        "pad-2",
+        "pad-3",
+        "pad-4",
+        "pad-5",
+        "pad-6",
+        "pad-7",
+        "pad-8",
+        "pad-9",
+        "pad-10",
+        "pad-11",
+        "pad-12",
+        "pad-13",
+        "pad-14",
+        "pad-15",
+        "pad-16"
+      ],
+      "containerAssignment": {
+        "anchor": {
+          "buttons-row-1": {
+            "controls": [
+              "sampling",
+              "pad-mode",
+              "clip-board"
+            ],
+            "direction": "row"
+          },
+          "buttons-row-2": {
+            "controls": [
+              "bank",
+              "hold"
+            ],
+            "direction": "row"
+          }
+        },
+        "cluster": [
+          "pad-1",
+          "pad-2",
+          "pad-3",
+          "pad-4",
+          "pad-5",
+          "pad-6",
+          "pad-7",
+          "pad-8",
+          "pad-9",
+          "pad-10",
+          "pad-11",
+          "pad-12",
+          "pad-13",
+          "pad-14",
+          "pad-15",
+          "pad-16"
+        ]
+      },
+      "gridCols": 4,
+      "gridRows": 4
+    }
+  },
+  "controls": {
+    "wheel-1": {
+      "id": "wheel-1",
+      "label": "WHEEL1",
+      "type": "wheel",
+      "x": 126,
+      "y": 108,
+      "w": 68,
+      "h": 333,
+      "sectionId": "controller",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "wheel-2",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "wheels",
+      "labelFontSize": 5
+    },
+    "wheel-2": {
+      "id": "wheel-2",
+      "label": "WHEEL2",
+      "type": "wheel",
+      "x": 188,
+      "y": 108,
+      "w": 68,
+      "h": 333,
+      "sectionId": "controller",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "wheel-1",
+        "below": "pitch-bend-lever",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "wheels",
+      "labelFontSize": 5
+    },
+    "s1": {
+      "id": "s1",
+      "label": "S1",
+      "type": "button",
+      "x": 110,
+      "y": 359,
+      "w": 108,
+      "h": 68,
+      "sectionId": "controller",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "s2"
+      },
+      "functionalGroup": "assignable-buttons",
+      "labelFontSize": 5
+    },
+    "s2": {
+      "id": "s2",
+      "label": "S2",
+      "type": "button",
+      "x": 155,
+      "y": 359,
+      "w": 108,
+      "h": 68,
+      "sectionId": "controller",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "s1",
+        "right": null
+      },
+      "functionalGroup": "assignable-buttons",
+      "labelFontSize": 5
+    },
+    "pitch-bend-lever": {
+      "id": "pitch-bend-lever",
+      "label": "PITCH BEND/MOD",
+      "type": "lever",
+      "x": 126,
+      "y": 400,
+      "w": 288,
+      "h": 288,
+      "sectionId": "controller",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "wheel-2",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "pitch-bend",
+      "labelFontSize": 5
+    },
+    "split": {
+      "id": "split",
+      "label": "SPLIT",
+      "type": "button",
+      "x": 271,
+      "y": 204,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "slider-1",
+        "below": null,
+        "left": null,
+        "right": "chord-memory"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 5
+    },
+    "chord-memory": {
+      "id": "chord-memory",
+      "label": "CHORD\nMEMORY",
+      "type": "button",
+      "x": 313,
+      "y": 204,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "split",
+        "right": "arpeggio"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 5
+    },
+    "arpeggio": {
+      "id": "arpeggio",
+      "label": "ARPEGGIO",
+      "type": "button",
+      "x": 351,
+      "y": 205,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "slider-4",
+        "below": null,
+        "left": "chord-memory",
+        "right": "transpose"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 5
+    },
+    "transpose": {
+      "id": "transpose",
+      "label": "TRANSPOSE",
+      "type": "button",
+      "x": 271,
+      "y": 245,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "slider-5",
+        "below": null,
+        "left": "arpeggio",
+        "right": "octave-down"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 5
+    },
+    "octave-down": {
+      "id": "octave-down",
+      "label": "DOWN",
+      "type": "button",
+      "x": 313,
+      "y": 245,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "transpose",
+        "right": "octave-up"
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 5
+    },
+    "octave-up": {
+      "id": "octave-up",
+      "label": "UP",
+      "type": "button",
+      "x": 351,
+      "y": 245,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "slider-8",
+        "below": null,
+        "left": "octave-down",
+        "right": null
+      },
+      "functionalGroup": "zone-performance",
+      "labelFontSize": 5
+    },
+    "knob-1": {
+      "id": "knob-1",
+      "label": "1",
+      "type": "knob",
+      "x": 403,
+      "y": 78,
+      "w": 108,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pan-level",
+        "below": "zone-int-ext-1",
+        "left": null,
+        "right": "knob-2"
+      },
+      "functionalGroup": "control-knobs",
+      "labelFontSize": 5
+    },
+    "knob-2": {
+      "id": "knob-2",
+      "label": "2",
+      "type": "knob",
+      "x": 445,
+      "y": 78,
+      "w": 108,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "ctrl",
+        "below": "zone-int-ext-2",
+        "left": "knob-1",
+        "right": "knob-3"
+      },
+      "functionalGroup": "control-knobs",
+      "labelFontSize": 5
+    },
+    "knob-3": {
+      "id": "knob-3",
+      "label": "3",
+      "type": "knob",
+      "x": 488,
+      "y": 78,
+      "w": 108,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "assign",
+        "below": "zone-int-ext-3",
+        "left": "knob-2",
+        "right": "knob-4"
+      },
+      "functionalGroup": "control-knobs",
+      "labelFontSize": 5
+    },
+    "knob-4": {
+      "id": "knob-4",
+      "label": "4",
+      "type": "knob",
+      "x": 529,
+      "y": 78,
+      "w": 108,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-9-16",
+        "below": "zone-int-ext-4",
+        "left": "knob-3",
+        "right": "knob-5"
+      },
+      "functionalGroup": "control-knobs",
+      "labelFontSize": 5
+    },
+    "knob-5": {
+      "id": "knob-5",
+      "label": "5",
+      "type": "knob",
+      "x": 573,
+      "y": 78,
+      "w": 108,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-select",
+        "below": "zone-int-ext-5",
+        "left": "knob-4",
+        "right": "knob-6"
+      },
+      "functionalGroup": "control-knobs",
+      "labelFontSize": 5
+    },
+    "knob-6": {
+      "id": "knob-6",
+      "label": "6",
+      "type": "knob",
+      "x": 614,
+      "y": 78,
+      "w": 108,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-6",
+        "left": "knob-5",
+        "right": "knob-7"
+      },
+      "functionalGroup": "control-knobs",
+      "labelFontSize": 5
+    },
+    "knob-7": {
+      "id": "knob-7",
+      "label": "7",
+      "type": "knob",
+      "x": 656,
+      "y": 78,
+      "w": 108,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-7",
+        "left": "knob-6",
+        "right": "knob-8"
+      },
+      "functionalGroup": "control-knobs",
+      "labelFontSize": 5
+    },
+    "knob-8": {
+      "id": "knob-8",
+      "label": "8",
+      "type": "knob",
+      "x": 698,
+      "y": 78,
+      "w": 108,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "zone-int-ext-8",
+        "left": "knob-7",
+        "right": null
+      },
+      "functionalGroup": "control-knobs",
+      "labelFontSize": 5
+    },
+    "master-volume": {
+      "id": "master-volume",
+      "label": "MASTER VOLUME",
+      "type": "knob",
+      "x": 266,
+      "y": 118,
+      "w": 130,
+      "h": 108,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "master-volume",
+      "labelFontSize": 5
+    },
+    "slider-1": {
+      "id": "slider-1",
+      "label": "1",
+      "type": "slider",
+      "x": 408,
+      "y": 188,
+      "w": 60,
+      "h": 250,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-1",
+        "below": "split",
+        "left": null,
+        "right": "slider-2"
+      },
+      "functionalGroup": "zone-sliders",
+      "labelFontSize": 5
+    },
+    "slider-2": {
+      "id": "slider-2",
+      "label": "2",
+      "type": "slider",
+      "x": 450,
+      "y": 188,
+      "w": 60,
+      "h": 250,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-2",
+        "below": null,
+        "left": "slider-1",
+        "right": "slider-3"
+      },
+      "functionalGroup": "zone-sliders",
+      "labelFontSize": 5
+    },
+    "slider-3": {
+      "id": "slider-3",
+      "label": "3",
+      "type": "slider",
+      "x": 493,
+      "y": 188,
+      "w": 60,
+      "h": 250,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-3",
+        "below": null,
+        "left": "slider-2",
+        "right": "slider-4"
+      },
+      "functionalGroup": "zone-sliders",
+      "labelFontSize": 5
+    },
+    "slider-4": {
+      "id": "slider-4",
+      "label": "4",
+      "type": "slider",
+      "x": 535,
+      "y": 188,
+      "w": 60,
+      "h": 250,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-4",
+        "below": "arpeggio",
+        "left": "slider-3",
+        "right": "slider-5"
+      },
+      "functionalGroup": "zone-sliders",
+      "labelFontSize": 5
+    },
+    "slider-5": {
+      "id": "slider-5",
+      "label": "5",
+      "type": "slider",
+      "x": 578,
+      "y": 188,
+      "w": 60,
+      "h": 250,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-5",
+        "below": "transpose",
+        "left": "slider-4",
+        "right": "slider-6"
+      },
+      "functionalGroup": "zone-sliders",
+      "labelFontSize": 5
+    },
+    "slider-6": {
+      "id": "slider-6",
+      "label": "6",
+      "type": "slider",
+      "x": 619,
+      "y": 188,
+      "w": 60,
+      "h": 250,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-6",
+        "below": null,
+        "left": "slider-5",
+        "right": "slider-7"
+      },
+      "functionalGroup": "zone-sliders",
+      "labelFontSize": 5
+    },
+    "slider-7": {
+      "id": "slider-7",
+      "label": "7",
+      "type": "slider",
+      "x": 661,
+      "y": 188,
+      "w": 60,
+      "h": 250,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-7",
+        "below": null,
+        "left": "slider-6",
+        "right": "slider-8"
+      },
+      "functionalGroup": "zone-sliders",
+      "labelFontSize": 5
+    },
+    "slider-8": {
+      "id": "slider-8",
+      "label": "8",
+      "type": "slider",
+      "x": 703,
+      "y": 188,
+      "w": 60,
+      "h": 250,
+      "sectionId": "zone",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-int-ext-8",
+        "below": "octave-up",
+        "left": "slider-7",
+        "right": null
+      },
+      "functionalGroup": "zone-sliders",
+      "labelFontSize": 5
+    },
+    "pan-level": {
+      "id": "pan-level",
+      "label": "PAN/\nLEVEL",
+      "type": "button",
+      "x": 314,
+      "y": 83,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-1",
+        "left": null,
+        "right": "ctrl"
+      },
+      "functionalGroup": "zone-mode-buttons",
+      "labelFontSize": 5
+    },
+    "ctrl": {
+      "id": "ctrl",
+      "label": "CTRL",
+      "type": "button",
+      "x": 351,
+      "y": 83,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-2",
+        "left": "pan-level",
+        "right": "assign"
+      },
+      "functionalGroup": "zone-mode-buttons",
+      "labelFontSize": 5
+    },
+    "assign": {
+      "id": "assign",
+      "label": "ASSIGN",
+      "type": "button",
+      "x": 351,
+      "y": 124,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-3",
+        "left": "ctrl",
+        "right": "zone-9-16"
+      },
+      "functionalGroup": "zone-mode-buttons",
+      "labelFontSize": 5
+    },
+    "zone-9-16": {
+      "id": "zone-9-16",
+      "label": "ZONE 9-16",
+      "type": "button",
+      "x": 313,
+      "y": 165,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-4",
+        "left": "assign",
+        "right": "zone-select"
+      },
+      "functionalGroup": "zone-navigation",
+      "labelFontSize": 5
+    },
+    "zone-select": {
+      "id": "zone-select",
+      "label": "ZONE\nSELECT",
+      "type": "button",
+      "x": 351,
+      "y": 164,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "knob-5",
+        "left": "zone-9-16",
+        "right": null
+      },
+      "functionalGroup": "zone-navigation",
+      "labelFontSize": 5
+    },
+    "zone-int-ext-1": {
+      "id": "zone-int-ext-1",
+      "label": "1",
+      "type": "button",
+      "x": 401,
+      "y": 139,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-1",
+        "below": "slider-1",
+        "left": null,
+        "right": "zone-int-ext-2"
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 5
+    },
+    "zone-int-ext-2": {
+      "id": "zone-int-ext-2",
+      "label": "2",
+      "type": "button",
+      "x": 443,
+      "y": 139,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-2",
+        "below": "slider-2",
+        "left": "zone-int-ext-1",
+        "right": "zone-int-ext-3"
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 5
+    },
+    "zone-int-ext-3": {
+      "id": "zone-int-ext-3",
+      "label": "3",
+      "type": "button",
+      "x": 485,
+      "y": 139,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-3",
+        "below": "slider-3",
+        "left": "zone-int-ext-2",
+        "right": "zone-int-ext-4"
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 5
+    },
+    "zone-int-ext-4": {
+      "id": "zone-int-ext-4",
+      "label": "4",
+      "type": "button",
+      "x": 528,
+      "y": 139,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-4",
+        "below": "slider-4",
+        "left": "zone-int-ext-3",
+        "right": "zone-int-ext-5"
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 5
+    },
+    "zone-int-ext-5": {
+      "id": "zone-int-ext-5",
+      "label": "5",
+      "type": "button",
+      "x": 569,
+      "y": 139,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-5",
+        "below": "slider-5",
+        "left": "zone-int-ext-4",
+        "right": "zone-int-ext-6"
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 5
+    },
+    "zone-int-ext-6": {
+      "id": "zone-int-ext-6",
+      "label": "6",
+      "type": "button",
+      "x": 611,
+      "y": 139,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-6",
+        "below": "slider-6",
+        "left": "zone-int-ext-5",
+        "right": "zone-int-ext-7"
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 5
+    },
+    "zone-int-ext-7": {
+      "id": "zone-int-ext-7",
+      "label": "7",
+      "type": "button",
+      "x": 653,
+      "y": 139,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-7",
+        "below": "slider-7",
+        "left": "zone-int-ext-6",
+        "right": "zone-int-ext-8"
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 5
+    },
+    "zone-int-ext-8": {
+      "id": "zone-int-ext-8",
+      "label": "8",
+      "type": "button",
+      "x": 695,
+      "y": 139,
+      "w": 108,
+      "h": 68,
+      "sectionId": "zone",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "knob-8",
+        "below": "slider-8",
+        "left": "zone-int-ext-7",
+        "right": null
+      },
+      "functionalGroup": "zone-int-ext",
+      "labelFontSize": 5
+    },
+    "display": {
+      "id": "display",
+      "label": "Display",
+      "type": "screen",
+      "x": 799,
+      "y": 55,
+      "w": 938,
+      "h": 560,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "master-fx",
+        "right": "value-dial"
+      },
+      "functionalGroup": "display",
+      "labelFontSize": 5
+    },
+    "scene-select": {
+      "id": "scene-select",
+      "label": "SCENE SELECT",
+      "type": "button",
+      "x": 1082.0091153231533,
+      "y": 96.10000305175782,
+      "w": 100,
+      "h": 63,
+      "sectionId": "scene",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "scene-chain",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "scene",
+      "labelFontSize": 5
+    },
+    "scene-chain": {
+      "id": "scene-chain",
+      "label": "SCENE CHAIN",
+      "type": "button",
+      "x": 1078.3727516867898,
+      "y": 130.0090970126065,
+      "w": 100,
+      "h": 63,
+      "sectionId": "scene",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "scene-select",
+        "below": "zone-view",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "scene",
+      "labelFontSize": 5
+    },
+    "zone-view": {
+      "id": "zone-view",
+      "label": "ZONE VIEW",
+      "type": "button",
+      "x": 1074.736388050426,
+      "y": 166.37275779030534,
+      "w": 100,
+      "h": 63,
+      "sectionId": "scene",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "scene-chain",
+        "below": "single-tone",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "scene",
+      "labelFontSize": 5
+    },
+    "single-tone": {
+      "id": "single-tone",
+      "label": "SINGLE TONE",
+      "type": "button",
+      "x": 1078.3727516867898,
+      "y": 205.46366688121438,
+      "w": 100,
+      "h": 63,
+      "sectionId": "scene",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "zone-view",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "scene",
+      "labelFontSize": 5
+    },
+    "cutoff": {
+      "id": "cutoff",
+      "label": "CUTOFF",
+      "type": "knob",
+      "x": 1238,
+      "y": 16,
+      "w": 100,
+      "h": 100,
+      "sectionId": "synth",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "resonance"
+      },
+      "functionalGroup": "synth-knobs",
+      "labelFontSize": 5
+    },
+    "resonance": {
+      "id": "resonance",
+      "label": "RESONANCE",
+      "type": "knob",
+      "x": 1338,
+      "y": 16,
+      "w": 100,
+      "h": 100,
+      "sectionId": "synth",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "cutoff",
+        "right": null
+      },
+      "functionalGroup": "synth-knobs",
+      "labelFontSize": 5
+    },
+    "osc": {
+      "id": "osc",
+      "label": "OSC",
+      "type": "button",
+      "x": 1253,
+      "y": 91,
+      "w": 100,
+      "h": 63,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "amp",
+        "left": null,
+        "right": "filter-type"
+      },
+      "functionalGroup": "synth-buttons",
+      "labelFontSize": 5
+    },
+    "filter-type": {
+      "id": "filter-type",
+      "label": "FILTER TYPE",
+      "type": "button",
+      "x": 1303,
+      "y": 91,
+      "w": 100,
+      "h": 63,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "fx",
+        "left": "osc",
+        "right": "param"
+      },
+      "functionalGroup": "synth-buttons",
+      "labelFontSize": 5
+    },
+    "param": {
+      "id": "param",
+      "label": "PARAM",
+      "type": "button",
+      "x": 1353,
+      "y": 91,
+      "w": 100,
+      "h": 63,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo",
+        "left": "filter-type",
+        "right": null
+      },
+      "functionalGroup": "synth-buttons",
+      "labelFontSize": 5
+    },
+    "amp": {
+      "id": "amp",
+      "label": "AMP",
+      "type": "button",
+      "x": 1253,
+      "y": 128,
+      "w": 100,
+      "h": 63,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "osc",
+        "below": null,
+        "left": null,
+        "right": "fx"
+      },
+      "functionalGroup": "synth-buttons",
+      "labelFontSize": 5
+    },
+    "fx": {
+      "id": "fx",
+      "label": "FX",
+      "type": "button",
+      "x": 1303,
+      "y": 128,
+      "w": 100,
+      "h": 63,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "filter-type",
+        "below": null,
+        "left": "amp",
+        "right": "lfo"
+      },
+      "functionalGroup": "synth-buttons",
+      "labelFontSize": 5
+    },
+    "lfo": {
+      "id": "lfo",
+      "label": "LFO",
+      "type": "button",
+      "x": 1353,
+      "y": 128,
+      "w": 100,
+      "h": 63,
+      "sectionId": "synth",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "param",
+        "below": null,
+        "left": "fx",
+        "right": null
+      },
+      "functionalGroup": "synth-buttons",
+      "labelFontSize": 5
+    },
+    "pattern": {
+      "id": "pattern",
+      "label": "PATTERN",
+      "type": "button",
+      "x": 1406,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tr-rec",
+        "left": null,
+        "right": "group"
+      },
+      "functionalGroup": "sequencer-nav",
+      "labelFontSize": 5
+    },
+    "group": {
+      "id": "group",
+      "label": "GROUP",
+      "type": "button",
+      "x": 1406,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "rhythm-ptn",
+        "left": "pattern",
+        "right": "song"
+      },
+      "functionalGroup": "sequencer-nav",
+      "labelFontSize": 5
+    },
+    "song": {
+      "id": "song",
+      "label": "SONG",
+      "type": "button",
+      "x": 1461,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tone-cat-3",
+        "left": "group",
+        "right": null
+      },
+      "functionalGroup": "sequencer-nav",
+      "labelFontSize": 5
+    },
+    "tr-rec": {
+      "id": "tr-rec",
+      "label": "TR-REC",
+      "type": "button",
+      "x": 1461,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pattern",
+        "below": "tone-cat-1",
+        "left": null,
+        "right": "rhythm-ptn"
+      },
+      "functionalGroup": "sequencer-mode",
+      "labelFontSize": 5
+    },
+    "rhythm-ptn": {
+      "id": "rhythm-ptn",
+      "label": "RHYTHM PTN",
+      "type": "button",
+      "x": 1498,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "group",
+        "below": "tone-cat-2",
+        "left": "tr-rec",
+        "right": null
+      },
+      "functionalGroup": "sequencer-mode",
+      "labelFontSize": 5
+    },
+    "stop": {
+      "id": "stop",
+      "label": "STOP",
+      "type": "button",
+      "x": 1549,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "play"
+      },
+      "functionalGroup": "transport",
+      "labelFontSize": 5
+    },
+    "play": {
+      "id": "play",
+      "label": "PLAY",
+      "type": "button",
+      "x": 1574,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "stop",
+        "right": "rec"
+      },
+      "functionalGroup": "transport",
+      "labelFontSize": 5
+    },
+    "rec": {
+      "id": "rec",
+      "label": "REC",
+      "type": "button",
+      "x": 1601,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "play",
+        "right": null
+      },
+      "functionalGroup": "transport",
+      "labelFontSize": 5
+    },
+    "tone-cat-1": {
+      "id": "tone-cat-1",
+      "label": "A.PIANO",
+      "type": "button",
+      "x": 1391,
+      "y": 163,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tr-rec",
+        "below": "tone-cat-5",
+        "left": null,
+        "right": "tone-cat-2"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-2": {
+      "id": "tone-cat-2",
+      "label": "E.PIANO",
+      "type": "button",
+      "x": 1450,
+      "y": 163,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "rhythm-ptn",
+        "below": "tone-cat-6",
+        "left": "tone-cat-1",
+        "right": "tone-cat-3"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-3": {
+      "id": "tone-cat-3",
+      "label": "ORGAN",
+      "type": "button",
+      "x": 1491,
+      "y": 163,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "song",
+        "below": "tone-cat-7",
+        "left": "tone-cat-2",
+        "right": "tone-cat-4"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-4": {
+      "id": "tone-cat-4",
+      "label": "GUITAR/BASS",
+      "type": "button",
+      "x": 1573,
+      "y": 163,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "tone-cat-8",
+        "left": "tone-cat-3",
+        "right": null
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-5": {
+      "id": "tone-cat-5",
+      "label": "STRINGS",
+      "type": "button",
+      "x": 1391,
+      "y": 194,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-1",
+        "below": "tone-cat-9",
+        "left": null,
+        "right": "tone-cat-6"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-6": {
+      "id": "tone-cat-6",
+      "label": "BRASS",
+      "type": "button",
+      "x": 1450,
+      "y": 194,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-2",
+        "below": "tone-cat-10",
+        "left": "tone-cat-5",
+        "right": "tone-cat-7"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-7": {
+      "id": "tone-cat-7",
+      "label": "SYNTH LEAD",
+      "type": "button",
+      "x": 1491,
+      "y": 194,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-3",
+        "below": "tone-cat-11",
+        "left": "tone-cat-6",
+        "right": "tone-cat-8"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-8": {
+      "id": "tone-cat-8",
+      "label": "SYNTH PAD",
+      "type": "button",
+      "x": 1573,
+      "y": 194,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-4",
+        "below": "tone-cat-12",
+        "left": "tone-cat-7",
+        "right": null
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-9": {
+      "id": "tone-cat-9",
+      "label": "BELL/MALLET",
+      "type": "button",
+      "x": 1391,
+      "y": 225,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-5",
+        "below": "tone-cat-13",
+        "left": null,
+        "right": "tone-cat-10"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-10": {
+      "id": "tone-cat-10",
+      "label": "HIT/OTHER",
+      "type": "button",
+      "x": 1450,
+      "y": 225,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-6",
+        "below": "tone-cat-14",
+        "left": "tone-cat-9",
+        "right": "tone-cat-11"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-11": {
+      "id": "tone-cat-11",
+      "label": "RHYTHM",
+      "type": "button",
+      "x": 1491,
+      "y": 225,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-7",
+        "below": "tone-cat-15",
+        "left": "tone-cat-10",
+        "right": "tone-cat-12"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-12": {
+      "id": "tone-cat-12",
+      "label": "S.N. ACOUSTIC",
+      "type": "button",
+      "x": 1573,
+      "y": 225,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-8",
+        "below": "tone-cat-16",
+        "left": "tone-cat-11",
+        "right": null
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-13": {
+      "id": "tone-cat-13",
+      "label": "S.N.S",
+      "type": "button",
+      "x": 1391,
+      "y": 256,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-9",
+        "below": null,
+        "left": null,
+        "right": "tone-cat-14"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-14": {
+      "id": "tone-cat-14",
+      "label": "VTW",
+      "type": "button",
+      "x": 1450,
+      "y": 256,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-10",
+        "below": null,
+        "left": "tone-cat-13",
+        "right": "tone-cat-15"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-15": {
+      "id": "tone-cat-15",
+      "label": "MODEL",
+      "type": "button",
+      "x": 1491,
+      "y": 256,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-11",
+        "below": null,
+        "left": "tone-cat-14",
+        "right": "tone-cat-16"
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "tone-cat-16": {
+      "id": "tone-cat-16",
+      "label": "DRUM",
+      "type": "button",
+      "x": 1573,
+      "y": 256,
+      "w": 100,
+      "h": 63,
+      "sectionId": "sequencer",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "tone-cat-12",
+        "below": null,
+        "left": "tone-cat-15",
+        "right": null
+      },
+      "functionalGroup": "tone-category",
+      "labelFontSize": 5
+    },
+    "sampling": {
+      "id": "sampling",
+      "label": "SAMPLING",
+      "type": "button",
+      "x": 1654,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-1",
+        "left": null,
+        "right": "pad-mode"
+      },
+      "functionalGroup": "pad-controls",
+      "labelFontSize": 5
+    },
+    "pad-mode": {
+      "id": "pad-mode",
+      "label": "PAD MODE",
+      "type": "button",
+      "x": 1704,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-2",
+        "left": "sampling",
+        "right": "clip-board"
+      },
+      "functionalGroup": "pad-controls",
+      "labelFontSize": 5
+    },
+    "clip-board": {
+      "id": "clip-board",
+      "label": "CLIP BOARD",
+      "type": "button",
+      "x": 1733,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-3",
+        "left": "pad-mode",
+        "right": null
+      },
+      "functionalGroup": "pad-controls",
+      "labelFontSize": 5
+    },
+    "bank": {
+      "id": "bank",
+      "label": "BANK",
+      "type": "button",
+      "x": 1758,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "hold"
+      },
+      "functionalGroup": "pad-controls",
+      "labelFontSize": 5
+    },
+    "hold": {
+      "id": "hold",
+      "label": "HOLD",
+      "type": "button",
+      "x": 1811,
+      "y": 38,
+      "w": 100,
+      "h": 63,
+      "sectionId": "pad",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "bank",
+        "right": null
+      },
+      "functionalGroup": "pad-controls",
+      "labelFontSize": 5
+    },
+    "pad-1": {
+      "id": "pad-1",
+      "label": "1",
+      "type": "pad",
+      "x": 1654,
+      "y": 163,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "sampling",
+        "below": "pad-5",
+        "left": null,
+        "right": "pad-2"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-2": {
+      "id": "pad-2",
+      "label": "2",
+      "type": "pad",
+      "x": 1706,
+      "y": 163,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-mode",
+        "below": "pad-6",
+        "left": "pad-1",
+        "right": "pad-3"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-3": {
+      "id": "pad-3",
+      "label": "3",
+      "type": "pad",
+      "x": 1760,
+      "y": 163,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "clip-board",
+        "below": "pad-7",
+        "left": "pad-2",
+        "right": "pad-4"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-4": {
+      "id": "pad-4",
+      "label": "4",
+      "type": "pad",
+      "x": 1811,
+      "y": 163,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "pad-8",
+        "left": "pad-3",
+        "right": null
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-5": {
+      "id": "pad-5",
+      "label": "5",
+      "type": "pad",
+      "x": 1654,
+      "y": 194,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-1",
+        "below": "pad-9",
+        "left": null,
+        "right": "pad-6"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-6": {
+      "id": "pad-6",
+      "label": "6",
+      "type": "pad",
+      "x": 1706,
+      "y": 194,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-2",
+        "below": "pad-10",
+        "left": "pad-5",
+        "right": "pad-7"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-7": {
+      "id": "pad-7",
+      "label": "7",
+      "type": "pad",
+      "x": 1760,
+      "y": 194,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-3",
+        "below": "pad-11",
+        "left": "pad-6",
+        "right": "pad-8"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-8": {
+      "id": "pad-8",
+      "label": "8",
+      "type": "pad",
+      "x": 1811,
+      "y": 194,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-4",
+        "below": "pad-12",
+        "left": "pad-7",
+        "right": null
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-9": {
+      "id": "pad-9",
+      "label": "9",
+      "type": "pad",
+      "x": 1654,
+      "y": 225,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-5",
+        "below": "pad-13",
+        "left": null,
+        "right": "pad-10"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-10": {
+      "id": "pad-10",
+      "label": "10",
+      "type": "pad",
+      "x": 1706,
+      "y": 225,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-6",
+        "below": "pad-14",
+        "left": "pad-9",
+        "right": "pad-11"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-11": {
+      "id": "pad-11",
+      "label": "11",
+      "type": "pad",
+      "x": 1760,
+      "y": 225,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-7",
+        "below": "pad-15",
+        "left": "pad-10",
+        "right": "pad-12"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-12": {
+      "id": "pad-12",
+      "label": "12",
+      "type": "pad",
+      "x": 1811,
+      "y": 225,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-8",
+        "below": "pad-16",
+        "left": "pad-11",
+        "right": null
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-13": {
+      "id": "pad-13",
+      "label": "13",
+      "type": "pad",
+      "x": 1654,
+      "y": 256,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-9",
+        "below": null,
+        "left": null,
+        "right": "pad-14"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-14": {
+      "id": "pad-14",
+      "label": "14",
+      "type": "pad",
+      "x": 1706,
+      "y": 256,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-10",
+        "below": null,
+        "left": "pad-13",
+        "right": "pad-15"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-15": {
+      "id": "pad-15",
+      "label": "15",
+      "type": "pad",
+      "x": 1760,
+      "y": 256,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-11",
+        "below": null,
+        "left": "pad-14",
+        "right": "pad-16"
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "pad-16": {
+      "id": "pad-16",
+      "label": "16",
+      "type": "pad",
+      "x": 1811,
+      "y": 256,
+      "w": 100,
+      "h": 100,
+      "sectionId": "pad",
+      "labelPosition": "on-button",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "pad-12",
+        "below": null,
+        "left": "pad-15",
+        "right": null
+      },
+      "functionalGroup": "pads",
+      "labelFontSize": 5
+    },
+    "write": {
+      "id": "write",
+      "label": "WRITE",
+      "type": "button",
+      "x": 753,
+      "y": 74,
+      "w": 108,
+      "h": 68,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "master-fx": {
+      "id": "master-fx",
+      "label": "MASTER FX",
+      "type": "button",
+      "x": 753,
+      "y": 118,
+      "w": 108,
+      "h": 68,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "motional-pad": {
+      "id": "motional-pad",
+      "label": "MOTIONAL PAD",
+      "type": "button",
+      "x": 754,
+      "y": 163,
+      "w": 108,
+      "h": 68,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "daw-ctrl": {
+      "id": "daw-ctrl",
+      "label": "DAW CTRL",
+      "type": "button",
+      "x": 754,
+      "y": 206,
+      "w": 108,
+      "h": 68,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "menu": {
+      "id": "menu",
+      "label": "MENU",
+      "type": "button",
+      "x": 755,
+      "y": 250,
+      "w": 108,
+      "h": 68,
+      "sectionId": "common",
+      "labelPosition": "above",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "e1": {
+      "id": "e1",
+      "label": "E1",
+      "type": "knob",
+      "x": 824.7363978160513,
+      "y": 236.82729091574947,
+      "w": 80,
+      "h": 80,
+      "sectionId": "common",
+      "labelPosition": "hidden",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "e2": {
+      "id": "e2",
+      "label": "E2",
+      "type": "knob",
+      "x": 865,
+      "y": 237,
+      "w": 80,
+      "h": 80,
+      "sectionId": "common",
+      "labelPosition": "hidden",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "e3": {
+      "id": "e3",
+      "label": "E3",
+      "type": "knob",
+      "x": 905,
+      "y": 237,
+      "w": 80,
+      "h": 80,
+      "sectionId": "common",
+      "labelPosition": "hidden",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "e4": {
+      "id": "e4",
+      "label": "E4",
+      "type": "knob",
+      "x": 945,
+      "y": 237,
+      "w": 80,
+      "h": 80,
+      "sectionId": "common",
+      "labelPosition": "hidden",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "e5": {
+      "id": "e5",
+      "label": "E5",
+      "type": "knob",
+      "x": 985,
+      "y": 237,
+      "w": 80,
+      "h": 80,
+      "sectionId": "common",
+      "labelPosition": "hidden",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "e6": {
+      "id": "e6",
+      "label": "E6",
+      "type": "knob",
+      "x": 1024.7363978160513,
+      "y": 236.82729091574947,
+      "w": 80,
+      "h": 80,
+      "sectionId": "common",
+      "labelPosition": "hidden",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "tempo": {
+      "id": "tempo",
+      "label": "TEMPO",
+      "type": "button",
+      "x": 1150,
+      "y": 254,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "value-dial": {
+      "id": "value-dial",
+      "label": "VALUE",
+      "type": "encoder",
+      "x": 1240,
+      "y": 254,
+      "w": 80,
+      "h": 80,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "dec": {
+      "id": "dec",
+      "label": "DEC",
+      "type": "button",
+      "x": 1330,
+      "y": 254,
+      "w": 80,
+      "h": 53,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "inc": {
+      "id": "inc",
+      "label": "INC",
+      "type": "button",
+      "x": 1194.7363392223006,
+      "y": 166.91821233576022,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "cursor-up": {
+      "id": "cursor-up",
+      "label": "CURSOR UP",
+      "type": "button",
+      "x": 1161.099975585937,
+      "y": 166.91821233576036,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "cursor-down": {
+      "id": "cursor-down",
+      "label": "CURSOR DOWN",
+      "type": "button",
+      "x": 1160.1908846768465,
+      "y": 203.28184869939648,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "cursor-left": {
+      "id": "cursor-left",
+      "label": "CURSOR LEFT",
+      "type": "button",
+      "x": 1130.1908846768465,
+      "y": 203.28184869939662,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "cursor-right": {
+      "id": "cursor-right",
+      "label": "CURSOR RIGHT",
+      "type": "button",
+      "x": 1194.736339222301,
+      "y": 203.28184869939622,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "shift": {
+      "id": "shift",
+      "label": "SHIFT",
+      "type": "button",
+      "x": 1128.372702858665,
+      "y": 239.64548506303288,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "exit": {
+      "id": "exit",
+      "label": "EXIT",
+      "type": "button",
+      "x": 1210.7640269886372,
+      "y": 275.6728493430396,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    },
+    "enter": {
+      "id": "enter",
+      "label": "ENTER",
+      "type": "button",
+      "x": 1194.7363392223006,
+      "y": 241.46366688121435,
+      "w": 80,
+      "h": 50,
+      "sectionId": "common",
+      "labelPosition": "below",
+      "locked": false,
+      "sizeClass": null,
+      "labelFontSize": 5
+    }
+  },
+  "editorLabels": [
+    {
+      "id": "label-wheel-1",
+      "controlId": "wheel-1",
+      "text": "WHEEL1",
+      "x": 106,
+      "y": 210,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-wheel-2",
+      "controlId": "wheel-2",
+      "text": "WHEEL2",
+      "x": 168,
+      "y": 210,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-s1",
+      "controlId": "s1",
+      "text": "S1",
+      "x": 96,
+      "y": 348,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-s2",
+      "controlId": "s2",
+      "text": "S2",
+      "x": 141,
+      "y": 348,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-pitch-bend-lever",
+      "controlId": "pitch-bend-lever",
+      "text": "PITCH BEND/MOD",
+      "x": 126,
+      "y": 489,
+      "fontSize": 5,
+      "align": "center",
+      "w": 86
+    },
+    {
+      "id": "label-split",
+      "controlId": "split",
+      "text": "SPLIT",
+      "x": 258,
+      "y": 193,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-chord-memory",
+      "controlId": "chord-memory",
+      "text": "CHORD\nMEMORY",
+      "x": 299,
+      "y": 185,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-arpeggio",
+      "controlId": "arpeggio",
+      "text": "ARPEGGIO",
+      "x": 338,
+      "y": 193,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-transpose",
+      "controlId": "transpose",
+      "text": "TRANSPOSE",
+      "x": 258,
+      "y": 234,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-octave-down",
+      "controlId": "octave-down",
+      "text": "DOWN",
+      "x": 299,
+      "y": 234,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-octave-up",
+      "controlId": "octave-up",
+      "text": "UP",
+      "x": 338,
+      "y": 234,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-master-volume",
+      "controlId": "master-volume",
+      "text": "MASTER\nVOLUME",
+      "x": 255,
+      "y": 99,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-pan-level",
+      "controlId": "pan-level",
+      "text": "PAN/\nLEVEL",
+      "x": 300,
+      "y": 64,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-ctrl",
+      "controlId": "ctrl",
+      "text": "CTRL",
+      "x": 338,
+      "y": 73,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-assign",
+      "controlId": "assign",
+      "text": "ASSIGN",
+      "x": 338,
+      "y": 113,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-9-16",
+      "controlId": "zone-9-16",
+      "text": "ZONE 9-16",
+      "x": 299,
+      "y": 154,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-select",
+      "controlId": "zone-select",
+      "text": "ZONE\nSELECT",
+      "x": 338,
+      "y": 145,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-1",
+      "controlId": "zone-int-ext-1",
+      "text": "1",
+      "x": 388,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-2",
+      "controlId": "zone-int-ext-2",
+      "text": "2",
+      "x": 429,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-3",
+      "controlId": "zone-int-ext-3",
+      "text": "3",
+      "x": 471,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-4",
+      "controlId": "zone-int-ext-4",
+      "text": "4",
+      "x": 513,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-5",
+      "controlId": "zone-int-ext-5",
+      "text": "5",
+      "x": 555,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-6",
+      "controlId": "zone-int-ext-6",
+      "text": "6",
+      "x": 598,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-7",
+      "controlId": "zone-int-ext-7",
+      "text": "7",
+      "x": 639,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-int-ext-8",
+      "controlId": "zone-int-ext-8",
+      "text": "8",
+      "x": 683,
+      "y": 128,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-display",
+      "controlId": "display",
+      "text": "Display",
+      "x": 800,
+      "y": 228,
+      "fontSize": 5,
+      "align": "center",
+      "w": 281
+    },
+    {
+      "id": "label-scene-select",
+      "controlId": "scene-select",
+      "text": "SCENE SELECT",
+      "x": 1067,
+      "y": 86,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-scene-chain",
+      "controlId": "scene-chain",
+      "text": "SCENE CHAIN",
+      "x": 1063,
+      "y": 120,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-zone-view",
+      "controlId": "zone-view",
+      "text": "ZONE VIEW",
+      "x": 1060,
+      "y": 156,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-single-tone",
+      "controlId": "single-tone",
+      "text": "SINGLE TONE",
+      "x": 1063,
+      "y": 195,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cutoff",
+      "controlId": "cutoff",
+      "text": "CUTOFF",
+      "x": 1223,
+      "y": 49,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-resonance",
+      "controlId": "resonance",
+      "text": "RESONANCE",
+      "x": 1323,
+      "y": 49,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-osc",
+      "controlId": "osc",
+      "text": "OSC",
+      "x": 1238,
+      "y": 80,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-filter-type",
+      "controlId": "filter-type",
+      "text": "FILTER TYPE",
+      "x": 1288,
+      "y": 80,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-param",
+      "controlId": "param",
+      "text": "PARAM",
+      "x": 1338,
+      "y": 80,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-amp",
+      "controlId": "amp",
+      "text": "AMP",
+      "x": 1238,
+      "y": 118,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-fx",
+      "controlId": "fx",
+      "text": "FX",
+      "x": 1288,
+      "y": 118,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-lfo",
+      "controlId": "lfo",
+      "text": "LFO",
+      "x": 1338,
+      "y": 118,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-pattern",
+      "controlId": "pattern",
+      "text": "PATTERN",
+      "x": 1391,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-group",
+      "controlId": "group",
+      "text": "GROUP",
+      "x": 1391,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-song",
+      "controlId": "song",
+      "text": "SONG",
+      "x": 1446,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tr-rec",
+      "controlId": "tr-rec",
+      "text": "TR-REC",
+      "x": 1446,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-rhythm-ptn",
+      "controlId": "rhythm-ptn",
+      "text": "RHYTHM PTN",
+      "x": 1483,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-stop",
+      "controlId": "stop",
+      "text": "STOP",
+      "x": 1534,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-play",
+      "controlId": "play",
+      "text": "PLAY",
+      "x": 1559,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-rec",
+      "controlId": "rec",
+      "text": "REC",
+      "x": 1586,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-1",
+      "controlId": "tone-cat-1",
+      "text": "A.PIANO",
+      "x": 1376,
+      "y": 153,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-2",
+      "controlId": "tone-cat-2",
+      "text": "E.PIANO",
+      "x": 1435,
+      "y": 153,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-3",
+      "controlId": "tone-cat-3",
+      "text": "ORGAN",
+      "x": 1476,
+      "y": 153,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-4",
+      "controlId": "tone-cat-4",
+      "text": "GUITAR/BASS",
+      "x": 1558,
+      "y": 153,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-5",
+      "controlId": "tone-cat-5",
+      "text": "STRINGS",
+      "x": 1376,
+      "y": 183,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-6",
+      "controlId": "tone-cat-6",
+      "text": "BRASS",
+      "x": 1435,
+      "y": 183,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-7",
+      "controlId": "tone-cat-7",
+      "text": "SYNTH LEAD",
+      "x": 1476,
+      "y": 183,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-8",
+      "controlId": "tone-cat-8",
+      "text": "SYNTH PAD",
+      "x": 1558,
+      "y": 183,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-9",
+      "controlId": "tone-cat-9",
+      "text": "BELL/MALLET",
+      "x": 1376,
+      "y": 214,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-10",
+      "controlId": "tone-cat-10",
+      "text": "HIT/OTHER",
+      "x": 1435,
+      "y": 214,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-11",
+      "controlId": "tone-cat-11",
+      "text": "RHYTHM",
+      "x": 1476,
+      "y": 214,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-12",
+      "controlId": "tone-cat-12",
+      "text": "S.N. ACOUSTIC",
+      "x": 1558,
+      "y": 214,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-13",
+      "controlId": "tone-cat-13",
+      "text": "S.N.S",
+      "x": 1376,
+      "y": 245,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-14",
+      "controlId": "tone-cat-14",
+      "text": "VTW",
+      "x": 1435,
+      "y": 245,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-15",
+      "controlId": "tone-cat-15",
+      "text": "MODEL",
+      "x": 1476,
+      "y": 245,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tone-cat-16",
+      "controlId": "tone-cat-16",
+      "text": "DRUM",
+      "x": 1558,
+      "y": 245,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-sampling",
+      "controlId": "sampling",
+      "text": "SAMPLING",
+      "x": 1639,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-pad-mode",
+      "controlId": "pad-mode",
+      "text": "PAD MODE",
+      "x": 1689,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-clip-board",
+      "controlId": "clip-board",
+      "text": "CLIP BOARD",
+      "x": 1718,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-bank",
+      "controlId": "bank",
+      "text": "BANK",
+      "x": 1743,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-hold",
+      "controlId": "hold",
+      "text": "HOLD",
+      "x": 1796,
+      "y": 28,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-write",
+      "controlId": "write",
+      "text": "WRITE",
+      "x": 739,
+      "y": 63,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-motional-pad",
+      "controlId": "motional-pad",
+      "text": "MOTIONAL\nPAD",
+      "x": 740,
+      "y": 143,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-daw-ctrl",
+      "controlId": "daw-ctrl",
+      "text": "DAW CTRL",
+      "x": 740,
+      "y": 195,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e2",
+      "controlId": "e2",
+      "text": "E2",
+      "x": 847,
+      "y": 268,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e3",
+      "controlId": "e3",
+      "text": "E3",
+      "x": 887,
+      "y": 218,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e4",
+      "controlId": "e4",
+      "text": "E4",
+      "x": 927,
+      "y": 268,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e5",
+      "controlId": "e5",
+      "text": "E5",
+      "x": 967,
+      "y": 268,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e6",
+      "controlId": "e6",
+      "text": "E6",
+      "x": 1007,
+      "y": 268,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-tempo",
+      "controlId": "tempo",
+      "text": "TEMPO",
+      "x": 1132,
+      "y": 273,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-value-dial",
+      "controlId": "value-dial",
+      "text": "VALUE",
+      "x": 1222,
+      "y": 281,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-inc",
+      "controlId": "inc",
+      "text": "INC",
+      "x": 1177,
+      "y": 186,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cursor-up",
+      "controlId": "cursor-up",
+      "text": "CURSOR UP",
+      "x": 1143,
+      "y": 186,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cursor-down",
+      "controlId": "cursor-down",
+      "text": "CURSOR DOWN",
+      "x": 1142,
+      "y": 222,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cursor-left",
+      "controlId": "cursor-left",
+      "text": "CURSOR LEFT",
+      "x": 1112,
+      "y": 222,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-cursor-right",
+      "controlId": "cursor-right",
+      "text": "CURSOR RIGHT",
+      "x": 1177,
+      "y": 222,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-shift",
+      "controlId": "shift",
+      "text": "SHIFT",
+      "x": 1110,
+      "y": 259,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-exit",
+      "controlId": "exit",
+      "text": "EXIT",
+      "x": 1193,
+      "y": 295,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-enter",
+      "controlId": "enter",
+      "text": "ENTER",
+      "x": 1176,
+      "y": 230,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-master-fx",
+      "controlId": "master-fx",
+      "text": "MASTER FX",
+      "x": 739,
+      "y": 108,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-menu",
+      "controlId": "menu",
+      "text": "MENU",
+      "x": 741,
+      "y": 239,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    },
+    {
+      "id": "label-e1",
+      "controlId": "e1",
+      "text": "E1",
+      "x": 807,
+      "y": 268,
+      "fontSize": 5,
+      "align": "center",
+      "w": 60
+    }
+  ],
+  "controlGroups": [
+    {
+      "id": "group-1775260180547-o9ai8i",
+      "name": "Group 1775260180547",
+      "controlIds": [
+        "zone-int-ext-1",
+        "zone-int-ext-2",
+        "zone-int-ext-3",
+        "zone-int-ext-4",
+        "zone-int-ext-5",
+        "zone-int-ext-6",
+        "zone-int-ext-7",
+        "zone-int-ext-8"
+      ]
+    },
+    {
+      "id": "group-1775262762540-kltjk2",
+      "name": "Group 2",
+      "controlIds": [
+        "knob-1",
+        "knob-2",
+        "knob-3",
+        "knob-4",
+        "knob-5",
+        "knob-6",
+        "knob-7",
+        "knob-8"
+      ]
+    },
+    {
+      "id": "group-1775262861219-zy97u8",
+      "name": "Group 3",
+      "controlIds": [
+        "slider-1",
+        "slider-2",
+        "slider-3",
+        "slider-4",
+        "slider-5",
+        "slider-6",
+        "slider-7",
+        "slider-8"
+      ]
+    },
+    {
+      "id": "group-1775325460369-dg7w05",
+      "name": "Group 4",
+      "controlIds": [
+        "ctrl",
+        "assign",
+        "zone-select",
+        "arpeggio",
+        "octave-up"
+      ]
+    },
+    {
+      "id": "group-1775326737456-lir1al",
+      "name": "Group 6",
+      "controlIds": [
+        "pan-level",
+        "zone-9-16",
+        "chord-memory",
+        "octave-down"
+      ]
+    },
+    {
+      "id": "group-1775328777684-l94k3m",
+      "name": "Group 6",
+      "controlIds": [
+        "s2",
+        "s1"
+      ]
+    },
+    {
+      "id": "group-1775331265248-4ho8ef",
+      "name": "Group 7",
+      "controlIds": [
+        "write",
+        "master-fx",
+        "motional-pad",
+        "daw-ctrl",
+        "menu"
+      ]
+    },
+    {
+      "id": "group-1775331654748-hqw9xi",
+      "name": "Group 8",
+      "controlIds": [
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    }
+  ],
+  "canvasWidth": 1875,
+  "canvasHeight": 564,
+  "_manifestVersion": "e4e20cff",
+  "controlScale": 0.3,
+  "zoom": 1.1,
+  "cleanupGap": 0,
+  "panelScale": 1,
+  "keyboard": {
+    "keys": 61,
+    "startNote": "C2",
+    "type": "standard",
+    "panelHeightPercent": 57.3,
+    "leftPercent": 71.1,
+    "widthPercent": 58
+  }
+}

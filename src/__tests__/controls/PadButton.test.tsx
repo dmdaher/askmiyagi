@@ -3,11 +3,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import PadButton from '@/components/controls/PadButton';
 
 describe('PadButton', () => {
-  it('renders with w-16 h-16 (64x64)', () => {
+  it('renders with default 64x64 size', () => {
     const { container } = render(<PadButton id="pad-1" label="1" />);
-    const button = container.querySelector('button');
-    expect(button?.className).toContain('w-16');
-    expect(button?.className).toContain('h-16');
+    const button = container.querySelector('button') as HTMLElement;
+    expect(button?.style.width).toBe('64px');
+    expect(button?.style.height).toBe('64px');
   });
 
   it('shows label text', () => {

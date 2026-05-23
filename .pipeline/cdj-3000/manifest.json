@@ -1,0 +1,2013 @@
+{
+  "deviceId": "cdj-3000",
+  "deviceName": "CDJ-3000 Multi Player",
+  "manufacturer": "Pioneer DJ",
+  "layoutType": "asymmetric",
+  "densityTargets": {
+    "vertical": "dense",
+    "horizontal": "moderate",
+    "horizontalDeadSpaceMax": 5
+  },
+  "sections": [
+    {
+      "id": "BROWSE",
+      "headerLabel": "Navigation Bar",
+      "archetype": "single-row",
+      "panelBoundingBox": {
+        "x": 10.6,
+        "y": 1.5,
+        "w": 78.4,
+        "h": 4.8
+      },
+      "controls": [
+        "SOURCE",
+        "BROWSE_BTN",
+        "TAG_LIST",
+        "SOURCE_INDICATOR",
+        "PLAYLIST",
+        "SEARCH_BTN",
+        "MENU_UTILITY"
+      ],
+      "widthPercent": 78,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "MEDIA",
+      "headerLabel": "USB/SD Media Ports",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 2.3,
+        "y": 7.5,
+        "w": 12.8,
+        "h": 15
+      },
+      "controls": [
+        "USB_PORT",
+        "USB_INDICATOR",
+        "USB_STOP",
+        "SD_INDICATOR",
+        "SD_SLOT"
+      ],
+      "containerAssignment": {
+        "row-usb-top": [
+          "USB_PORT",
+          "USB_INDICATOR"
+        ],
+        "row-usb-stop": [
+          "USB_STOP"
+        ],
+        "row-sd": [
+          "SD_INDICATOR",
+          "SD_SLOT"
+        ]
+      },
+      "widthPercent": 14,
+      "complexity": "LOW"
+    },
+    {
+      "id": "DISPLAY",
+      "headerLabel": "9-inch Touch Display",
+      "archetype": "single-column",
+      "panelBoundingBox": {
+        "x": 19,
+        "y": 7.1,
+        "w": 61.3,
+        "h": 26.2
+      },
+      "controls": [
+        "TOUCH_DISPLAY"
+      ],
+      "widthPercent": 64,
+      "complexity": "LOW"
+    },
+    {
+      "id": "SELECTOR",
+      "headerLabel": "Browse Selector",
+      "archetype": "single-column",
+      "panelBoundingBox": {
+        "x": 78.2,
+        "y": 10.5,
+        "w": 22.8,
+        "h": 18.7
+      },
+      "controls": [
+        "BACK",
+        "TAG_TRACK_REMOVE",
+        "ROTARY_SELECTOR"
+      ],
+      "widthPercent": 22,
+      "complexity": "LOW"
+    },
+    {
+      "id": "HOT_CUE",
+      "headerLabel": "Performance Pads & Mode Buttons",
+      "archetype": "dual-column",
+      "panelBoundingBox": {
+        "x": 0,
+        "y": 23.9,
+        "w": 85.2,
+        "h": 14.5
+      },
+      "controls": [
+        "SLIP",
+        "QUANTIZE",
+        "TIME_MODE_AUTO_CUE",
+        "HOT_CUE_A",
+        "HOT_CUE_B",
+        "HOT_CUE_C",
+        "HOT_CUE_D",
+        "HOT_CUE_E",
+        "HOT_CUE_F",
+        "HOT_CUE_G",
+        "HOT_CUE_H"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "SLIP",
+          "QUANTIZE",
+          "TIME_MODE_AUTO_CUE"
+        ],
+        "right-column": {
+          "pads": {
+            "controls": [
+              "HOT_CUE_A",
+              "HOT_CUE_B",
+              "HOT_CUE_C",
+              "HOT_CUE_D",
+              "HOT_CUE_E",
+              "HOT_CUE_F",
+              "HOT_CUE_G",
+              "HOT_CUE_H"
+            ],
+            "direction": "row"
+          }
+        }
+      },
+      "widthPercent": 52,
+      "complexity": "HIGH"
+    },
+    {
+      "id": "JOG_CONTROLS",
+      "headerLabel": "Jog Wheel Settings",
+      "archetype": "dual-column",
+      "panelBoundingBox": {
+        "x": 69.8,
+        "y": 40.5,
+        "w": 29.2,
+        "h": 10.2
+      },
+      "controls": [
+        "TRACK_FILTER_EDIT",
+        "SHORTCUT",
+        "VINYL_SPEED_ADJ",
+        "JOG_MODE",
+        "VINYL_CDJ_INDICATOR",
+        "JOG_ADJUST"
+      ],
+      "containerAssignment": {
+        "left-column": [
+          "TRACK_FILTER_EDIT",
+          "SHORTCUT",
+          "VINYL_SPEED_ADJ"
+        ],
+        "right-column": [
+          "JOG_MODE",
+          "VINYL_CDJ_INDICATOR",
+          "JOG_ADJUST"
+        ]
+      },
+      "widthPercent": 22,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "LOOP",
+      "headerLabel": "Loop Controls",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": -0.8,
+        "y": 40.3,
+        "w": 30.1,
+        "h": 9.9
+      },
+      "controls": [
+        "LOOP_IN_CUE",
+        "LOOP_OUT",
+        "RELOOP_EXIT",
+        "FOUR_BEAT_LOOP",
+        "EIGHT_BEAT_LOOP"
+      ],
+      "containerAssignment": {
+        "row-1": [
+          "LOOP_IN_CUE",
+          "LOOP_OUT"
+        ],
+        "row-2": [
+          "RELOOP_EXIT",
+          "FOUR_BEAT_LOOP",
+          "EIGHT_BEAT_LOOP"
+        ]
+      },
+      "widthPercent": 28,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "CUE_MEMORY",
+      "headerLabel": "Cue/Loop Memory Controls",
+      "archetype": "grid-NxM",
+      "panelBoundingBox": {
+        "x": 58.9,
+        "y": 34.6,
+        "w": 36.5,
+        "h": 9.6
+      },
+      "gridRows": 2,
+      "gridCols": 2,
+      "controls": [
+        "CUE_LOOP_CALL_BACK",
+        "CUE_LOOP_CALL_FWD",
+        "DELETE",
+        "MEMORY"
+      ],
+      "widthPercent": 23,
+      "complexity": "LOW"
+    },
+    {
+      "id": "SYNC",
+      "headerLabel": "Beat Sync Controls",
+      "archetype": "single-column",
+      "panelBoundingBox": {
+        "x": 86.5,
+        "y": 47.1,
+        "w": 11.8,
+        "h": 7.9
+      },
+      "controls": [
+        "MASTER",
+        "KEY_SYNC",
+        "BEAT_SYNC_INST_DOUBLES"
+      ],
+      "widthPercent": 22,
+      "complexity": "LOW"
+    },
+    {
+      "id": "TRANSPORT",
+      "headerLabel": "Transport Controls",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": {
+        "x": 0.6,
+        "y": 50.4,
+        "w": 15.6,
+        "h": 47.7
+      },
+      "controls": [
+        "BEAT_JUMP_BACK",
+        "BEAT_JUMP_FWD",
+        "DIRECTION_LEVER",
+        "TRACK_SEARCH_BACK",
+        "TRACK_SEARCH_FWD",
+        "SEARCH_BACK",
+        "SEARCH_FWD",
+        "CUE_BTN",
+        "PLAY_PAUSE"
+      ],
+      "containerAssignment": {
+        "row-beat-jump": [
+          "BEAT_JUMP_BACK",
+          "BEAT_JUMP_FWD"
+        ],
+        "row-direction": [
+          "DIRECTION_LEVER"
+        ],
+        "row-track-search": [
+          "TRACK_SEARCH_BACK",
+          "TRACK_SEARCH_FWD"
+        ],
+        "row-search": [
+          "SEARCH_BACK",
+          "SEARCH_FWD"
+        ],
+        "row-cue": [
+          "CUE_BTN"
+        ],
+        "row-play": [
+          "PLAY_PAUSE"
+        ]
+      },
+      "widthPercent": 15,
+      "complexity": "HIGH"
+    },
+    {
+      "id": "JOG_WHEEL",
+      "headerLabel": "Jog Wheel",
+      "archetype": "anchor-layout",
+      "panelBoundingBox": {
+        "x": 16.9,
+        "y": 46.1,
+        "w": 68.7,
+        "h": 43.6
+      },
+      "controls": [
+        "JOG_WHEEL",
+        "JOG_DISPLAY"
+      ],
+      "containerAssignment": {
+        "secondary-controls": [
+          "JOG_DISPLAY"
+        ],
+        "anchor-element": [
+          "JOG_WHEEL"
+        ]
+      },
+      "heightSplits": {
+        "cluster": 0.1,
+        "anchor": 0.85,
+        "gap": 0.05
+      },
+      "widthPercent": 54,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "TEMPO",
+      "headerLabel": "Tempo Controls",
+      "archetype": "dual-column",
+      "panelBoundingBox": {
+        "x": 79.9,
+        "y": 58.3,
+        "w": 21.3,
+        "h": 37.6
+      },
+      "controls": [
+        "TEMPO_RANGE",
+        "MASTER_TEMPO",
+        "TEMPO_SLIDER",
+        "TEMPO_RESET",
+        "TEMPO_RESET_INDICATOR"
+      ],
+      "containerAssignment": {
+        "left-column": {
+          "mode-buttons": {
+            "controls": [
+              "TEMPO_RANGE",
+              "MASTER_TEMPO"
+            ],
+            "direction": "column"
+          },
+          "reset-controls": {
+            "controls": [
+              "TEMPO_RESET",
+              "TEMPO_RESET_INDICATOR"
+            ],
+            "direction": "row"
+          }
+        },
+        "right-column": [
+          "TEMPO_SLIDER"
+        ]
+      },
+      "widthPercent": 20,
+      "complexity": "MEDIUM"
+    }
+  ],
+  "controls": [
+    {
+      "id": "SOURCE",
+      "verbatimLabel": "SOURCE",
+      "type": "button",
+      "section": "BROWSE",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": "BROWSE_BTN"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "flat-key",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 11.2,
+        "y": 2,
+        "w": 21.3,
+        "h": 3.9
+      }
+    },
+    {
+      "id": "BROWSE_BTN",
+      "verbatimLabel": "BROWSE",
+      "type": "button",
+      "section": "BROWSE",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "SOURCE",
+        "right": "TAG_LIST"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "flat-key",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 22.3,
+        "y": 2,
+        "w": 21.3,
+        "h": 3.9
+      }
+    },
+    {
+      "id": "TAG_LIST",
+      "verbatimLabel": "TAG LIST",
+      "type": "button",
+      "section": "BROWSE",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "BROWSE_BTN",
+        "right": "SOURCE_INDICATOR"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "flat-key",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 44.6,
+        "y": 2,
+        "w": 21.3,
+        "h": 3.9
+      }
+    },
+    {
+      "id": "SOURCE_INDICATOR",
+      "verbatimLabel": "SOURCE indicator",
+      "type": "led",
+      "section": "BROWSE",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "TAG_LIST",
+        "right": "PLAYLIST"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 48.5,
+        "y": 2,
+        "w": 2.5,
+        "h": 1.7
+      }
+    },
+    {
+      "id": "PLAYLIST",
+      "verbatimLabel": "PLAYLIST",
+      "type": "button",
+      "section": "BROWSE",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "SOURCE_INDICATOR",
+        "right": "SEARCH_BTN"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "flat-key",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 34.7,
+        "y": 2,
+        "w": 21.3,
+        "h": 3.9
+      }
+    },
+    {
+      "id": "SEARCH_BTN",
+      "verbatimLabel": "SEARCH",
+      "type": "button",
+      "section": "BROWSE",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "PLAYLIST",
+        "right": "MENU_UTILITY"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "flat-key",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 55.6,
+        "y": 2,
+        "w": 21.3,
+        "h": 3.9
+      }
+    },
+    {
+      "id": "MENU_UTILITY",
+      "verbatimLabel": "MENU/UTILITY",
+      "type": "button",
+      "section": "BROWSE",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "SEARCH_BTN",
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "flat-key",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 67,
+        "y": 2,
+        "w": 21.3,
+        "h": 3.9
+      }
+    },
+    {
+      "id": "USB_PORT",
+      "verbatimLabel": "USB port",
+      "type": "port",
+      "section": "MEDIA",
+      "functionalGroup": "Media/Storage",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "USB_STOP",
+        "left": null,
+        "right": "USB_INDICATOR"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 2.9,
+        "y": 8,
+        "w": 6.1,
+        "h": 3.4
+      }
+    },
+    {
+      "id": "USB_INDICATOR",
+      "verbatimLabel": "USB indicator",
+      "type": "led",
+      "section": "MEDIA",
+      "functionalGroup": "Media/Storage",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "USB_PORT",
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 10.2,
+        "y": 8,
+        "w": 2.3,
+        "h": 3.4
+      }
+    },
+    {
+      "id": "USB_STOP",
+      "verbatimLabel": "USB STOP",
+      "type": "button",
+      "section": "MEDIA",
+      "functionalGroup": "Media/Storage",
+      "spatialNeighbors": {
+        "above": "USB_PORT",
+        "below": "SD_INDICATOR",
+        "left": null,
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 8.4,
+        "y": 11.8,
+        "w": 6,
+        "h": 2.4
+      }
+    },
+    {
+      "id": "SD_INDICATOR",
+      "verbatimLabel": "SD memory card indicator",
+      "type": "led",
+      "section": "MEDIA",
+      "functionalGroup": "Media/Storage",
+      "spatialNeighbors": {
+        "above": "USB_STOP",
+        "below": null,
+        "left": null,
+        "right": "SD_SLOT"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#f59e0b",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 4.5,
+        "y": 18.7,
+        "w": 8.3,
+        "h": 3.4
+      }
+    },
+    {
+      "id": "SD_SLOT",
+      "verbatimLabel": "SD memory card slot",
+      "type": "slot",
+      "section": "MEDIA",
+      "functionalGroup": "Media/Storage",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "SD_INDICATOR",
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 4.5,
+        "y": 16.1,
+        "w": 8.3,
+        "h": 3.4
+      }
+    },
+    {
+      "id": "TOUCH_DISPLAY",
+      "verbatimLabel": "Touch display",
+      "type": "screen",
+      "section": "DISPLAY",
+      "functionalGroup": "Display",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 19.7,
+        "y": 7.6,
+        "w": 60,
+        "h": 25.2
+      }
+    },
+    {
+      "id": "BACK",
+      "verbatimLabel": "BACK",
+      "type": "button",
+      "section": "SELECTOR",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "TAG_TRACK_REMOVE",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 78.9,
+        "y": 11,
+        "w": 12.7,
+        "h": 4.4
+      }
+    },
+    {
+      "id": "TAG_TRACK_REMOVE",
+      "verbatimLabel": "TAG TRACK/REMOVE",
+      "type": "button",
+      "section": "SELECTOR",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": "BACK",
+        "below": "ROTARY_SELECTOR",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 87.7,
+        "y": 11,
+        "w": 12.7,
+        "h": 4.4
+      }
+    },
+    {
+      "id": "ROTARY_SELECTOR",
+      "verbatimLabel": "Rotary selector",
+      "type": "encoder",
+      "section": "SELECTOR",
+      "functionalGroup": "Navigation",
+      "spatialNeighbors": {
+        "above": "TAG_TRACK_REMOVE",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 83.7,
+        "y": 13.9,
+        "w": 12,
+        "h": 9.7
+      }
+    },
+    {
+      "id": "SLIP",
+      "verbatimLabel": "SLIP",
+      "type": "button",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "QUANTIZE",
+        "left": null,
+        "right": "HOT_CUE_A"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#3b82f6",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 0.6,
+        "y": 28.3,
+        "w": 8.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "QUANTIZE",
+      "verbatimLabel": "QUANTIZE",
+      "type": "button",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": "SLIP",
+        "below": "TIME_MODE_AUTO_CUE",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#ef4444",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 6.5,
+        "y": 28.3,
+        "w": 8.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "TIME_MODE_AUTO_CUE",
+      "verbatimLabel": "TIME MODE/AUTO CUE",
+      "type": "button",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": "QUANTIZE",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "above",
+      "icon": null,
+      "secondaryLabel": "AUTO CUE",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 3.6,
+        "y": 24.4,
+        "w": 8.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "HOT_CUE_A",
+      "verbatimLabel": "HOT CUE A",
+      "type": "pad",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "SLIP",
+        "right": "HOT_CUE_B"
+      },
+      "shape": "square",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "below",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 15.1,
+        "y": 35,
+        "w": 7.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "HOT_CUE_B",
+      "verbatimLabel": "HOT CUE B",
+      "type": "pad",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "HOT_CUE_A",
+        "right": "HOT_CUE_C"
+      },
+      "shape": "square",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "below",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 23.8,
+        "y": 35,
+        "w": 7.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "HOT_CUE_C",
+      "verbatimLabel": "HOT CUE C",
+      "type": "pad",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "HOT_CUE_B",
+        "right": "HOT_CUE_D"
+      },
+      "shape": "square",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "below",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 32.5,
+        "y": 35,
+        "w": 7.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "HOT_CUE_D",
+      "verbatimLabel": "HOT CUE D",
+      "type": "pad",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "HOT_CUE_C",
+        "right": "HOT_CUE_E"
+      },
+      "shape": "square",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "below",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 41.1,
+        "y": 35,
+        "w": 7.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "HOT_CUE_E",
+      "verbatimLabel": "HOT CUE E",
+      "type": "pad",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "HOT_CUE_D",
+        "right": "HOT_CUE_F"
+      },
+      "shape": "square",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "below",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 50.9,
+        "y": 35,
+        "w": 7.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "HOT_CUE_F",
+      "verbatimLabel": "HOT CUE F",
+      "type": "pad",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "HOT_CUE_E",
+        "right": "HOT_CUE_G"
+      },
+      "shape": "square",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "below",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 59.6,
+        "y": 35,
+        "w": 7.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "HOT_CUE_G",
+      "verbatimLabel": "HOT CUE G",
+      "type": "pad",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "HOT_CUE_F",
+        "right": "HOT_CUE_H"
+      },
+      "shape": "square",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "below",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 68.6,
+        "y": 35,
+        "w": 7.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "HOT_CUE_H",
+      "verbatimLabel": "HOT CUE H",
+      "type": "pad",
+      "section": "HOT_CUE",
+      "functionalGroup": "Performance",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "HOT_CUE_G",
+        "right": null
+      },
+      "shape": "square",
+      "surfaceColor": null,
+      "buttonStyle": "rubber",
+      "labelDisplay": "below",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 77.1,
+        "y": 35,
+        "w": 7.3,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "TRACK_FILTER_EDIT",
+      "verbatimLabel": "TRACK FILTER/EDIT",
+      "type": "button",
+      "section": "JOG_CONTROLS",
+      "functionalGroup": "Jog Settings",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "SHORTCUT",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 80.5,
+        "y": 24.4,
+        "w": 12.7,
+        "h": 4.4
+      }
+    },
+    {
+      "id": "SHORTCUT",
+      "verbatimLabel": "SHORTCUT",
+      "type": "button",
+      "section": "JOG_CONTROLS",
+      "functionalGroup": "Jog Settings",
+      "spatialNeighbors": {
+        "above": "TRACK_FILTER_EDIT",
+        "below": "VINYL_SPEED_ADJ",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 87.7,
+        "y": 24.4,
+        "w": 12.7,
+        "h": 4.4
+      }
+    },
+    {
+      "id": "VINYL_SPEED_ADJ",
+      "verbatimLabel": "VINYL SPEED ADJ. TOUCH/BRAKE",
+      "type": "knob",
+      "section": "JOG_CONTROLS",
+      "functionalGroup": "Jog Settings",
+      "spatialNeighbors": {
+        "above": "SHORTCUT",
+        "below": null,
+        "left": null,
+        "right": "JOG_MODE"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "above",
+      "icon": null,
+      "secondaryLabel": "TOUCH/BRAKE",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 89.5,
+        "y": 35.1,
+        "w": 5.3,
+        "h": 3.9
+      }
+    },
+    {
+      "id": "JOG_MODE",
+      "verbatimLabel": "JOG MODE",
+      "type": "button",
+      "section": "JOG_CONTROLS",
+      "functionalGroup": "Jog Settings",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "VINYL_CDJ_INDICATOR",
+        "left": "VINYL_SPEED_ADJ",
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 91.7,
+        "y": 41,
+        "w": 6.7,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "VINYL_CDJ_INDICATOR",
+      "verbatimLabel": "VINYL/CDJ indicator",
+      "type": "led",
+      "section": "JOG_CONTROLS",
+      "functionalGroup": "Jog Settings",
+      "spatialNeighbors": {
+        "above": "JOG_MODE",
+        "below": "JOG_ADJUST",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledVariant": "dual-label",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 84.8,
+        "y": 41,
+        "w": 6.7,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "JOG_ADJUST",
+      "verbatimLabel": "JOG ADJUST",
+      "type": "knob",
+      "section": "JOG_CONTROLS",
+      "functionalGroup": "Jog Settings",
+      "spatialNeighbors": {
+        "above": "VINYL_CDJ_INDICATOR",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "above",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 70.4,
+        "y": 47.4,
+        "w": 14.7,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "LOOP_IN_CUE",
+      "verbatimLabel": "IN/CUE",
+      "type": "button",
+      "section": "LOOP",
+      "functionalGroup": "Loop",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "RELOOP_EXIT",
+        "left": null,
+        "right": "LOOP_OUT"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "secondaryLabel": "IN ADJUST",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": -0.1,
+        "y": 40.8,
+        "w": 12,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "LOOP_OUT",
+      "verbatimLabel": "OUT",
+      "type": "button",
+      "section": "LOOP",
+      "functionalGroup": "Loop",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "EIGHT_BEAT_LOOP",
+        "left": "LOOP_IN_CUE",
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "secondaryLabel": "OUT ADJUST",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 8.2,
+        "y": 40.8,
+        "w": 12,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "RELOOP_EXIT",
+      "verbatimLabel": "LOOP RELOOP/EXIT",
+      "type": "button",
+      "section": "LOOP",
+      "functionalGroup": "Loop",
+      "spatialNeighbors": {
+        "above": "LOOP_IN_CUE",
+        "below": null,
+        "left": null,
+        "right": "FOUR_BEAT_LOOP"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 16.6,
+        "y": 40.8,
+        "w": 12,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "FOUR_BEAT_LOOP",
+      "verbatimLabel": "4 BEAT LOOP (1/2X)",
+      "type": "button",
+      "section": "LOOP",
+      "functionalGroup": "Loop",
+      "spatialNeighbors": {
+        "above": "LOOP_IN_CUE",
+        "below": null,
+        "left": "RELOOP_EXIT",
+        "right": "EIGHT_BEAT_LOOP"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "secondaryLabel": "1/2X",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": -0.1,
+        "y": 46.9,
+        "w": 12,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "EIGHT_BEAT_LOOP",
+      "verbatimLabel": "8 BEAT LOOP (2X)",
+      "type": "button",
+      "section": "LOOP",
+      "functionalGroup": "Loop",
+      "spatialNeighbors": {
+        "above": "LOOP_OUT",
+        "below": null,
+        "left": "FOUR_BEAT_LOOP",
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "secondaryLabel": "2X",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 8.2,
+        "y": 46.9,
+        "w": 12,
+        "h": 2.9
+      }
+    },
+    {
+      "id": "CUE_LOOP_CALL_BACK",
+      "verbatimLabel": "CUE/LOOP CALL ◄",
+      "type": "button",
+      "section": "CUE_MEMORY",
+      "functionalGroup": "Cue/Memory",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "DELETE",
+        "left": null,
+        "right": "CUE_LOOP_CALL_FWD"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "icon-only",
+      "icon": "arrow-left",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 59.6,
+        "y": 41.2,
+        "w": 8.8,
+        "h": 2.4
+      }
+    },
+    {
+      "id": "CUE_LOOP_CALL_FWD",
+      "verbatimLabel": "CUE/LOOP CALL ►",
+      "type": "button",
+      "section": "CUE_MEMORY",
+      "functionalGroup": "Cue/Memory",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "MEMORY",
+        "left": "CUE_LOOP_CALL_BACK",
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "icon-only",
+      "icon": "arrow-right",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 64.8,
+        "y": 41.2,
+        "w": 8.8,
+        "h": 2.4
+      }
+    },
+    {
+      "id": "DELETE",
+      "verbatimLabel": "DELETE",
+      "type": "button",
+      "section": "CUE_MEMORY",
+      "functionalGroup": "Cue/Memory",
+      "spatialNeighbors": {
+        "above": "CUE_LOOP_CALL_BACK",
+        "below": null,
+        "left": null,
+        "right": "MEMORY"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 71.3,
+        "y": 41.2,
+        "w": 8.8,
+        "h": 2.4
+      }
+    },
+    {
+      "id": "MEMORY",
+      "verbatimLabel": "MEMORY",
+      "type": "button",
+      "section": "CUE_MEMORY",
+      "functionalGroup": "Cue/Memory",
+      "spatialNeighbors": {
+        "above": "CUE_LOOP_CALL_FWD",
+        "below": null,
+        "left": "DELETE",
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 77.1,
+        "y": 41.2,
+        "w": 8.8,
+        "h": 2.4
+      }
+    },
+    {
+      "id": "MASTER",
+      "verbatimLabel": "MASTER",
+      "type": "button",
+      "section": "SYNC",
+      "functionalGroup": "Sync",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "KEY_SYNC",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 92.3,
+        "y": 47.6,
+        "w": 5.3,
+        "h": 3.4
+      }
+    },
+    {
+      "id": "KEY_SYNC",
+      "verbatimLabel": "KEY SYNC",
+      "type": "button",
+      "section": "SYNC",
+      "functionalGroup": "Sync",
+      "spatialNeighbors": {
+        "above": "MASTER",
+        "below": "BEAT_SYNC_INST_DOUBLES",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": "#ec4899",
+      "buttonStyle": "raised",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#ec4899",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 89.7,
+        "y": 51.1,
+        "w": 5.3,
+        "h": 3.4
+      }
+    },
+    {
+      "id": "BEAT_SYNC_INST_DOUBLES",
+      "verbatimLabel": "Beat Sync",
+      "type": "button",
+      "section": "SYNC",
+      "functionalGroup": "Sync",
+      "spatialNeighbors": {
+        "above": "KEY_SYNC",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "secondaryLabel": "",
+      "ledVariant": "dot",
+      "ledColor": "#3b82f6",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 87.1,
+        "y": 47.6,
+        "w": 5.3,
+        "h": 3.4
+      }
+    },
+    {
+      "id": "BEAT_JUMP_BACK",
+      "verbatimLabel": "BEAT JUMP ◄",
+      "type": "button",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "DIRECTION_LEVER",
+        "left": null,
+        "right": "BEAT_JUMP_FWD"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "icon-only",
+      "icon": "arrow-left",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 1.3,
+        "y": 50.9,
+        "w": 6.4,
+        "h": 5.9
+      }
+    },
+    {
+      "id": "BEAT_JUMP_FWD",
+      "verbatimLabel": "BEAT JUMP ►",
+      "type": "button",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "DIRECTION_LEVER",
+        "left": "BEAT_JUMP_BACK",
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "icon-only",
+      "icon": "arrow-right",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 9.1,
+        "y": 50.9,
+        "w": 6.4,
+        "h": 5.9
+      }
+    },
+    {
+      "id": "DIRECTION_LEVER",
+      "verbatimLabel": "DIRECTION FWD, REV, SLIP REV",
+      "type": "lever",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": "BEAT_JUMP_BACK",
+        "below": "TRACK_SEARCH_BACK",
+        "left": null,
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "labelDisplay": "above",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 3.1,
+        "y": 57.4,
+        "w": 10.7,
+        "h": 5.8
+      }
+    },
+    {
+      "id": "TRACK_SEARCH_BACK",
+      "verbatimLabel": "Track/Search",
+      "type": "button",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": "DIRECTION_LEVER",
+        "below": "SEARCH_BACK",
+        "left": null,
+        "right": "TRACK_SEARCH_FWD"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "icon-only",
+      "icon": "skip-backward",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 1.5,
+        "y": 67.2,
+        "w": 6,
+        "h": 5.3
+      }
+    },
+    {
+      "id": "TRACK_SEARCH_FWD",
+      "verbatimLabel": "Track/Search",
+      "type": "button",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": "DIRECTION_LEVER",
+        "below": "SEARCH_FWD",
+        "left": "TRACK_SEARCH_BACK",
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "icon-only",
+      "icon": "skip-forward",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 9.5,
+        "y": 67.2,
+        "w": 6,
+        "h": 5.3
+      }
+    },
+    {
+      "id": "SEARCH_BACK",
+      "verbatimLabel": "Search",
+      "type": "button",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": "TRACK_SEARCH_BACK",
+        "below": "CUE_BTN",
+        "left": null,
+        "right": "SEARCH_FWD"
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "icon-only",
+      "icon": "rewind",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 1.3,
+        "y": 72.6,
+        "w": 6.4,
+        "h": 5.9
+      }
+    },
+    {
+      "id": "SEARCH_FWD",
+      "verbatimLabel": "Search",
+      "type": "button",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": "TRACK_SEARCH_FWD",
+        "below": "CUE_BTN",
+        "left": "SEARCH_BACK",
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "icon-only",
+      "icon": "fast-forward",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 9.1,
+        "y": 72.6,
+        "w": 6.4,
+        "h": 5.9
+      }
+    },
+    {
+      "id": "CUE_BTN",
+      "verbatimLabel": "CUE",
+      "type": "button",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": "SEARCH_BACK",
+        "below": "PLAY_PAUSE",
+        "left": null,
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": "#f59e0b",
+      "buttonStyle": "transport",
+      "labelDisplay": "on-button",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#f59e0b",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 1.7,
+        "y": 80.3,
+        "w": 13.3,
+        "h": 7.3
+      }
+    },
+    {
+      "id": "PLAY_PAUSE",
+      "verbatimLabel": "PLAY/PAUSE ►/II",
+      "type": "button",
+      "section": "TRANSPORT",
+      "functionalGroup": "Transport",
+      "spatialNeighbors": {
+        "above": "CUE_BTN",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": "#22c55e",
+      "buttonStyle": "transport",
+      "labelDisplay": "icon-only",
+      "icon": "play-pause",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 1.7,
+        "y": 90.4,
+        "w": 13.3,
+        "h": 7.3
+      }
+    },
+    {
+      "id": "JOG_WHEEL",
+      "verbatimLabel": "Jog wheel (–REV/+FWD)",
+      "type": "wheel",
+      "section": "JOG_WHEEL",
+      "functionalGroup": "Jog Wheel",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledVariant": "bar",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 17.6,
+        "y": 46.6,
+        "w": 67.3,
+        "h": 42.7
+      }
+    },
+    {
+      "id": "JOG_DISPLAY",
+      "verbatimLabel": "Jog display",
+      "type": "screen",
+      "section": "JOG_WHEEL",
+      "functionalGroup": "Jog Wheel",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 29.9,
+        "y": 60.5,
+        "w": 42.7,
+        "h": 14.9
+      }
+    },
+    {
+      "id": "TEMPO_RANGE",
+      "verbatimLabel": "TEMPO ±6/±10/±16/WIDE",
+      "type": "button",
+      "section": "TEMPO",
+      "functionalGroup": "Tempo",
+      "spatialNeighbors": {
+        "above": null,
+        "below": "MASTER_TEMPO",
+        "left": null,
+        "right": "TEMPO_SLIDER"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "secondaryLabel": "±6/±10/±16/WIDE",
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 84.3,
+        "y": 58.8,
+        "w": 16.3,
+        "h": 2.4
+      }
+    },
+    {
+      "id": "MASTER_TEMPO",
+      "verbatimLabel": "MASTER TEMPO",
+      "type": "button",
+      "section": "TEMPO",
+      "functionalGroup": "Tempo",
+      "spatialNeighbors": {
+        "above": "TEMPO_RANGE",
+        "below": "TEMPO_RESET",
+        "left": null,
+        "right": "TEMPO_SLIDER"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#f59e0b",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 84.3,
+        "y": 64,
+        "w": 16.3,
+        "h": 2.4
+      }
+    },
+    {
+      "id": "TEMPO_SLIDER",
+      "verbatimLabel": "TEMPO slider",
+      "type": "fader",
+      "section": "TEMPO",
+      "functionalGroup": "Tempo",
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "MASTER_TEMPO",
+        "right": null
+      },
+      "shape": "rectangle",
+      "surfaceColor": null,
+      "labelDisplay": "above",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 88.5,
+        "y": 69.2,
+        "w": 8,
+        "h": 26.2
+      }
+    },
+    {
+      "id": "TEMPO_RESET",
+      "verbatimLabel": "TEMPO RESET",
+      "type": "button",
+      "section": "TEMPO",
+      "functionalGroup": "Tempo",
+      "spatialNeighbors": {
+        "above": "MASTER_TEMPO",
+        "below": null,
+        "left": null,
+        "right": "TEMPO_RESET_INDICATOR"
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "buttonStyle": "raised",
+      "labelDisplay": "above",
+      "icon": null,
+      "ledColor": null,
+      "hasLed": false,
+      "editorPosition": {
+        "x": 80.6,
+        "y": 79.1,
+        "w": 4.7,
+        "h": 6.3
+      }
+    },
+    {
+      "id": "TEMPO_RESET_INDICATOR",
+      "verbatimLabel": "TEMPO RESET indicator",
+      "type": "led",
+      "section": "TEMPO",
+      "functionalGroup": "Tempo",
+      "spatialNeighbors": {
+        "above": "TEMPO_SLIDER",
+        "below": null,
+        "left": "TEMPO_RESET",
+        "right": null
+      },
+      "shape": "circle",
+      "surfaceColor": null,
+      "labelDisplay": "hidden",
+      "icon": null,
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
+      "hasLed": true,
+      "editorPosition": {
+        "x": 83.5,
+        "y": 79.1,
+        "w": 8,
+        "h": 6.2
+      }
+    }
+  ],
+  "sharedElements": [],
+  "alignmentAnchors": [
+    {
+      "sourceId": "DISPLAY",
+      "targetId": "SELECTOR",
+      "axis": "x",
+      "tolerancePx": 2
+    },
+    {
+      "sourceId": "JOG_CONTROLS",
+      "targetId": "SYNC",
+      "axis": "x",
+      "tolerancePx": 2
+    },
+    {
+      "sourceId": "SYNC",
+      "targetId": "TEMPO",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "TRANSPORT",
+      "targetId": "JOG_WHEEL",
+      "axis": "y",
+      "tolerancePx": 4
+    }
+  ],
+  "deviceDimensions": {
+    "widthMm": 320,
+    "depthMm": 392,
+    "heightMm": 106
+  }
+}

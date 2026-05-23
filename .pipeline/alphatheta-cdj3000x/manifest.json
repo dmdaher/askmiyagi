@@ -1,0 +1,711 @@
+{
+  "deviceId": "alphatheta-cdj3000x",
+  "deviceName": "CDJ-3000X",
+  "manufacturer": "alphatheta",
+  "layoutType": "asymmetric",
+  "densityTargets": {
+    "vertical": "mixed — dense strip (hot cue 10.3:1) + sparse display (16:9) + dense lower panel",
+    "horizontal": "3 columns: left transport (22%), center jog (58%), right tempo (19%)",
+    "horizontalDeadSpaceMax": 5
+  },
+  "sections": [
+    {
+      "id": "source-bar",
+      "headerLabel": null,
+      "archetype": "single-row",
+      "panelBoundingBox": { "x": 14, "y": 0, "w": 74, "h": 4 },
+      "controls": [
+        "source-btn", "browse-btn", "tag-list-btn", "playlist-btn", "search-nav-btn", "menu-btn"
+      ],
+      "widthPercent": 74,
+      "complexity": "LOW"
+    },
+    {
+      "id": "usb",
+      "headerLabel": null,
+      "archetype": "stacked-rows",
+      "panelBoundingBox": { "x": 0, "y": 5, "w": 10, "h": 22 },
+      "controls": [
+        "usb1-port", "usb1-indicator", "usb1-stop",
+        "usb2-port", "usb2-indicator", "usb2-stop"
+      ],
+      "containerAssignment": {
+        "row-1": ["usb1-port", "usb1-indicator"],
+        "row-2": ["usb1-stop"],
+        "row-3": ["usb2-port", "usb2-indicator"],
+        "row-4": ["usb2-stop"]
+      },
+      "widthPercent": 10,
+      "complexity": "LOW"
+    },
+    {
+      "id": "display",
+      "headerLabel": null,
+      "archetype": "single-row",
+      "panelBoundingBox": { "x": 10, "y": 4, "w": 70, "h": 33 },
+      "controls": ["touchscreen"],
+      "widthPercent": 70,
+      "complexity": "LOW"
+    },
+    {
+      "id": "browse",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "panelBoundingBox": { "x": 80, "y": 5, "w": 17, "h": 32 },
+      "controls": [
+        "back-btn", "tag-track-btn", "rotary-selector", "track-filter-btn", "shortcut-btn"
+      ],
+      "widthPercent": 17,
+      "complexity": "LOW"
+    },
+    {
+      "id": "hot-cue",
+      "headerLabel": "HOT CUE",
+      "archetype": "dual-column",
+      "panelBoundingBox": { "x": 3, "y": 37, "w": 72, "h": 7 },
+      "controls": [
+        "quantize-btn", "slip-btn",
+        "hot-cue-a", "hot-cue-b", "hot-cue-c", "hot-cue-d",
+        "hot-cue-e", "hot-cue-f", "hot-cue-g", "hot-cue-h"
+      ],
+      "containerAssignment": {
+        "left-column": ["quantize-btn", "slip-btn"],
+        "right-column": {
+          "pads": { "controls": ["hot-cue-a", "hot-cue-b", "hot-cue-c", "hot-cue-d", "hot-cue-e", "hot-cue-f", "hot-cue-g", "hot-cue-h"], "direction": "row" }
+        }
+      },
+      "widthPercent": 72,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "loop",
+      "headerLabel": "LOOP",
+      "archetype": "stacked-rows",
+      "panelBoundingBox": { "x": 3, "y": 44, "w": 37, "h": 10 },
+      "controls": [
+        "loop-in-btn", "loop-out-btn", "reloop-exit-btn",
+        "four-beat-loop-btn", "eight-beat-loop-btn"
+      ],
+      "containerAssignment": {
+        "row-1": ["loop-in-btn", "loop-out-btn", "reloop-exit-btn"],
+        "row-2": ["four-beat-loop-btn", "eight-beat-loop-btn"]
+      },
+      "widthPercent": 37,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "cue-memory",
+      "headerLabel": null,
+      "archetype": "single-row",
+      "panelBoundingBox": { "x": 52, "y": 44, "w": 26, "h": 8 },
+      "controls": [
+        "cue-loop-call-prev", "cue-loop-call-next", "delete-btn", "memory-btn"
+      ],
+      "widthPercent": 26,
+      "complexity": "LOW"
+    },
+    {
+      "id": "beat-jump",
+      "headerLabel": "BEAT JUMP",
+      "archetype": "cluster-above-anchor",
+      "panelBoundingBox": { "x": 3, "y": 54, "w": 19, "h": 12 },
+      "gridRows": 1,
+      "gridCols": 2,
+      "controls": [
+        "beat-jump-prev", "beat-jump-next", "slip-rev-fwd-rev"
+      ],
+      "containerAssignment": {
+        "cluster": ["beat-jump-prev", "beat-jump-next"],
+        "anchor": ["slip-rev-fwd-rev"]
+      },
+      "heightSplits": { "cluster": 0.40, "anchor": 0.50, "gap": 0.10 },
+      "widthPercent": 19,
+      "complexity": "LOW"
+    },
+    {
+      "id": "transport",
+      "headerLabel": null,
+      "archetype": "stacked-rows",
+      "panelBoundingBox": { "x": 3, "y": 66, "w": 19, "h": 32 },
+      "controls": [
+        "track-search-prev", "track-search-next",
+        "search-rew", "search-ff",
+        "cue-btn", "play-pause-btn"
+      ],
+      "containerAssignment": {
+        "row-1": ["track-search-prev", "track-search-next"],
+        "row-2": ["search-rew", "search-ff"],
+        "row-3": ["cue-btn"],
+        "row-4": ["play-pause-btn"]
+      },
+      "widthPercent": 19,
+      "complexity": "MEDIUM"
+    },
+    {
+      "id": "jog",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "panelBoundingBox": { "x": 20, "y": 50, "w": 58, "h": 43 },
+      "controls": ["jog-wheel", "jog-display", "jog-ring"],
+      "widthPercent": 58,
+      "complexity": "LOW"
+    },
+    {
+      "id": "jog-controls",
+      "headerLabel": null,
+      "archetype": "single-column",
+      "panelBoundingBox": { "x": 78, "y": 37, "w": 19, "h": 19 },
+      "controls": [
+        "vinyl-speed-adjust", "jog-mode-btn", "vinyl-cdj-indicator", "jog-feel-knob"
+      ],
+      "widthPercent": 19,
+      "complexity": "LOW"
+    },
+    {
+      "id": "sync-tempo",
+      "headerLabel": null,
+      "archetype": "dual-column",
+      "panelBoundingBox": { "x": 78, "y": 56, "w": 19, "h": 42 },
+      "controls": [
+        "master-btn", "key-sync-btn", "beat-sync-btn",
+        "tempo-range-btn", "master-tempo-btn",
+        "tempo-slider", "tempo-reset-indicator", "tempo-reset-btn"
+      ],
+      "containerAssignment": {
+        "left-column": ["master-btn", "key-sync-btn", "beat-sync-btn", "tempo-range-btn", "master-tempo-btn"],
+        "right-column": ["tempo-slider", "tempo-reset-indicator", "tempo-reset-btn"]
+      },
+      "widthPercent": 19,
+      "complexity": "HIGH"
+    }
+  ],
+  "controls": [
+    {
+      "id": "source-btn",
+      "verbatimLabel": "SOURCE button",
+      "type": "button",
+      "section": "source-bar",
+      "functionalGroup": "source-selection",
+      "spatialNeighbors": { "above": null, "below": null, "left": null, "right": "browse-btn" }
+    },
+    {
+      "id": "browse-btn",
+      "verbatimLabel": "BROWSE button",
+      "type": "button",
+      "section": "source-bar",
+      "functionalGroup": "source-selection",
+      "spatialNeighbors": { "above": null, "below": null, "left": "source-btn", "right": "tag-list-btn" }
+    },
+    {
+      "id": "tag-list-btn",
+      "verbatimLabel": "TAG LIST button",
+      "type": "button",
+      "section": "source-bar",
+      "functionalGroup": "source-selection",
+      "spatialNeighbors": { "above": null, "below": null, "left": "browse-btn", "right": "playlist-btn" }
+    },
+    {
+      "id": "playlist-btn",
+      "verbatimLabel": "PLAYLIST button",
+      "type": "button",
+      "section": "source-bar",
+      "functionalGroup": "source-selection",
+      "spatialNeighbors": { "above": null, "below": null, "left": "tag-list-btn", "right": "search-nav-btn" }
+    },
+    {
+      "id": "search-nav-btn",
+      "verbatimLabel": "SEARCH button",
+      "type": "button",
+      "section": "source-bar",
+      "functionalGroup": "source-selection",
+      "spatialNeighbors": { "above": null, "below": null, "left": "playlist-btn", "right": "menu-btn" }
+    },
+    {
+      "id": "menu-btn",
+      "verbatimLabel": "MENU button",
+      "type": "button",
+      "section": "source-bar",
+      "functionalGroup": "source-selection",
+      "spatialNeighbors": { "above": null, "below": null, "left": "search-nav-btn", "right": null }
+    },
+    {
+      "id": "usb1-port",
+      "verbatimLabel": "USB1 port",
+      "type": "button",
+      "section": "usb",
+      "functionalGroup": "media-connection",
+      "spatialNeighbors": { "above": null, "below": "usb1-stop", "left": null, "right": "usb1-indicator" }
+    },
+    {
+      "id": "usb1-indicator",
+      "verbatimLabel": "USB1 indicator",
+      "type": "led",
+      "section": "usb",
+      "functionalGroup": "media-connection",
+      "spatialNeighbors": { "above": null, "below": null, "left": "usb1-port", "right": null }
+    },
+    {
+      "id": "usb1-stop",
+      "verbatimLabel": "USB1 STOP button",
+      "type": "button",
+      "section": "usb",
+      "functionalGroup": "media-connection",
+      "spatialNeighbors": { "above": "usb1-port", "below": "usb2-port", "left": null, "right": null }
+    },
+    {
+      "id": "usb2-port",
+      "verbatimLabel": "USB2 port",
+      "type": "button",
+      "section": "usb",
+      "functionalGroup": "media-connection",
+      "spatialNeighbors": { "above": "usb1-stop", "below": "usb2-stop", "left": null, "right": "usb2-indicator" }
+    },
+    {
+      "id": "usb2-indicator",
+      "verbatimLabel": "USB2 indicator",
+      "type": "led",
+      "section": "usb",
+      "functionalGroup": "media-connection",
+      "spatialNeighbors": { "above": null, "below": null, "left": "usb2-port", "right": null }
+    },
+    {
+      "id": "usb2-stop",
+      "verbatimLabel": "USB2 STOP button",
+      "type": "button",
+      "section": "usb",
+      "functionalGroup": "media-connection",
+      "spatialNeighbors": { "above": "usb2-port", "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "touchscreen",
+      "verbatimLabel": "Touchscreen",
+      "type": "screen",
+      "section": "display",
+      "functionalGroup": "display",
+      "spatialNeighbors": { "above": null, "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "back-btn",
+      "verbatimLabel": "BACK button",
+      "type": "button",
+      "section": "browse",
+      "functionalGroup": "browse-navigation",
+      "spatialNeighbors": { "above": null, "below": "tag-track-btn", "left": null, "right": null }
+    },
+    {
+      "id": "tag-track-btn",
+      "verbatimLabel": "TAG TRACK/REMOVE button",
+      "type": "button",
+      "section": "browse",
+      "functionalGroup": "browse-navigation",
+      "spatialNeighbors": { "above": "back-btn", "below": "rotary-selector", "left": null, "right": null }
+    },
+    {
+      "id": "rotary-selector",
+      "verbatimLabel": "Rotary selector",
+      "type": "encoder",
+      "section": "browse",
+      "functionalGroup": "browse-navigation",
+      "spatialNeighbors": { "above": "tag-track-btn", "below": "track-filter-btn", "left": null, "right": null }
+    },
+    {
+      "id": "track-filter-btn",
+      "verbatimLabel": "TRACK FILTER/EDIT button",
+      "type": "button",
+      "section": "browse",
+      "functionalGroup": "browse-navigation",
+      "spatialNeighbors": { "above": "rotary-selector", "below": "shortcut-btn", "left": null, "right": null }
+    },
+    {
+      "id": "shortcut-btn",
+      "verbatimLabel": "SHORTCUT button",
+      "type": "button",
+      "section": "browse",
+      "functionalGroup": "browse-navigation",
+      "spatialNeighbors": { "above": "track-filter-btn", "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "quantize-btn",
+      "verbatimLabel": "QUANTIZE button",
+      "type": "button",
+      "section": "hot-cue",
+      "functionalGroup": "playback-mode",
+      "spatialNeighbors": { "above": null, "below": "slip-btn", "left": null, "right": "hot-cue-a" }
+    },
+    {
+      "id": "slip-btn",
+      "verbatimLabel": "SLIP button",
+      "type": "button",
+      "section": "hot-cue",
+      "functionalGroup": "playback-mode",
+      "spatialNeighbors": { "above": "quantize-btn", "below": null, "left": null, "right": "hot-cue-a" }
+    },
+    {
+      "id": "hot-cue-a",
+      "verbatimLabel": "HOT CUE A button",
+      "type": "pad",
+      "section": "hot-cue",
+      "functionalGroup": "performance-pads",
+      "spatialNeighbors": { "above": null, "below": null, "left": "slip-btn", "right": "hot-cue-b" }
+    },
+    {
+      "id": "hot-cue-b",
+      "verbatimLabel": "HOT CUE B button",
+      "type": "pad",
+      "section": "hot-cue",
+      "functionalGroup": "performance-pads",
+      "spatialNeighbors": { "above": null, "below": null, "left": "hot-cue-a", "right": "hot-cue-c" }
+    },
+    {
+      "id": "hot-cue-c",
+      "verbatimLabel": "HOT CUE C button",
+      "type": "pad",
+      "section": "hot-cue",
+      "functionalGroup": "performance-pads",
+      "spatialNeighbors": { "above": null, "below": null, "left": "hot-cue-b", "right": "hot-cue-d" }
+    },
+    {
+      "id": "hot-cue-d",
+      "verbatimLabel": "HOT CUE D button",
+      "type": "pad",
+      "section": "hot-cue",
+      "functionalGroup": "performance-pads",
+      "spatialNeighbors": { "above": null, "below": null, "left": "hot-cue-c", "right": "hot-cue-e" }
+    },
+    {
+      "id": "hot-cue-e",
+      "verbatimLabel": "HOT CUE E button",
+      "type": "pad",
+      "section": "hot-cue",
+      "functionalGroup": "performance-pads",
+      "spatialNeighbors": { "above": null, "below": null, "left": "hot-cue-d", "right": "hot-cue-f" }
+    },
+    {
+      "id": "hot-cue-f",
+      "verbatimLabel": "HOT CUE F button",
+      "type": "pad",
+      "section": "hot-cue",
+      "functionalGroup": "performance-pads",
+      "spatialNeighbors": { "above": null, "below": null, "left": "hot-cue-e", "right": "hot-cue-g" }
+    },
+    {
+      "id": "hot-cue-g",
+      "verbatimLabel": "HOT CUE G button",
+      "type": "pad",
+      "section": "hot-cue",
+      "functionalGroup": "performance-pads",
+      "spatialNeighbors": { "above": null, "below": null, "left": "hot-cue-f", "right": "hot-cue-h" }
+    },
+    {
+      "id": "hot-cue-h",
+      "verbatimLabel": "HOT CUE H button",
+      "type": "pad",
+      "section": "hot-cue",
+      "functionalGroup": "performance-pads",
+      "spatialNeighbors": { "above": null, "below": null, "left": "hot-cue-g", "right": null }
+    },
+    {
+      "id": "loop-in-btn",
+      "verbatimLabel": "LOOP IN/CUE (IN ADJUST) button",
+      "type": "button",
+      "section": "loop",
+      "functionalGroup": "looping",
+      "spatialNeighbors": { "above": null, "below": "four-beat-loop-btn", "left": null, "right": "loop-out-btn" }
+    },
+    {
+      "id": "loop-out-btn",
+      "verbatimLabel": "LOOP OUT (OUT ADJUST) button",
+      "type": "button",
+      "section": "loop",
+      "functionalGroup": "looping",
+      "spatialNeighbors": { "above": null, "below": "eight-beat-loop-btn", "left": "loop-in-btn", "right": "reloop-exit-btn" }
+    },
+    {
+      "id": "reloop-exit-btn",
+      "verbatimLabel": "LOOP RELOOP/EXIT button",
+      "type": "button",
+      "section": "loop",
+      "functionalGroup": "looping",
+      "spatialNeighbors": { "above": null, "below": null, "left": "loop-out-btn", "right": null }
+    },
+    {
+      "id": "four-beat-loop-btn",
+      "verbatimLabel": "4 BEAT LOOP (1/2X) button",
+      "type": "button",
+      "section": "loop",
+      "functionalGroup": "looping",
+      "spatialNeighbors": { "above": "loop-in-btn", "below": null, "left": null, "right": "eight-beat-loop-btn" }
+    },
+    {
+      "id": "eight-beat-loop-btn",
+      "verbatimLabel": "8 BEAT LOOP (2X) button",
+      "type": "button",
+      "section": "loop",
+      "functionalGroup": "looping",
+      "spatialNeighbors": { "above": "loop-out-btn", "below": null, "left": "four-beat-loop-btn", "right": null }
+    },
+    {
+      "id": "cue-loop-call-prev",
+      "verbatimLabel": "CUE/LOOP CALL ◀ button",
+      "type": "button",
+      "section": "cue-memory",
+      "functionalGroup": "cue-management",
+      "spatialNeighbors": { "above": null, "below": null, "left": null, "right": "cue-loop-call-next" }
+    },
+    {
+      "id": "cue-loop-call-next",
+      "verbatimLabel": "CUE/LOOP CALL ▶ button",
+      "type": "button",
+      "section": "cue-memory",
+      "functionalGroup": "cue-management",
+      "spatialNeighbors": { "above": null, "below": null, "left": "cue-loop-call-prev", "right": "delete-btn" }
+    },
+    {
+      "id": "delete-btn",
+      "verbatimLabel": "DELETE button",
+      "type": "button",
+      "section": "cue-memory",
+      "functionalGroup": "cue-management",
+      "spatialNeighbors": { "above": null, "below": null, "left": "cue-loop-call-next", "right": "memory-btn" }
+    },
+    {
+      "id": "memory-btn",
+      "verbatimLabel": "MEMORY button",
+      "type": "button",
+      "section": "cue-memory",
+      "functionalGroup": "cue-management",
+      "spatialNeighbors": { "above": null, "below": null, "left": "delete-btn", "right": null }
+    },
+    {
+      "id": "beat-jump-prev",
+      "verbatimLabel": "BEAT JUMP ◀ button",
+      "type": "button",
+      "section": "beat-jump",
+      "functionalGroup": "beat-navigation",
+      "spatialNeighbors": { "above": null, "below": "slip-rev-fwd-rev", "left": null, "right": "beat-jump-next" }
+    },
+    {
+      "id": "beat-jump-next",
+      "verbatimLabel": "BEAT JUMP ▶ button",
+      "type": "button",
+      "section": "beat-jump",
+      "functionalGroup": "beat-navigation",
+      "spatialNeighbors": { "above": null, "below": "slip-rev-fwd-rev", "left": "beat-jump-prev", "right": null }
+    },
+    {
+      "id": "slip-rev-fwd-rev",
+      "verbatimLabel": "SLIP REV, FWD, REV lever",
+      "type": "switch",
+      "section": "beat-jump",
+      "functionalGroup": "playback-direction",
+      "spatialNeighbors": { "above": "beat-jump-prev", "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "track-search-prev",
+      "verbatimLabel": "TRACK SEARCH |◀◀ button",
+      "type": "button",
+      "section": "transport",
+      "functionalGroup": "transport",
+      "spatialNeighbors": { "above": null, "below": "search-rew", "left": null, "right": "track-search-next" }
+    },
+    {
+      "id": "track-search-next",
+      "verbatimLabel": "TRACK SEARCH ▶▶| button",
+      "type": "button",
+      "section": "transport",
+      "functionalGroup": "transport",
+      "spatialNeighbors": { "above": null, "below": "search-ff", "left": "track-search-prev", "right": null }
+    },
+    {
+      "id": "search-rew",
+      "verbatimLabel": "SEARCH ◀◀ button",
+      "type": "button",
+      "section": "transport",
+      "functionalGroup": "transport",
+      "spatialNeighbors": { "above": "track-search-prev", "below": "cue-btn", "left": null, "right": "search-ff" }
+    },
+    {
+      "id": "search-ff",
+      "verbatimLabel": "SEARCH ▶▶ button",
+      "type": "button",
+      "section": "transport",
+      "functionalGroup": "transport",
+      "spatialNeighbors": { "above": "track-search-next", "below": "cue-btn", "left": "search-rew", "right": null }
+    },
+    {
+      "id": "cue-btn",
+      "verbatimLabel": "CUE button",
+      "type": "button",
+      "section": "transport",
+      "functionalGroup": "transport",
+      "spatialNeighbors": { "above": "search-rew", "below": "play-pause-btn", "left": null, "right": null }
+    },
+    {
+      "id": "play-pause-btn",
+      "verbatimLabel": "▶/II button",
+      "type": "button",
+      "section": "transport",
+      "functionalGroup": "transport",
+      "spatialNeighbors": { "above": "cue-btn", "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "jog-wheel",
+      "verbatimLabel": "Jog wheel",
+      "type": "wheel",
+      "section": "jog",
+      "functionalGroup": "jog-wheel",
+      "spatialNeighbors": { "above": null, "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "jog-display",
+      "verbatimLabel": "Jog display",
+      "type": "screen",
+      "section": "jog",
+      "functionalGroup": "jog-wheel",
+      "spatialNeighbors": { "above": null, "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "jog-ring",
+      "verbatimLabel": "Jog ring illumination",
+      "type": "led",
+      "section": "jog",
+      "functionalGroup": "jog-wheel",
+      "spatialNeighbors": { "above": null, "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "vinyl-speed-adjust",
+      "verbatimLabel": "VINYL SPEED ADJUST knob",
+      "type": "knob",
+      "section": "jog-controls",
+      "functionalGroup": "jog-settings",
+      "spatialNeighbors": { "above": null, "below": "jog-mode-btn", "left": null, "right": null }
+    },
+    {
+      "id": "jog-mode-btn",
+      "verbatimLabel": "JOG MODE button",
+      "type": "button",
+      "section": "jog-controls",
+      "functionalGroup": "jog-settings",
+      "spatialNeighbors": { "above": "vinyl-speed-adjust", "below": "vinyl-cdj-indicator", "left": null, "right": null }
+    },
+    {
+      "id": "vinyl-cdj-indicator",
+      "verbatimLabel": "VINYL/CDJ indicator",
+      "type": "led",
+      "section": "jog-controls",
+      "functionalGroup": "jog-settings",
+      "spatialNeighbors": { "above": "jog-mode-btn", "below": "jog-feel-knob", "left": null, "right": null }
+    },
+    {
+      "id": "jog-feel-knob",
+      "verbatimLabel": "JOG FEEL knob",
+      "type": "knob",
+      "section": "jog-controls",
+      "functionalGroup": "jog-settings",
+      "spatialNeighbors": { "above": "vinyl-cdj-indicator", "below": null, "left": null, "right": null }
+    },
+    {
+      "id": "master-btn",
+      "verbatimLabel": "MASTER button",
+      "type": "button",
+      "section": "sync-tempo",
+      "functionalGroup": "sync",
+      "spatialNeighbors": { "above": null, "below": "key-sync-btn", "left": null, "right": null }
+    },
+    {
+      "id": "key-sync-btn",
+      "verbatimLabel": "KEY SYNC button",
+      "type": "button",
+      "section": "sync-tempo",
+      "functionalGroup": "sync",
+      "spatialNeighbors": { "above": "master-btn", "below": "beat-sync-btn", "left": null, "right": null }
+    },
+    {
+      "id": "beat-sync-btn",
+      "verbatimLabel": "BEAT SYNC/INST.DOUBLES button",
+      "type": "button",
+      "section": "sync-tempo",
+      "functionalGroup": "sync",
+      "spatialNeighbors": { "above": "key-sync-btn", "below": "tempo-range-btn", "left": null, "right": null }
+    },
+    {
+      "id": "tempo-range-btn",
+      "verbatimLabel": "TEMPO ±6/±10/±16/WIDE button",
+      "type": "button",
+      "section": "sync-tempo",
+      "functionalGroup": "tempo",
+      "spatialNeighbors": { "above": "beat-sync-btn", "below": "master-tempo-btn", "left": null, "right": "tempo-slider" }
+    },
+    {
+      "id": "master-tempo-btn",
+      "verbatimLabel": "MASTER TEMPO button",
+      "type": "button",
+      "section": "sync-tempo",
+      "functionalGroup": "tempo",
+      "spatialNeighbors": { "above": "tempo-range-btn", "below": null, "left": null, "right": "tempo-slider" }
+    },
+    {
+      "id": "tempo-slider",
+      "verbatimLabel": "TEMPO slider",
+      "type": "slider",
+      "section": "sync-tempo",
+      "functionalGroup": "tempo",
+      "spatialNeighbors": { "above": null, "below": "tempo-reset-indicator", "left": "tempo-range-btn", "right": null }
+    },
+    {
+      "id": "tempo-reset-indicator",
+      "verbatimLabel": "TEMPO RESET indicator",
+      "type": "led",
+      "section": "sync-tempo",
+      "functionalGroup": "tempo",
+      "spatialNeighbors": { "above": "tempo-slider", "below": "tempo-reset-btn", "left": null, "right": null }
+    },
+    {
+      "id": "tempo-reset-btn",
+      "verbatimLabel": "TEMPO RESET button",
+      "type": "button",
+      "section": "sync-tempo",
+      "functionalGroup": "tempo",
+      "spatialNeighbors": { "above": "tempo-reset-indicator", "below": null, "left": null, "right": null }
+    }
+  ],
+  "sharedElements": [],
+  "alignmentAnchors": [
+    {
+      "sourceId": "source-bar",
+      "targetId": "display",
+      "axis": "y",
+      "tolerancePx": 8
+    },
+    {
+      "sourceId": "loop",
+      "targetId": "cue-memory",
+      "axis": "y",
+      "tolerancePx": 8
+    },
+    {
+      "sourceId": "beat-jump",
+      "targetId": "transport",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "jog-controls",
+      "targetId": "sync-tempo",
+      "axis": "x",
+      "tolerancePx": 4
+    },
+    {
+      "sourceId": "usb",
+      "targetId": "display",
+      "axis": "y",
+      "tolerancePx": 8
+    },
+    {
+      "sourceId": "browse",
+      "targetId": "display",
+      "axis": "y",
+      "tolerancePx": 8
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Source-of-truth pre-push hook (committed to repo).
+# Install into .git/hooks/ via: bash scripts/install-git-hooks.sh
+#
+# Catches:
+#   1. Local git corruption (e.g., iCloud/Finder-duplicated refs)
+#      → Bug-6 (2026-05-06).
+#   2. Tutorial → control-ID drift (every tutorial step's highlightControls[]
+#      and panelStateChanges keys must resolve to a real control in the
+#      device's manifest)
+#      → 2026-05-10: closes the gap surfaced during the manifest-integrity
+#        deep review. Drift can no longer reach origin.
+#   3. Cumulative panel state errors — tutorials that highlight or
+#      mutate a control id that doesn't exist (caught here separately so
+#      the failure message points at the specific step + control id, not
+#      just "some control somewhere doesn't resolve")
+#      → 2026-05-10: pre-push gate matches the pattern in #2.
+
+set -e
+
+# Block iCloud duplicate files (" 2.<ext>" or trailing " 2") from being pushed
+# even if force-staged past .gitignore. Catches the macOS sync-conflict pattern
+# that pollutes the working tree.
+DUPES=$(git diff --cached --name-only --diff-filter=A 2>/dev/null | grep -E ' 2(\.[a-zA-Z]+)?$' || true)
+if [ -n "$DUPES" ]; then
+  echo "✗ Refusing push — iCloud duplicate files staged:"
+  echo "$DUPES" | sed 's/^/  /'
+  echo ""
+  echo "If you really need to commit one, rename to drop the ' 2' suffix."
+  exit 1
+fi
+
+echo "Running git health check before push..."
+npm run --silent check-git-health
+
+echo ""
+echo "Validating tutorial → control references..."
+# Bails with code 1 if any tutorial step references an id that doesn't exist
+# in the device's manifest. The test file uses fuzzy-match suggestions on
+# failure (e.g., "Did you mean: 'zone-1-led'?") to speed up the fix.
+if ! npx vitest run src/__tests__/tutorials/tutorialControlRefs.test.ts \
+      --reporter=dot --silent > /dev/null 2>&1; then
+  echo ""
+  echo "✗ Tutorial control-ID drift detected. Push aborted."
+  echo "  Re-run without --silent to see specific failures:"
+  echo "    npx vitest run src/__tests__/tutorials/tutorialControlRefs.test.ts"
+  echo ""
+  exit 1
+fi
+echo "✓ Tutorial control references resolve."
+
+echo ""
+echo "Validating cumulative tutorial state..."
+# Walks every tutorial step in order, applies panelStateChanges, surfaces
+# state-drift errors (multi-step bugs the LLM reviewer can't reliably catch).
+if ! npx vitest run src/__tests__/tutorials/cumulative-state.integration.test.ts \
+      --reporter=dot --silent > /dev/null 2>&1; then
+  echo ""
+  echo "✗ Cumulative tutorial state errors. Push aborted."
+  echo "  Re-run without --silent to see specific step+control failures:"
+  echo "    npx vitest run src/__tests__/tutorials/cumulative-state.integration.test.ts"
+  echo ""
+  exit 1
+fi
+echo "✓ Cumulative tutorial state clean."

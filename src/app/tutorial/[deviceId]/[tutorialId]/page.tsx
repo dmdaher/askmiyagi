@@ -4,23 +4,9 @@ import { useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getDevice } from '@/data/devices';
-import { fantom08Tutorials } from '@/data/tutorials/fantom-08';
-import { rc505mk2Tutorials } from '@/data/tutorials/rc505-mk2';
-import { Tutorial } from '@/types/tutorial';
 import { getGlossary } from '@/data/glossary';
+import { DEVICE_REGISTRY } from '@/lib/deviceRegistry';
 import TutorialRunner from '@/components/tutorial/TutorialRunner';
-import FantomPanel from '@/components/devices/fantom-08/FantomPanel';
-import RC505Panel from '@/components/devices/rc505-mk2/RC505Panel';
-
-const tutorialsByDevice: Record<string, Tutorial[]> = {
-  'fantom-08': fantom08Tutorials,
-  'rc505-mk2': rc505mk2Tutorials,
-};
-
-const panelComponents: Record<string, React.ComponentType<any>> = {
-  'fantom-08': FantomPanel,
-  'rc505-mk2': RC505Panel,
-};
 
 export default function TutorialPage() {
   const params = useParams<{ deviceId: string; tutorialId: string }>();
@@ -28,14 +14,14 @@ export default function TutorialPage() {
   const tutorialId = params.tutorialId;
 
   const device = useMemo(() => getDevice(deviceId), [deviceId]);
+  const registry = DEVICE_REGISTRY[deviceId];
 
   const tutorial = useMemo(() => {
-    const tutorials = tutorialsByDevice[deviceId];
-    if (!tutorials) return null;
-    return tutorials.find((t) => t.id === tutorialId) ?? null;
-  }, [deviceId, tutorialId]);
+    if (!registry) return null;
+    return registry.tutorials.find((t) => t.id === tutorialId) ?? null;
+  }, [registry, tutorialId]);
 
-  const DevicePanel = panelComponents[deviceId];
+  const DevicePanel = registry?.PanelComponent;
 
   // Handle not found states
   if (!device || !tutorial || !DevicePanel) {
@@ -62,14 +48,17 @@ export default function TutorialPage() {
     );
   }
 
-  const allTutorials = tutorialsByDevice[deviceId] ?? [];
+  const allTutorials = registry.tutorials;
   const glossary = getGlossary(deviceId);
+  const dimensions = registry.dimensions;
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[var(--background)]">
       <TutorialRunner
         tutorial={tutorial}
         DevicePanel={DevicePanel}
+        panelWidth={dimensions.width}
+        panelHeight={dimensions.height}
         allTutorials={allTutorials}
         deviceName={device.name}
         glossary={glossary}

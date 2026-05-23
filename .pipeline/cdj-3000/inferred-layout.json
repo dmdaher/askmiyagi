@@ -1,0 +1,118 @@
+{
+  "sections": [
+    {
+      "sectionId": "beat-sync",
+      "archetype": "stacked-rows",
+      "parameters": {
+        "gap": 0
+      },
+      "confidence": 0.8
+    },
+    {
+      "sectionId": "browse-bar",
+      "archetype": "single-row",
+      "parameters": {
+        "gap": 9,
+        "alignment": "start"
+      },
+      "confidence": 0.95
+    },
+    {
+      "sectionId": "cue-loop-memory",
+      "archetype": "stacked-rows",
+      "parameters": {
+        "gap": 9
+      },
+      "confidence": 0.8
+    },
+    {
+      "sectionId": "display",
+      "archetype": "single-row",
+      "parameters": {
+        "gap": 4
+      },
+      "confidence": 0.5
+    },
+    {
+      "sectionId": "hot-cue",
+      "archetype": "single-row",
+      "parameters": {
+        "gap": 18,
+        "alignment": "start"
+      },
+      "confidence": 0.7
+    },
+    {
+      "sectionId": "jog",
+      "archetype": "absolute",
+      "parameters": {},
+      "confidence": 0
+    },
+    {
+      "sectionId": "jog-mode-controls",
+      "archetype": "stacked-rows",
+      "parameters": {
+        "gap": 28
+      },
+      "confidence": 0.8
+    },
+    {
+      "sectionId": "left-transport",
+      "archetype": "grid-NxM",
+      "parameters": {
+        "gridCols": 3,
+        "gridRows": 6,
+        "gap": 0
+      },
+      "confidence": 0.9
+    },
+    {
+      "sectionId": "loop",
+      "archetype": "grid-NxM",
+      "parameters": {
+        "gridCols": 3,
+        "gridRows": 2,
+        "gap": 0
+      },
+      "confidence": 0.9
+    },
+    {
+      "sectionId": "media",
+      "archetype": "grid-NxM",
+      "parameters": {
+        "gridCols": 4,
+        "gridRows": 4,
+        "gap": 0
+      },
+      "confidence": 0.9
+    },
+    {
+      "sectionId": "navigation",
+      "archetype": "grid-NxM",
+      "parameters": {
+        "gridCols": 4,
+        "gridRows": 3,
+        "gap": 0
+      },
+      "confidence": 0.9
+    },
+    {
+      "sectionId": "performance-modes",
+      "archetype": "stacked-rows",
+      "parameters": {
+        "gap": 9
+      },
+      "confidence": 0.8
+    },
+    {
+      "sectionId": "tempo",
+      "archetype": "grid-NxM",
+      "parameters": {
+        "gridCols": 4,
+        "gridRows": 4,
+        "gap": 0
+      },
+      "confidence": 0.9
+    }
+  ]
+}

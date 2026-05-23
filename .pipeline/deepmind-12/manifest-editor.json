@@ -1,0 +1,2833 @@
+{
+  "sections": {
+    "performance": {
+      "id": "performance",
+      "headerLabel": "PERFORMANCE",
+      "archetype": "stacked-rows",
+      "x": 0,
+      "y": 285,
+      "w": 241,
+      "h": 320,
+      "childIds": [
+        "octave-leds",
+        "volume-knob",
+        "portamento-slider",
+        "oct-up",
+        "oct-down",
+        "pitch-wheel",
+        "mod-wheel"
+      ],
+      "containerAssignment": {
+        "octave-indicators": [
+          "octave-leds"
+        ],
+        "knob-slider-row": {
+          "controls": [
+            "volume-knob",
+            "portamento-slider"
+          ],
+          "direction": "row"
+        },
+        "octave-buttons": {
+          "controls": [
+            "oct-up",
+            "oct-down"
+          ],
+          "direction": "column"
+        },
+        "wheels": {
+          "controls": [
+            "pitch-wheel",
+            "mod-wheel"
+          ],
+          "direction": "row"
+        }
+      },
+      "widthPercent": 7,
+      "complexity": "medium",
+      "frameMode": "hidden",
+      "hidden": true
+    },
+    "arp-seq": {
+      "id": "arp-seq",
+      "headerLabel": "ARP / SEQ",
+      "archetype": "stacked-rows",
+      "x": 69.00005248448625,
+      "y": -2.0000076119668746,
+      "w": 232,
+      "h": 300,
+      "childIds": [
+        "arp-chord",
+        "arp-pchord",
+        "arp-rate",
+        "arp-gate-time",
+        "arp-on-off",
+        "arp-tap-hold",
+        "arp-edit"
+      ],
+      "containerAssignment": {
+        "chord-buttons": {
+          "controls": [
+            "arp-chord",
+            "arp-pchord"
+          ],
+          "direction": "column"
+        },
+        "sliders": {
+          "controls": [
+            "arp-rate",
+            "arp-gate-time"
+          ],
+          "direction": "row"
+        },
+        "transport-buttons": {
+          "controls": [
+            "arp-on-off",
+            "arp-tap-hold",
+            "arp-edit"
+          ],
+          "direction": "row"
+        }
+      },
+      "widthPercent": 8,
+      "complexity": "medium"
+    },
+    "lfo1": {
+      "id": "lfo1",
+      "headerLabel": "LFO1",
+      "archetype": "stacked-rows",
+      "x": 303.99997688242183,
+      "y": 0,
+      "w": 116,
+      "h": 300,
+      "childIds": [
+        "lfo1-rate",
+        "lfo1-waveform-leds",
+        "lfo1-delay-time",
+        "lfo1-edit"
+      ],
+      "containerAssignment": {
+        "slider-led-row": {
+          "controls": [
+            "lfo1-rate",
+            "lfo1-waveform-leds",
+            "lfo1-delay-time"
+          ],
+          "direction": "row"
+        },
+        "buttons": [
+          "lfo1-edit"
+        ]
+      },
+      "widthPercent": 6.5,
+      "complexity": "low"
+    },
+    "lfo2": {
+      "id": "lfo2",
+      "headerLabel": "LFO2",
+      "archetype": "stacked-rows",
+      "x": 422.99999344023433,
+      "y": 0,
+      "w": 116,
+      "h": 300,
+      "childIds": [
+        "lfo2-rate",
+        "lfo2-waveform-leds",
+        "lfo2-delay-time",
+        "lfo2-edit"
+      ],
+      "containerAssignment": {
+        "slider-led-row": {
+          "controls": [
+            "lfo2-rate",
+            "lfo2-waveform-leds",
+            "lfo2-delay-time"
+          ],
+          "direction": "row"
+        },
+        "buttons": [
+          "lfo2-edit"
+        ]
+      },
+      "widthPercent": 6.5,
+      "complexity": "low"
+    },
+    "osc-1-2": {
+      "id": "osc-1-2",
+      "headerLabel": "OSC 1&2",
+      "archetype": "grid-NxM",
+      "x": 541.000060465625,
+      "y": 0,
+      "w": 472,
+      "h": 300,
+      "childIds": [
+        "osc1-pitch-mod",
+        "osc1-pwm",
+        "osc2-pitch-mod",
+        "osc2-tone-mod",
+        "osc2-pitch",
+        "osc2-level",
+        "noise-level",
+        "osc1-square",
+        "osc1-sawtooth",
+        "osc-sync",
+        "osc-edit"
+      ],
+      "containerAssignment": {
+        "osc1-sliders": {
+          "controls": [
+            "osc1-pitch-mod",
+            "osc1-pwm"
+          ],
+          "direction": "row"
+        },
+        "osc2-sliders": {
+          "controls": [
+            "osc2-pitch-mod",
+            "osc2-tone-mod",
+            "osc2-pitch",
+            "osc2-level"
+          ],
+          "direction": "row"
+        },
+        "noise": [
+          "noise-level"
+        ],
+        "waveform-buttons": {
+          "controls": [
+            "osc1-square",
+            "osc1-sawtooth"
+          ],
+          "direction": "row"
+        },
+        "edit": [
+          "osc-edit"
+        ]
+      },
+      "gridCols": 7,
+      "gridRows": 2,
+      "widthPercent": 18.5,
+      "complexity": "high"
+    },
+    "display-center": {
+      "id": "display-center",
+      "headerLabel": null,
+      "archetype": "anchor-layout",
+      "x": 1013.00002909375,
+      "y": 0,
+      "w": 668,
+      "h": 300,
+      "childIds": [
+        "data-encoder",
+        "data-fader",
+        "mod-button",
+        "lcd-display",
+        "menu-prog",
+        "menu-fx",
+        "menu-global",
+        "menu-compare",
+        "menu-write",
+        "nav-up",
+        "nav-down",
+        "nav-yes",
+        "nav-no"
+      ],
+      "containerAssignment": {
+        "data-entry": {
+          "controls": [
+            "data-encoder",
+            "data-fader",
+            "mod-button"
+          ],
+          "direction": "column"
+        },
+        "menu-row": {
+          "controls": [
+            "menu-prog",
+            "menu-fx",
+            "menu-global",
+            "menu-compare",
+            "menu-write"
+          ],
+          "direction": "row"
+        },
+        "anchor": [
+          "lcd-display"
+        ],
+        "navigation": {
+          "controls": [
+            "nav-up",
+            "nav-down",
+            "nav-yes",
+            "nav-no"
+          ],
+          "direction": "row"
+        }
+      },
+      "heightSplits": {
+        "cluster": 60,
+        "anchor": 35,
+        "gap": 5
+      },
+      "widthPercent": 13,
+      "complexity": "high"
+    },
+    "poly": {
+      "id": "poly",
+      "headerLabel": "POLY",
+      "archetype": "single-column",
+      "x": 1684.0000846445312,
+      "y": -1.0000036367187501,
+      "w": 92,
+      "h": 300,
+      "childIds": [
+        "poly-unison-detune",
+        "poly-edit"
+      ],
+      "widthPercent": 5.5,
+      "complexity": "low",
+      "frameMode": "full"
+    },
+    "vcf": {
+      "id": "vcf",
+      "headerLabel": "VCF",
+      "archetype": "grid-NxM",
+      "x": 1780,
+      "y": -1.000003750625,
+      "w": 360,
+      "h": 300,
+      "childIds": [
+        "vcf-freq",
+        "vcf-res",
+        "vcf-env",
+        "vcf-lfo",
+        "vcf-kybd",
+        "vcf-2pole",
+        "vcf-invert",
+        "vcf-edit"
+      ],
+      "containerAssignment": {
+        "sliders": {
+          "controls": [
+            "vcf-freq",
+            "vcf-res",
+            "vcf-env",
+            "vcf-lfo",
+            "vcf-kybd"
+          ],
+          "direction": "row"
+        },
+        "buttons": {
+          "controls": [
+            "vcf-2pole",
+            "vcf-invert",
+            "vcf-edit"
+          ],
+          "direction": "row"
+        }
+      },
+      "gridCols": 5,
+      "gridRows": 2,
+      "widthPercent": 11.5,
+      "complexity": "medium"
+    },
+    "vca": {
+      "id": "vca",
+      "headerLabel": "VCA",
+      "archetype": "single-column",
+      "x": 2143.0000290937496,
+      "y": 0,
+      "w": 88,
+      "h": 300,
+      "childIds": [
+        "vca-level",
+        "vca-edit"
+      ],
+      "widthPercent": 4.5,
+      "complexity": "low"
+    },
+    "hpf": {
+      "id": "hpf",
+      "headerLabel": "HPF",
+      "archetype": "single-column",
+      "x": 2233.0000290937496,
+      "y": 0,
+      "w": 84,
+      "h": 300,
+      "childIds": [
+        "hpf-freq",
+        "hpf-boost"
+      ],
+      "widthPercent": 4.5,
+      "complexity": "low"
+    },
+    "envelopes": {
+      "id": "envelopes",
+      "headerLabel": "ENVELOPES",
+      "archetype": "grid-NxM",
+      "x": 2321.0000595493125,
+      "y": -6.999988623460937,
+      "w": 344,
+      "h": 308,
+      "childIds": [
+        "env-attack",
+        "env-decay",
+        "env-sustain",
+        "env-release",
+        "env-curve-leds",
+        "env-vca-sel",
+        "env-vcf-sel",
+        "env-mod-sel",
+        "env-curves"
+      ],
+      "containerAssignment": {
+        "adsr-sliders": {
+          "controls": [
+            "env-attack",
+            "env-decay",
+            "env-sustain",
+            "env-release"
+          ],
+          "direction": "row"
+        },
+        "curve-indicators": [
+          "env-curve-leds"
+        ],
+        "selector-buttons": {
+          "controls": [
+            "env-vca-sel",
+            "env-vcf-sel",
+            "env-mod-sel",
+            "env-curves"
+          ],
+          "direction": "row"
+        }
+      },
+      "gridCols": 5,
+      "gridRows": 2,
+      "widthPercent": 11,
+      "complexity": "medium"
+    },
+    "voices": {
+      "id": "voices",
+      "headerLabel": "VOICES",
+      "archetype": "single-row",
+      "x": 1275,
+      "y": 813,
+      "w": 126,
+      "h": 75,
+      "childIds": [
+        "voices-leds"
+      ],
+      "widthPercent": 10.5,
+      "complexity": "low",
+      "frameMode": "hidden",
+      "hidden": true
+    }
+  },
+  "controls": {
+    "volume-knob": {
+      "id": "volume-knob",
+      "label": "VOLUME",
+      "type": "knob",
+      "x": 91,
+      "y": 400.0000242382812,
+      "w": 56,
+      "h": 56,
+      "sectionId": "performance",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "octave-leds",
+        "below": "oct-up",
+        "left": null,
+        "right": "portamento-slider"
+      },
+      "functionalGroup": "performance",
+      "labelFontSize": 8
+    },
+    "portamento-slider": {
+      "id": "portamento-slider",
+      "label": "PORTAMENTO",
+      "type": "knob",
+      "x": 167,
+      "y": 400.0000242382812,
+      "w": 56,
+      "h": 56,
+      "sectionId": "performance",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "octave-leds",
+        "below": "oct-down",
+        "left": "volume-knob",
+        "right": null
+      },
+      "functionalGroup": "performance",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "oct-up": {
+      "id": "oct-up",
+      "label": "OCT UP",
+      "type": "button",
+      "x": 34.999922929687436,
+      "y": 445,
+      "w": 40,
+      "h": 30,
+      "sectionId": "performance",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "volume-knob",
+        "below": "oct-down",
+        "left": null,
+        "right": "portamento-slider"
+      },
+      "functionalGroup": "performance",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "oct-down": {
+      "id": "oct-down",
+      "label": "OCT DOWN",
+      "type": "button",
+      "x": 243.9999332666015,
+      "y": 445,
+      "w": 40,
+      "h": 30,
+      "sectionId": "performance",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "oct-up",
+        "below": "pitch-wheel",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "performance",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "octave-leds": {
+      "id": "octave-leds",
+      "label": "OCTAVE",
+      "type": "led",
+      "x": 100,
+      "y": 660.9999877929688,
+      "w": 20,
+      "h": 20,
+      "sectionId": "performance",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "volume-knob",
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "performance",
+      "labelFontSize": 8
+    },
+    "pitch-wheel": {
+      "id": "pitch-wheel",
+      "label": "PITCH",
+      "type": "wheel",
+      "x": 107,
+      "y": 494.00003343749995,
+      "w": 24,
+      "h": 140,
+      "sectionId": "performance",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "oct-down",
+        "below": null,
+        "left": null,
+        "right": "mod-wheel"
+      },
+      "functionalGroup": "performance",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "mod-wheel": {
+      "id": "mod-wheel",
+      "label": "MOD WHEEL",
+      "type": "wheel",
+      "x": 183,
+      "y": 494.00003343749995,
+      "w": 24,
+      "h": 140,
+      "sectionId": "performance",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "portamento-slider",
+        "below": null,
+        "left": "pitch-wheel",
+        "right": null
+      },
+      "functionalGroup": "performance",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "arp-chord": {
+      "id": "arp-chord",
+      "label": "CHORD",
+      "type": "button",
+      "x": 101.0000091552735,
+      "y": 95.00008972168003,
+      "w": 41,
+      "h": 30,
+      "sectionId": "arp-seq",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "arp-pchord",
+        "left": null,
+        "right": "arp-rate"
+      },
+      "functionalGroup": "modulation",
+      "interactionType": "toggle",
+      "labelFontSize": 8
+    },
+    "arp-pchord": {
+      "id": "arp-pchord",
+      "label": "POLY CHORD",
+      "type": "button",
+      "x": 101.00002624511727,
+      "y": 189.0001445312504,
+      "w": 41,
+      "h": 30,
+      "sectionId": "arp-seq",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "arp-chord",
+        "below": "arp-rate",
+        "left": null,
+        "right": "arp-gate-time"
+      },
+      "functionalGroup": "modulation",
+      "interactionType": "toggle",
+      "labelFontSize": 8
+    },
+    "arp-rate": {
+      "id": "arp-rate",
+      "label": "RATE",
+      "type": "slider",
+      "x": 178,
+      "y": 92.00003261718717,
+      "w": 20,
+      "h": 173,
+      "sectionId": "arp-seq",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "arp-chord",
+        "below": "arp-tap-hold",
+        "left": "arp-pchord",
+        "right": "arp-gate-time"
+      },
+      "functionalGroup": "modulation",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "arp-gate-time": {
+      "id": "arp-gate-time",
+      "label": "GATE TIME",
+      "type": "slider",
+      "x": 243,
+      "y": 92.00009782714828,
+      "w": 20,
+      "h": 173,
+      "sectionId": "arp-seq",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "arp-chord",
+        "below": "arp-edit",
+        "left": "arp-rate",
+        "right": "lfo1-rate"
+      },
+      "functionalGroup": "modulation",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "arp-on-off": {
+      "id": "arp-on-off",
+      "label": "ON/\nOFF",
+      "type": "button",
+      "x": 101.00004028320333,
+      "y": 284.0002097167976,
+      "w": 41,
+      "h": 30,
+      "sectionId": "arp-seq",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "arp-rate",
+        "below": null,
+        "left": null,
+        "right": "arp-tap-hold"
+      },
+      "functionalGroup": "modulation",
+      "interactionType": "toggle",
+      "labelFontSize": 8
+    },
+    "arp-tap-hold": {
+      "id": "arp-tap-hold",
+      "label": "TAP/HOLD",
+      "type": "button",
+      "x": 168,
+      "y": 284.00030944824186,
+      "w": 41,
+      "h": 30,
+      "sectionId": "arp-seq",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "arp-rate",
+        "below": null,
+        "left": "arp-on-off",
+        "right": "arp-edit"
+      },
+      "functionalGroup": "modulation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "arp-edit": {
+      "id": "arp-edit",
+      "label": "EDIT",
+      "type": "button",
+      "x": 233,
+      "y": 284.0002689697264,
+      "w": 41,
+      "h": 30,
+      "sectionId": "arp-seq",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "arp-gate-time",
+        "below": null,
+        "left": "arp-tap-hold",
+        "right": "lfo1-edit"
+      },
+      "functionalGroup": "modulation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "lfo1-edit": {
+      "id": "lfo1-edit",
+      "label": "EDIT",
+      "type": "button",
+      "x": 343.0000646972656,
+      "y": 284.0003254394531,
+      "w": 41,
+      "h": 30,
+      "sectionId": "lfo1",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "lfo1-waveform-leds",
+        "below": null,
+        "left": "arp-edit",
+        "right": "lfo2-edit"
+      },
+      "functionalGroup": "modulation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "lfo1-rate": {
+      "id": "lfo1-rate",
+      "label": "RATE",
+      "type": "slider",
+      "x": 323.00009271240236,
+      "y": 92.0000488281249,
+      "w": 20,
+      "h": 173,
+      "sectionId": "lfo1",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo1-edit",
+        "left": "arp-gate-time",
+        "right": "lfo1-waveform-leds"
+      },
+      "functionalGroup": "modulation",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "lfo1-waveform-leds": {
+      "id": "lfo1-waveform-leds",
+      "label": "LFO WAVEFORMS",
+      "type": "led",
+      "x": 488.0001834570312,
+      "y": 719.0001682421874,
+      "w": 35,
+      "h": 35,
+      "sectionId": "lfo1",
+      "labelPosition": "right",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo1-edit",
+        "left": "lfo1-rate",
+        "right": "lfo1-delay-time"
+      },
+      "functionalGroup": "modulation",
+      "labelFontSize": 8
+    },
+    "lfo1-delay-time": {
+      "id": "lfo1-delay-time",
+      "label": "DELAY \nTIME",
+      "type": "slider",
+      "x": 388.0000259399414,
+      "y": 92.00002075195303,
+      "w": 20,
+      "h": 173,
+      "sectionId": "lfo1",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo1-edit",
+        "left": "lfo1-waveform-leds",
+        "right": "lfo2-rate"
+      },
+      "functionalGroup": "modulation",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "lfo2-edit": {
+      "id": "lfo2-edit",
+      "label": "EDIT",
+      "type": "button",
+      "x": 459.0001652099609,
+      "y": 284.0002799804689,
+      "w": 40,
+      "h": 30,
+      "sectionId": "lfo2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "lfo2-waveform-leds",
+        "below": null,
+        "left": "lfo1-edit",
+        "right": "osc1-square"
+      },
+      "functionalGroup": "modulation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "lfo2-rate": {
+      "id": "lfo2-rate",
+      "label": "RATE",
+      "type": "slider",
+      "x": 439.0000484619142,
+      "y": 92.00006396484378,
+      "w": 20,
+      "h": 173,
+      "sectionId": "lfo2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo2-edit",
+        "left": "lfo1-delay-time",
+        "right": "lfo2-waveform-leds"
+      },
+      "functionalGroup": "modulation",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "lfo2-waveform-leds": {
+      "id": "lfo2-waveform-leds",
+      "label": "LFO WAVEFORMS",
+      "type": "led",
+      "x": 451.00002783203115,
+      "y": 735,
+      "w": 16,
+      "h": 41,
+      "sectionId": "lfo2",
+      "labelPosition": "right",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo2-edit",
+        "left": "lfo2-rate",
+        "right": "lfo2-delay-time"
+      },
+      "functionalGroup": "modulation"
+    },
+    "lfo2-delay-time": {
+      "id": "lfo2-delay-time",
+      "label": "DELAY TIME",
+      "type": "slider",
+      "x": 504.00006481933576,
+      "y": 92.00008605957024,
+      "w": 20,
+      "h": 173,
+      "sectionId": "lfo2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lfo2-edit",
+        "left": "lfo2-waveform-leds",
+        "right": "osc1-pitch-mod"
+      },
+      "functionalGroup": "modulation",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "osc1-pitch-mod": {
+      "id": "osc1-pitch-mod",
+      "label": "PITCH MOD",
+      "type": "slider",
+      "x": 562,
+      "y": 92.00002089843807,
+      "w": 20,
+      "h": 173,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc1-square",
+        "left": "lfo2-delay-time",
+        "right": "osc1-pwm"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "PITCH MOD",
+      "secondaryLabel": "OSC1",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "osc1-pwm": {
+      "id": "osc1-pwm",
+      "label": "PWM",
+      "type": "slider",
+      "x": 625.0000124511723,
+      "y": 92.00002597656291,
+      "w": 20,
+      "h": 173,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc1-sawtooth",
+        "left": "osc1-pitch-mod",
+        "right": "osc2-pitch-mod"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "PWM",
+      "secondaryLabel": "OSC1",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "osc2-pitch-mod": {
+      "id": "osc2-pitch-mod",
+      "label": "PITCH MOD",
+      "type": "slider",
+      "x": 695,
+      "y": 92.00006741699227,
+      "w": 20,
+      "h": 173,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc-edit",
+        "left": "osc1-pwm",
+        "right": "osc2-tone-mod"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "PITCH MOD",
+      "secondaryLabel": "OSC2",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "osc2-tone-mod": {
+      "id": "osc2-tone-mod",
+      "label": "TONE MOD",
+      "type": "slider",
+      "x": 760.0000738525403,
+      "y": 92.00004125976562,
+      "w": 20,
+      "h": 173,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc-edit",
+        "left": "osc2-pitch-mod",
+        "right": "osc2-pitch"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "TONE MOD",
+      "secondaryLabel": "OSC2",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "osc2-pitch": {
+      "id": "osc2-pitch",
+      "label": "PITCH",
+      "type": "slider",
+      "x": 825.0001397705089,
+      "y": 92.00004663085943,
+      "w": 20,
+      "h": 173,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc-edit",
+        "left": "osc2-tone-mod",
+        "right": "osc2-level"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "PITCH",
+      "secondaryLabel": "OSC2",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "osc2-level": {
+      "id": "osc2-level",
+      "label": "LEVEL",
+      "type": "slider",
+      "x": 890.000051879884,
+      "y": 92.00004467773448,
+      "w": 20,
+      "h": 173,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc-edit",
+        "left": "osc2-pitch",
+        "right": "noise-level"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "LEVEL",
+      "secondaryLabel": "OSC2",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "noise-level": {
+      "id": "noise-level",
+      "label": "NOISE LEVEL",
+      "type": "slider",
+      "x": 958.0000885009763,
+      "y": 92.00007263183585,
+      "w": 20,
+      "h": 173,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "osc-edit",
+        "left": "osc2-level",
+        "right": "data-encoder"
+      },
+      "functionalGroup": "oscillators",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "osc1-square": {
+      "id": "osc1-square",
+      "label": "SQUAREWAVE",
+      "type": "button",
+      "x": 552,
+      "y": 284.0004570800787,
+      "w": 40,
+      "h": 30,
+      "sectionId": "osc-1-2",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "osc1-pitch-mod",
+        "below": null,
+        "left": "lfo2-edit",
+        "right": "osc1-sawtooth"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "SQUAREWAVE",
+      "secondaryLabel": "OSC1",
+      "interactionType": "toggle",
+      "labelFontSize": 8
+    },
+    "osc1-sawtooth": {
+      "id": "osc1-sawtooth",
+      "label": "",
+      "type": "button",
+      "x": 615,
+      "y": 284.00047368164064,
+      "w": 40,
+      "h": 30,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "osc1-pwm",
+        "below": null,
+        "left": "osc1-square",
+        "right": "osc-sync"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "SAWTOOTH",
+      "secondaryLabel": "OSC1",
+      "interactionType": "toggle",
+      "labelFontSize": 8,
+      "icon": "square-wave"
+    },
+    "osc-edit": {
+      "id": "osc-edit",
+      "label": "EDIT",
+      "type": "button",
+      "x": 784.0001660009766,
+      "y": 284.0004718945313,
+      "w": 40,
+      "h": 30,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "noise-level",
+        "below": null,
+        "left": "osc-sync",
+        "right": "mod-button"
+      },
+      "functionalGroup": "oscillators",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "lcd-display": {
+      "id": "lcd-display",
+      "label": "DISPLAY",
+      "type": "screen",
+      "x": 1024.0000146484374,
+      "y": 47.99999233398437,
+      "w": 288,
+      "h": 208,
+      "sectionId": "display-center",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "menu-prog",
+        "below": "nav-up",
+        "left": "data-encoder",
+        "right": null
+      },
+      "functionalGroup": "display-navigation",
+      "labelFontSize": 8
+    },
+    "data-encoder": {
+      "id": "data-encoder",
+      "label": "DATA ENTRY",
+      "type": "encoder",
+      "x": 1401.000190527344,
+      "y": 98.00000996093749,
+      "w": 116,
+      "h": 116,
+      "sectionId": "display-center",
+      "labelPosition": "hidden",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "data-fader",
+        "left": "noise-level",
+        "right": "lcd-display"
+      },
+      "functionalGroup": "display-navigation",
+      "encoderHasPush": true,
+      "labelFontSize": 8
+    },
+    "data-fader": {
+      "id": "data-fader",
+      "label": "DATA ENTRY",
+      "type": "slider",
+      "x": 1622,
+      "y": 92.00009602050778,
+      "w": 20,
+      "h": 173,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "data-encoder",
+        "below": "mod-button",
+        "left": null,
+        "right": "lcd-display"
+      },
+      "functionalGroup": "display-navigation",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "mod-button": {
+      "id": "mod-button",
+      "label": "MOD",
+      "type": "button",
+      "x": 1612,
+      "y": 284.0000244140624,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "data-fader",
+        "below": null,
+        "left": "osc-edit",
+        "right": "nav-down"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "menu-prog": {
+      "id": "menu-prog",
+      "label": "PROG",
+      "type": "button",
+      "x": 1019.9999853515624,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lcd-display",
+        "left": null,
+        "right": "menu-fx"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "secondaryFunction": "PROG MENU",
+      "labelFontSize": 8
+    },
+    "menu-fx": {
+      "id": "menu-fx",
+      "label": "FX",
+      "type": "button",
+      "x": 1079.9999853515624,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lcd-display",
+        "left": "menu-prog",
+        "right": "menu-global"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "secondaryFunction": "FX MENU",
+      "labelFontSize": 8
+    },
+    "menu-global": {
+      "id": "menu-global",
+      "label": "GLOBAL",
+      "type": "button",
+      "x": 1139.9999853515624,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lcd-display",
+        "left": "menu-fx",
+        "right": "menu-compare"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "secondaryFunction": "GLOBAL MENU",
+      "labelFontSize": 8
+    },
+    "menu-compare": {
+      "id": "menu-compare",
+      "label": "COMPARE",
+      "type": "button",
+      "x": 1199.9999658203124,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lcd-display",
+        "left": "menu-global",
+        "right": "menu-write"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "secondaryFunction": "COMPARE MENU",
+      "labelFontSize": 8
+    },
+    "menu-write": {
+      "id": "menu-write",
+      "label": "WRITE",
+      "type": "button",
+      "x": 1259.9999658203124,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "lcd-display",
+        "left": "menu-compare",
+        "right": null
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "secondaryFunction": "WRITE MENU",
+      "labelFontSize": 8
+    },
+    "nav-up": {
+      "id": "nav-up",
+      "label": "UP",
+      "type": "button",
+      "x": 1438.0003833007825,
+      "y": 53.99999389648438,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "lcd-display",
+        "below": null,
+        "left": "mod-button",
+        "right": "nav-yes"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "nav-down": {
+      "id": "nav-down",
+      "label": "DOWN",
+      "type": "button",
+      "x": 1438.000461425784,
+      "y": 234.000009765625,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "below",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "lcd-display",
+        "below": null,
+        "left": "nav-up",
+        "right": "nav-yes"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "nav-yes": {
+      "id": "nav-yes",
+      "label": "+/YES",
+      "type": "button",
+      "x": 1533.9999389648426,
+      "y": 142.99996337890616,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "lcd-display",
+        "below": null,
+        "left": "nav-down",
+        "right": "nav-no"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "nav-no": {
+      "id": "nav-no",
+      "label": "-/NO",
+      "type": "button",
+      "x": 1343.999987792968,
+      "y": 142.9999633789062,
+      "w": 40,
+      "h": 30,
+      "sectionId": "display-center",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "lcd-display",
+        "below": null,
+        "left": "nav-yes",
+        "right": "poly-unison-detune"
+      },
+      "functionalGroup": "display-navigation",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "poly-unison-detune": {
+      "id": "poly-unison-detune",
+      "label": "UNISON DETUNE",
+      "type": "slider",
+      "x": 1722,
+      "y": 92.00009602050778,
+      "w": 20,
+      "h": 173,
+      "sectionId": "poly",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "poly-edit",
+        "left": "nav-no",
+        "right": "vcf-freq"
+      },
+      "functionalGroup": "voice-architecture",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "poly-edit": {
+      "id": "poly-edit",
+      "label": "EDIT",
+      "type": "button",
+      "x": 1712,
+      "y": 284.0000244140624,
+      "w": 40,
+      "h": 30,
+      "sectionId": "poly",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "poly-unison-detune",
+        "below": null,
+        "left": null,
+        "right": "vcf-2pole"
+      },
+      "functionalGroup": "voice-architecture",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "vcf-freq": {
+      "id": "vcf-freq",
+      "label": "FREQ",
+      "type": "slider",
+      "x": 1811,
+      "y": 92.00007648925788,
+      "w": 20,
+      "h": 173,
+      "sectionId": "vcf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "vcf-2pole",
+        "left": "poly-unison-detune",
+        "right": "vcf-res"
+      },
+      "functionalGroup": "filter",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "vcf-res": {
+      "id": "vcf-res",
+      "label": "RES",
+      "type": "slider",
+      "x": 1876,
+      "y": 92.0000846923827,
+      "w": 20,
+      "h": 173,
+      "sectionId": "vcf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "vcf-invert",
+        "left": "vcf-freq",
+        "right": "vcf-env"
+      },
+      "functionalGroup": "filter",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "vcf-env": {
+      "id": "vcf-env",
+      "label": "ENV",
+      "type": "slider",
+      "x": 1945,
+      "y": 92.00009602050778,
+      "w": 20,
+      "h": 173,
+      "sectionId": "vcf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "vcf-edit",
+        "left": "vcf-res",
+        "right": "vcf-lfo"
+      },
+      "functionalGroup": "filter",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "vcf-lfo": {
+      "id": "vcf-lfo",
+      "label": "LFO",
+      "type": "slider",
+      "x": 2009,
+      "y": 92.00008337402352,
+      "w": 20,
+      "h": 173,
+      "sectionId": "vcf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "vcf-edit",
+        "left": "vcf-env",
+        "right": "vcf-kybd"
+      },
+      "functionalGroup": "filter",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "vcf-kybd": {
+      "id": "vcf-kybd",
+      "label": "KYBD",
+      "type": "slider",
+      "x": 2074.0000732421877,
+      "y": 92.0000803222657,
+      "w": 20,
+      "h": 173,
+      "sectionId": "vcf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "vcf-edit",
+        "left": "vcf-lfo",
+        "right": "vca-level"
+      },
+      "functionalGroup": "filter",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "vcf-2pole": {
+      "id": "vcf-2pole",
+      "label": "2-POLE",
+      "type": "button",
+      "x": 1801,
+      "y": 284.000009765625,
+      "w": 40,
+      "h": 30,
+      "sectionId": "vcf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "vcf-freq",
+        "below": null,
+        "left": "poly-edit",
+        "right": "vcf-invert"
+      },
+      "functionalGroup": "filter",
+      "interactionType": "toggle",
+      "labelFontSize": 8
+    },
+    "vcf-invert": {
+      "id": "vcf-invert",
+      "label": "INVERT",
+      "type": "button",
+      "x": 1935,
+      "y": 284.00008544921843,
+      "w": 40,
+      "h": 30,
+      "sectionId": "vcf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "vcf-res",
+        "below": null,
+        "left": "vcf-2pole",
+        "right": "vcf-edit"
+      },
+      "functionalGroup": "filter",
+      "interactionType": "toggle",
+      "labelFontSize": 8
+    },
+    "vcf-edit": {
+      "id": "vcf-edit",
+      "label": "EDIT",
+      "type": "button",
+      "x": 1866,
+      "y": 284.00001264648427,
+      "w": 40,
+      "h": 30,
+      "sectionId": "vcf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "vcf-kybd",
+        "below": null,
+        "left": "vcf-invert",
+        "right": "vca-edit"
+      },
+      "functionalGroup": "filter",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "vca-level": {
+      "id": "vca-level",
+      "label": "LEVEL",
+      "type": "slider",
+      "x": 2174,
+      "y": 92.00009541015622,
+      "w": 20,
+      "h": 173,
+      "sectionId": "vca",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "vca-edit",
+        "left": "vcf-kybd",
+        "right": "hpf-freq"
+      },
+      "functionalGroup": "amplifier",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "vca-edit": {
+      "id": "vca-edit",
+      "label": "EDIT",
+      "type": "button",
+      "x": 2164,
+      "y": 284.0000244140624,
+      "w": 40,
+      "h": 30,
+      "sectionId": "vca",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "vca-level",
+        "below": null,
+        "left": "vcf-edit",
+        "right": "hpf-boost"
+      },
+      "functionalGroup": "amplifier",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "hpf-freq": {
+      "id": "hpf-freq",
+      "label": "FREQ",
+      "type": "slider",
+      "x": 2264.0005126953133,
+      "y": 92.00007727050789,
+      "w": 20,
+      "h": 173,
+      "sectionId": "hpf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "hpf-boost",
+        "left": "vca-level",
+        "right": "env-attack"
+      },
+      "functionalGroup": "filter",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "hpf-boost": {
+      "id": "hpf-boost",
+      "label": "BOOST",
+      "type": "button",
+      "x": 2254.0007033203105,
+      "y": 284.00004760742183,
+      "w": 40,
+      "h": 30,
+      "sectionId": "hpf",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "hpf-freq",
+        "below": null,
+        "left": "vca-edit",
+        "right": "env-vca-sel"
+      },
+      "functionalGroup": "filter",
+      "interactionType": "toggle",
+      "labelFontSize": 8
+    },
+    "env-attack": {
+      "id": "env-attack",
+      "label": "A",
+      "type": "slider",
+      "x": 2355,
+      "y": 91.00002136230468,
+      "w": 20,
+      "h": 173,
+      "sectionId": "envelopes",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "env-vca-sel",
+        "left": "hpf-freq",
+        "right": "env-decay"
+      },
+      "functionalGroup": "envelopes",
+      "primaryLabel": "A",
+      "secondaryLabel": "ATTACK",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "env-decay": {
+      "id": "env-decay",
+      "label": "D",
+      "type": "slider",
+      "x": 2420,
+      "y": 91.0000122070312,
+      "w": 20,
+      "h": 173,
+      "sectionId": "envelopes",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "env-vcf-sel",
+        "left": "env-attack",
+        "right": "env-sustain"
+      },
+      "functionalGroup": "envelopes",
+      "primaryLabel": "D",
+      "secondaryLabel": "DECAY",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "env-sustain": {
+      "id": "env-sustain",
+      "label": "S",
+      "type": "slider",
+      "x": 2485,
+      "y": 91.0000183105468,
+      "w": 20,
+      "h": 173,
+      "sectionId": "envelopes",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "env-mod-sel",
+        "left": "env-decay",
+        "right": "env-release"
+      },
+      "functionalGroup": "envelopes",
+      "primaryLabel": "S",
+      "secondaryLabel": "SUSTAIN",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "env-release": {
+      "id": "env-release",
+      "label": "R",
+      "type": "slider",
+      "x": 2550,
+      "y": 91.0000122070312,
+      "w": 20,
+      "h": 173,
+      "sectionId": "envelopes",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": "env-curves",
+        "left": "env-sustain",
+        "right": "env-curve-leds"
+      },
+      "functionalGroup": "envelopes",
+      "primaryLabel": "R",
+      "secondaryLabel": "RELEASE",
+      "orientation": "vertical",
+      "labelFontSize": 8
+    },
+    "env-curve-leds": {
+      "id": "env-curve-leds",
+      "label": "CURVES",
+      "type": "led",
+      "x": 1965,
+      "y": 725.9999853515625,
+      "w": 35,
+      "h": 220,
+      "sectionId": "envelopes",
+      "labelPosition": "right",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "env-release",
+        "right": null
+      },
+      "functionalGroup": "envelopes"
+    },
+    "env-vca-sel": {
+      "id": "env-vca-sel",
+      "label": "VCA",
+      "type": "button",
+      "x": 2374.9999609375,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "envelopes",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "env-attack",
+        "below": null,
+        "left": "hpf-boost",
+        "right": "env-vcf-sel"
+      },
+      "functionalGroup": "envelopes",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "env-vcf-sel": {
+      "id": "env-vcf-sel",
+      "label": "VCF",
+      "type": "button",
+      "x": 2441.9999609375,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "envelopes",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "env-decay",
+        "below": null,
+        "left": "env-vca-sel",
+        "right": "env-mod-sel"
+      },
+      "functionalGroup": "envelopes",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "env-mod-sel": {
+      "id": "env-mod-sel",
+      "label": "MOD",
+      "type": "button",
+      "x": 2508.9999609375,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "envelopes",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "env-sustain",
+        "below": null,
+        "left": "env-vcf-sel",
+        "right": "env-curves"
+      },
+      "functionalGroup": "envelopes",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "env-curves": {
+      "id": "env-curves",
+      "label": "CURVES",
+      "type": "button",
+      "x": 2594.0002080078125,
+      "y": 284,
+      "w": 40,
+      "h": 30,
+      "sectionId": "envelopes",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "env-release",
+        "below": null,
+        "left": "env-mod-sel",
+        "right": "env-curve-leds"
+      },
+      "functionalGroup": "envelopes",
+      "interactionType": "momentary",
+      "labelFontSize": 8
+    },
+    "voices-leds": {
+      "id": "voices-leds",
+      "label": "1",
+      "type": "led",
+      "x": 2175,
+      "y": 331.00017561523435,
+      "w": 45,
+      "h": 16,
+      "sectionId": "voices",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": "env-curves",
+        "below": null,
+        "left": null,
+        "right": null
+      },
+      "functionalGroup": "voice-status",
+      "secondaryLabel": ""
+    },
+    "osc-sync": {
+      "id": "osc-sync",
+      "label": "SYNC",
+      "type": "button",
+      "x": 685,
+      "y": 284.0004735058594,
+      "w": 40,
+      "h": 30,
+      "sectionId": "osc-1-2",
+      "labelPosition": "above",
+      "locked": false,
+      "spatialNeighbors": {
+        "above": null,
+        "below": null,
+        "left": "osc1-sawtooth",
+        "right": "osc-edit"
+      },
+      "functionalGroup": "oscillators",
+      "primaryLabel": "SYNC",
+      "secondaryLabel": "OSC",
+      "interactionType": "toggle",
+      "labelFontSize": 8
+    }
+  },
+  "editorLabels": [
+    {
+      "id": "label-volume-knob",
+      "controlId": "volume-knob",
+      "text": "VOLUME",
+      "x": 89,
+      "y": 459,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-portamento-slider",
+      "controlId": "portamento-slider",
+      "text": "PORTAMENTO",
+      "x": 165,
+      "y": 459,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-oct-up",
+      "controlId": "oct-up",
+      "text": "OCT UP",
+      "x": 25,
+      "y": 478,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-oct-down",
+      "controlId": "oct-down",
+      "text": "OCT DOWN",
+      "x": 234,
+      "y": 478,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-pitch-wheel",
+      "controlId": "pitch-wheel",
+      "text": "PITCH",
+      "x": 89,
+      "y": 637,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-mod-wheel",
+      "controlId": "mod-wheel",
+      "text": "MOD WHEEL",
+      "x": 165,
+      "y": 637,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-arp-chord",
+      "controlId": "arp-chord",
+      "text": "CHORD",
+      "x": 92,
+      "y": 78,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-arp-pchord",
+      "controlId": "arp-pchord",
+      "text": "POLY \nCHORD",
+      "x": 92,
+      "y": 165,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-arp-on-off",
+      "controlId": "arp-on-off",
+      "text": "ON/OFF",
+      "x": 92,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-arp-tap-hold",
+      "controlId": "arp-tap-hold",
+      "text": "TAP/HOLD",
+      "x": 159,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-lfo1-edit",
+      "controlId": "lfo1-edit",
+      "text": "EDIT",
+      "x": 334,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-lfo1-rate",
+      "controlId": "lfo1-rate",
+      "text": "RATE",
+      "x": 303,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-lfo1-waveform-leds",
+      "controlId": "lfo1-waveform-leds",
+      "text": "LFO WAVEFORMS",
+      "x": 404,
+      "y": 1288,
+      "w": 75,
+      "fontSize": 8,
+      "align": "left"
+    },
+    {
+      "id": "label-lfo1-delay-time",
+      "controlId": "lfo1-delay-time",
+      "text": "DELAY \nTIME",
+      "x": 368,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-lfo2-edit",
+      "controlId": "lfo2-edit",
+      "text": "EDIT",
+      "x": 450,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-lfo2-rate",
+      "controlId": "lfo2-rate",
+      "text": "RATE",
+      "x": 419,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-lfo2-waveform-leds",
+      "controlId": "lfo2-waveform-leds",
+      "text": "LFO WAVEFORMS",
+      "x": 492,
+      "y": 839,
+      "w": 75,
+      "fontSize": 10,
+      "align": "left"
+    },
+    {
+      "id": "label-lfo2-delay-time",
+      "controlId": "lfo2-delay-time",
+      "text": "DELAY \nTIME",
+      "x": 484,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-osc1-pitch-mod",
+      "controlId": "osc1-pitch-mod",
+      "text": "PITCH \nMOD",
+      "x": 542,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-osc1-pwm",
+      "controlId": "osc1-pwm",
+      "text": "PWM",
+      "x": 605,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-osc2-pitch-mod",
+      "controlId": "osc2-pitch-mod",
+      "text": "PITCH \nMOD",
+      "x": 675,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-osc2-tone-mod",
+      "controlId": "osc2-tone-mod",
+      "text": "TONE \nMOD",
+      "x": 740,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-osc2-pitch",
+      "controlId": "osc2-pitch",
+      "text": "PITCH",
+      "x": 805,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-osc2-level",
+      "controlId": "osc2-level",
+      "text": "LEVEL",
+      "x": 870,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-noise-level",
+      "controlId": "noise-level",
+      "text": "NOISE \nLEVEL",
+      "x": 938,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-osc-edit",
+      "controlId": "osc-edit",
+      "text": "EDIT",
+      "x": 774,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-data-fader",
+      "controlId": "data-fader",
+      "text": "DATA \nENTRY",
+      "x": 1602,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-mod-button",
+      "controlId": "mod-button",
+      "text": "MOD",
+      "x": 1602,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-menu-prog",
+      "controlId": "menu-prog",
+      "text": "PROG",
+      "x": 1010,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-menu-fx",
+      "controlId": "menu-fx",
+      "text": "FX",
+      "x": 1070,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-menu-global",
+      "controlId": "menu-global",
+      "text": "GLOBAL",
+      "x": 1130,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-menu-compare",
+      "controlId": "menu-compare",
+      "text": "COMPARE",
+      "x": 1190,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-menu-write",
+      "controlId": "menu-write",
+      "text": "WRITE",
+      "x": 1250,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-nav-up",
+      "controlId": "nav-up",
+      "text": "UP",
+      "x": 1428,
+      "y": 41,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-nav-down",
+      "controlId": "nav-down",
+      "text": "DOWN",
+      "x": 1428,
+      "y": 267,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-nav-yes",
+      "controlId": "nav-yes",
+      "text": "+/YES",
+      "x": 1524,
+      "y": 129,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-nav-no",
+      "controlId": "nav-no",
+      "text": "-/NO",
+      "x": 1334,
+      "y": 129,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-poly-unison-detune",
+      "controlId": "poly-unison-detune",
+      "text": "UNISON \nDETUNE",
+      "x": 1702,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-poly-edit",
+      "controlId": "poly-edit",
+      "text": "EDIT",
+      "x": 1702,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vcf-freq",
+      "controlId": "vcf-freq",
+      "text": "FREQ",
+      "x": 1791,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vcf-res",
+      "controlId": "vcf-res",
+      "text": "RES",
+      "x": 1856,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vcf-env",
+      "controlId": "vcf-env",
+      "text": "ENV",
+      "x": 1925,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vcf-lfo",
+      "controlId": "vcf-lfo",
+      "text": "LFO",
+      "x": 1989,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vcf-kybd",
+      "controlId": "vcf-kybd",
+      "text": "KYBD",
+      "x": 2054,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vcf-2pole",
+      "controlId": "vcf-2pole",
+      "text": "2-POLE",
+      "x": 1791,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vcf-invert",
+      "controlId": "vcf-invert",
+      "text": "INVERT",
+      "x": 1925,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vcf-edit",
+      "controlId": "vcf-edit",
+      "text": "EDIT",
+      "x": 1856,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vca-level",
+      "controlId": "vca-level",
+      "text": "LEVEL",
+      "x": 2154,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-vca-edit",
+      "controlId": "vca-edit",
+      "text": "EDIT",
+      "x": 2154,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-hpf-freq",
+      "controlId": "hpf-freq",
+      "text": "FREQ",
+      "x": 2244,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-hpf-boost",
+      "controlId": "hpf-boost",
+      "text": "BOOST",
+      "x": 2244,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-env-attack",
+      "controlId": "env-attack",
+      "text": "A",
+      "x": 2335,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-env-decay",
+      "controlId": "env-decay",
+      "text": "D",
+      "x": 2400,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-env-sustain",
+      "controlId": "env-sustain",
+      "text": "S",
+      "x": 2465,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-env-release",
+      "controlId": "env-release",
+      "text": "R",
+      "x": 2530,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-env-curve-leds",
+      "controlId": "env-curve-leds",
+      "text": "CURVES",
+      "x": 2006,
+      "y": 830,
+      "w": 75,
+      "fontSize": 10,
+      "align": "left"
+    },
+    {
+      "id": "label-env-vca-sel",
+      "controlId": "env-vca-sel",
+      "text": "VCA",
+      "x": 2365,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-env-vcf-sel",
+      "controlId": "env-vcf-sel",
+      "text": "VCF",
+      "x": 2432,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-env-mod-sel",
+      "controlId": "env-mod-sel",
+      "text": "MOD",
+      "x": 2499,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-env-curves",
+      "controlId": "env-curves",
+      "text": "CURVES",
+      "x": 2584,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-arp-rate",
+      "controlId": "arp-rate",
+      "text": "RATE",
+      "x": 158,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-arp-gate-time",
+      "controlId": "arp-gate-time",
+      "text": "GATE \nTIME",
+      "x": 223,
+      "y": 68,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-arp-edit",
+      "controlId": "arp-edit",
+      "text": "EDIT",
+      "x": 224,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-voices-leds",
+      "controlId": "voices-leds",
+      "text": "1",
+      "x": 2168,
+      "y": 318,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "hidden": false
+    },
+    {
+      "id": "label-standalone-1777700314057",
+      "controlId": null,
+      "text": "ANALOG 12- VOICE POLYPHONIC SYNTHESIZER",
+      "x": 1008,
+      "y": 326,
+      "w": 75,
+      "fontSize": 10,
+      "align": "center"
+    },
+    {
+      "id": "label-osc-sync",
+      "controlId": "osc-sync",
+      "text": "SYNC",
+      "x": 675,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center"
+    },
+    {
+      "id": "label-standalone-1778016922795-q3fodc",
+      "controlId": "osc1-sawtooth",
+      "sectionId": "osc-1-2",
+      "text": "",
+      "x": 605,
+      "y": 269,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center",
+      "icon": "square-wave",
+      "hidden": false
+    },
+    {
+      "id": "label-standalone-1778022427184-viok2j",
+      "controlId": null,
+      "sectionId": "osc-1-2",
+      "text": "OSC 1",
+      "x": 576,
+      "y": 42,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center"
+    },
+    {
+      "id": "label-standalone-1778022454917-hu4gd3",
+      "controlId": null,
+      "sectionId": "osc-1-2",
+      "text": "OSC 2",
+      "x": 772,
+      "y": 42,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center"
+    },
+    {
+      "id": "label-standalone-1778038552514-vjfyoz",
+      "controlId": null,
+      "text": "VOICES",
+      "x": 2118,
+      "y": 326,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center"
+    },
+    {
+      "id": "label-standalone-1778041209092-t7jlsh",
+      "controlId": null,
+      "sectionId": "performance",
+      "text": "OCTAVE",
+      "x": 18,
+      "y": 326,
+      "w": 60,
+      "fontSize": 8,
+      "align": "center"
+    }
+  ],
+  "controlGroups": [
+    {
+      "id": "group-1777602930479-dbbfdk",
+      "name": "Group 6",
+      "controlIds": [
+        "menu-fx",
+        "menu-prog",
+        "menu-global",
+        "menu-compare",
+        "menu-write"
+      ]
+    },
+    {
+      "id": "group-1777691396146-jckdft",
+      "name": "Group 9",
+      "controlIds": [
+        "env-vca-sel",
+        "env-vcf-sel",
+        "env-mod-sel"
+      ]
+    },
+    {
+      "id": "group-1777691453760-fug65b",
+      "name": "Group 10",
+      "controlIds": [
+        "env-attack",
+        "env-decay",
+        "env-sustain",
+        "env-release"
+      ]
+    },
+    {
+      "id": "group-1778019995829-s8wfpm",
+      "name": "Group 11",
+      "controlIds": [
+        "lfo1-rate",
+        "lfo1-delay-time",
+        "lfo1-edit"
+      ]
+    },
+    {
+      "id": "group-1778020071753-66qzec",
+      "name": "Group 11",
+      "controlIds": [
+        "lfo2-rate",
+        "lfo2-delay-time"
+      ]
+    },
+    {
+      "id": "group-1778022015027-4cimts",
+      "name": "Group 12",
+      "controlIds": [
+        "osc1-pitch-mod",
+        "osc1-pwm"
+      ]
+    },
+    {
+      "id": "group-1778022020441-m4sbgm",
+      "name": "Group 13",
+      "controlIds": [
+        "osc2-pitch-mod",
+        "osc2-tone-mod",
+        "osc2-pitch",
+        "osc2-level"
+      ]
+    },
+    {
+      "id": "group-1778022974365-8ei99f",
+      "name": "Group 13",
+      "controlIds": [
+        "nav-down",
+        "nav-up"
+      ]
+    },
+    {
+      "id": "group-1778022994666-mu6lfn",
+      "name": "Group 14",
+      "controlIds": [
+        "nav-yes",
+        "nav-no"
+      ]
+    }
+  ],
+  "controlContainers": [
+    {
+      "id": "container-1778015946061",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 1.9999456425661706,
+      "y": 360.00003755920613,
+      "w": 320,
+      "h": 336,
+      "borderRadius": 4
+    },
+    {
+      "id": "container-1778016002245",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 2.999958801376953,
+      "y": 0.9999465942875,
+      "w": 68,
+      "h": 300,
+      "borderRadius": 4
+    },
+    {
+      "id": "container-1778046086589",
+      "controlIds": [],
+      "style": "recessed",
+      "x": 327.00000732421876,
+      "y": 358.00006865921875,
+      "w": 2340,
+      "h": 336,
+      "borderRadius": 4
+    }
+  ],
+  "canvasWidth": 2680,
+  "canvasHeight": 699,
+  "_manifestVersion": "3ba8d29f",
+  "_loadedAt": "2026-05-09T00:01:53.282Z",
+  "controlScale": 1,
+  "zoom": 0.8,
+  "cleanupGap": 8,
+  "panelScale": 1,
+  "keyboard": {
+    "keys": 49,
+    "startNote": "C2",
+    "type": "standard",
+    "panelHeightPercent": 35,
+    "leftPercent": 12.4,
+    "widthPercent": 87.5
+  }
+}
