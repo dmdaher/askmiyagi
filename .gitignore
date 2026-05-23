@@ -111,3 +111,4 @@ docs/**/screenshots/*.jpg
 # Created by the editor's auto-save throttle. Rotated on disk; not source.
 .pipeline/*/manifest-editor-backup-*.json
 .pipeline/*/manifest-editor-backup-pre-*.json
+.env*.local

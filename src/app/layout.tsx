@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
+import { PostHogRouteGuard } from './PostHogRouteGuard';
 import './globals.css';
 
 // Inter via Next.js font system — bundled at build time, self-hosted via
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`dark ${inter.variable}`}>
       <body className="min-h-screen bg-[#0a0a0f] text-gray-100 antialiased">
+        <PostHogRouteGuard />
         {children}
         <Analytics />
       </body>

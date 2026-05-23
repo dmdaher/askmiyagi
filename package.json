@@ -26,6 +26,7 @@
     "@vercel/blob": "^2.3.3",
     "framer-motion": "^12.34.3",
     "next": "16.2.6",
+    "posthog-js": "^1.376.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-joyride": "^3.0.0",
