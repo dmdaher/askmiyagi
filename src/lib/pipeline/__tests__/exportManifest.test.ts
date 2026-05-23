@@ -12,7 +12,8 @@ import path from 'path';
 import os from 'os';
 
 // Import dynamically so we can chdir into the tmpdir first.
-let exportManifest: (deviceId: string) => any;
+let exportManifest: (deviceId: string, options?: { bypassDowngradeCheck?: boolean }) => any;
+let __internal: any;
 
 const TEST_DEVICE = 'sentinel-device';
 
@@ -24,7 +25,9 @@ beforeEach(async () => {
   tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'export-manifest-test-'));
   process.chdir(tmpdir);
   // Re-import to pick up the new cwd
-  exportManifest = (await import('../exportManifest?t=' + Date.now())).exportManifest;
+  const mod = await import('../exportManifest?t=' + Date.now());
+  exportManifest = mod.exportManifest;
+  __internal = mod.__internal;
 });
 
 afterEach(() => {
@@ -32,13 +35,37 @@ afterEach(() => {
   fs.rmSync(tmpdir, { recursive: true, force: true });
 });
 
-function setupDevice(deviceId: string, editorData: any, mainManifest?: any) {
+function setupDevice(deviceId: string, editorData: any, mainManifest?: any, stateJson?: any) {
   const dir = path.join(tmpdir, '.pipeline', deviceId);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'manifest-editor.json'), JSON.stringify(editorData));
   if (mainManifest) {
     fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(mainManifest));
   }
+  if (stateJson) {
+    fs.writeFileSync(path.join(dir, 'state.json'), JSON.stringify(stateJson));
+  }
+}
+
+function setupPriorProductionManifest(deviceId: string, manifest: any) {
+  const dir = path.join(tmpdir, 'src', 'data', 'manifests');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, `${deviceId}.json`), JSON.stringify(manifest, null, 2));
+}
+
+/** Minimal editorData with no top-level deviceName/manufacturer — matches the
+ *  real-world bug shape that this PR fixes (the contractor's manifest-editor
+ *  is sections/controls-rooted, no top-level metadata). */
+function minimalEditorData(): any {
+  return {
+    deviceId: TEST_DEVICE,
+    canvasWidth: 800,
+    canvasHeight: 600,
+    controlScale: 1,
+    sections: { s1: { id: 's1', x: 0, y: 0, w: 100, h: 100 } },
+    controls: { c1: { id: 'c1', type: 'button', label: 'X', x: 0, y: 0, w: 30, h: 30 } },
+    editorLabels: [],
+  };
 }
 
 function readProductionManifest(deviceId: string): any {
@@ -92,6 +119,8 @@ describe('exportManifest — production allowlist (editor-only fields stripped)'
   it('strips locked, resizeLocked, ledOn, spatialNeighbors (editor-only fields)', () => {
     setupDevice(TEST_DEVICE, {
       deviceId: TEST_DEVICE,
+      deviceName: 'Sentinel',  // populate metadata so detector doesn't abort
+      manufacturer: 'TestCo',
       canvasWidth: 800,
       canvasHeight: 600,
       sections: {},
@@ -136,6 +165,8 @@ describe('exportManifest — merge with pipeline manifest', () => {
       TEST_DEVICE,
       {
         deviceId: TEST_DEVICE,
+        deviceName: 'Sentinel',
+        manufacturer: 'TestCo',
         canvasWidth: 800,
         canvasHeight: 600,
         sections: {},
@@ -143,6 +174,8 @@ describe('exportManifest — merge with pipeline manifest', () => {
         editorLabels: [],
       },
       {
+        deviceName: 'Sentinel',  // matches editorData so detector passes
+        manufacturer: 'TestCo',
         groupLabels: [{ id: 'gl-1', text: 'OSC', position: 'above', controlIds: [] }],
         keyboard: null,
       },
@@ -161,6 +194,8 @@ describe('exportManifest — array vs dict shape compatibility', () => {
   it('handles controls/sections in DICT shape (Record<id, Def>)', () => {
     setupDevice(TEST_DEVICE, {
       deviceId: TEST_DEVICE,
+      deviceName: 'Sentinel',
+      manufacturer: 'TestCo',
       canvasWidth: 800,
       canvasHeight: 600,
       sections: { 's1': { id: 's1', x: 0, y: 0, w: 100, h: 100 } },
@@ -176,6 +211,8 @@ describe('exportManifest — array vs dict shape compatibility', () => {
   it('handles controls/sections in ARRAY shape (after API normalization)', () => {
     setupDevice(TEST_DEVICE, {
       deviceId: TEST_DEVICE,
+      deviceName: 'Sentinel',
+      manufacturer: 'TestCo',
       canvasWidth: 800,
       canvasHeight: 600,
       sections: [{ id: 's1', x: 0, y: 0, w: 100, h: 100 }],
@@ -193,6 +230,8 @@ describe('exportManifest — idempotent', () => {
   it('running twice produces identical output', () => {
     setupDevice(TEST_DEVICE, {
       deviceId: TEST_DEVICE,
+      deviceName: 'Sentinel',
+      manufacturer: 'TestCo',
       canvasWidth: 800,
       canvasHeight: 600,
       sections: { 's1': { id: 's1', x: 0, y: 0, w: 100, h: 100 } },
@@ -204,5 +243,287 @@ describe('exportManifest — idempotent', () => {
     exportManifest(TEST_DEVICE);
     const second = JSON.parse(fs.readFileSync(path.join(tmpdir, 'src/data/manifests', `${TEST_DEVICE}.json`), 'utf-8'));
     expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+  });
+});
+
+// ═════════════════════════════════════════════════════════════════════════════
+// NEW: state.json fallback fix (PR 2026-05-23) — fallback chain + detector
+// ═════════════════════════════════════════════════════════════════════════════
+
+describe('exportManifest — fallback chain (PR 2026-05-23)', () => {
+  it('layer 1: editorData wins when present', () => {
+    setupDevice(TEST_DEVICE,
+      { ...minimalEditorData(), deviceName: 'FromEditor', manufacturer: 'EditorBrand' },
+      { deviceName: 'FromMain', manufacturer: 'MainBrand' },
+      { deviceName: 'FromState', manufacturer: 'StateBrand' },
+    );
+    exportManifest(TEST_DEVICE);
+    const prod = readProductionManifest(TEST_DEVICE);
+    expect(prod.deviceName).toBe('FromEditor');
+    expect(prod.manufacturer).toBe('EditorBrand');
+  });
+
+  it('layer 2: mainManifest wins when editorData lacks the field', () => {
+    setupDevice(TEST_DEVICE,
+      minimalEditorData(),
+      { deviceName: 'FromMain', manufacturer: 'MainBrand' },
+      { deviceName: 'FromState', manufacturer: 'StateBrand' },
+    );
+    exportManifest(TEST_DEVICE);
+    const prod = readProductionManifest(TEST_DEVICE);
+    expect(prod.deviceName).toBe('FromMain');
+    expect(prod.manufacturer).toBe('MainBrand');
+  });
+
+  it('layer 4: stateJson wins when editorData + mainManifest + devicesRegistry all miss', () => {
+    // TEST_DEVICE (sentinel-device) is not in devices.ts, so devicesRegistry returns null
+    setupDevice(TEST_DEVICE,
+      minimalEditorData(),
+      undefined, // no mainManifest
+      { deviceName: 'FromState', manufacturer: 'StateBrand' },
+    );
+    exportManifest(TEST_DEVICE);
+    const prod = readProductionManifest(TEST_DEVICE);
+    expect(prod.deviceName).toBe('FromState');
+    expect(prod.manufacturer).toBe('StateBrand');
+  });
+
+  it('default: aborts via detector when ALL sources missing (no prior, no fallback)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData());
+    // No mainManifest, no state.json, not in devicesRegistry → falls to deviceId (corruption)
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('fell back to deviceId');
+  });
+
+  it('reads devicesRegistry for known device (deepmind-12)', () => {
+    // deepmind-12 IS in src/data/devices.ts → 'Behringer DeepMind 12' / 'Behringer'
+    setupDevice('deepmind-12', { ...minimalEditorData(), deviceId: 'deepmind-12' });
+    exportManifest('deepmind-12');
+    const prod = readProductionManifest('deepmind-12');
+    expect(prod.deviceName).toBe('Behringer DeepMind 12');
+    expect(prod.manufacturer).toBe('Behringer');
+  });
+});
+
+describe('exportManifest — downgrade detector (PR 2026-05-23)', () => {
+  it('allows first-ever export (no prior production manifest)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'NewDevice', manufacturer: 'NewBrand' },
+    );
+    // No prior production manifest
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(true);
+  });
+
+  it('allows idempotent re-export (prior matches computed)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'Same', manufacturer: 'SameBrand' },
+    );
+    exportManifest(TEST_DEVICE); // first export
+    const r = exportManifest(TEST_DEVICE); // re-export
+    expect(r.ok).toBe(true);
+  });
+
+  it('ABORTS when deviceName would fall to deviceId (corruption signal)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData());
+    // No fallback sources → falls to deviceId
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'PreviousGood', manufacturer: 'PrevBrand' });
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('fell back to deviceId');
+  });
+
+  it('ABORTS when manufacturer would be wiped (prior non-empty → computed empty)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'KeepName', manufacturer: '' }, // mainManifest has empty manufacturer
+    );
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'KeepName', manufacturer: 'CuratedBrand' });
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('manufacturer would be wiped');
+  });
+
+  it('ABORTS auto-rename of deviceName (prior !== computed, both non-empty)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'NewName', manufacturer: 'Brand' },
+    );
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'OldName', manufacturer: 'Brand' });
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('deviceName would change');
+    expect(r.reason).toContain('OldName');
+    expect(r.reason).toContain('NewName');
+  });
+
+  it('ABORTS auto-rename of manufacturer', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'Same', manufacturer: 'NewBrand' },
+    );
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'Same', manufacturer: 'OldBrand' });
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('manufacturer would change');
+  });
+
+  it('allows empty → empty (no change, no degradation)', () => {
+    setupDevice(TEST_DEVICE, { ...minimalEditorData(), manufacturer: '' },
+      { deviceName: 'Name', manufacturer: '' },
+    );
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'Name', manufacturer: '' });
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(true);
+  });
+
+  it('ABORTS when panelWidth falls to default 1200 (suspected fallthrough)', () => {
+    setupDevice(TEST_DEVICE,
+      { ...minimalEditorData(), canvasWidth: undefined }, // missing canvasWidth → fallthrough to 1200
+      { deviceName: 'X', manufacturer: 'Y' },
+    );
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'X', manufacturer: 'Y', panelWidth: 2680, panelHeight: 800 });
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('panelWidth fell to default');
+  });
+
+  it('ABORTS when keyboard would be lost (prior non-null → computed null)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'X', manufacturer: 'Y', keyboard: null }, // mainManifest has null keyboard
+    );
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'X', manufacturer: 'Y', keyboard: { octaves: 4 } });
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('keyboard would be lost');
+  });
+
+  it('bypassDowngradeCheck option allows the write (admin force-export)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'NewName', manufacturer: 'Brand' },
+    );
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'OldName', manufacturer: 'Brand' });
+    // Without bypass: would abort
+    expect(exportManifest(TEST_DEVICE).ok).toBe(false);
+    // With bypass: writes the new value
+    const r = exportManifest(TEST_DEVICE, { bypassDowngradeCheck: true });
+    expect(r.ok).toBe(true);
+    const prod = readProductionManifest(TEST_DEVICE);
+    expect(prod.deviceName).toBe('NewName');
+  });
+
+  it('reports reason in the result for caller (e.g., PUT route surfacing to toast)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'Diff', manufacturer: 'Brand' },
+    );
+    setupPriorProductionManifest(TEST_DEVICE, { deviceName: 'Original', manufacturer: 'Brand' });
+    const r = exportManifest(TEST_DEVICE);
+    expect(r.ok).toBe(false);
+    expect(typeof r.reason).toBe('string');
+    expect(r.reason!.length).toBeGreaterThan(0);
+  });
+});
+
+describe('exportManifest — helper functions (PR 2026-05-23)', () => {
+  it('readStateJson returns null when file missing', () => {
+    const result = __internal.readStateJson('no-such-device');
+    expect(result).toBeNull();
+  });
+
+  it('readStateJson returns null on corrupt JSON (graceful degradation)', () => {
+    const dir = path.join(tmpdir, '.pipeline', TEST_DEVICE);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'state.json'), '{ "bad json'); // unterminated JSON
+    const result = __internal.readStateJson(TEST_DEVICE);
+    expect(result).toBeNull();
+  });
+
+  it('readStateJson returns parsed metadata when present', () => {
+    const dir = path.join(tmpdir, '.pipeline', TEST_DEVICE);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'state.json'), JSON.stringify({
+      deviceId: TEST_DEVICE,
+      deviceName: 'StateName',
+      manufacturer: 'StateBrand',
+      keyboard: { octaves: 5 },
+    }));
+    const result = __internal.readStateJson(TEST_DEVICE);
+    expect(result).toEqual({
+      deviceName: 'StateName',
+      manufacturer: 'StateBrand',
+      keyboard: { octaves: 5 },
+    });
+  });
+
+  it('readDevicesRegistry returns metadata for known device', () => {
+    const r = __internal.readDevicesRegistry('deepmind-12');
+    expect(r).not.toBeNull();
+    expect(r.deviceName).toBe('Behringer DeepMind 12');
+    expect(r.manufacturer).toBe('Behringer');
+  });
+
+  it('readDevicesRegistry returns null for unknown device', () => {
+    const r = __internal.readDevicesRegistry('not-in-registry');
+    expect(r).toBeNull();
+  });
+
+  it('detectDowngrade returns null for first-ever export (no prior)', () => {
+    const r = __internal.detectDowngrade(TEST_DEVICE, null, {
+      deviceName: 'NewDevice', manufacturer: 'NewBrand', panelWidth: 800, panelHeight: 600, keyboard: null,
+    });
+    expect(r).toBeNull();
+  });
+
+  it('detectDowngrade returns reason on rename when prior exists', () => {
+    const r = __internal.detectDowngrade(TEST_DEVICE,
+      { deviceName: 'Old', manufacturer: 'Brand' },
+      { deviceName: 'New', manufacturer: 'Brand', panelWidth: 800, panelHeight: 600, keyboard: null },
+    );
+    expect(r).toContain('deviceName would change');
+  });
+});
+
+describe('exportManifest — contractor-data immutability (PR 2026-05-23)', () => {
+  it('NEVER writes to manifest-editor.json (SHA byte-identity preserved)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'Name', manufacturer: 'Brand' },
+    );
+    const editorPath = path.join(tmpdir, '.pipeline', TEST_DEVICE, 'manifest-editor.json');
+    const shaBefore = require('crypto').createHash('sha256').update(fs.readFileSync(editorPath)).digest('hex');
+    exportManifest(TEST_DEVICE);
+    const shaAfter = require('crypto').createHash('sha256').update(fs.readFileSync(editorPath)).digest('hex');
+    expect(shaAfter).toBe(shaBefore);
+  });
+
+  it('NEVER writes to .pipeline/<id>/state.json (read-only fallback source)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'Name', manufacturer: 'Brand' },
+      { deviceName: 'StateName', manufacturer: 'StateBrand' },
+    );
+    const statePath = path.join(tmpdir, '.pipeline', TEST_DEVICE, 'state.json');
+    const shaBefore = require('crypto').createHash('sha256').update(fs.readFileSync(statePath)).digest('hex');
+    exportManifest(TEST_DEVICE);
+    const shaAfter = require('crypto').createHash('sha256').update(fs.readFileSync(statePath)).digest('hex');
+    expect(shaAfter).toBe(shaBefore);
+  });
+
+  it('NEVER writes to .pipeline/<id>/manifest.json (read-only fallback source)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'Name', manufacturer: 'Brand' },
+    );
+    const mainPath = path.join(tmpdir, '.pipeline', TEST_DEVICE, 'manifest.json');
+    const shaBefore = require('crypto').createHash('sha256').update(fs.readFileSync(mainPath)).digest('hex');
+    exportManifest(TEST_DEVICE);
+    const shaAfter = require('crypto').createHash('sha256').update(fs.readFileSync(mainPath)).digest('hex');
+    expect(shaAfter).toBe(shaBefore);
+  });
+
+  it('writes ONLY to src/data/manifests/<id>.json (the production output)', () => {
+    setupDevice(TEST_DEVICE, minimalEditorData(),
+      { deviceName: 'Name', manufacturer: 'Brand' },
+    );
+    exportManifest(TEST_DEVICE);
+    const outputPath = path.join(tmpdir, 'src/data/manifests', `${TEST_DEVICE}.json`);
+    expect(fs.existsSync(outputPath)).toBe(true);
+    const written = JSON.parse(fs.readFileSync(outputPath, 'utf-8'));
+    expect(written.deviceName).toBe('Name');
   });
 });

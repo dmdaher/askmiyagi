@@ -31,7 +31,17 @@ function getSaveUrl(deviceId: string) {
  *
  * Returns { saveStatus, saveNow, lastSavedAt } for UI display and manual save button.
  */
-export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow: () => Promise<void>; lastSavedAt: Date | null } {
+export function useAutoSave(deviceId: string): {
+  saveStatus: SaveStatus;
+  saveNow: () => Promise<void>;
+  lastSavedAt: Date | null;
+  /** Non-null when last save succeeded but the production auto-export was
+   *  blocked by the downgrade detector (see src/lib/pipeline/exportManifest.ts).
+   *  Contractor's editor data IS saved; production manifest stays at prior value.
+   *  Recovery: admin reviews + uses force-export OR fixes fallback sources.
+   *  Cleared on the next successful export. */
+  productionExportWarning: string | null;
+} {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Tracks whether there are changes that haven't been successfully saved to blob.
@@ -39,6 +49,19 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
   const hasUnsavedChanges = useRef(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [productionExportWarning, setProductionExportWarning] = useState<string | null>(null);
+
+  /** Read productionExport from a save response and update warning state. */
+  const updateProductionExportWarning = useCallback((data: { productionExport?: { ok: boolean; reason?: string } | null }) => {
+    const pe = data.productionExport;
+    if (pe && pe.ok === false && pe.reason) {
+      setProductionExportWarning(pe.reason);
+    } else if (pe && pe.ok === true) {
+      // Successful export clears any previous warning.
+      setProductionExportWarning(null);
+    }
+    // pe === undefined/null (e.g., hosted mode without auto-export) — leave warning state untouched.
+  }, []);
 
   /** Handle a successful save response — update _loadedAt for conflict detection */
   const handleSaveSuccess = useCallback((savedAt?: string) => {
@@ -80,6 +103,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       if (res.ok) {
         const data = await res.json().catch(() => ({}));
         handleSaveSuccess(data.savedAt);
+        updateProductionExportWarning(data);
       } else if (res.status === 409) {
         setSaveStatus('conflict');
       } else {
@@ -102,7 +126,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 4000);
     }
-  }, [deviceId, handleSaveSuccess]);
+  }, [deviceId, handleSaveSuccess, updateProductionExportWarning]);
 
   // Pick up _loadedAt from store once manifest loads (store is empty at hook init time)
   useEffect(() => {
@@ -206,6 +230,7 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
             if (res.ok) {
               const data = await res.json().catch(() => ({}));
               handleSaveSuccess(data.savedAt);
+              updateProductionExportWarning(data);
             } else if (res.status === 409) {
               setSaveStatus('conflict');
             } else {
@@ -293,5 +318,5 @@ export function useAutoSave(deviceId: string): { saveStatus: SaveStatus; saveNow
     };
   }, [deviceId]);
 
-  return { saveStatus, saveNow, lastSavedAt };
+  return { saveStatus, saveNow, lastSavedAt, productionExportWarning };
 }

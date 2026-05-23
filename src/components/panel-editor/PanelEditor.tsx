@@ -25,7 +25,7 @@ interface PanelEditorProps {
 /** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
 function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { deviceId: string; onRestoreVersion?: () => void; adminNote?: string | null; isSandbox?: boolean }) {
   useEditorKeyboard();
-  const { saveStatus, saveNow, lastSavedAt } = useAutoSave(deviceId);
+  const { saveStatus, saveNow, lastSavedAt, productionExportWarning } = useAutoSave(deviceId);
 
   const previewMode = useEditorStore((s) => s.previewMode);
   const setPreviewMode = useEditorStore((s) => s.setPreviewMode);
@@ -188,6 +188,27 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
           >
             Back to Editor
           </button>
+        </div>
+      )}
+
+      {/* Production-export warning banner — fires when the downgrade detector
+          aborts the auto-export (e.g., would silently rename a curated value).
+          Contractor save SUCCEEDED; only the production manifest update was
+          skipped. Admin must review + use /api/pipeline/<id>/force-export OR
+          fix the fallback sources (.pipeline/<id>/manifest.json / src/data/devices.ts).
+          See src/lib/pipeline/exportManifest.ts for detector rules. */}
+      {productionExportWarning && !previewMode && (
+        <div className="flex items-start gap-2 border-b border-amber-700/40 bg-amber-900/20 px-4 py-2">
+          <span className="text-amber-400 text-sm mt-0.5">⚠️</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] text-amber-400 font-medium">Your save succeeded, but production export was blocked</p>
+            <p className="text-xs text-amber-300/80 whitespace-pre-wrap">
+              {productionExportWarning}
+            </p>
+            <p className="text-[10px] text-amber-400/60 mt-0.5">
+              Recovery: admin can review + use /api/pipeline/{deviceId}/force-export, or fix .pipeline/{deviceId}/manifest.json or src/data/devices.ts to match.
+            </p>
+          </div>
         </div>
       )}
 

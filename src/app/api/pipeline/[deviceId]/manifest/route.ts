@@ -182,11 +182,21 @@ export async function PUT(
     // failure here doesn't fail the save (contractor's primary file is
     // already on disk; the production export can be retried via the
     // /api/pipeline/{deviceId}/export-manifest route if needed).
+    //
+    // PR (state.json fallback fix, 2026-05-23): if exportManifest's
+    // downgrade detector aborts the export (e.g., would silently rename
+    // a curated deviceName), surface the reason in the response so the
+    // editor can toast the contractor + admin. Contractor save still
+    // succeeds; production stays at the previously-exported value until
+    // an admin reviews + uses /force-export to override.
+    let productionExportResult: { ok: boolean; reason?: string } | null = null;
     try {
       const { exportManifest } = await import('@/lib/pipeline/exportManifest');
-      exportManifest(deviceId);
+      const result = exportManifest(deviceId);
+      productionExportResult = { ok: result.ok, reason: result.reason };
     } catch {
       /* best-effort — manual export route is the fallback */
+      productionExportResult = { ok: false, reason: 'export crashed' };
     }
 
     // Schedule a debounced re-run of tutorial-validators + canvas-qa so
@@ -201,7 +211,12 @@ export async function PUT(
       /* best-effort — manual "Refresh from editor" button is the fallback */
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true,
+      // Surface auto-export status (if blocked by downgrade detector,
+      // contractor sees a toast via useAutoSave; their save still succeeded).
+      productionExport: productionExportResult,
+    });
   } catch {
     return NextResponse.json(
       { error: 'Failed to write editor manifest' },
