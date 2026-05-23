@@ -90,7 +90,11 @@ async function setUpPage(page: Page, deviceId: string) {
   // mid-hydration state. MANDATORY for any Playwright editor load —
   // see CLAUDE.md "Playwright + Editor Safety" section.
   await page.goto(`${BASE}/admin/${deviceId}/editor?nosave=true`, { waitUntil: 'load', timeout: 90_000 });
-  await page.waitForSelector('[data-control-id]', { timeout: 60_000 });
+  // 90s budget — matches page.goto's 90s above. CI cold-compile of larger
+  // devices (deepmind-12, dj-xdj-rx3, dj-xdj-rr) can exceed 60s after PostHog
+  // + OpenTelemetry instrumentation (PR #159) increased webpack work, plus
+  // new pipeline-export imports in this PR. Local: ~30ms; CI: occasionally >60s.
+  await page.waitForSelector('[data-control-id]', { timeout: 90_000 });
 
   // Replace the previous fixed 2000ms sleep with semantic waits:
   //   - networkidle: all manifest fetches + font file requests settle
