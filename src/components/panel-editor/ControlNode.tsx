@@ -709,7 +709,23 @@ export default function ControlNode({ controlId, sectionId }: ControlNodeProps) 
   // resize freely. Larger controls keep their handles always.
   // Threshold: 32 px on the shorter axis (post-zoom).
   const isTooSmallToResize = Math.min(wrapperW, wrapperH) < 32;
-  const canResize = !isLocked && !isResizeLocked && (isSelected || !isTooSmallToResize);
+  // Resize disabled while CSS rotation is applied to the visual: Rnd's
+  // corner handles sit at the un-rotated bbox corners, so dragging the
+  // visual-right corner actually grows H (the un-rotated vertical axis)
+  // instead of the visual-width the contractor expects. This was the
+  // explicit v1 mitigation in the rotation plan's premortem.
+  //
+  // Sliders/faders at cardinal angles (90/270) are EXEMPT — EP6-B's
+  // auto-swap rotates the bbox along with the visual, so the handles
+  // align naturally. Other rotated controls (knobs, buttons at any
+  // angle; faders at non-cardinal angles) get the resize lock.
+  //
+  // To resize a rotated control: open Properties → Rotate row → set to
+  // 0°, resize, then re-rotate. Custom angle input remains available.
+  const isFaderType = control.type === 'fader' || control.type === 'slider';
+  const isCardinalRotation = control.rotation === 90 || control.rotation === 270;
+  const hasCssRotation = !!control.rotation && !(isFaderType && isCardinalRotation);
+  const canResize = !isLocked && !isResizeLocked && !hasCssRotation && (isSelected || !isTooSmallToResize);
 
   // Controls can be dragged freely — section boundaries are decorative only.
 
