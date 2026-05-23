@@ -16,6 +16,8 @@ import DirectionSwitch from './DirectionSwitch';
 import JogDisplay from './JogDisplay';
 import SharedCircleButton from '@/components/panel/SharedCircleButton';
 import SharedLed from '@/components/panel/SharedLed';
+import SharedLedDot from '@/components/panel/SharedLedDot';
+import { panelButtonHasLed } from '@/lib/led-gate';
 import {
   renderLabelText,
   inferPortVariant,
@@ -165,11 +167,7 @@ function renderControl(
           <div className="relative" data-control-id={control.id}>
             {control.hasLed && control.ledPosition !== 'inside' && (control.ledStyle ?? 'dot') === 'dot' && (
               <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 1 }}>
-                <div className="rounded-full" style={{
-                  width: 6, height: 6,
-                  backgroundColor: ledOn ? (control.ledColor ?? '#22c55e') : '#333',
-                  boxShadow: ledOn ? `0 0 4px 1px ${control.ledColor ?? '#22c55e'}` : 'none',
-                }} />
+                <SharedLedDot color={control.ledColor ?? '#22c55e'} ledOn={ledOn} />
               </div>
             )}
             <SharedCircleButton
@@ -200,11 +198,7 @@ function renderControl(
         <div className="relative">
           {control.hasLed && control.ledPosition !== 'inside' && (control.ledStyle ?? 'dot') === 'dot' && (
             <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 1 }}>
-              <div className="rounded-full" style={{
-                width: 6, height: 6,
-                backgroundColor: ledOn ? (control.ledColor ?? '#22c55e') : '#333',
-                boxShadow: ledOn ? `0 0 4px 1px ${control.ledColor ?? '#22c55e'}` : 'none',
-              }} />
+              <SharedLedDot color={control.ledColor ?? '#22c55e'} ledOn={ledOn} />
             </div>
           )}
           <PanelButton
@@ -216,22 +210,10 @@ function renderControl(
             height={h}
             variant={variant}
             surfaceColor={control.surfaceColor ?? undefined}
-            // Pass hasLed to PanelButton when EITHER:
-            //   (a) ledPosition === 'inside' → PanelButton renders its
-            //       internal dot inside the button face, or
-            //   (b) ledStyle is a non-dot style (face / label-backlit /
-            //       edge-glow) → PanelButton renders the full LED face.
-            // For plain dot LEDs (ledStyle 'dot' or undefined) with
-            // ledPosition !== 'inside', the SEPARATE external dot at
-            // line ~201 above is the one that should show. Passing
-            // hasLed=false here suppresses PanelButton's own internal
-            // dot so we don't double up (was visible as 2 dots on
-            // CDJ-3000 BEAT_SYNC / MASTER / KEY_SYNC after the EP3b
-            // forge made hasLed=true for those buttons).
-            hasLed={!!control.hasLed && (
-              control.ledPosition === 'inside'
-              || (!!control.ledStyle && control.ledStyle !== 'dot')
-            )}
+            // Gate logic lives in panelButtonHasLed() — see src/lib/led-gate.ts.
+            // Both PanelRenderer (preview) and ControlNode (editor) consume the
+            // same helper so the editor↔preview parity gate cannot drift.
+            hasLed={panelButtonHasLed(control)}
             ledOn={ledOn}
             ledColor={control.ledColor ?? undefined}
             labelPosition={mapButtonLabelPosition(control.labelPosition)}
@@ -248,7 +230,8 @@ function renderControl(
       const knobSize = Math.max(Math.min(w, h) - 4, 12);
       return (
         <Knob id={control.id} label="" highlighted={highlighted}
-          outerSize={knobSize} innerSize={knobSize * 0.7} />
+          outerSize={knobSize} innerSize={knobSize * 0.7}
+          hasLed={control.hasLed} ledColor={control.ledColor ?? undefined} ledOn={ledOn} />
       );
     }
     case 'fader':
@@ -294,7 +277,8 @@ function renderControl(
           <JogWheelAssembly id={control.id} label="" highlighted={highlighted}
             wheelSize={Math.min(w, h)}
             displaySize={nestedDisplay ? Math.min(nestedDisplay.editorPosition?.w ?? 60, nestedDisplay.editorPosition?.h ?? 60, 60) : 60}
-            ringColor={nestedRing?.ledColor ?? undefined} />
+            ringColor={nestedRing?.ledColor ?? undefined}
+            ledOn={ledOn} />
         );
       }
       return <Wheel id={control.id} label="" highlighted={highlighted} width={w} height={h} />;
@@ -304,11 +288,7 @@ function renderControl(
         <div className="relative">
           {control.hasLed && (
             <div className="absolute -top-2 left-1/2 -translate-x-1/2" style={{ zIndex: 1 }}>
-              <div className="rounded-full" style={{
-                width: 6, height: 6,
-                backgroundColor: ledOn ? (control.ledColor ?? '#22c55e') : '#333',
-                boxShadow: ledOn ? `0 0 4px 1px ${control.ledColor ?? '#22c55e'}` : 'none',
-              }} />
+              <SharedLedDot color={control.ledColor ?? '#22c55e'} ledOn={ledOn} />
             </div>
           )}
           <PadButton id={control.id}
