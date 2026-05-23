@@ -1162,12 +1162,36 @@ export const createManifestSlice: StateCreator<
     get().clearScaleBase();
     const ctrl = get().controls[id];
     if (!ctrl || ctrl.locked || ctrl.resizeLocked) return;
-    set((s) => ({
-      controls: {
-        ...s.controls,
-        [id]: { ...ctrl, w: Math.max(8, w), h: Math.max(8, h) },
-      },
-    }));
+    const newW = Math.max(8, w);
+    const newH = Math.max(8, h);
+    // PR-B: scale linked labels proportionally around the control's top-left
+    // anchor (Rnd's resize anchor after onResizeStop). Preserves any manual
+    // user-customized label offset relative to the control. Standalone labels
+    // (controlId === null) and labels of other controls are untouched.
+    const sx = ctrl.w > 0 ? newW / ctrl.w : 1;
+    const sy = ctrl.h > 0 ? newH / ctrl.h : 1;
+    set((s) => {
+      const updatedLabels = (s.editorLabels as EditorLabel[]).map((l) => {
+        if (l.controlId !== id) return l;
+        const dx = l.x - ctrl.x;
+        const dy = l.y - ctrl.y;
+        const fontScale = Math.min(sx, sy);
+        return {
+          ...l,
+          x: Math.round(ctrl.x + dx * sx),
+          y: Math.round(ctrl.y + dy * sy),
+          w: l.w != null ? Math.max(8, Math.round(l.w * sx)) : l.w,
+          fontSize: Math.max(4, Math.round(l.fontSize * fontScale)),
+        };
+      });
+      return {
+        controls: {
+          ...s.controls,
+          [id]: { ...ctrl, w: newW, h: newH },
+        },
+        editorLabels: updatedLabels,
+      };
+    });
   },
 
   moveSection: (id, dx, dy) => {
@@ -1402,7 +1426,34 @@ export const createManifestSlice: StateCreator<
       eligible++;
     }
 
-    set({ controls: next });
+    // PR-B: scale linked labels proportionally around each control's CENTER
+    // (matching scaleSelectedControls's center-preserving anchor at line 1383).
+    // Standalone labels (controlId === null) and labels of unselected controls
+    // are untouched. Preserves user-customized label offsets — the offset from
+    // the control's center is scaled by `factor`, not reset to canonical anchor.
+    const idSet = new Set(selectedIds);
+    const editorLabels = get().editorLabels as EditorLabel[];
+    const updatedLabels = editorLabels.map((l) => {
+      if (!l.controlId || !idSet.has(l.controlId)) return l;
+      const before = controls[l.controlId];
+      const after = next[l.controlId];
+      if (!before || !after) return l;
+      const cxBefore = before.x + before.w / 2;
+      const cyBefore = before.y + before.h / 2;
+      const cxAfter = after.x + after.w / 2;
+      const cyAfter = after.y + after.h / 2;
+      const dx = l.x - cxBefore;
+      const dy = l.y - cyBefore;
+      return {
+        ...l,
+        x: Math.round(cxAfter + dx * factor),
+        y: Math.round(cyAfter + dy * factor),
+        w: l.w != null ? Math.max(8, Math.round(l.w * factor)) : l.w,
+        fontSize: Math.max(4, Math.round(l.fontSize * factor)),
+      };
+    });
+
+    set({ controls: next, editorLabels: updatedLabels });
     return { eligible, skipped, sizeClamped, fontClamped };
   },
 
