@@ -846,6 +846,20 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
           mixed={false}
           onCommit={handleRotationChange}
         />
+        {/* Resize-disabled hint — shown when CSS rotation is active on a
+            non-fader-cardinal control. Mirrors the canResize gate in
+            ControlNode.tsx so the contractor knows why drag handles vanish. */}
+        {(() => {
+          const isFaderType = control.type === 'fader' || control.type === 'slider';
+          const isCardinalRotation = control.rotation === 90 || control.rotation === 270;
+          const hasCssRotation = !!control.rotation && !(isFaderType && isCardinalRotation);
+          if (!hasCssRotation) return null;
+          return (
+            <div className="text-[9px] text-amber-400/80 leading-tight pl-1">
+              ℹ Resize is locked while rotated. Set rotation to 0° to resize, then re-apply.
+            </div>
+          );
+        })()}
       </div>
 
       {/* Divider */}
