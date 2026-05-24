@@ -19,11 +19,35 @@ export const devices: DeviceRegistry = {
   },
   'deepmind-12': {
     id: 'deepmind-12',
-    name: 'Behringer DeepMind 12',
+    // `name` must match the curated production manifest's `deviceName`
+    // (`src/data/manifests/deepmind-12.json`). The downgrade detector in
+    // `exportManifest` aborts when the registry's value would silently
+    // rename a non-empty prior production value.
+    name: 'DeepMind 12',
     manufacturer: 'Behringer',
     description: '12-voice analog polyphonic synthesizer with dual oscillators, VCF, three envelopes, two LFOs, built-in effects, and 49-key keyboard.',
     available: false,
     categories: ['basics', 'synthesis', 'modulation', 'effects', 'presets'],
+  },
+  'dj-xdj-rx3': {
+    id: 'dj-xdj-rx3',
+    // Metadata-only fallback entry. `available: false` keeps this off the
+    // homepage. Exists so `exportManifest`'s fallback chain finds a tracked
+    // deviceName/manufacturer source instead of falling through to deviceId.
+    name: 'XDJ-RX3',
+    manufacturer: 'Pioneer DJ',
+    description: 'All-in-one DJ system with dual decks, 4-channel mixer, and 10.1-inch touchscreen.',
+    available: false,
+    categories: ['basics'],
+  },
+  'dj-djs-1000': {
+    id: 'dj-djs-1000',
+    // Metadata-only fallback entry — see dj-xdj-rx3 above.
+    name: 'DJ DJS-1000',
+    manufacturer: 'Pioneer',
+    description: 'Standalone DJ sampler with 16 performance pads, step sequencer, and 7-inch touchscreen.',
+    available: false,
+    categories: ['basics'],
   },
 };
 

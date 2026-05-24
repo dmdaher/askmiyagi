@@ -297,11 +297,13 @@ describe('exportManifest — fallback chain (PR 2026-05-23)', () => {
   });
 
   it('reads devicesRegistry for known device (deepmind-12)', () => {
-    // deepmind-12 IS in src/data/devices.ts → 'Behringer DeepMind 12' / 'Behringer'
+    // deepmind-12 IS in src/data/devices.ts → 'DeepMind 12' / 'Behringer'
+    // (Registry name must match production manifest deviceName so the
+    // downgrade detector doesn't treat the chain output as a rename.)
     setupDevice('deepmind-12', { ...minimalEditorData(), deviceId: 'deepmind-12' });
     exportManifest('deepmind-12');
     const prod = readProductionManifest('deepmind-12');
-    expect(prod.deviceName).toBe('Behringer DeepMind 12');
+    expect(prod.deviceName).toBe('DeepMind 12');
     expect(prod.manufacturer).toBe('Behringer');
   });
 });
@@ -456,7 +458,7 @@ describe('exportManifest — helper functions (PR 2026-05-23)', () => {
   it('readDevicesRegistry returns metadata for known device', () => {
     const r = __internal.readDevicesRegistry('deepmind-12');
     expect(r).not.toBeNull();
-    expect(r.deviceName).toBe('Behringer DeepMind 12');
+    expect(r.deviceName).toBe('DeepMind 12');
     expect(r.manufacturer).toBe('Behringer');
   });
 

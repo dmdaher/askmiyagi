@@ -47,7 +47,16 @@ export async function GET(
           const pipelineVersion = computeManifestVersion(mainData);
           const editorVersion = parsed._manifestVersion;
 
-          if (editorVersion && editorVersion !== pipelineVersion) {
+          // Only treat the pipeline manifest as a "newer structural version"
+          // if it actually has structural content. Metadata-only manifests
+          // (used by exportManifest's fallback chain for devices without a
+          // gatekeeper-produced manifest) would otherwise always hash-mismatch
+          // a real editor file and silently archive contractor data.
+          const mainHasStructure =
+            (Array.isArray(mainData.controls) && mainData.controls.length > 0) ||
+            (Array.isArray(mainData.sections) && mainData.sections.length > 0);
+
+          if (mainHasStructure && editorVersion && editorVersion !== pipelineVersion) {
             // Editor manifest is stale — pipeline has new structural data.
             // Archive stale editor manifest and serve fresh pipeline data.
             const stalePath = editorPath + '.stale';
