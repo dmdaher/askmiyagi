@@ -47,6 +47,13 @@ jobs:
       CI: "true"
       ADMIN_PASSWORD: miyagi2026
       NEXT_TELEMETRY_DISABLED: "1"
+      # Force sequential device execution. The script defaults to parallel
+      # (3-device Promise.all) which 2-3× faster on a warm dev server, but on
+      # GitHub Actions cold-compile of all 3 simultaneously can exhaust
+      # CPU/memory on the runner — deepmind-12 (largest manifest) timed out
+      # waitForSelector consistently. Sequential is reliable + still under
+      # the 15-min job budget (~2-3 minutes typical).
+      DRIFT_SERIAL: "1"
 
     steps:
       - uses: actions/checkout@v4
