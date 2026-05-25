@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useEditorStore } from './store';
 import type { MasterManifestInput } from './store';
 import { isHosted } from '@/lib/env';
+import { useIsContractorRoute } from '@/lib/contractor-route';
 import EditorToolbar from './EditorToolbar';
 import EditorWorkspace from './EditorWorkspace';
 import PropertiesPanel from './PropertiesPanel';
@@ -25,6 +26,8 @@ interface PanelEditorProps {
 /** Inner shell rendered after manifest is loaded. Hooks run unconditionally here. */
 function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { deviceId: string; onRestoreVersion?: () => void; adminNote?: string | null; isSandbox?: boolean }) {
   useEditorKeyboard();
+  // Route-based data source — see src/lib/contractor-route.ts.
+  const isContractorRoute = useIsContractorRoute();
   const { saveStatus, saveNow, lastSavedAt, productionExportWarning } = useAutoSave(deviceId);
 
   const previewMode = useEditorStore((s) => s.previewMode);
@@ -93,7 +96,9 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
 
     try {
       // Force-save current manifest (bypass debounce)
-      const saveUrl = `${isHosted ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${isHosted ? '' : '/manifest'}`;
+      // Route-based instead of env-based: admin → local file, contractor → Blob.
+      const useHostedApi = isContractorRoute || isSandbox;
+      const saveUrl = `${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`;
       const saveRes = await fetch(saveUrl, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -258,6 +263,11 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
 }
 
 export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
+  // Route-based data source selection. Admin's /admin/<id>/editor reads
+  // local file; contractor's /editor/<id> reads Blob. See
+  // src/lib/contractor-route.ts for the full rationale.
+  const isContractorRoute = useIsContractorRoute();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -294,7 +304,8 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
 
     async function fetchManifest() {
       try {
-        const useHostedApi = isHosted || isSandbox;
+        // Route-based instead of env-based — see useIsContractorRoute().
+        const useHostedApi = isContractorRoute || isSandbox;
 
         // Check sessionStorage for a recent local save — bypasses CDN propagation delay.
         // On refresh, the server might return stale data for a few seconds due to
@@ -469,7 +480,11 @@ export default function PanelEditor({ deviceId, isSandbox }: PanelEditorProps) {
     return () => {
       cancelled = true;
     };
-  }, [deviceId, reloadKey]);
+    // isContractorRoute is captured for SSR-flip safety per Risk 13 in plan:
+    // if a server-render returns null pathname → client hydrates with the real
+    // route → trigger refetch with the correct URL. In practice route doesn't
+    // change while mounted, so this fires once per mount.
+  }, [deviceId, reloadKey, isContractorRoute, isSandbox]);
 
   if (loading) {
     return (

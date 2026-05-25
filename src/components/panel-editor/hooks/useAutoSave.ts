@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditorStore } from '../store';
 import { isHosted } from '@/lib/env';
+import { useIsContractorRoute } from '@/lib/contractor-route';
 
 const AUTO_SAVE_DEBOUNCE_MS = isHosted ? 1500 : 800;
 const UNDO_PERSIST_DEBOUNCE_MS = 2000;
@@ -19,9 +20,14 @@ export function buildSavePayload() {
   return { sections, controls, editorLabels, controlGroups, controlContainers, polishBanners, canvasWidth, canvasHeight, deviceDimensions, _manifestVersion, _loadedAt, controlScale, zoom, cleanupGap, panelScale, keyboard };
 }
 
-/** Get the save URL for this device */
-function getSaveUrl(deviceId: string) {
-  const useHostedApi = isHosted || deviceId.startsWith('sandbox-');
+/** Get the save URL for this device.
+ *  `isContractorRoute` is captured at the call site from `useIsContractorRoute()`
+ *  in the React component tree. Route-based selection ensures admin's local
+ *  review editor always writes to `.pipeline/<id>/manifest-editor.json`
+ *  (local file) and the contractor's hosted editor always writes to Blob.
+ *  See `src/lib/contractor-route.ts` for full rationale. */
+function getSaveUrl(deviceId: string, isContractorRoute: boolean) {
+  const useHostedApi = isContractorRoute || deviceId.startsWith('sandbox-');
   return `${useHostedApi ? '/api/hosted/panels' : '/api/pipeline'}/${deviceId}${useHostedApi ? '' : '/manifest'}`;
 }
 
@@ -42,6 +48,10 @@ export function useAutoSave(deviceId: string): {
    *  Cleared on the next successful export. */
   productionExportWarning: string | null;
 } {
+  // Route-based data source — see src/lib/contractor-route.ts. Captured at
+  // render time; closures (debounced save, sendBeacon) snapshot this value.
+  const isContractorRoute = useIsContractorRoute();
+
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Tracks whether there are changes that haven't been successfully saved to blob.
@@ -94,7 +104,8 @@ export function useAutoSave(deviceId: string): {
       // the hosted PUT route creates a history snapshot (bypassing throttle) and
       // tags it as a manual save in version history. Local pipeline route honors
       // the same params for parity.
-      const url = getSaveUrl(deviceId) + (getSaveUrl(deviceId).includes('?') ? '&' : '?') + 'backup=force&source=manual';
+      const baseUrl = getSaveUrl(deviceId, isContractorRoute);
+      const url = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 'backup=force&source=manual';
       const res = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -222,7 +233,7 @@ export function useAutoSave(deviceId: string): {
           saveTimerRef.current = null;
           if (isHosted && useEditorStore.getState().previewMode) return;
 
-          fetch(getSaveUrl(deviceId), {
+          fetch(getSaveUrl(deviceId, isContractorRoute), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(buildSavePayload()),
@@ -275,7 +286,7 @@ export function useAutoSave(deviceId: string): {
           saveTimerRef.current = null;
         }
         const payload = buildSavePayload();
-        navigator.sendBeacon(getSaveUrl(deviceId), new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+        navigator.sendBeacon(getSaveUrl(deviceId, isContractorRoute), new Blob([JSON.stringify(payload)], { type: 'application/json' }));
         try {
           sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({
             data: payload, savedAt: Date.now(),
@@ -298,7 +309,7 @@ export function useAutoSave(deviceId: string): {
         saveTimerRef.current = null;
         const payload = buildSavePayload();
         // Use sendBeacon for reliability — fetch may not complete during unmount
-        navigator.sendBeacon(getSaveUrl(deviceId), new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+        navigator.sendBeacon(getSaveUrl(deviceId, isContractorRoute), new Blob([JSON.stringify(payload)], { type: 'application/json' }));
         // Cache locally so navigating back doesn't depend on CDN propagation
         try {
           sessionStorage.setItem(`manifest-cache-${deviceId}`, JSON.stringify({
