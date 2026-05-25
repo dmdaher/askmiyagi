@@ -2371,13 +2371,36 @@ Include a summary of your findings in the checkpoint body.`,
   const previousGaps = typeof prevGapsRaw === 'string'
     ? prevGapsRaw.split('|').filter(Boolean)
     : [];
+  // PR #166 — read the new feature-level match-table.md if the agent produced
+  // one. The scorer recomputes coverage_pct from this table (authoritative)
+  // and warns if the agent's frontmatter disagrees. Old-format checkpoints
+  // without match-table.md fall back to frontmatter — backward compatible.
+  const matchTablePath = path.join(
+    '.pipeline', deviceId, 'agents', 'coverage-auditor', 'match-table.md',
+  );
+  const matchTableMarkdown = fs.existsSync(matchTablePath)
+    ? fs.readFileSync(matchTablePath, 'utf-8')
+    : null;
   const verdict = coverageScorer.scoreCoverage(auditorMarkdown, {
     previousCriticalGapFeatures: previousGaps,
+    matchTableMarkdown,
   });
   appendLog(deviceId, {
     level: 'info',
     message: `Coverage scorer verdict: ${verdict.verdict}. ${verdict.reason}`,
   });
+  if (verdict.matchTableWarning) {
+    appendLog(deviceId, {
+      level: 'warn',
+      message: `Coverage scorer: ${verdict.matchTableWarning}`,
+    });
+  }
+  if (verdict.matchTable) {
+    appendLog(deviceId, {
+      level: 'info',
+      message: `Coverage scorer recomputed from match-table: ${verdict.matchTable.confirmed}/${verdict.matchTable.total} CONFIRMED (${verdict.matchTable.coveragePct.toFixed(1)}%), ${verdict.matchTable.parentOnlyGaps} parent-only gaps, ${verdict.matchTable.missingGaps} missing gaps`,
+    });
+  }
   // Persist current critical gap set for convergence check on next retry
   state.strikeTracker['phase-4-audit-prev-critical-gaps'] = verdict.criticalGaps
     .map(g => g.feature)

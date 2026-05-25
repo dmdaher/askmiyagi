@@ -20,6 +20,28 @@
 
 export type CoverageVerdict = 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
 
+/** match-table.md row kinds. See `.claude/agents/coverage-auditor.md` Phase 2 §1. */
+export type MatchKind = 'CONFIRMED' | 'CONFIRMED_BY_PARENT_ONLY' | 'MISSING' | 'RECLASSIFICATION';
+
+export interface MatchRow {
+  featureId: string;
+  featureName: string;
+  page: string;
+  matchKind: MatchKind;
+  tutorialId: string;
+  stepId: string;
+  evidenceQuote: string;
+}
+
+export interface MatchTableSummary {
+  total: number;
+  confirmed: number;      // CONFIRMED + RECLASSIFICATION (both indicate a tutorial teaches it)
+  parentOnlyGaps: number; // CONFIRMED_BY_PARENT_ONLY (section covered, feature not specifically taught)
+  missingGaps: number;    // MISSING (neither section nor feature covered)
+  /** Recomputed `confirmed / total * 100`. NaN-guarded: returns 0 when total = 0. */
+  coveragePct: number;
+}
+
 export interface CoverageGap {
   feature: string;
   pages: string;       // raw page citation, e.g. "pp. 70-72" or "p.117"
@@ -46,6 +68,15 @@ export interface ScoredVerdict {
   /** Convergence flag: true when this gap set differs from previous in a way
    *  that suggests the extractor regressed (introduced new gaps). */
   regressed: boolean;
+  /** Present when `match-table.md` was provided. Authoritative coverage source
+   *  per the agent prompt's feature-level matching contract. When present, the
+   *  recomputed `coveragePct` overrides any frontmatter `coverage_pct` the
+   *  auditor self-reported (with a warning if they disagree by > 0.5%). */
+  matchTable?: MatchTableSummary;
+  /** Non-null when frontmatter coverage_pct and match-table-recomputed
+   *  coveragePct disagree by > 0.5 percentage points. Human-readable; the
+   *  pipeline runner can surface this to the admin or log it. */
+  matchTableWarning?: string;
 }
 
 // ── Verdict thresholds — codified, not LLM-invented ─────────────────────────
@@ -105,6 +136,59 @@ function parseScoreBreakdown(markdown: string): ScoreBreakdown {
     dependencyCorrectness: grab('Dependency'),
     composite: grab('Composite'),
   };
+}
+
+/**
+ * Parse `match-table.md` into a per-feature row list.
+ *
+ * Accepts the markdown table format documented in the coverage-auditor
+ * agent prompt (Phase 2 §1):
+ *   | feature_id | feature_name | page | match_kind | tutorial_id | step_id | evidence_quote |
+ *
+ * Returns an empty list if the input is empty or has no parseable rows.
+ * Headers + separator rows (`| --- | --- |`) are skipped. Rows where
+ * `match_kind` isn't one of the 4 documented kinds are dropped with no
+ * warning (we treat unknown kinds as missing data — the agent owes us
+ * a well-formed table).
+ */
+export function parseMatchTable(markdown: string): MatchRow[] {
+  if (!markdown) return [];
+  const rows: MatchRow[] = [];
+  const validKinds = new Set(['CONFIRMED', 'CONFIRMED_BY_PARENT_ONLY', 'MISSING', 'RECLASSIFICATION']);
+  for (const line of markdown.split('\n')) {
+    // A table row starts and ends with |. Skip non-rows.
+    if (!line.trim().startsWith('|') || !line.trim().endsWith('|')) continue;
+    // Skip separator rows (| --- | --- |) and header rows (containing "feature_id")
+    if (/^\s*\|[\s|:-]+\|\s*$/.test(line)) continue;
+    if (line.includes('feature_id') && line.includes('match_kind')) continue;
+    // Split on | and trim each cell. Drop empty leading/trailing cells from the wrapping pipes.
+    const cells = line.split('|').slice(1, -1).map((c) => c.trim());
+    if (cells.length < 7) continue; // malformed row
+    const [featureId, featureName, page, matchKindRaw, tutorialId, stepId, evidenceQuote] = cells;
+    const matchKind = matchKindRaw.toUpperCase() as MatchKind;
+    if (!validKinds.has(matchKind)) continue;
+    rows.push({ featureId, featureName, page, matchKind, tutorialId, stepId, evidenceQuote });
+  }
+  return rows;
+}
+
+/**
+ * Summarize a parsed match-table into counts + recomputed coverage_pct.
+ * CONFIRMED and RECLASSIFICATION both count as "covered" — the feature
+ * is taught by some tutorial step, even if categorized differently than
+ * the auditor expected.
+ *
+ * NaN-guarded: returns coveragePct = 0 when total = 0 (instead of NaN
+ * from 0/0). This lets downstream verdict logic treat an empty table
+ * as CRITICAL coverage (which it is — 0/0 = no signal at all).
+ */
+export function summarizeMatchTable(rows: MatchRow[]): MatchTableSummary {
+  const total = rows.length;
+  const confirmed = rows.filter((r) => r.matchKind === 'CONFIRMED' || r.matchKind === 'RECLASSIFICATION').length;
+  const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY').length;
+  const missingGaps = rows.filter((r) => r.matchKind === 'MISSING').length;
+  const coveragePct = total > 0 ? (confirmed / total) * 100 : 0;
+  return { total, confirmed, parentOnlyGaps, missingGaps, coveragePct };
 }
 
 /**
@@ -190,11 +274,25 @@ function parseAllGaps(markdown: string): {
  */
 export function scoreCoverage(
   auditorMarkdown: string,
-  options: { previousCriticalGapFeatures?: string[] } = {},
+  options: {
+    previousCriticalGapFeatures?: string[];
+    /** When provided, parsed into the authoritative `matchTable` summary on
+     *  the result. Recomputed `coverage_pct` from this table OVERRIDES any
+     *  frontmatter `coverage_pct` (with a warning if they disagree).
+     *  Pass null/empty string to skip — old-format checkpoints still work. */
+    matchTableMarkdown?: string | null;
+  } = {},
 ): ScoredVerdict {
   const fm = parseFrontmatter(auditorMarkdown);
   const scores = parseScoreBreakdown(auditorMarkdown);
   const { critical, moderate, minor } = parseAllGaps(auditorMarkdown);
+
+  // Parse the new match-table.md when provided. This is the authoritative
+  // feature-level coverage source per the agent prompt (since the fix for
+  // section-vs-feature granularity). Old-format checkpoints without a match
+  // table fall back to frontmatter — backward compatible.
+  const matchRows = options.matchTableMarkdown ? parseMatchTable(options.matchTableMarkdown) : [];
+  const matchTable = matchRows.length > 0 ? summarizeMatchTable(matchRows) : undefined;
 
   // Convergence: did this retry introduce NEW critical gaps vs the previous run?
   const previousCriticalSet = new Set(options.previousCriticalGapFeatures ?? []);
@@ -203,117 +301,116 @@ export function scoreCoverage(
     .filter((f) => previousCriticalSet.size > 0 && !previousCriticalSet.has(f));
   const regressed = newCritical.length > 0;
 
-  // Inventory coverage takes priority (it's a count, not a judgment call).
-  // If the auditor didn't report inventory coverage, fall back to composite.
-  const effectiveCoverage = scores.inventoryCoverage ?? scores.composite ?? 0;
-
-  // CRITICAL: catastrophic — fundamentally incomplete extraction
-  if (effectiveCoverage < THRESHOLDS.CRITICAL_INVENTORY) {
-    return {
-      verdict: 'CRITICAL',
-      reason: `Inventory coverage ${effectiveCoverage.toFixed(1)}/10 below CRITICAL threshold ${THRESHOLDS.CRITICAL_INVENTORY}. Extraction is fundamentally incomplete; re-extract from scratch with broader scope.`,
-      scores,
-      criticalGaps: critical,
-      moderateGaps: moderate,
-      minorGaps: minor,
-      shouldAutoRetry: false, // CRITICAL escalates to admin, doesn't auto-retry
-      regressed,
-    };
-  }
-  if (critical.length > THRESHOLDS.CRITICAL_GAP_COUNT_CRITICAL) {
-    return {
-      verdict: 'CRITICAL',
-      reason: `${critical.length} critical gaps exceeds CRITICAL threshold (${THRESHOLDS.CRITICAL_GAP_COUNT_CRITICAL}). Extractor missed too many major workflows; re-extract.`,
-      scores,
-      criticalGaps: critical,
-      moderateGaps: moderate,
-      minorGaps: minor,
-      shouldAutoRetry: false,
-      regressed,
-    };
+  // Coverage source priority (NEW post-fix):
+  //   1. If match-table is present → use its recomputed coverage_pct as
+  //      authoritative. Convert percentage (0-100) to score scale (0-10).
+  //   2. Else fall back to frontmatter `inventoryCoverage` (0-10).
+  //   3. Else fall back to composite (0-10).
+  //   4. Else 0 (worst case).
+  let effectiveCoverage: number;
+  let matchTableWarning: string | undefined;
+  if (matchTable) {
+    effectiveCoverage = matchTable.coveragePct / 10; // 90% → 9.0, matching the 0-10 score scale
+    // Warn if the auditor's self-reported frontmatter disagrees significantly.
+    const frontmatterScore = scores.inventoryCoverage ?? scores.composite;
+    if (frontmatterScore != null && Math.abs(frontmatterScore - effectiveCoverage) > 0.05) {
+      matchTableWarning =
+        `Auditor frontmatter coverage (${frontmatterScore.toFixed(1)}/10) disagrees with ` +
+        `match-table recomputed coverage (${effectiveCoverage.toFixed(1)}/10 = ` +
+        `${matchTable.confirmed}/${matchTable.total} CONFIRMED). ` +
+        `Using match-table as authoritative.`;
+    }
+  } else {
+    effectiveCoverage = scores.inventoryCoverage ?? scores.composite ?? 0;
   }
 
-  // REGRESSED on retry: escalate instead of looping
-  if (regressed) {
-    return {
-      verdict: 'REJECTED',
-      reason: `Retry produced ${newCritical.length} NEW critical gaps not present in the previous run (${newCritical.slice(0, 3).join(', ')}). Extractor is not converging — escalating for admin review rather than looping.`,
-      scores,
-      criticalGaps: critical,
-      moderateGaps: moderate,
-      minorGaps: minor,
-      shouldAutoRetry: false, // forced halt — don't keep retrying
-      regressed: true,
-    };
-  }
-
-  // REJECTED: any critical gap (with pages cited) → auto-retry
-  if (critical.length > THRESHOLDS.CRITICAL_GAP_COUNT_REJECT) {
-    return {
-      verdict: 'REJECTED',
-      reason: `${critical.length} critical gap${critical.length === 1 ? '' : 's'} (${critical.map((g) => g.feature).slice(0, 3).join(', ')}${critical.length > 3 ? '…' : ''}). Auto-retry: extractor will be re-run with directives covering these features.`,
-      scores,
-      criticalGaps: critical,
-      moderateGaps: moderate,
-      minorGaps: minor,
-      shouldAutoRetry: true,
-      regressed: false,
-    };
-  }
-
-  // REJECTED: inventory coverage too low even without critical gaps
-  if (effectiveCoverage < THRESHOLDS.REJECT_INVENTORY) {
-    return {
-      verdict: 'REJECTED',
-      reason: `Inventory coverage ${effectiveCoverage.toFixed(1)}/10 below REJECT threshold ${THRESHOLDS.REJECT_INVENTORY}. Auto-retry with broader extraction scope.`,
-      scores,
-      criticalGaps: critical,
-      moderateGaps: moderate,
-      minorGaps: minor,
-      shouldAutoRetry: true,
-      regressed: false,
-    };
-  }
-
-  // REJECTED: too many moderate gaps
-  if (moderate.length > THRESHOLDS.MODERATE_GAP_COUNT_REJECT) {
-    return {
-      verdict: 'REJECTED',
-      reason: `${moderate.length} moderate gaps exceeds REJECT threshold ${THRESHOLDS.MODERATE_GAP_COUNT_REJECT}. Auto-retry.`,
-      scores,
-      criticalGaps: critical,
-      moderateGaps: moderate,
-      minorGaps: minor,
-      shouldAutoRetry: true,
-      regressed: false,
-    };
-  }
-
-  // APPROVED_WITH_WARNINGS: solid but not perfect — advance + log to inventory
-  if (effectiveCoverage < THRESHOLDS.WARN_INVENTORY || moderate.length > THRESHOLDS.MODERATE_GAP_COUNT_WARN) {
-    return {
-      verdict: 'APPROVED_WITH_WARNINGS',
-      reason: `Coverage ${effectiveCoverage.toFixed(1)}/10 with ${moderate.length} moderate gaps — solid but with logged warnings. Pipeline advances; gaps appear in attention inventory.`,
-      scores,
-      criticalGaps: critical,
-      moderateGaps: moderate,
-      minorGaps: minor,
-      shouldAutoRetry: false,
-      regressed: false,
-    };
-  }
-
-  // APPROVED clean
-  return {
-    verdict: 'APPROVED',
-    reason: `Coverage ${effectiveCoverage.toFixed(1)}/10, 0 critical gaps, ${moderate.length} moderate gaps. Auditor verdict in frontmatter: ${fm.verdict ?? 'n/a'}.`,
+  // Helper: every return site needs the same scores/gaps/matchTable plumbing.
+  // Keeps verdict-specific logic readable above; common fields applied here.
+  const buildResult = (partial: Pick<ScoredVerdict, 'verdict' | 'reason' | 'shouldAutoRetry' | 'regressed'>): ScoredVerdict => ({
+    ...partial,
     scores,
     criticalGaps: critical,
     moderateGaps: moderate,
     minorGaps: minor,
+    matchTable,
+    matchTableWarning,
+  });
+
+  // CRITICAL: catastrophic — fundamentally incomplete extraction
+  if (effectiveCoverage < THRESHOLDS.CRITICAL_INVENTORY) {
+    return buildResult({
+      verdict: 'CRITICAL',
+      reason: `Inventory coverage ${effectiveCoverage.toFixed(1)}/10 below CRITICAL threshold ${THRESHOLDS.CRITICAL_INVENTORY}. Extraction is fundamentally incomplete; re-extract from scratch with broader scope.`,
+      shouldAutoRetry: false, // CRITICAL escalates to admin, doesn't auto-retry
+      regressed,
+    });
+  }
+  if (critical.length > THRESHOLDS.CRITICAL_GAP_COUNT_CRITICAL) {
+    return buildResult({
+      verdict: 'CRITICAL',
+      reason: `${critical.length} critical gaps exceeds CRITICAL threshold (${THRESHOLDS.CRITICAL_GAP_COUNT_CRITICAL}). Extractor missed too many major workflows; re-extract.`,
+      shouldAutoRetry: false,
+      regressed,
+    });
+  }
+
+  // REGRESSED on retry: escalate instead of looping
+  if (regressed) {
+    return buildResult({
+      verdict: 'REJECTED',
+      reason: `Retry produced ${newCritical.length} NEW critical gaps not present in the previous run (${newCritical.slice(0, 3).join(', ')}). Extractor is not converging — escalating for admin review rather than looping.`,
+      shouldAutoRetry: false, // forced halt — don't keep retrying
+      regressed: true,
+    });
+  }
+
+  // REJECTED: any critical gap (with pages cited) → auto-retry
+  if (critical.length > THRESHOLDS.CRITICAL_GAP_COUNT_REJECT) {
+    return buildResult({
+      verdict: 'REJECTED',
+      reason: `${critical.length} critical gap${critical.length === 1 ? '' : 's'} (${critical.map((g) => g.feature).slice(0, 3).join(', ')}${critical.length > 3 ? '…' : ''}). Auto-retry: extractor will be re-run with directives covering these features.`,
+      shouldAutoRetry: true,
+      regressed: false,
+    });
+  }
+
+  // REJECTED: inventory coverage too low even without critical gaps
+  if (effectiveCoverage < THRESHOLDS.REJECT_INVENTORY) {
+    return buildResult({
+      verdict: 'REJECTED',
+      reason: `Inventory coverage ${effectiveCoverage.toFixed(1)}/10 below REJECT threshold ${THRESHOLDS.REJECT_INVENTORY}. Auto-retry with broader extraction scope.`,
+      shouldAutoRetry: true,
+      regressed: false,
+    });
+  }
+
+  // REJECTED: too many moderate gaps
+  if (moderate.length > THRESHOLDS.MODERATE_GAP_COUNT_REJECT) {
+    return buildResult({
+      verdict: 'REJECTED',
+      reason: `${moderate.length} moderate gaps exceeds REJECT threshold ${THRESHOLDS.MODERATE_GAP_COUNT_REJECT}. Auto-retry.`,
+      shouldAutoRetry: true,
+      regressed: false,
+    });
+  }
+
+  // APPROVED_WITH_WARNINGS: solid but not perfect — advance + log to inventory
+  if (effectiveCoverage < THRESHOLDS.WARN_INVENTORY || moderate.length > THRESHOLDS.MODERATE_GAP_COUNT_WARN) {
+    return buildResult({
+      verdict: 'APPROVED_WITH_WARNINGS',
+      reason: `Coverage ${effectiveCoverage.toFixed(1)}/10 with ${moderate.length} moderate gaps — solid but with logged warnings. Pipeline advances; gaps appear in attention inventory.`,
+      shouldAutoRetry: false,
+      regressed: false,
+    });
+  }
+
+  // APPROVED clean
+  return buildResult({
+    verdict: 'APPROVED',
+    reason: `Coverage ${effectiveCoverage.toFixed(1)}/10, 0 critical gaps, ${moderate.length} moderate gaps. Auditor verdict in frontmatter: ${fm.verdict ?? 'n/a'}.`,
     shouldAutoRetry: false,
     regressed: false,
-  };
+  });
 }
 
 /**
