@@ -89,23 +89,40 @@ Per-chapter summary:
 
 NOW read the Manual Extractor's checkpoint and tutorial plan. Compare systematically:
 
-1. **Feature Gap Analysis:** For every feature in YOUR checklist, find it in the Extractor's Feature Inventory.
-   - **FOUND + MATCHING:** Feature exists and is classified the same way → `CONFIRMED`
-   - **FOUND + DIFFERENT:** Feature exists but classified differently (e.g., you say `workflow`, they say `parameter`) → `RECLASSIFICATION: [your view] vs [their view] — [which is correct and why]`
-   - **MISSING:** Feature in your checklist but NOT in the Extractor's inventory → `GAP: [feature] on [pages] — MISSED by Extractor`
+1. **Feature Gap Analysis (FEATURE-LEVEL MATCHING — MANDATORY):** For every feature in YOUR checklist, **search the Extractor's curriculum (`pass-3-curriculum.md` AND `tutorials.json` if present) for any step or tutorial description that explicitly teaches this feature by name or canonical keyword.** Section-level matching alone is FORBIDDEN — a tutorial covering "the Cue section" does NOT mean "Cue Point Sampler is covered". Open the tutorial's steps and search for the exact feature keyword.
 
+   For each checklist feature, produce ONE of these classifications:
+   - **CONFIRMED:** A specific tutorial step mentions the feature by name (case-insensitive) OR uses a documented synonym. Cite the tutorial id + step id + a short evidence quote.
+   - **CONFIRMED_BY_PARENT_ONLY:** Feature falls within a section the Extractor's curriculum nominally covers, but NO specific step teaches the feature itself → log as **GAP** with `parent-coverage-only: true` so admin/scorer can decide. This catches the most common silent failure (section-credit-as-feature-credit).
+   - **MISSING:** Feature is in your checklist AND no tutorial nominally covers its section either → log as **GAP**.
+   - **RECLASSIFICATION:** Feature exists with a different classification than yours (e.g., you say `workflow`, Extractor says `parameter`) → note both views and which is correct.
+
+   **REQUIRED OUTPUT — `match-table.md`** (separate file beside `comparative-audit.md`):
+   A single markdown table with columns:
+   ```
+   | feature_id | feature_name | page | match_kind | tutorial_id | step_id | evidence_quote |
+   ```
+   - `feature_id`: from your independent checklist (e.g., `3.5`)
+   - `feature_name`: human-readable name (e.g., "Cue Point Sampler")
+   - `page`: source page number from the manual
+   - `match_kind`: one of `CONFIRMED`, `CONFIRMED_BY_PARENT_ONLY`, `MISSING`, `RECLASSIFICATION`
+   - `tutorial_id`: id of the tutorial that teaches it (e.g., `cue-points`) or empty if MISSING
+   - `step_id`: id of the specific step (e.g., `step-3`) or empty if no specific step
+   - `evidence_quote`: short verbatim excerpt from the step that proves the match — REQUIRED for CONFIRMED; empty otherwise
+
+   This table is machine-read by `src/lib/pipeline/coverage-scorer.ts` to recompute the coverage percentage from CONFIRMED count vs total. Get it right.
+
+   **Summary block in `comparative-audit.md`** (kept for human readability):
    ```
    FEATURE GAP ANALYSIS:
-   Your checklist: 87 features
-   Extractor inventory: 82 features
-   Confirmed matches: 79
-   Reclassifications: 3
-   Gaps (Extractor missed): 5
-     - GAP: global-tuning (§7.3 p.29) — system parameter for master tuning, not in any tutorial
-     - GAP: compare-fader-matching (§4.10 p.14) — distinct workflow from compare-function
-     - GAP: arp-latch-mode (§8.7 p.67) — mentioned in ARP section but not extracted as separate feature
-     - GAP: wifi-midi (§7.4 p.33) — Wi-Fi MIDI setup, only USB/DIN covered in Extractor's midi-setup
-     - GAP: program-init (§4.7 p.13) — initialize program to default, not in any tutorial
+   Your checklist: 87 features (total_features)
+   Confirmed matches: 79 (CONFIRMED + RECLASSIFICATION)
+   Parent-only gaps: 3 (CONFIRMED_BY_PARENT_ONLY) — section covered but feature not specifically taught
+   Missing gaps: 5 (MISSING) — neither feature nor section covered
+   Coverage: 79/87 = 90.8% confirmed (parent-only counted as gap per spec)
+     - GAP (parent-only): cue-point-sampler (§3.5 p.52) — cue-points tutorial exists but no step teaches the sampler
+     - GAP (missing): global-tuning (§7.3 p.29) — system parameter for master tuning, not in any tutorial
+     - GAP (missing): wifi-midi (§7.4 p.33) — only USB/DIN covered in Extractor's midi-setup
    ```
 
 2. **Page Coverage Cross-Check:** Compare your Page Coverage Map against the Extractor's:
@@ -213,7 +230,10 @@ After completing each phase, write your progress to `.pipeline/<deviceId>/agents
 ## OUTPUT CONTRACT:
 - **Pre-condition Check:** [PASSED / FAILED]
 - **Phase 1 — Independent Extraction:** [Your independent checklist + Page Coverage Map — produced BEFORE reading Extractor output]
-- **Phase 2 — Comparative Audit:** [Feature Gap Analysis, Page Coverage Cross-Check, Cross-Reference Verification, Control Coverage, Curriculum Review, Dependency Verification]
+- **Phase 2 — Comparative Audit:** Files produced in `.pipeline/<deviceId>/agents/coverage-auditor/`:
+  - `independent-checklist.md` — your unbiased feature list (from Phase 1)
+  - `comparative-audit.md` — the human-readable Feature Gap Analysis, Page Coverage Cross-Check, Cross-Reference Verification, Control Coverage, Curriculum Review, Dependency Verification
+  - **`match-table.md`** (NEW, REQUIRED) — machine-readable per-feature match table consumed by `src/lib/pipeline/coverage-scorer.ts`. Format spec is in Phase 2 §1. Every row in your independent checklist MUST appear in this table with one of the 4 match_kinds.
 - **Phase 3 — Verdict:**
   - **Gaps Found:** [Critical: N, Moderate: N, Minor: N]
   - **Reclassifications:** [N features]
@@ -222,3 +242,25 @@ After completing each phase, write your progress to `.pipeline/<deviceId>/agents
   - **Specific Recommendations:** [Actionable fix list]
 - **Quality Gate Score:** [X.X/10] + Justification
 - **Overall Verdict:** [APPROVED / REVISIONS NEEDED — with specific revision list]
+
+### REQUIRED CHECKPOINT FRONTMATTER (`checkpoint.md`)
+
+Add these new fields alongside existing `verdict`, `score`, `coverage_pct`:
+```yaml
+---
+agent: coverage-auditor
+device_id: <deviceId>
+phase: 4
+status: PASS | FAIL
+verdict: APPROVED | REVISIONS_NEEDED
+score: X.X
+# NEW (since the section-vs-feature granularity fix):
+total_features: <int>          # row count of independent-checklist.md
+confirmed_features: <int>      # rows in match-table.md where match_kind = CONFIRMED
+parent_only_gaps: <int>        # rows where match_kind = CONFIRMED_BY_PARENT_ONLY
+missing_gaps: <int>            # rows where match_kind = MISSING
+coverage_pct: <float>          # confirmed_features / total_features * 100
+---
+```
+
+The scorer recomputes `coverage_pct` from `match-table.md` and warns if it differs from your frontmatter by > 0.5. Get the math right.
