@@ -52,6 +52,7 @@ import * as validators from '../src/lib/pipeline/checkpoint-validators';
 import * as coverageScorer from '../src/lib/pipeline/coverage-scorer';
 import { pipelinePaths, agentPath, inputPath } from '../src/lib/pipeline/paths';
 import { regenerateTutorialsFromCanvas } from '../src/lib/pipeline/regenerate-tutorial-ts';
+import { pushPhaseOutputToBackupBranch } from '../src/lib/pipeline/auto-push';
 
 const deviceId = process.argv[2];
 if (!deviceId) {
@@ -2596,6 +2597,21 @@ Create: device-theme.json, atoms/, screens/, DisplayScreen.tsx dispatcher, scree
     message: `Phase 5-X post-check passed (${inventoryEntries.length} screens validated, no contamination detected)`,
   });
   completePhase(state, 'phase-5-display-build', null, true);
+
+  // Best-effort backup: push phase output to pipeline/<deviceId> branch on origin.
+  // Failure is non-fatal — phase already passed. See CDJ-3000 2026-05-11 incident.
+  const displayPushResult = pushPhaseOutputToBackupBranch({
+    deviceId,
+    phase: 'phase-5-display-build',
+    worktreeCwd,
+    paths: [`src/components/devices/${deviceId}/display/`],
+  });
+  if (displayPushResult.kind === 'pushed') {
+    appendLog(deviceId, { level: 'info', message: `[auto-push] backed up to origin/${displayPushResult.branch}` });
+  } else if (displayPushResult.kind === 'failed') {
+    appendLog(deviceId, { level: 'warn', message: `[auto-push] backup failed (non-fatal): ${displayPushResult.reason}` });
+  }
+
   advancePhase(state, worktreeCwd);
 }
 
@@ -2821,6 +2837,21 @@ async function doPhase5(state: PipelineState) {
   }
 
   completePhase(state, 'phase-5-tutorial-build', 10, true);
+
+  // Best-effort backup: push tutorial output to pipeline/<deviceId> branch on origin.
+  // Failure is non-fatal — phase already passed. See CDJ-3000 2026-05-11 incident.
+  const tutorialPushResult = pushPhaseOutputToBackupBranch({
+    deviceId,
+    phase: 'phase-5-tutorial-build',
+    worktreeCwd,
+    paths: [`src/data/tutorials/${deviceId}/`],
+  });
+  if (tutorialPushResult.kind === 'pushed') {
+    appendLog(deviceId, { level: 'info', message: `[auto-push] backed up to origin/${tutorialPushResult.branch}` });
+  } else if (tutorialPushResult.kind === 'failed') {
+    appendLog(deviceId, { level: 'warn', message: `[auto-push] backup failed (non-fatal): ${tutorialPushResult.reason}` });
+  }
+
   // Clear the feedback once consumed so we don't re-include it on the NEXT
   // unrelated build pass.
   state.tutorialReviewFeedback = null;
