@@ -13,6 +13,20 @@ export interface AutoPushOptions {
   exec?: (command: string, opts: { cwd: string; encoding: 'utf-8' }) => string;
 }
 
+/**
+ * Best-effort backup of pipeline phase output to `origin/pipeline/<deviceId>`.
+ *
+ * SEMANTICS:
+ *   This is a "latest pipeline run wins" backup branch — NOT a versioned
+ *   archive. Each successful push force-overwrites the prior pipeline/<id>
+ *   tip. If you need older content, recover via git reflog or by checking
+ *   out the auto-push commit from `pipeline-runner.ts` log lines.
+ *
+ *   `--force-with-lease` provides cross-machine protection: when the
+ *   worktree shares git refs with the canonical repo (which only fetches
+ *   origin/test, never origin/pipeline/*), the lease correctly rejects
+ *   the push with "stale info" if remote has unexpected commits.
+ */
 export function pushPhaseOutputToBackupBranch(opts: AutoPushOptions): AutoPushResult {
   const { deviceId, phase, worktreeCwd, paths } = opts;
   const run = opts.exec ?? ((cmd, o) => execSync(cmd, { ...o, stdio: ['pipe', 'pipe', 'pipe'] }).toString());
