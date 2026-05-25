@@ -22,6 +22,7 @@ describe('pushPhaseOutputToBackupBranch', () => {
     phase: 'phase-5-display-build',
     worktreeCwd: '/tmp/worktree',
     paths: ['src/components/devices/fantom-08/display/'],
+    env: {} as NodeJS.ProcessEnv, // explicit empty env to avoid host env leakage
   };
 
   it('returns no-changes when paths array is empty (defensive)', () => {
@@ -135,5 +136,49 @@ describe('pushPhaseOutputToBackupBranch', () => {
     });
     expect(calls[0]).toContain('src/data/tutorials/x/');
     expect(calls[0]).toContain('.pipeline/x/agents/');
+  });
+
+  // ─── HARDENING (post-premortem MEDIUM only) ─────────────────────────────
+
+  it('returns disabled (early exit, no git calls) when PIPELINE_AUTO_PUSH_DISABLED=1', () => {
+    const { exec, calls } = makeFakeExec({});
+    const result = pushPhaseOutputToBackupBranch({
+      ...baseOpts,
+      exec,
+      env: { PIPELINE_AUTO_PUSH_DISABLED: '1' },
+    });
+    expect(result).toEqual({ kind: 'disabled' });
+    expect(calls.length).toBe(0);
+  });
+
+  it('still pushes when PIPELINE_AUTO_PUSH_DISABLED is set to anything other than "1"', () => {
+    const { exec } = makeFakeExec({
+      'git status': ' M file\n',
+      'git add': '',
+      'git commit': '',
+      'git push': '',
+    });
+    const result = pushPhaseOutputToBackupBranch({
+      ...baseOpts,
+      exec,
+      env: { PIPELINE_AUTO_PUSH_DISABLED: 'true' }, // not "1" — should still push
+    });
+    expect(result.kind).toBe('pushed');
+  });
+
+  it('falls back to process.env when no env opt provided', () => {
+    // Sanity: helper reads process.env when opts.env is undefined
+    // We don't set PIPELINE_AUTO_PUSH_DISABLED so this should NOT be disabled
+    const originalEnv = process.env.PIPELINE_AUTO_PUSH_DISABLED;
+    delete process.env.PIPELINE_AUTO_PUSH_DISABLED;
+    try {
+      const { exec } = makeFakeExec({ 'git status': '' });
+      const optsNoEnv: any = { ...baseOpts, exec };
+      delete optsNoEnv.env;
+      const result = pushPhaseOutputToBackupBranch(optsNoEnv);
+      expect(result.kind).toBe('no-changes'); // not 'disabled'
+    } finally {
+      if (originalEnv !== undefined) process.env.PIPELINE_AUTO_PUSH_DISABLED = originalEnv;
+    }
   });
 });

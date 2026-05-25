@@ -2610,6 +2610,8 @@ Create: device-theme.json, atoms/, screens/, DisplayScreen.tsx dispatcher, scree
     appendLog(deviceId, { level: 'info', message: `[auto-push] backed up to origin/${displayPushResult.branch}` });
   } else if (displayPushResult.kind === 'failed') {
     appendLog(deviceId, { level: 'warn', message: `[auto-push] backup failed (non-fatal): ${displayPushResult.reason}` });
+  } else if (displayPushResult.kind === 'disabled') {
+    appendLog(deviceId, { level: 'info', message: `[auto-push] disabled via PIPELINE_AUTO_PUSH_DISABLED` });
   }
 
   advancePhase(state, worktreeCwd);
@@ -2850,6 +2852,8 @@ async function doPhase5(state: PipelineState) {
     appendLog(deviceId, { level: 'info', message: `[auto-push] backed up to origin/${tutorialPushResult.branch}` });
   } else if (tutorialPushResult.kind === 'failed') {
     appendLog(deviceId, { level: 'warn', message: `[auto-push] backup failed (non-fatal): ${tutorialPushResult.reason}` });
+  } else if (tutorialPushResult.kind === 'disabled') {
+    appendLog(deviceId, { level: 'info', message: `[auto-push] disabled via PIPELINE_AUTO_PUSH_DISABLED` });
   }
 
   // Clear the feedback once consumed so we don't re-include it on the NEXT
