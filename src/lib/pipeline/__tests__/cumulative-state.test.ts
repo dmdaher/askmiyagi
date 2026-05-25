@@ -174,3 +174,155 @@ describe('violationsToQaResults', () => {
     expect(r[0].name).toContain('1 case)');
   });
 });
+
+/**
+ * highlight-label-mismatch heuristic (Way 2): when a step's instruction
+ * mentions ALL-CAPS words and the highlighted control's label also has
+ * ALL-CAPS words but none intersect, flag as WARN. Catches author bugs
+ * where the wrong button got highlighted for the intent.
+ *
+ * Catches: "Press the NOISE button" highlighting a control labeled "SWEEP"
+ * Misses: lowercase instructions, paraphrased ("third button"), synonyms
+ */
+describe('verifyCumulativeState — highlight-label-mismatch (heuristic)', () => {
+  const labeledManifest = {
+    controls: [
+      { id: 'scfx_btn_1', type: 'button', label: 'SPACE' },
+      { id: 'scfx_btn_2', type: 'button', label: 'DUB ECHO' },
+      { id: 'scfx_btn_3', type: 'button', label: 'SWEEP' },
+      { id: 'scfx_btn_4', type: 'button', label: 'NOISE' },
+      { id: 'scfx_parameter_knob', type: 'knob', label: 'PARAMETER' },
+      // Lower-case + short labels — caps extraction should ignore
+      { id: 'play', type: 'button', label: 'Play' },
+      { id: 'fx', type: 'button', label: 'FX' }, // 2-char caps — below threshold
+    ],
+  };
+
+  it('PASS: instruction caps match highlighted control label caps', () => {
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Press the NOISE button to activate the filter',
+        highlightControls: ['scfx_btn_4'], // label "NOISE"
+      }],
+    }, labeledManifest);
+    const mismatch = r.violations.filter((v) => v.kind === 'highlight-label-mismatch');
+    expect(mismatch).toEqual([]);
+    expect(r.ok).toBe(true);
+  });
+
+  it('WARN: instruction mentions NOISE but highlights a button labeled SWEEP', () => {
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Press the NOISE button to activate the filter',
+        highlightControls: ['scfx_btn_3'], // label "SWEEP"
+      }],
+    }, labeledManifest);
+    const mismatch = r.violations.filter((v) => v.kind === 'highlight-label-mismatch');
+    expect(mismatch).toHaveLength(1);
+    expect(mismatch[0].severity).toBe('warn');
+    expect(mismatch[0].controlId).toBe('scfx_btn_3');
+    expect(mismatch[0].message).toContain('NOISE');
+    expect(mismatch[0].message).toContain('SWEEP');
+    // Warning-severity issues do not fail the run.
+    expect(r.ok).toBe(true);
+  });
+
+  it('still WARNs even when ID is vague (validator checks LABEL not ID)', () => {
+    // scfx_btn_3 is a vague ID but its LABEL is "SWEEP". Instruction says NOISE.
+    // The validator catches this regardless of whether the ID is semantic or vague,
+    // because it cross-references the manifest LABEL, not the ID itself.
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Press NOISE',
+        highlightControls: ['scfx_btn_3'],
+      }],
+    }, labeledManifest);
+    expect(r.violations.filter((v) => v.kind === 'highlight-label-mismatch')).toHaveLength(1);
+  });
+
+  it('SKIP: instruction has no all-caps words (low-signal — heuristic stays silent)', () => {
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Press the third button to enable the effect',
+        highlightControls: ['scfx_btn_3'], // label "SWEEP"
+      }],
+    }, labeledManifest);
+    // No instruction caps → heuristic doesn't fire, no warning either way
+    expect(r.violations.filter((v) => v.kind === 'highlight-label-mismatch')).toEqual([]);
+  });
+
+  it('SKIP: control label has no all-caps words', () => {
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Press the PLAY button',
+        highlightControls: ['play'], // label "Play" — no all-caps
+      }],
+    }, labeledManifest);
+    expect(r.violations.filter((v) => v.kind === 'highlight-label-mismatch')).toEqual([]);
+  });
+
+  it('SKIP: caps too short (≥3 char threshold avoids false positives on initialisms)', () => {
+    // "DJ" and "FX" are 2 chars, won't be extracted as control-name candidates.
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Use the DJ FX',
+        highlightControls: ['fx'], // label "FX"
+      }],
+    }, labeledManifest);
+    expect(r.violations.filter((v) => v.kind === 'highlight-label-mismatch')).toEqual([]);
+  });
+
+  it('PASS: multiple caps in instruction, at least one matches', () => {
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'After NOISE finishes, press SWEEP to layer effects',
+        highlightControls: ['scfx_btn_3'], // label "SWEEP" — matches one of the caps
+      }],
+    }, labeledManifest);
+    expect(r.violations.filter((v) => v.kind === 'highlight-label-mismatch')).toEqual([]);
+  });
+
+  it('PASS: multi-word label, one word matches instruction', () => {
+    // Label "DUB ECHO" has caps ["DUB", "ECHO"]. Instruction says "ECHO".
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Activate the ECHO effect',
+        highlightControls: ['scfx_btn_2'], // label "DUB ECHO"
+      }],
+    }, labeledManifest);
+    expect(r.violations.filter((v) => v.kind === 'highlight-label-mismatch')).toEqual([]);
+  });
+
+  it('WARNs even when other violations exist on same step', () => {
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Press the NOISE button',
+        highlightControls: ['scfx_btn_3', 'GHOST'], // SWEEP + nonexistent
+      }],
+    }, labeledManifest);
+    const kinds = r.violations.map((v) => v.kind).sort();
+    expect(kinds).toContain('highlight-label-mismatch');
+    expect(kinds).toContain('highlight-not-in-manifest');
+    // highlight-not-in-manifest is FAIL severity → overall ok=false
+    expect(r.ok).toBe(false);
+  });
+
+  it('handles missing instruction field gracefully', () => {
+    const r = verifyCumulativeState({
+      steps: [{
+        highlightControls: ['scfx_btn_3'], // no instruction field at all
+      }],
+    }, labeledManifest);
+    expect(r.violations.filter((v) => v.kind === 'highlight-label-mismatch')).toEqual([]);
+  });
+
+  it('does not flag step that highlights no controls', () => {
+    const r = verifyCumulativeState({
+      steps: [{
+        instruction: 'Press the NOISE button',
+        highlightControls: [], // empty
+      }],
+    }, labeledManifest);
+    expect(r.violations).toEqual([]);
+  });
+});

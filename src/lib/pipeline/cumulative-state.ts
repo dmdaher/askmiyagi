@@ -25,6 +25,7 @@ export type ViolationKind =
   | 'led-on-non-led'         // panelStateChanges sets ledOn:true on a control with no ledOn field
   | 'unknown-display-screen' // displayState.screenType is unknown
   | 'highlight-not-in-manifest' // highlightControls entry doesn't exist in manifest
+  | 'highlight-label-mismatch'  // instruction mentions ALL-CAPS words that don't match the highlighted control's label
   | 'downstream-state-lost'; // step removes state that downstream step relies on
 
 export interface Violation {
@@ -55,6 +56,9 @@ interface MinimalControl {
   id: string;
   /** Manifests carry a coarse type (`button`, `knob`, `led`, etc.). */
   type?: string;
+  /** Display label (e.g., "NOISE", "DUB ECHO"). Used by the label-mismatch
+   *  heuristic to cross-check instruction text against the highlighted control. */
+  label?: string;
   /** Some controls explicitly carry ledOn=false in the manifest; presence of
    *  the key indicates "this control supports an LED state at all." */
   ledOn?: boolean;
@@ -72,6 +76,9 @@ interface MinimalStep {
   highlightControls?: string[];
   panelStateChanges?: Record<string, ControlState>;
   displayState?: { screenType?: string; [k: string]: unknown };
+  /** Tutorial instruction text. Scanned for ALL-CAPS words (likely control names)
+   *  to heuristically detect mismatches between intended button and highlightControls. */
+  instruction?: string;
 }
 
 interface MinimalTutorial {
@@ -87,6 +94,29 @@ const KNOWN_SCREEN_TYPES = new Set([
   'splash', 'load', 'save', 'recall', 'sequencer', 'mixer',
   'sampling', 'effects', 'arpeggio', 'song', 'piano-roll',
 ]);
+
+/**
+ * Extract ALL-CAPS words (≥3 chars) from a text string. Used by the
+ * label-mismatch heuristic to find candidate control-name references.
+ *
+ * Examples:
+ *   "Press the NOISE button"             → ["NOISE"]
+ *   "Press DUB ECHO then SWEEP"          → ["DUB", "ECHO", "SWEEP"]
+ *   "Press the third button from left"   → [] (no caps signal — skip)
+ *   "press the noise button"             → [] (lowercase — heuristic
+ *                                            doesn't fire, that's OK)
+ *
+ * The ≥3 char threshold avoids false positives on initialisms ("DJ", "FX")
+ * which are common in instruction text and not control names.
+ *
+ * Returns `[]` for any of: empty string, null, undefined, no caps words found.
+ */
+function extractAllCapsWords(text: string | undefined | null): string[] {
+  if (!text) return [];
+  // \b[A-Z]{3,}\b matches isolated ALL-CAPS tokens of 3+ chars. The \b
+  // word boundary excludes substrings inside camelCase identifiers etc.
+  return text.match(/\b[A-Z]{3,}\b/g) ?? [];
+}
 
 /**
  * `true` if `panelStateChanges.<id>` could legitimately set `ledOn`.
@@ -119,6 +149,22 @@ export function verifyCumulativeState(
     const stepNum = idx + 1;
 
     // Check 1: every highlightControls entry must exist in manifest.
+    // Check 1b: heuristic label-mismatch — if the instruction mentions
+    //   ALL-CAPS words (likely control names like "NOISE", "DUB ECHO")
+    //   and the highlighted control's label has ALL-CAPS words too, at
+    //   least one should intersect. Otherwise it's a likely author
+    //   confusion bug (highlighting the wrong button for the intent).
+    //   Catches: tutorial says "Press the NOISE button" + highlights a
+    //   button whose label is "SWEEP" → warning.
+    //   Misses: lowercase instructions or paraphrased ("press the third
+    //   button") — those return empty caps-word set and skip the check
+    //   safely. See plan: ~/.claude/plans/ (Way 2 heuristic).
+    //
+    //   WARNING severity (not FAIL) initially — too strict-as-fail would
+    //   block existing tutorials that don't follow this convention.
+    //   Promote to FAIL after Fantom-08 baseline audit confirms zero
+    //   warnings in shipped tutorials.
+    const instructionAllCaps = extractAllCapsWords(step.instruction);
     for (const ctrlId of step.highlightControls ?? []) {
       if (!controlsById.has(ctrlId)) {
         violations.push({
@@ -128,6 +174,30 @@ export function verifyCumulativeState(
           message: `Step ${stepNum} highlights "${ctrlId}" but this control is not in the manifest.`,
           severity: 'fail',
         });
+        continue;
+      }
+      // Label-mismatch heuristic: only fires when BOTH the instruction
+      // and the control label have all-caps words (≥3 chars). Empty
+      // caps sets short-circuit to "no opinion".
+      if (instructionAllCaps.length > 0) {
+        const control = controlsById.get(ctrlId);
+        const labelAllCaps = extractAllCapsWords(control?.label);
+        if (labelAllCaps.length > 0) {
+          const intersect = instructionAllCaps.some((w) => labelAllCaps.includes(w));
+          if (!intersect) {
+            violations.push({
+              kind: 'highlight-label-mismatch',
+              stepIndex: stepNum,
+              controlId: ctrlId,
+              message:
+                `Step ${stepNum} instruction mentions [${instructionAllCaps.join(', ')}] ` +
+                `but highlights "${ctrlId}" with label "${control?.label}" ` +
+                `(label caps: [${labelAllCaps.join(', ')}]). ` +
+                `Possible wrong-button bug; verify the highlightControls entry matches the intended button.`,
+              severity: 'warn',
+            });
+          }
+        }
       }
     }
 
