@@ -48,6 +48,18 @@ If any pre-condition fails, HALT with `PRE-CONDITION FAILURE` and specify what's
   - `src/__tests__/tutorials/<device-id>Tutorials.test.ts` — test file (create or update)
   - `.pipeline/<deviceId>/agents/tutorial-builder/checkpoint.md` — build progress
 
+### SKIP-EXISTING DIRECTIVE (PROMPT-LEVEL OVERRIDE)
+
+If the invocation prompt contains "SKIP-EXISTING DIRECTIVE", you MUST:
+
+1. **DO NOT use the Write tool** on any of the listed existing tutorial files. They contain prior good work (often previously approved) — overwriting them is a CRITICAL bug.
+2. **DO read existing tutorials** for pattern-matching (style, naming, code structure). Reading is safe; writing is not.
+3. **ONLY generate `.ts` files** for the tutorial IDs in "ONLY generate these missing tutorials".
+4. **When updating `src/data/tutorials/<device-id>/index.ts`**: read the existing file first, PRESERVE all current imports + array entries + named exports, ADD only the new entries.
+5. **When updating the test file** (`src/__tests__/tutorials/<device-id>Tutorials.test.ts`): read the existing file first, PRESERVE all current `expectedStepCounts` entries, ADD only the new entries + bump the total count.
+
+The pipeline runner performs a SHA-based post-check after your invocation. If you modify any listed existing tutorial file, the runner WILL restore it from git HEAD and log a warning flagging your agent as a violator. This is a safety net — but please don't trigger it.
+
 ---
 
 ## THE BUILD PROTOCOL
