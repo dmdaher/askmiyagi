@@ -30,15 +30,18 @@ import { computeKeyboardOverlaps } from '@/lib/keyboard-overlap';
 // Asymmetric thresholds — long keys warn much sooner than stubby keys,
 // since tall stretchy keys look obviously wrong on a real instrument.
 //
-// 2026-05-25: stubby thresholds loosened from 0.7/1.3 → 2.0/2.0 (universal,
+// 2026-05-25: stubby thresholds loosened from 0.7/1.3 → 2.4/2.4 (universal,
 // affects ALL keyboards). Old floor was 5.3:1 banner / 5.9:1 chip — too
-// strict for compact synth keyboards like the DeepMind 12 (≈4.67:1). New
-// floor is 4.6:1 for both chip and banner, matching the user-confirmed
-// "acceptable" lower bound. Anything stubbier than 4.6:1 still gets the
-// chip + banner. Long-side thresholds unchanged.
-const ASPECT_CHIP_BUFFER_STUBBY = 2.0;     // chip amber when aspect ≤ 4.6
+// strict for compact synth keyboards. New floor is 4.2:1 for both chip and
+// banner. The driving case was DeepMind 12 (actual aspect 4.576:1, computed
+// as h = canvasHeight − keyboardTop, NOT panelHeightPercent × canvasHeight),
+// which the old 2.0 threshold still tripped on by 0.024. 2.4 gives 0.376
+// headroom above DeepMind and covers future compact keyboards down to 4.2:1.
+// Anything stubbier than 4.2:1 still gets the chip + banner. Long-side
+// thresholds unchanged — elongated keys still look obviously wrong.
+const ASPECT_CHIP_BUFFER_STUBBY = 2.4;     // chip amber when aspect ≤ 4.2
 const ASPECT_CHIP_BUFFER_LONG = 0.2;       // chip amber when aspect ≥ 6.8
-const ASPECT_WARN_THRESHOLD_STUBBY = 2.0;  // banner when aspect ≤ 4.6
+const ASPECT_WARN_THRESHOLD_STUBBY = 2.4;  // banner when aspect ≤ 4.2
 const ASPECT_WARN_THRESHOLD_LONG = 0.4;    // banner when aspect ≥ 7.0
 // Spatial overlap: warn when keyboard top covers a control by more than this.
 const OVERLAP_WARN_PX = 4;
