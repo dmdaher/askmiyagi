@@ -1,6 +1,10 @@
 import posthog from 'posthog-js';
 
-if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN) {
+if (
+  typeof window !== 'undefined' &&
+  process.env.NODE_ENV === 'production' &&
+  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
+) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN, {
     api_host: '/relay-mg',
     ui_host: 'https://us.posthog.com',
@@ -10,5 +14,8 @@ if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOK
       maskAllInputs: true,
       maskTextSelector: '[data-private]',
     },
+  });
+  posthog.register({
+    environment: process.env.VERCEL_ENV ?? 'unknown',
   });
 }
