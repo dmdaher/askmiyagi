@@ -26,6 +26,14 @@ export default function DeviceNav({ deviceId }: DeviceNavProps) {
 
   const codegenCompleted = (activePipeline as any)?.codegenCompleted ?? false;
 
+  // Tutorial tab is enabled when the device has tutorials available to review.
+  // We check tutorialBatches in the pipeline state — any approved batch means
+  // there's content the canvas review page can show. The canvas itself will
+  // 404 if not paused; in that case, the tab is still enabled so admins can
+  // navigate there and see the empty/404 state instead of being silently
+  // blocked from learning the page exists.
+  const hasAnyTutorials = (activePipeline?.tutorialBatches?.length ?? 0) > 0;
+
   const tabs = [
     {
       id: 'overview',
@@ -40,6 +48,13 @@ export default function DeviceNav({ deviceId }: DeviceNavProps) {
       href: `/admin/${deviceId}/editor`,
       enabled: gatekeeperPassed,
       tooltip: 'Waiting for gatekeeper to identify controls...',
+    },
+    {
+      id: 'tutorial',
+      label: 'Tutorial',
+      href: `/admin/${deviceId}/review-tutorials`,
+      enabled: hasAnyTutorials,
+      tooltip: 'No tutorials available yet — pipeline must build them first.',
     },
     // Preview removed — use toolbar Preview button in the editor instead
   ];

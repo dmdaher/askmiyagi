@@ -37,7 +37,7 @@ export default function TutorialDiagnosticsPanel({
   if (collapsed) {
     return (
       <aside
-        className="border-l border-white/10 bg-[#0c0c18] flex flex-col items-center pt-3"
+        className="border-l border-white/10 bg-[#0c0c18] flex flex-col items-center pt-3 min-h-0 overflow-y-auto"
         data-testid="diagnostics-panel-collapsed"
       >
         <button
@@ -74,7 +74,7 @@ export default function TutorialDiagnosticsPanel({
 
   return (
     <aside
-      className="border-l border-white/10 bg-[#0c0c18] overflow-y-auto"
+      className="border-l border-white/10 bg-[#0c0c18] overflow-y-auto min-h-0"
       data-testid="diagnostics-panel"
     >
       <div className="flex items-center justify-between px-3 py-3 border-b border-white/10 sticky top-0 bg-[#0c0c18] z-10">

@@ -13,6 +13,7 @@ import DiagnosticsPanel from './DiagnosticsPanel';
 import ManifestViewer from './ManifestViewer';
 import PanelLayoutEditor from './PanelLayoutEditor';
 import IssuesPanel from './IssuesPanel';
+import RecheckCoverageButton from './RecheckCoverageButton';
 
 // Active pipeline agents (SI/PQ/Critic archived — see phase-order.ts).
 const AGENT_PHASE_MAP: Record<string, string> = {
@@ -223,6 +224,11 @@ export default function PipelineDetail({ pipeline, logs, onResolve }: PipelineDe
         >
           Regenerate Tutorials
         </button>
+        <RecheckCoverageButton
+          deviceId={pipeline.deviceId}
+          deviceName={pipeline.deviceName}
+          pipelineStatus={pipeline.status}
+        />
       </div>
 
       {activeTab === 'logs' && (
