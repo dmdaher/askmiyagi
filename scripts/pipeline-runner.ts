@@ -53,6 +53,11 @@ import * as coverageScorer from '../src/lib/pipeline/coverage-scorer';
 import { pipelinePaths, agentPath, inputPath } from '../src/lib/pipeline/paths';
 import { regenerateTutorialsFromCanvas } from '../src/lib/pipeline/regenerate-tutorial-ts';
 import { pushPhaseOutputToBackupBranch } from '../src/lib/pipeline/auto-push';
+import {
+  partitionTutorialBatch,
+  captureFileShas,
+  detectModifiedFiles,
+} from '../src/lib/pipeline/tutorial-skip-existing';
 
 const deviceId = process.argv[2];
 if (!deviceId) {
@@ -2653,12 +2658,49 @@ async function doPhase5(state: PipelineState) {
   for (const batch of state.tutorialBatches) {
     if (batch.status === 'approved') continue;
 
+    // SKIP-EXISTING: partition this batch's tutorials into existing vs missing.
+    // If all already on disk, skip the agent + reviewer entirely (zero cost).
+    // If some missing, modify the prompt with a SKIP-EXISTING DIRECTIVE so the
+    // agent only generates the missing ones (existing files preserved by name).
+    const { existing: existingTutorials, missing: missingTutorials } =
+      partitionTutorialBatch(batch.tutorials, deviceId, worktreeCwd);
+
+    if (missingTutorials.length === 0) {
+      appendLog(deviceId, {
+        level: 'info', agent: 'tutorial-builder',
+        message: `[skip-existing] Batch ${batch.batchId}: all ${existingTutorials.length} tutorials already on disk; skipping agent invocation. To force regen, delete files first.`,
+      });
+      batch.status = 'approved';
+      batch.builderScore = null;
+      batch.reviewerVerdict = 'APPROVED';
+      writeState(deviceId, state);
+      continue;
+    }
+
+    // Capture SHAs of existing files BEFORE agent runs, so we can detect any
+    // case where the agent ignored the SKIP directive and overwrote them.
+    const beforeShas = captureFileShas(existingTutorials, deviceId, worktreeCwd);
+
     batch.status = 'building';
     state.lastCheckpoint = { phase: 'phase-5-tutorial-build', subStep: `batch-${batch.batchId}-building` };
     writeState(deviceId, state);
     if (!isBudgetOk(state)) return;
 
-    appendLog(deviceId, { level: 'info', agent: 'tutorial-builder', message: `Building batch ${batch.batchId}: ${batch.tutorials.join(', ')}` });
+    const skipDirective = existingTutorials.length > 0
+      ? `\n\nIMPORTANT — SKIP-EXISTING DIRECTIVE\n` +
+        `These tutorials ALREADY EXIST and MUST NOT be regenerated or modified:\n` +
+        existingTutorials.map((id) => `  - src/data/tutorials/${deviceId}/${id}.ts`).join('\n') + `\n\n` +
+        `ONLY generate these missing tutorials: ${missingTutorials.join(', ')}\n\n` +
+        `When updating index.ts: ADD imports for new tutorials, PRESERVE all existing imports.\n` +
+        `When updating <device>Tutorials.test.ts: ADD entries for new tutorials, PRESERVE existing entries.\n`
+      : '';
+
+    appendLog(deviceId, {
+      level: 'info', agent: 'tutorial-builder',
+      message: existingTutorials.length > 0
+        ? `Building batch ${batch.batchId}: generating ${missingTutorials.join(', ')} (preserving existing: ${existingTutorials.join(', ')})`
+        : `Building batch ${batch.batchId}: ${batch.tutorials.join(', ')}`,
+    });
     // If admin requested changes from a prior tutorial-review pause, the feedback
     // note rides on the next build attempt's prompt so the agent knows what to fix.
     const feedbackSuffix = state.tutorialReviewFeedback
@@ -2669,7 +2711,7 @@ async function doPhase5(state: PipelineState) {
     // the failure and our GATE 1 below pauses with an escalation.
     trackAgentActivity(state, 'tutorial-builder', Date.now());
     const buildResult = await invokeAgentWithRetry({
-      prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${batch.tutorials.join(', ')}${feedbackSuffix}`,
+      prompt: `Build tutorial batch ${batch.batchId} for ${state.deviceName}. Device ID: ${deviceId}. Tutorials: ${missingTutorials.join(', ')}${skipDirective}${feedbackSuffix}`,
       deviceId, cwd: worktreeCwd, phase: 'phase-5-tutorial-build', agent: 'tutorial-builder', batchId: batch.batchId,
       allowedTools: PIPELINE_TOOLS,
       remainingBudgetUsd: getRemainingBudget(state),
@@ -2702,6 +2744,33 @@ async function doPhase5(state: PipelineState) {
     }
 
     batch.builderScore = readAgentCheckpoint('tutorial-builder').score;
+
+    // POST-CHECK: did the agent honor the SKIP-EXISTING DIRECTIVE?
+    // SHA-compare the existing files. If any changed/deleted, restore from
+    // git HEAD (they're committed; HEAD has the prior good content).
+    if (existingTutorials.length > 0) {
+      const violated = detectModifiedFiles(beforeShas, deviceId, worktreeCwd);
+      if (violated.length > 0) {
+        appendLog(deviceId, {
+          level: 'warn',
+          message: `[skip-existing] Agent violated SKIP directive — restoring ${violated.length} file(s) from git HEAD: ${violated.join(', ')}`,
+        });
+        for (const id of violated) {
+          try {
+            execSync(`git checkout HEAD -- 'src/data/tutorials/${deviceId}/${id}.ts'`, {
+              cwd: worktreeCwd,
+              encoding: 'utf-8',
+              stdio: ['pipe', 'pipe', 'pipe'],
+            });
+          } catch (err) {
+            appendLog(deviceId, {
+              level: 'error',
+              message: `[skip-existing] Failed to restore ${id}: ${(err as Error).message}`,
+            });
+          }
+        }
+      }
+    }
 
     batch.status = 'reviewing';
     state.lastCheckpoint = { phase: 'phase-5-tutorial-build', subStep: `batch-${batch.batchId}-reviewing` };
