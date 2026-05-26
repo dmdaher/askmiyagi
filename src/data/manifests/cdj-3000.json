@@ -243,8 +243,8 @@
       "type": "led",
       "label": "SD memory card indicator",
       "editorPosition": {
-        "x": 835.7221964337996,
-        "y": 228.66668702161456,
+        "x": 835.7221980758223,
+        "y": 228.6666870136979,
         "w": 76,
         "h": 40
       },
@@ -989,8 +989,8 @@
       "type": "button",
       "label": "►",
       "editorPosition": {
-        "x": 82.74992675781243,
-        "y": 566.4451732580887,
+        "x": 82.74992889404295,
+        "y": 566.4451625813052,
         "w": 36,
         "h": 32
       },
@@ -1024,18 +1024,18 @@
     },
     {
       "id": "DIRECTION_INDICATOR",
-      "type": "button",
-      "label": "SLIPREV\nFWD \nREV",
+      "type": "led",
+      "label": "SLIP REV/FWD /REV",
       "editorPosition": {
-        "x": 69.9998855828469,
-        "y": 633.8892365419957,
+        "x": 69.999885563835,
+        "y": 633.8892364685554,
         "w": 48,
         "h": 52
       },
       "shape": "rectangle",
       "labelPosition": "on-button",
       "labelDisplay": "above",
-      "ledVariant": "dot",
+      "ledVariant": "triple-label",
       "ledColor": "#22c55e",
       "hasLed": true,
       "ledStyle": "integrated",
@@ -1153,8 +1153,8 @@
       "type": "wheel",
       "label": "Jog wheel (–REV/+FWD)",
       "editorPosition": {
-        "x": 142.36213660903672,
-        "y": 508.722829843119,
+        "x": 142.3621367944636,
+        "y": 508.72283745299876,
         "w": 491,
         "h": 488
       },
@@ -1259,8 +1259,8 @@
       "type": "slider",
       "label": "SLIP REV FWD REV",
       "editorPosition": {
-        "x": 14.249724470307141,
-        "y": 630.1392478938053,
+        "x": 14.249725167498928,
+        "y": 630.1392387389174,
         "w": 54,
         "h": 67
       },
@@ -1740,8 +1740,8 @@
       "id": "label-standalone-1779340176345-bmyh25",
       "text": "►",
       "icon": "arrow-right",
-      "x": 122,
-      "y": 573,
+      "x": 124,
+      "y": 572,
       "w": 60,
       "fontSize": 19,
       "align": "center",
