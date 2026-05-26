@@ -20,6 +20,12 @@ interface LabelEditorProps {
   labelFontSize?: number;
   /** When true, renders two separate inputs for top/bottom dual-label LED */
   isDualLabel?: boolean;
+  /** When true, renders three separate inputs for top/middle/bottom triple-label LED */
+  isTripleLabel?: boolean;
+  /** Optional explicit tertiary label (middle row of triple-label). */
+  tertiaryLabel?: string;
+  /** Callback when middle-row text changes (triple-label only). */
+  onTertiaryLabelChange?: (value: string) => void;
   /** When true, the fields show "Mixed" placeholder (multi-select with differing values) */
   labelMixed?: boolean;
   positionMixed?: boolean;
@@ -56,6 +62,9 @@ export default function LabelEditor({
   secondaryLabel,
   labelFontSize,
   isDualLabel,
+  isTripleLabel,
+  tertiaryLabel,
+  onTertiaryLabelChange,
   labelAlign,
   labelColor,
   labelMixed,
@@ -93,6 +102,84 @@ export default function LabelEditor({
   );
 
   const showSecondary = secondaryLabel !== undefined || secondaryMixed;
+
+  // Triple-label mode: three separate inputs for top/middle/bottom of triple-label LED
+  // (e.g. CDJ-3000 DIRECTION_INDICATOR: SLIP REV / FWD / REV)
+  if (isTripleLabel) {
+    const parts = label.split(/[\/\n]/);
+    const topValue = parts[0] ?? '';
+    const middleValue = tertiaryLabel ?? parts[1] ?? '';
+    const bottomValue = parts[2] ?? secondaryLabel ?? '';
+    const stripSep = (v: string) => v.replace(/[\/\n]/g, '');
+    const rebuildLabel = (t: string, m: string, b: string) => `${t}/${m}/${b}`;
+
+    return (
+      <div className="space-y-2" data-testid="label-editor-triple">
+        <label className="text-[10px] uppercase tracking-wide text-gray-500">
+          Triple Label
+        </label>
+        <div className="space-y-1.5">
+          <div className="space-y-0.5">
+            <label className="text-[9px] text-gray-600">Top</label>
+            <input
+              type="text"
+              value={topValue}
+              placeholder="e.g. SLIP REV"
+              onChange={(e) => onLabelChange(rebuildLabel(stripSep(e.target.value), middleValue, bottomValue))}
+              className="h-7 w-full rounded border border-gray-700 bg-gray-900 px-2 text-xs text-gray-300 outline-none focus:border-blue-500 placeholder:text-gray-600"
+              data-testid="triple-label-top"
+            />
+          </div>
+          <div className="space-y-0.5">
+            <label className="text-[9px] text-gray-600">Middle</label>
+            <input
+              type="text"
+              value={middleValue}
+              placeholder="e.g. FWD"
+              onChange={(e) => {
+                const v = stripSep(e.target.value);
+                onLabelChange(rebuildLabel(topValue, v, bottomValue));
+                onTertiaryLabelChange?.(v);
+              }}
+              className="h-7 w-full rounded border border-gray-700 bg-gray-900 px-2 text-xs text-gray-300 outline-none focus:border-blue-500 placeholder:text-gray-600"
+              data-testid="triple-label-middle"
+            />
+          </div>
+          <div className="space-y-0.5">
+            <label className="text-[9px] text-gray-600">Bottom</label>
+            <input
+              type="text"
+              value={bottomValue}
+              placeholder="e.g. REV"
+              onChange={(e) => {
+                const v = stripSep(e.target.value);
+                onLabelChange(rebuildLabel(topValue, middleValue, v));
+                onSecondaryLabelChange(v);
+              }}
+              className="h-7 w-full rounded border border-gray-700 bg-gray-900 px-2 text-xs text-gray-300 outline-none focus:border-blue-500 placeholder:text-gray-600"
+              data-testid="triple-label-bottom"
+            />
+          </div>
+        </div>
+        {onFontSizeChange && (
+          <div className="space-y-1">
+            <label className="text-[10px] text-gray-500">Size</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min={6}
+                max={40}
+                value={labelFontSize ?? 8}
+                onChange={(e) => onFontSizeChange(Number(e.target.value))}
+                className="h-1 flex-1 cursor-pointer accent-blue-500"
+              />
+              <span className="text-[10px] text-gray-500 w-6">{labelFontSize ?? 8}px</span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   // Dual-label mode: two separate inputs for top/bottom of dual-label LED
   if (isDualLabel) {

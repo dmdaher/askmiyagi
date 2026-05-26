@@ -235,3 +235,131 @@ describe('SharedLed — VINYL_CDJ_INDICATOR fixture (real cdj-3000 control)', ()
     expect(firstInactive).toBeLessThan(firstActive);
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────
+// triple-label variant — used for 3-position indicators like CDJ-3000
+// DIRECTION_INDICATOR (SLIP REV / FWD / REV). Mirrors dual-label coverage
+// with added activeRow prop for explicit position control.
+// ─────────────────────────────────────────────────────────────────────────
+
+describe('SharedLed — triple-label variant dispatch + structure', () => {
+  it('renders triple-label as a 3-row vertical container', () => {
+    const html = render({ width: 60, height: 45, variant: 'triple-label', label: 'A/B/C' });
+    expect(html).toContain('flex flex-col rounded overflow-hidden');
+    // Three .flex-1 rows for top/middle/bottom
+    expect((html.match(/flex-1/g) || []).length).toBe(3);
+  });
+
+  it('splits label on / into top/middle/bottom (legacy)', () => {
+    const html = render({ width: 60, height: 45, variant: 'triple-label', label: 'SLIP REV/FWD/REV' });
+    expect(html).toContain('SLIP REV');
+    expect(html).toContain('FWD');
+    // 'REV' will be in both "SLIP REV" and the bottom row, so check separately
+    expect((html.match(/&gt;REV/g) || (html.match(/>REV/g) || [])).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('splits label on \\n', () => {
+    const html = render({ width: 60, height: 45, variant: 'triple-label', label: 'SLIP REV\nFWD\nREV' });
+    expect(html).toContain('SLIP REV');
+    expect(html).toContain('FWD');
+  });
+
+  it('uses MODE A/B/C defaults when label is empty', () => {
+    const html = render({ width: 60, height: 45, variant: 'triple-label', label: '' });
+    expect(html).toContain('MODE A');
+    expect(html).toContain('MODE B');
+    expect(html).toContain('MODE C');
+  });
+
+  it('uses explicit secondaryLabel + tertiaryLabel when provided', () => {
+    const html = render({
+      width: 60, height: 45, variant: 'triple-label',
+      label: 'TOP', tertiaryLabel: 'MID', secondaryLabel: 'BOT',
+    });
+    expect(html).toContain('TOP');
+    expect(html).toContain('MID');
+    expect(html).toContain('BOT');
+  });
+
+  it('data-control-id pass-through', () => {
+    const html = render({
+      width: 60, height: 45, variant: 'triple-label',
+      label: 'A/B/C', dataControlId: 'DIRECTION_INDICATOR',
+    });
+    expect(html).toContain('data-control-id="DIRECTION_INDICATOR"');
+  });
+});
+
+describe('SharedLed — triple-label activeRow + ledOn semantics', () => {
+  const base = { width: 60, height: 45, variant: 'triple-label' as const, label: 'TOP/MID/BOT', ledColor: '#22c55e' };
+
+  it('default (no activeRow, ledOn undefined) → top row active (design-viz)', () => {
+    const html = render(base);
+    // Top row's background is #0a2e1a (active green), and it appears BEFORE other rows
+    const firstActive = html.indexOf('#0a2e1a');
+    const firstInactive = html.indexOf('#1a1a2a');
+    expect(firstActive).toBeLessThan(firstInactive);
+  });
+
+  it('activeRow="top" → top row active', () => {
+    const html = render({ ...base, activeRow: 'top' });
+    expect((html.match(/#0a2e1a/g) || []).length).toBe(1); // exactly one active row
+    const firstActive = html.indexOf('#0a2e1a');
+    const firstInactive = html.indexOf('#1a1a2a');
+    expect(firstActive).toBeLessThan(firstInactive); // top row's bg comes first
+  });
+
+  it('activeRow="middle" → middle row active', () => {
+    const html = render({ ...base, activeRow: 'middle' });
+    expect((html.match(/#0a2e1a/g) || []).length).toBe(1);
+    // Middle row's active bg should sit between the two inactive bgs
+    const firstInactive = html.indexOf('#1a1a2a');
+    const active = html.indexOf('#0a2e1a');
+    const lastInactive = html.lastIndexOf('#1a1a2a');
+    expect(firstInactive).toBeLessThan(active);
+    expect(active).toBeLessThan(lastInactive);
+  });
+
+  it('activeRow="bottom" → bottom row active', () => {
+    const html = render({ ...base, activeRow: 'bottom' });
+    expect((html.match(/#0a2e1a/g) || []).length).toBe(1);
+    // Bottom row's active bg comes AFTER both inactive bgs
+    const lastActive = html.lastIndexOf('#0a2e1a');
+    const lastInactive = html.lastIndexOf('#1a1a2a');
+    expect(lastInactive).toBeLessThan(lastActive);
+  });
+
+  it('ledOn=false fallback (no activeRow) → bottom row active', () => {
+    const html = render({ ...base, ledOn: false });
+    const lastActive = html.lastIndexOf('#0a2e1a');
+    const lastInactive = html.lastIndexOf('#1a1a2a');
+    expect(lastInactive).toBeLessThan(lastActive);
+  });
+
+  it('activeRow overrides ledOn (explicit beats fallback)', () => {
+    const html = render({ ...base, ledOn: false, activeRow: 'top' });
+    // Even though ledOn=false would suggest bottom, activeRow=top wins
+    const firstActive = html.indexOf('#0a2e1a');
+    const firstInactive = html.indexOf('#1a1a2a');
+    expect(firstActive).toBeLessThan(firstInactive);
+  });
+});
+
+describe('SharedLed — triple-label end-to-end (CDJ-3000 DIRECTION_INDICATOR shape)', () => {
+  it('renders SLIP REV / FWD / REV correctly with realistic prod props', () => {
+    const html = render({
+      width: 48, height: 52,
+      variant: 'triple-label',
+      label: 'SLIP REV\nFWD\nREV',
+      ledColor: '#22c55e',
+      dataControlId: 'DIRECTION_INDICATOR',
+    });
+    expect(html).toContain('SLIP REV');
+    expect(html).toContain('FWD');
+    expect(html).toContain('data-control-id="DIRECTION_INDICATOR"');
+    // 3 flex-1 rows
+    expect((html.match(/flex-1/g) || []).length).toBe(3);
+    // Default top-active (no activeRow specified)
+    expect((html.match(/#0a2e1a/g) || []).length).toBe(1);
+  });
+});

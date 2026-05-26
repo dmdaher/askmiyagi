@@ -2,77 +2,73 @@
   "deviceId": "cdj-3000",
   "deviceName": "CDJ-3000 Multi Player",
   "manufacturer": "Pioneer DJ",
-  "panelWidth": 752,
-  "panelHeight": 943,
+  "panelWidth": 770,
+  "panelHeight": 1050,
   "controlScale": 1,
   "keyboard": null,
   "editorSections": [
     {
       "id": "BROWSE",
       "headerLabel": "Navigation Bar",
-      "frameMode": "hidden",
-      "hidden": true,
-      "x": 117.55554224989149,
-      "y": -1.9999949265899657,
-      "w": 524,
-      "h": 88
+      "frameMode": "body-only",
+      "x": 126.55552377441406,
+      "y": 2.9999938918573,
+      "w": 520,
+      "h": 76
     },
     {
       "id": "MEDIA",
       "headerLabel": "USB/SD Media Ports",
-      "frameMode": "hidden",
-      "hidden": true,
-      "x": -0.44446946885850735,
-      "y": 63.444434678819455,
-      "w": 120,
-      "h": 256
+      "frameMode": "body-only",
+      "x": 3.0555671683984302,
+      "y": 73.44442379339844,
+      "w": 124,
+      "h": 292
     },
     {
       "id": "DISPLAY",
       "headerLabel": "9-inch Touch Display",
-      "frameMode": "hidden",
-      "hidden": true,
-      "x": 148,
-      "y": 60,
-      "w": 478,
-      "h": 207
+      "frameMode": "body-only",
+      "x": 126.99991527179687,
+      "y": 76.99999913027344,
+      "w": 520,
+      "h": 288
     },
     {
       "id": "SELECTOR",
       "headerLabel": "Browse Selector",
-      "frameMode": "hidden",
-      "hidden": true,
-      "x": 642.4443943956163,
-      "y": 63.44445115831163,
+      "frameMode": "body-only",
+      "x": 647.4443820516406,
+      "y": 73.44446172046875,
       "w": 120,
-      "h": 256
+      "h": 288
     },
     {
       "id": "HOT_CUE",
       "headerLabel": "Performance Pads & Mode Buttons",
-      "frameMode": "hidden",
-      "hidden": true,
-      "x": 124.44444664380327,
-      "y": 354.0000067770326,
-      "w": 516,
-      "h": 572
+      "frameMode": "body-only",
+      "x": 1.44446740467368,
+      "y": 364.0000152075031,
+      "w": 768,
+      "h": 688
     },
     {
       "id": "JOG_CONTROLS",
       "headerLabel": "Jog Wheel Settings",
       "frameMode": "hidden",
       "hidden": true,
-      "x": 637.2222270806205,
-      "y": 341.4444648668078,
-      "w": 128,
-      "h": 204
+      "x": 670.2220871730086,
+      "y": 360.4444518061813,
+      "w": 100,
+      "h": 92
     },
     {
       "id": "LOOP",
       "headerLabel": "Loop Controls",
-      "frameMode": "full",
-      "x": 945.7777777777792,
-      "y": 193.66666666666725,
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 15.777777777779193,
+      "y": 423.6666666666672,
       "w": 216,
       "h": 56
     },
@@ -89,8 +85,10 @@
     {
       "id": "SYNC",
       "headerLabel": "Beat Sync Controls",
-      "x": 860.5555579969617,
-      "y": 823.3332710774743,
+      "frameMode": "hidden",
+      "hidden": true,
+      "x": 675.5555579969617,
+      "y": 523.3332710774743,
       "w": 72,
       "h": 72
     },
@@ -99,28 +97,28 @@
       "headerLabel": "Transport Controls",
       "frameMode": "hidden",
       "hidden": true,
-      "x": 18.333333330579123,
-      "y": 643.7777436206733,
+      "x": 28.33335571189911,
+      "y": 648.7776940022704,
       "w": 176,
-      "h": 396
+      "h": 344
     },
     {
-      "id": "JOG_WHEEL",
+      "id": "JOG_WHEEL_SECTION",
       "headerLabel": "Jog Wheel",
       "frameMode": "hidden",
       "hidden": true,
-      "x": 122.77777795172808,
-      "y": 538.8888888888891,
-      "w": 512,
-      "h": 460
+      "x": 186.77779738582512,
+      "y": 598.8888549804688,
+      "w": 488,
+      "h": 408
     },
     {
       "id": "TEMPO",
       "headerLabel": "Tempo Controls",
       "frameMode": "hidden",
       "hidden": true,
-      "x": 635.777731391059,
-      "y": 557.888897433811,
+      "x": 640.777731391059,
+      "y": 607.888897433811,
       "w": 124,
       "h": 376
     }
@@ -131,8 +129,8 @@
       "type": "button",
       "label": "SOURCE",
       "editorPosition": {
-        "x": 149.55542547211184,
-        "y": 31.22213026638454,
+        "x": 154.55549427410986,
+        "y": 36.2221329624566,
         "w": 64,
         "h": 18
       },
@@ -147,8 +145,8 @@
       "type": "button",
       "label": "BROWSE",
       "editorPosition": {
-        "x": 228.55541488560849,
-        "y": 31.222141002875443,
+        "x": 233.5554148856085,
+        "y": 36.222141002875446,
         "w": 64,
         "h": 18
       },
@@ -163,8 +161,8 @@
       "type": "button",
       "label": "TAG LIST",
       "editorPosition": {
-        "x": 307.55542626256164,
-        "y": 31.222141002875443,
+        "x": 312.55542626256164,
+        "y": 36.222141002875446,
         "w": 64,
         "h": 18
       },
@@ -176,28 +174,29 @@
     },
     {
       "id": "SOURCE_INDICATOR",
-      "type": "led",
+      "type": "button",
       "label": "",
       "editorPosition": {
-        "x": 660.4442886421658,
-        "y": 88.55537410877261,
-        "w": 24,
-        "h": 20
+        "x": 675.4445407864008,
+        "y": 91.55539183130293,
+        "w": 12,
+        "h": 12
       },
       "shape": "circle",
       "labelPosition": "hidden",
       "labelDisplay": "hidden",
       "ledVariant": "dot",
       "ledColor": "#22c55e",
-      "hasLed": true
+      "hasLed": true,
+      "ledStyle": "dot"
     },
     {
       "id": "PLAYLIST",
       "type": "button",
       "label": "PLAYLIST",
       "editorPosition": {
-        "x": 386.5552884390748,
-        "y": 31.2221371576606,
+        "x": 391.5552884390748,
+        "y": 36.2221371576606,
         "w": 64,
         "h": 18
       },
@@ -212,8 +211,8 @@
       "type": "button",
       "label": "SEARCH",
       "editorPosition": {
-        "x": 465.5552691214475,
-        "y": 31.22216383002387,
+        "x": 470.5552691214475,
+        "y": 36.222163830023874,
         "w": 64,
         "h": 18
       },
@@ -228,8 +227,8 @@
       "type": "button",
       "label": "MENU",
       "editorPosition": {
-        "x": 544.5553658769494,
-        "y": 31.222148940429673,
+        "x": 549.5553658769494,
+        "y": 36.222148940429676,
         "w": 64,
         "h": 18
       },
@@ -244,8 +243,8 @@
       "type": "led",
       "label": "SD memory card indicator",
       "editorPosition": {
-        "x": 828.2221964337998,
-        "y": 218.66668702161456,
+        "x": 835.7221964337996,
+        "y": 228.66668702161456,
         "w": 76,
         "h": 40
       },
@@ -262,10 +261,10 @@
       "type": "slot",
       "label": "SD memory card slot",
       "editorPosition": {
-        "x": 22.000130670865715,
-        "y": 175.22216802444643,
-        "w": 96,
-        "h": 36
+        "x": 16.500168215747394,
+        "y": 179.22225923325607,
+        "w": 100,
+        "h": 49
       },
       "shape": "rectangle",
       "labelPosition": "hidden",
@@ -277,8 +276,8 @@
       "type": "button",
       "label": "USB STOP",
       "editorPosition": {
-        "x": 82.88887796753983,
-        "y": 135.22218331004956,
+        "x": 85.38888044058999,
+        "y": 135.222206911282,
         "w": 28,
         "h": 28
       },
@@ -294,10 +293,10 @@
       "type": "port",
       "label": "USB port",
       "editorPosition": {
-        "x": 22.555580072821535,
-        "y": 91.77780119322355,
-        "w": 44,
-        "h": 36
+        "x": 17.555853654674294,
+        "y": 93.77779502406399,
+        "w": 48,
+        "h": 44
       },
       "shape": "rectangle",
       "labelPosition": "hidden",
@@ -309,8 +308,8 @@
       "type": "led",
       "label": "USB indicator",
       "editorPosition": {
-        "x": 828.0000171220398,
-        "y": 145.8888081918674,
+        "x": 835.5000125796814,
+        "y": 155.88880594989692,
         "w": 76,
         "h": 28
       },
@@ -327,10 +326,10 @@
       "type": "screen",
       "label": "Touch display",
       "editorPosition": {
-        "x": 163.88901007422328,
-        "y": 90.55551481640676,
-        "w": 432,
-        "h": 256
+        "x": 171.88906523605283,
+        "y": 97.5555038961873,
+        "w": 424,
+        "h": 244
       },
       "shape": "rectangle",
       "labelPosition": "hidden",
@@ -342,8 +341,8 @@
       "type": "button",
       "label": "BACK",
       "editorPosition": {
-        "x": 622.3325030264422,
-        "y": 118.66680589103285,
+        "x": 627.3324531524519,
+        "y": 113.66681923057605,
         "w": 44,
         "h": 48
       },
@@ -360,8 +359,8 @@
       "type": "button",
       "label": "TAG TRACK/ REMOVE",
       "editorPosition": {
-        "x": 665.3324365011869,
-        "y": 118.66671982708371,
+        "x": 670.3324797883167,
+        "y": 113.66672423528371,
         "w": 44,
         "h": 48
       },
@@ -378,10 +377,10 @@
       "type": "encoder",
       "label": "Rotary selector",
       "editorPosition": {
-        "x": 464.2227203089759,
-        "y": 154.0000341056642,
-        "w": 400,
-        "h": 132
+        "x": 481.2226867661375,
+        "y": 153.00006850837073,
+        "w": 388,
+        "h": 128
       },
       "shape": "circle",
       "labelPosition": "hidden",
@@ -394,9 +393,9 @@
       "type": "button",
       "label": "SLIP",
       "editorPosition": {
-        "x": 20.000003493443636,
-        "y": 317.00027373247303,
-        "w": 48,
+        "x": 18.749917187500003,
+        "y": 327.0003402448415,
+        "w": 42,
         "h": 20
       },
       "shape": "rectangle",
@@ -415,9 +414,9 @@
       "type": "button",
       "label": "QUANTIZE",
       "editorPosition": {
-        "x": 74.0000154019712,
-        "y": 317.0002405271929,
-        "w": 48,
+        "x": 74.74984218750001,
+        "y": 327.0003402448415,
+        "w": 42,
         "h": 20
       },
       "shape": "rectangle",
@@ -436,8 +435,8 @@
       "type": "button",
       "label": "Auto Cue",
       "editorPosition": {
-        "x": 54.33296738790086,
-        "y": 248.77735136233656,
+        "x": 54.33295882507198,
+        "y": 258.77735138962936,
         "w": 28,
         "h": 28
       },
@@ -455,8 +454,8 @@
       "type": "button",
       "label": "A",
       "editorPosition": {
-        "x": 146.00009765624998,
-        "y": 374.5550945808539,
+        "x": 130.99998885378014,
+        "y": 389.5551765980624,
         "w": 50,
         "h": 28
       },
@@ -478,8 +477,8 @@
       "type": "button",
       "label": "B",
       "editorPosition": {
-        "x": 206.000048828125,
-        "y": 374.55509553512906,
+        "x": 197.00000530405697,
+        "y": 389.5551765980624,
         "w": 50,
         "h": 28
       },
@@ -500,8 +499,8 @@
       "type": "button",
       "label": "C",
       "editorPosition": {
-        "x": 266.000048828125,
-        "y": 374.5550879238098,
+        "x": 263.00000530405697,
+        "y": 389.5551765980624,
         "w": 50,
         "h": 28
       },
@@ -522,8 +521,8 @@
       "type": "button",
       "label": "D",
       "editorPosition": {
-        "x": 326.000048828125,
-        "y": 374.5551001019206,
+        "x": 329.00000530405697,
+        "y": 389.5551765980624,
         "w": 50,
         "h": 28
       },
@@ -544,8 +543,8 @@
       "type": "button",
       "label": "E",
       "editorPosition": {
-        "x": 386.000048828125,
-        "y": 374.5550879238098,
+        "x": 395.00000530405697,
+        "y": 389.5551765980624,
         "w": 50,
         "h": 28
       },
@@ -566,8 +565,8 @@
       "type": "button",
       "label": "F",
       "editorPosition": {
-        "x": 446.000048828125,
-        "y": 374.55510192863716,
+        "x": 461.00000530405697,
+        "y": 389.5551765980624,
         "w": 50,
         "h": 28
       },
@@ -588,8 +587,8 @@
       "type": "button",
       "label": "G",
       "editorPosition": {
-        "x": 506.000048828125,
-        "y": 374.5551001019206,
+        "x": 527.0000053040569,
+        "y": 389.5551765980624,
         "w": 50,
         "h": 28
       },
@@ -610,8 +609,8 @@
       "type": "button",
       "label": "H",
       "editorPosition": {
-        "x": 566.000048828125,
-        "y": 374.55520819214564,
+        "x": 593.0000053040569,
+        "y": 389.5551765980624,
         "w": 50,
         "h": 28
       },
@@ -632,8 +631,8 @@
       "type": "button",
       "label": "TRACK FILTER\n/EDIT",
       "editorPosition": {
-        "x": 622.3323497042921,
-        "y": 270.22192549637964,
+        "x": 627.3323005351909,
+        "y": 270.2219057896923,
         "w": 44,
         "h": 48
       },
@@ -650,8 +649,8 @@
       "type": "button",
       "label": "SHORT\nCUT",
       "editorPosition": {
-        "x": 665.3320529204472,
-        "y": 270.2218081743333,
+        "x": 670.3320249919622,
+        "y": 270.2218217511073,
         "w": 44,
         "h": 48
       },
@@ -668,10 +667,10 @@
       "type": "knob",
       "label": "VINYL SPEED ADJ. TOUCH/BRAKE",
       "editorPosition": {
-        "x": 680.8892864970211,
-        "y": 376.4444353536434,
-        "w": 28,
-        "h": 28
+        "x": 688.3892801132063,
+        "y": 386.4445028270359,
+        "w": 40,
+        "h": 36
       },
       "shape": "circle",
       "labelPosition": "above",
@@ -685,8 +684,8 @@
       "type": "button",
       "label": "JOG MODE",
       "editorPosition": {
-        "x": 693.000390943362,
-        "y": 421.00010388435123,
+        "x": 709.2505950478616,
+        "y": 445,
         "w": 40,
         "h": 36
       },
@@ -702,8 +701,8 @@
       "type": "led",
       "label": "VINYL\nCDJ",
       "editorPosition": {
-        "x": 650.9998763431294,
-        "y": 421.0003305693751,
+        "x": 667.250259262148,
+        "y": 445,
         "w": 40,
         "h": 36
       },
@@ -722,8 +721,8 @@
       "type": "knob",
       "label": "JOG ADJUST",
       "editorPosition": {
-        "x": 557.333985666212,
-        "y": 483.6653364522277,
+        "x": 562.3339844679673,
+        "y": 513.6654612313963,
         "w": 36,
         "h": 36
       },
@@ -738,10 +737,10 @@
       "type": "button",
       "label": "IN/CUE",
       "editorPosition": {
-        "x": 19.999987418821483,
-        "y": 426.9999361732179,
-        "w": 30,
-        "h": 30
+        "x": 17.499924316406247,
+        "y": 443.000032043457,
+        "w": 40,
+        "h": 40
       },
       "shape": "circle",
       "buttonStyle": "raised",
@@ -759,10 +758,10 @@
       "type": "button",
       "label": "OUT",
       "editorPosition": {
-        "x": 75.99996415220804,
-        "y": 426.9999361732179,
-        "w": 30,
-        "h": 30
+        "x": 80.74984466552732,
+        "y": 443.000032043457,
+        "w": 40,
+        "h": 40
       },
       "shape": "circle",
       "buttonStyle": "raised",
@@ -778,12 +777,12 @@
     {
       "id": "RELOOP_EXIT",
       "type": "button",
-      "label": "LOOP RELOOP/EXIT",
+      "label": "RELOOP/EXIT",
       "editorPosition": {
-        "x": 137.00056534991722,
-        "y": 426.9999361732179,
-        "w": 30,
-        "h": 30
+        "x": 163.2506619180955,
+        "y": 443.000032043457,
+        "w": 40,
+        "h": 40
       },
       "shape": "circle",
       "buttonStyle": "raised",
@@ -800,10 +799,10 @@
       "type": "button",
       "label": "4",
       "editorPosition": {
-        "x": 21,
-        "y": 487.66548530555184,
-        "w": 28,
-        "h": 28
+        "x": 22.499999999999993,
+        "y": 508.91598361329824,
+        "w": 30,
+        "h": 30
       },
       "shape": "circle",
       "buttonStyle": "raised",
@@ -821,10 +820,10 @@
       "type": "button",
       "label": "8",
       "editorPosition": {
-        "x": 77,
-        "y": 487.6657537869145,
-        "w": 28,
-        "h": 28
+        "x": 85.74989013671869,
+        "y": 507.6662526161849,
+        "w": 30,
+        "h": 30
       },
       "shape": "circle",
       "buttonStyle": "raised",
@@ -842,8 +841,8 @@
       "type": "button",
       "label": "CUE/LOOP CALL",
       "editorPosition": {
-        "x": 480.9999228584191,
-        "y": 427.0000229588217,
+        "x": 464.7504847139366,
+        "y": 449.75001831054686,
         "w": 24,
         "h": 24
       },
@@ -860,8 +859,8 @@
       "type": "button",
       "label": "CUE/LOOP CALL ",
       "editorPosition": {
-        "x": 519.9999757368171,
-        "y": 427.0000229588217,
+        "x": 508.75068716551846,
+        "y": 449.75001831054686,
         "w": 24,
         "h": 24
       },
@@ -878,8 +877,8 @@
       "type": "button",
       "label": "DELETE",
       "editorPosition": {
-        "x": 558.9998393586914,
-        "y": 427.0000229588217,
+        "x": 562.7502566704,
+        "y": 449.75001831054686,
         "w": 24,
         "h": 24
       },
@@ -895,8 +894,8 @@
       "type": "button",
       "label": "MEMORY",
       "editorPosition": {
-        "x": 597.9999204483254,
-        "y": 427.0000229588217,
+        "x": 606.7503861831215,
+        "y": 449.7500366210937,
         "w": 24,
         "h": 24
       },
@@ -912,8 +911,8 @@
       "type": "button",
       "label": "MASTER",
       "editorPosition": {
-        "x": 695.0006886650334,
-        "y": 487.6653322826947,
+        "x": 711.2509202167697,
+        "y": 518.9153346656466,
         "w": 38,
         "h": 32
       },
@@ -932,8 +931,8 @@
       "type": "button",
       "label": "KEY SYNC",
       "editorPosition": {
-        "x": 665.0002292728426,
-        "y": 529.1112651476196,
+        "x": 686.2504241609182,
+        "y": 560.3613731996253,
         "w": 48,
         "h": 20
       },
@@ -953,8 +952,8 @@
       "type": "button",
       "label": "Beat Sync",
       "editorPosition": {
-        "x": 651.0009565369742,
-        "y": 487.6652706081149,
+        "x": 667.2509608920633,
+        "y": 518.9153627625091,
         "w": 38,
         "h": 32
       },
@@ -971,16 +970,16 @@
     {
       "id": "BEAT_JUMP_BACK",
       "type": "button",
-      "label": "BEAT JUMP ◄",
+      "label": "◄",
       "editorPosition": {
-        "x": 19.99999670605031,
-        "y": 536.4435377537973,
-        "w": 30,
-        "h": 30
+        "x": 19.50001220703124,
+        "y": 566.4441821415502,
+        "w": 36,
+        "h": 32
       },
       "shape": "rectangle",
       "buttonStyle": "raised",
-      "labelPosition": "hidden",
+      "labelPosition": "on-button",
       "labelDisplay": "icon-only",
       "icon": "arrow-left",
       "hasLed": false
@@ -988,16 +987,16 @@
     {
       "id": "BEAT_JUMP_FWD",
       "type": "button",
-      "label": "BEAT JUMP ►",
+      "label": "►",
       "editorPosition": {
-        "x": 76,
-        "y": 536.4444207306345,
-        "w": 30,
-        "h": 30
+        "x": 82.74992675781243,
+        "y": 566.4451732580887,
+        "w": 36,
+        "h": 32
       },
       "shape": "rectangle",
       "buttonStyle": "raised",
-      "labelPosition": "hidden",
+      "labelPosition": "on-button",
       "labelDisplay": "icon-only",
       "icon": "arrow-right",
       "hasLed": false
@@ -1007,8 +1006,8 @@
       "type": "button",
       "label": "CUE",
       "editorPosition": {
-        "x": 25.999985918511392,
-        "y": 772.6665239347245,
+        "x": 27.249897489749088,
+        "y": 836.4165604307691,
         "w": 76,
         "h": 72
       },
@@ -1024,14 +1023,14 @@
       "labelFontSize": 6
     },
     {
-      "id": "DIRECTION_LEVER",
+      "id": "DIRECTION_INDICATOR",
       "type": "button",
       "label": "SLIPREV\nFWD \nREV",
       "editorPosition": {
-        "x": 66.00011144970293,
-        "y": 588.8893291647146,
-        "w": 40,
-        "h": 44
+        "x": 69.9998855828469,
+        "y": 633.8892365419957,
+        "w": 48,
+        "h": 52
       },
       "shape": "rectangle",
       "labelPosition": "on-button",
@@ -1048,8 +1047,8 @@
       "type": "button",
       "label": "PLAY/PAUSE ►/II",
       "editorPosition": {
-        "x": 25.9999929617451,
-        "y": 864.4443904100884,
+        "x": 28.499900220812243,
+        "y": 939.4447725413972,
         "w": 76,
         "h": 72
       },
@@ -1070,8 +1069,8 @@
       "type": "button",
       "label": "Search",
       "editorPosition": {
-        "x": 13.999842806643954,
-        "y": 721.889113170656,
+        "x": 13.999997558593748,
+        "y": 776.8892695241891,
         "w": 52,
         "h": 40
       },
@@ -1087,9 +1086,9 @@
       "type": "button",
       "label": "Search",
       "editorPosition": {
-        "x": 57.999753189465196,
-        "y": 721.8890344738219,
-        "w": 52,
+        "x": 76.74996337890622,
+        "y": 776.8892695241891,
+        "w": 40,
         "h": 40
       },
       "shape": "circle",
@@ -1104,8 +1103,8 @@
       "type": "button",
       "label": "Track/Search",
       "editorPosition": {
-        "x": 13.999990714849206,
-        "y": 662.1125218850964,
+        "x": 13.999850968144052,
+        "y": 714.6132246765186,
         "w": 52,
         "h": 40
       },
@@ -1121,9 +1120,9 @@
       "type": "button",
       "label": "Track/Search",
       "editorPosition": {
-        "x": 57.99996932025089,
-        "y": 662.1124605314586,
-        "w": 52,
+        "x": 76.74973111054598,
+        "y": 714.6132246765186,
+        "w": 40,
         "h": 40
       },
       "shape": "circle",
@@ -1138,10 +1137,10 @@
       "type": "screen",
       "label": "Jog display",
       "editorPosition": {
-        "x": 293.55723521987284,
-        "y": 628.889347291449,
-        "w": 172,
-        "h": 140
+        "x": 307.30699346115046,
+        "y": 672.3896684453681,
+        "w": 167,
+        "h": 159
       },
       "shape": "circle",
       "labelPosition": "hidden",
@@ -1154,10 +1153,10 @@
       "type": "wheel",
       "label": "Jog wheel (–REV/+FWD)",
       "editorPosition": {
-        "x": 151.11151781155849,
-        "y": 487.2213401136239,
-        "w": 460,
-        "h": 428
+        "x": 142.36213660903672,
+        "y": 508.722829843119,
+        "w": 491,
+        "h": 488
       },
       "shape": "circle",
       "labelPosition": "hidden",
@@ -1172,8 +1171,8 @@
       "type": "button",
       "label": "TEMPO",
       "editorPosition": {
-        "x": 677.000230068028,
-        "y": 616.4456693281692,
+        "x": 694.5011520439326,
+        "y": 636.4459306653467,
         "w": 28,
         "h": 28
       },
@@ -1190,8 +1189,8 @@
       "type": "button",
       "label": "MASTER TEMPO",
       "editorPosition": {
-        "x": 677.000228701433,
-        "y": 675.3349152755968,
+        "x": 694.5007576277426,
+        "y": 696.5849954311473,
         "w": 28,
         "h": 28
       },
@@ -1210,10 +1209,10 @@
       "type": "fader",
       "label": "TEMPO",
       "editorPosition": {
-        "x": 667.000059437319,
-        "y": 720.0006409139638,
-        "w": 44,
-        "h": 200
+        "x": 677.0002089040084,
+        "y": 746.0012421004574,
+        "w": 64,
+        "h": 274
       },
       "shape": "rectangle",
       "labelPosition": "below",
@@ -1226,14 +1225,14 @@
       "type": "button",
       "label": "TEMPO\n \nRESET",
       "editorPosition": {
-        "x": 609.6663887005274,
-        "y": 797.3328097666044,
+        "x": 619.6665065177949,
+        "y": 887.3331689419748,
         "w": 28,
         "h": 28
       },
       "shape": "circle",
       "buttonStyle": "raised",
-      "labelPosition": "above",
+      "labelPosition": "below",
       "labelDisplay": "above",
       "hasLed": false,
       "labelFontSize": 6
@@ -1243,8 +1242,8 @@
       "type": "led",
       "label": "TEMPO RESET indicator",
       "editorPosition": {
-        "x": 880.8885838650172,
-        "y": 719.8888422390407,
+        "x": 885.8885838650172,
+        "y": 769.8888422390407,
         "w": 20,
         "h": 24
       },
@@ -1256,14 +1255,14 @@
       "hasLed": true
     },
     {
-      "id": "DIRECTION_LEVER-copy",
+      "id": "DIRECTION_LEVER",
       "type": "slider",
       "label": "SLIP REV FWD REV",
       "editorPosition": {
-        "x": 19.0001137168263,
-        "y": 586.88928098687,
-        "w": 44,
-        "h": 52
+        "x": 14.249724470307141,
+        "y": 630.1392478938053,
+        "w": 54,
+        "h": 67
       },
       "shape": "rectangle",
       "labelPosition": "on-button",
@@ -1279,8 +1278,8 @@
       "type": "button",
       "label": "CALL/DELETE",
       "editorPosition": {
-        "x": 20.00002675895747,
-        "y": 374.5546872275999,
+        "x": 17.50001491402604,
+        "y": 389.5552183202503,
         "w": 55,
         "h": 28
       },
@@ -1296,465 +1295,463 @@
     {
       "id": "label-USB_STOP",
       "text": "USB \nSTOP",
-      "x": 67,
-      "y": 112,
+      "x": 71,
+      "y": 117,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "USB_STOP"
     },
     {
       "id": "label-JOG_ADJUST",
       "text": "JOG ADJUST",
-      "x": 545,
-      "y": 473,
+      "x": 550,
+      "y": 503,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "JOG_ADJUST"
     },
     {
       "id": "label-LOOP_IN_CUE",
       "text": "IN/CUE",
-      "x": 5,
-      "y": 413,
+      "x": -922,
+      "y": 662,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "LOOP_IN_CUE"
     },
     {
       "id": "label-LOOP_OUT",
       "text": "OUT",
-      "x": 61,
-      "y": 413,
+      "x": -858,
+      "y": 662,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "LOOP_OUT"
     },
     {
       "id": "label-RELOOP_EXIT",
-      "text": "LOOP RELOOP/EXIT",
-      "x": 122,
-      "y": 413,
+      "text": "RELOOP/EXIT",
+      "x": -778,
+      "y": 662,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "RELOOP_EXIT"
     },
     {
       "id": "label-DELETE",
       "text": "DELETE",
-      "x": 541,
-      "y": 413,
+      "x": 545,
+      "y": 431,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "DELETE"
     },
     {
       "id": "label-MEMORY",
       "text": "MEMORY",
-      "x": 580,
-      "y": 413,
+      "x": 589,
+      "y": 431,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "MEMORY"
     },
     {
       "id": "label-TEMPO_RANGE",
       "text": "        TEMPO \n±6/±10/±16/WIDE",
-      "x": 661,
-      "y": 593,
+      "x": 678,
+      "y": 616,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "TEMPO_RANGE"
     },
     {
       "id": "label-MASTER_TEMPO",
       "text": "MASTER \nTEMPO",
-      "x": 661,
-      "y": 653,
+      "x": 679,
+      "y": 673,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "MASTER_TEMPO"
     },
     {
       "id": "label-TEMPO_RESET",
       "text": "TEMPO \nRESET",
-      "x": 594,
-      "y": 774,
+      "x": 604,
+      "y": 918,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "TEMPO_RESET"
     },
     {
       "id": "label-USB_INDICATOR",
       "text": "USB indicator",
-      "x": 829,
-      "y": 188,
+      "x": 836,
+      "y": 196,
       "w": 64,
       "fontSize": 6,
       "align": "center",
       "hidden": true,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "USB_INDICATOR"
     },
     {
       "id": "label-SD_INDICATOR",
       "text": "SD memory card indicator",
-      "x": 828,
-      "y": 266,
+      "x": 836,
+      "y": 276,
       "w": 84,
       "fontSize": 8,
       "align": "center",
       "hidden": true,
-      "lineHeight": 10
-    },
-    {
-      "id": "label-standalone-1776874509600",
-      "text": "",
-      "x": 830,
-      "y": 442,
-      "w": 60,
-      "fontSize": 8,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 10
+      "lineHeight": 10,
+      "controlId": "SD_INDICATOR"
     },
     {
       "id": "label-standalone-1776874519111",
       "text": "INST. DOUBLES",
-      "x": 660,
-      "y": 473,
+      "x": 679,
+      "y": 504,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": null
     },
     {
       "id": "label-standalone-1776874534812",
       "text": "1/2X",
       "x": 6,
-      "y": 519,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776874538023",
-      "text": "BEAT LOOP",
-      "x": 124,
-      "y": 495,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776874539262",
-      "text": "LOOP",
-      "x": 184,
-      "y": 436,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776978973334",
-      "text": "— UTILITY",
-      "x": 550,
-      "y": 20,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776979109267",
-      "text": "5V — 1A",
-      "x": 13,
-      "y": 130,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776979174170",
-      "text": "SD",
-      "x": 33,
-      "y": 218,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776979211589",
-      "text": ".\nTIME \nMODE",
-      "x": 6,
-      "y": 244,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776979438275",
-      "text": "—\nAUTO \nCUE",
-      "x": 69,
-      "y": 245,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776980037736",
-      "text": "MP3/AAC/WAV/\nAIFF/FLAC/ALAC",
-      "x": 662,
-      "y": 333,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776983124658",
-      "text": "HOT CUE",
-      "x": 352,
-      "y": 359,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776983452284",
-      "text": "IN ADJUST",
-      "x": 5,
-      "y": 460,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776983535255",
-      "text": "OUT ADJUST",
-      "x": 62,
-      "y": 460,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776983723119",
-      "text": "2X",
-      "x": 61,
-      "y": 519,
-      "w": 60,
-      "fontSize": 6,
-      "align": "center",
-      "hidden": false,
-      "lineHeight": 8
-    },
-    {
-      "id": "label-standalone-1776983787260",
-      "text": "BEAT\nJUMP",
-      "x": 34,
       "y": 540,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": null
     },
     {
-      "id": "label-standalone-1776990995424",
-      "text": "DIRECTION",
-      "x": 33,
-      "y": 576,
+      "id": "label-standalone-1776874538023",
+      "text": "BEAT LOOP",
+      "x": 149,
+      "y": 518,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": null
     },
     {
-      "id": "label-standalone-1776992586519",
-      "text": "SEARCH",
-      "x": 33,
-      "y": 711,
+      "id": "label-standalone-1776874539262",
+      "text": "LOOP",
+      "x": 224,
+      "y": 456,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": null
     },
     {
-      "id": "label-standalone-1776992587188",
-      "text": "TRACK SEARCH",
-      "x": 33,
-      "y": 650,
+      "id": "label-standalone-1776978973334",
+      "text": "— UTILITY",
+      "x": 555,
+      "y": 25,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": null
     },
     {
-      "id": "label-PLAY_PAUSE",
-      "text": "PLAY/PAUSE ",
-      "x": 34,
-      "y": 851,
-      "w": 65,
+      "id": "label-standalone-1776979109267",
+      "text": "5V — 1A",
+      "x": 11,
+      "y": 143,
+      "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": null
     },
     {
-      "id": "label-standalone-1776996922195",
-      "text": "Label",
-      "x": 884,
-      "y": 446,
+      "id": "label-standalone-1776979174170",
+      "text": "SD",
+      "x": 38,
+      "y": 236,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776979211589",
+      "text": ".\nTIME \nMODE",
+      "x": 10,
+      "y": 257,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776979438275",
+      "text": "—\nAUTO \nCUE",
+      "x": 67,
+      "y": 257,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776980037736",
+      "text": "MP3/AAC/WAV/\nAIFF/FLAC/ALAC",
+      "x": 672,
+      "y": 328,
       "w": 60,
       "fontSize": 8,
       "align": "center",
       "hidden": false,
-      "lineHeight": 10
+      "lineHeight": 10,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776983124658",
+      "text": "HOT CUE",
+      "x": 356,
+      "y": 376,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776983452284",
+      "text": "IN ADJUST",
+      "x": 7,
+      "y": 488,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776983535255",
+      "text": "OUT ADJUST",
+      "x": 71,
+      "y": 488,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776983723119",
+      "text": "2X",
+      "x": 69,
+      "y": 540,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776983787260",
+      "text": "BEAT\nJUMP",
+      "x": 40,
+      "y": 572,
+      "w": 60,
+      "fontSize": 7,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 9,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776990995424",
+      "text": "DIRECTION",
+      "x": 34,
+      "y": 618,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776992586519",
+      "text": "SEARCH",
+      "x": 38,
+      "y": 766,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-standalone-1776992587188",
+      "text": "TRACK SEARCH",
+      "x": 39,
+      "y": 704,
+      "w": 60,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": null
+    },
+    {
+      "id": "label-PLAY_PAUSE",
+      "text": "PLAY/PAUSE ",
+      "x": 33,
+      "y": 928,
+      "w": 65,
+      "fontSize": 6,
+      "align": "center",
+      "hidden": false,
+      "lineHeight": 8,
+      "controlId": "PLAY_PAUSE"
     },
     {
       "id": "label-standalone-1777319576555",
       "text": "LIGHT",
-      "x": 526,
-      "y": 514,
+      "x": 528,
+      "y": 548,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": null
     },
     {
       "id": "label-standalone-1777319604547",
       "text": "HEAVY",
-      "x": 566,
-      "y": 514,
+      "x": 572,
+      "y": 548,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": null
     },
     {
       "id": "label-CUE_LOOP_CALL_FWD",
-      "text": "CUE/LOOP CALL ",
-      "x": 486,
-      "y": 413,
+      "text": "CUE/LOOP \nCALL ",
+      "x": 469,
+      "y": 433,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "CUE_LOOP_CALL_FWD"
     },
     {
       "id": "label-VINYL_SPEED_ADJ",
       "text": "VINYL SPEED ADJ.\n TOUCH/BRAKE",
-      "x": 664,
-      "y": 355,
+      "x": 678,
+      "y": 368,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "VINYL_SPEED_ADJ"
     },
     {
       "id": "label-CALL_DELETE",
       "text": "CALL/DELETE",
-      "x": 18,
-      "y": 364,
+      "x": 15,
+      "y": 379,
       "w": 60,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "CALL_DELETE"
     },
     {
       "id": "label-TEMPO_SLIDER",
       "text": "TEMPO",
-      "x": 659,
-      "y": 923,
-      "w": 60,
+      "x": 676,
+      "y": 1024,
+      "w": 64,
       "fontSize": 6,
       "align": "center",
       "hidden": false,
-      "lineHeight": 8
+      "lineHeight": 8,
+      "controlId": "TEMPO_SLIDER"
+    },
+    {
+      "id": "label-standalone-1779340176345-bmyh25",
+      "text": "►",
+      "icon": "arrow-right",
+      "x": 122,
+      "y": 573,
+      "w": 60,
+      "fontSize": 19,
+      "align": "center",
+      "hidden": true,
+      "lineHeight": 21,
+      "controlId": "BEAT_JUMP_FWD"
     }
   ],
   "groupLabels": [],
   "controlContainers": [
-    {
-      "id": "container-1777590101813",
-      "controlIds": [],
-      "style": "recessed",
-      "x": 0.9999286516729372,
-      "y": 361.0008402858263,
-      "w": 752,
-      "h": 584,
-      "borderRadius": 4
-    },
-    {
-      "id": "container-1778700489230",
-      "controlIds": [],
-      "style": "recessed",
-      "x": 1.3997863769685943,
-      "y": 82.40003988650462,
-      "w": 144,
-      "h": 280,
-      "borderRadius": 4
-    },
-    {
-      "id": "container-1778700518727",
-      "controlIds": [],
-      "style": "recessed",
-      "x": 140.99992636703905,
-      "y": 81.0000045837539,
-      "w": 480,
-      "h": 280,
-      "borderRadius": 4
-    },
     {
       "id": "container-1778700742294",
       "controlIds": [],
@@ -1766,33 +1763,13 @@
       "borderRadius": 4
     },
     {
-      "id": "container-1778700973333",
-      "controlIds": [],
-      "style": "recessed",
-      "x": 617.0002745073693,
-      "y": 80.99995991537844,
-      "w": 136,
-      "h": 280,
-      "borderRadius": 4
-    },
-    {
-      "id": "container-1778701336253",
-      "controlIds": [],
-      "style": "recessed",
-      "x": 140.00001576688095,
-      "y": -1.999969482423125,
-      "w": 480,
-      "h": 88,
-      "borderRadius": 4
-    },
-    {
       "id": "container-1778725385769",
       "controlIds": [],
       "style": "recessed",
-      "x": 649.0001890966796,
-      "y": 486.0001182523437,
-      "w": 84,
-      "h": 68,
+      "x": 665.0003007345772,
+      "y": 516.0003010827568,
+      "w": 87,
+      "h": 72,
       "borderRadius": 4
     }
   ]

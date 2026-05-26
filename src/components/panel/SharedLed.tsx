@@ -73,7 +73,7 @@ const HIGHLIGHT_ANIMATION = {
   },
 };
 
-export type SharedLedVariant = 'dot' | 'dual-label' | 'bar';
+export type SharedLedVariant = 'dot' | 'dual-label' | 'triple-label' | 'bar';
 
 export interface SharedLedProps {
   /** Container width in CSS pixels (already scaled by caller). */
@@ -81,18 +81,30 @@ export interface SharedLedProps {
   /** Container height in CSS pixels (already scaled by caller). */
   height: number;
   variant?: SharedLedVariant;
-  /** Primary label. For dual-label, becomes the top row text. */
+  /** Primary label. For dual-label, becomes the top row text. For triple-label, top row. */
   label: string;
   /**
-   * Explicit secondary label (preferred for dual-label). Falls back to
-   * splitting `label` on `/` or `\n` for legacy manifests.
+   * Explicit secondary label (preferred for dual-label, bottom row for triple-label).
+   * Falls back to splitting `label` on `/` or `\n` for legacy manifests.
    */
   secondaryLabel?: string | null;
+  /**
+   * Explicit middle label (triple-label only). Falls back to splitting `label` on `/` or `\n`.
+   */
+  tertiaryLabel?: string | null;
   ledColor?: string | null;
   /**
    * Tutorial-driven LED state. TRISTATE — see comment block at top.
+   * For triple-label, prefer `activeRow` for explicit position.
    */
   ledOn?: boolean;
+  /**
+   * triple-label only: which of the 3 rows is the active position.
+   * 'top' (default when ledOn undefined), 'middle', 'bottom'.
+   * Maps to physical 3-position indicator (e.g. CDJ-3000 DIRECTION_INDICATOR
+   * showing SLIP REV / FWD / REV).
+   */
+  activeRow?: 'top' | 'middle' | 'bottom';
   /** Optional data-control-id for editor selectors + drift CI. */
   dataControlId?: string;
   /**
@@ -161,6 +173,62 @@ function DualLabel({ width, height, label, secondaryLabel, ledColor, ledOn, data
   );
 }
 
+function splitTripleLabel(label: string): { top: string; middle: string; bottom: string } {
+  const parts = label.split(/[\/\n]/).map((s) => s.trim()).filter(Boolean);
+  return {
+    top: parts[0] || 'MODE A',
+    middle: parts[1] || 'MODE B',
+    bottom: parts[2] || 'MODE C',
+  };
+}
+
+function TripleLabel({
+  width, height, label, secondaryLabel, tertiaryLabel, ledColor, ledOn, activeRow, dataControlId,
+}: SharedLedProps) {
+  const color = ledColor ?? DEFAULT_LED_COLOR;
+  // Prefer explicit secondaryLabel/tertiaryLabel; else split `label` on `/` or `\n`
+  const { top: topText, middle: midText, bottom: bottomText } =
+    secondaryLabel != null || tertiaryLabel != null
+      ? { top: label, middle: tertiaryLabel ?? '', bottom: secondaryLabel ?? '' }
+      : splitTripleLabel(label);
+
+  // Determine which row is active. Priority:
+  //   activeRow (explicit) → ledOn fallback (top if !false, bottom if false) → top
+  // Editor design-viz: undefined → top active (matches dual-label behavior)
+  const active: 'top' | 'middle' | 'bottom' =
+    activeRow ?? (ledOn === false ? 'bottom' : 'top');
+
+  const renderRow = (text: string, isActive: boolean, withBorder: 'top' | 'bottom' | 'both' | null) => (
+    <div
+      className="flex flex-1 items-center justify-center py-0.5 px-1"
+      style={{
+        backgroundColor: isActive ? '#0a2e1a' : '#1a1a2a',
+        borderTop: withBorder === 'top' || withBorder === 'both' ? '1px solid #333' : undefined,
+        borderBottom: withBorder === 'bottom' || withBorder === 'both' ? '1px solid #333' : undefined,
+      }}
+    >
+      <span
+        className="text-[7px] font-medium uppercase truncate"
+        style={{ color: isActive ? '#4ade80' : `${color}88` }}
+      >
+        {text}
+      </span>
+    </div>
+  );
+
+  return (
+    <div
+      className="flex flex-col rounded overflow-hidden"
+      style={{ width, height, border: '1px solid #333' }}
+      {...(dataControlId ? { 'data-control-id': dataControlId } : {})}
+    >
+      {renderRow(topText, active === 'top', 'bottom')}
+      {renderRow(midText, active === 'middle', 'bottom')}
+      {renderRow(bottomText, active === 'bottom', null)}
+    </div>
+  );
+}
+
 function Bar({ width, label, ledColor, ledOn, dataControlId }: SharedLedProps) {
   const color = ledColor ?? DEFAULT_LED_COLOR;
   // ledOn !== false = lit (both undefined and true). False = dim.
@@ -225,6 +293,7 @@ export default function SharedLed(props: SharedLedProps) {
   const variant = props.variant ?? 'dot';
   const inner =
     variant === 'dual-label' ? <DualLabel {...props} />
+    : variant === 'triple-label' ? <TripleLabel {...props} />
     : variant === 'bar' ? <Bar {...props} />
     : <Dot {...props} />;
   // When highlighted, wrap in a motion.div pulsing the cyan glow. Use
