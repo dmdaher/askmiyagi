@@ -26,7 +26,7 @@ import fs from 'fs';
 import path from 'path';
 import { readState, writeState, appendLog, ensurePipelineDir } from '@/lib/pipeline/state-machine';
 import { invokeAgent } from '@/lib/pipeline/runner';
-import { trackAudit, untrackAudit, killAudit } from '@/lib/pipeline/audit-tracker';
+import { trackAudit, untrackAudit, killAudit, getAuditPid } from '@/lib/pipeline/audit-tracker';
 import {
   parseMatchTable,
   summarizeMatchTable,
@@ -46,23 +46,42 @@ interface PreviewResponse {
   canRecheck: boolean;
   reason: string;
   hasIndependentChecklist: boolean; // tells UI whether re-run will be fast (resume) or slow (full)
+  /** True when a recheck is currently in-flight (auditor agent spawned via
+   *  this route is registered in audit-tracker). UI uses this to disable
+   *  the Re-check button + show a "running elsewhere" indicator on every
+   *  surface that displays the button, not just the one that launched it. */
+  isRecheckRunning: boolean;
 }
 
 function computePreview(deviceId: string): PreviewResponse {
+  // Check audit-tracker FIRST so we surface "running elsewhere" even when
+  // the pipeline state itself is paused/completed (the recheck agent runs
+  // outside the pipeline runner).
+  const runningPid = getAuditPid(deviceId, TRACKER_ISSUE_ID);
+  const isRecheckRunning = runningPid !== undefined;
+
   const state = readState(deviceId);
   if (!state) {
-    return { canRecheck: false, reason: `No pipeline found for ${deviceId}.`, hasIndependentChecklist: false };
+    return { canRecheck: false, reason: `No pipeline found for ${deviceId}.`, hasIndependentChecklist: false, isRecheckRunning };
+  }
+  if (isRecheckRunning) {
+    return {
+      canRecheck: false,
+      reason: `Re-check already running (PID ${runningPid}). Wait for it to complete or cancel from the surface that launched it.`,
+      hasIndependentChecklist: false,
+      isRecheckRunning: true,
+    };
   }
   if (state.status === 'running') {
-    return { canRecheck: false, reason: 'Pipeline is currently running — pause or wait for completion.', hasIndependentChecklist: false };
+    return { canRecheck: false, reason: 'Pipeline is currently running — pause or wait for completion.', hasIndependentChecklist: false, isRecheckRunning };
   }
   const manualPaths = state.manualPaths ?? [];
   if (manualPaths.length === 0) {
-    return { canRecheck: false, reason: 'No manual PDFs registered for this device.', hasIndependentChecklist: false };
+    return { canRecheck: false, reason: 'No manual PDFs registered for this device.', hasIndependentChecklist: false, isRecheckRunning };
   }
   const resolvedManuals = manualPaths.map((p) => path.resolve(p)).filter((p) => fs.existsSync(p));
   if (resolvedManuals.length === 0) {
-    return { canRecheck: false, reason: 'Manual PDFs not found on disk.', hasIndependentChecklist: false };
+    return { canRecheck: false, reason: 'Manual PDFs not found on disk.', hasIndependentChecklist: false, isRecheckRunning };
   }
   const checklistPath = path.join(process.cwd(), '.pipeline', deviceId, 'agents', 'coverage-auditor', 'independent-checklist.md');
   const hasIndependentChecklist = fs.existsSync(checklistPath);
@@ -72,6 +91,7 @@ function computePreview(deviceId: string): PreviewResponse {
       ? 'Ready to re-check coverage (fast: reuses independent checklist).'
       : 'Ready to re-check coverage (full 3-phase audit: independent read + compare + verdict).',
     hasIndependentChecklist,
+    isRecheckRunning: false,
   };
 }
 

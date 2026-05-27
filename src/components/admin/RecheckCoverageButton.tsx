@@ -14,6 +14,7 @@ interface Preview {
   canRecheck: boolean;
   reason: string;
   hasIndependentChecklist: boolean;
+  isRecheckRunning: boolean;
 }
 
 interface RecheckResponse {
@@ -71,14 +72,21 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/pipeline/${deviceId}/recheck-coverage`)
-      .then((r) => r.json())
-      .then((data: Preview) => { if (!cancelled) setPreview(data); })
-      .catch(() => { if (!cancelled) setPreview({ canRecheck: false, reason: 'Failed to load preview', hasIndependentChecklist: false }); });
-    return () => { cancelled = true; };
+    const fetchPreview = () => {
+      fetch(`/api/pipeline/${deviceId}/recheck-coverage`)
+        .then((r) => r.json())
+        .then((data: Preview) => { if (!cancelled) setPreview(data); })
+        .catch(() => { if (!cancelled) setPreview({ canRecheck: false, reason: 'Failed to load preview', hasIndependentChecklist: false, isRecheckRunning: false }); });
+    };
+    fetchPreview();
+    // Poll every 3s while mounted so the button reflects cross-surface
+    // re-check state (admin may have clicked Re-check from canvas review).
+    const id = setInterval(fetchPreview, 3000);
+    return () => { cancelled = true; clearInterval(id); };
   }, [deviceId, pipelineStatus]); // re-fetch when pipeline status changes
 
-  const canClick = preview?.canRecheck === true && !running && pipelineStatus !== 'running';
+  const remoteRunning = preview?.isRecheckRunning === true;
+  const canClick = preview?.canRecheck === true && !running && !remoteRunning && pipelineStatus !== 'running';
 
   async function runRecheck() {
     setRunning(true);
@@ -103,7 +111,9 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
   }
 
   const tooltip = preview?.reason ?? 'Loading…';
-  const buttonLabel = running ? 'Checking…' : 'Re-check Coverage';
+  const buttonLabel = (running || remoteRunning)
+    ? (remoteRunning && !running ? 'Re-checking (started elsewhere)…' : 'Checking…')
+    : 'Re-check Coverage';
 
   return (
     <>
