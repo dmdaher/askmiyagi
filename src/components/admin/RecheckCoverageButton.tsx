@@ -40,6 +40,34 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<RecheckResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [resetting, setResetting] = useState(false);
+
+  async function resetRetries() {
+    const confirmed = window.confirm(
+      `Reset the coverage self-heal retry counter for ${deviceName}?\n\n` +
+      `This clears strikeTracker['phase-4-audit'] so the next Re-check Coverage ` +
+      `can trigger another self-heal cycle (~$45-100, 30-45 min). Use this only ` +
+      `after you've reviewed the previous failure + understand why retries were ` +
+      `exhausted.`
+    );
+    if (!confirmed) return;
+    setResetting(true);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/recover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset-coverage-retries' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? 'Reset failed'); return; }
+      // Clear the local verdict so the next recheck shows fresh state
+      setResult(null);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setResetting(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -129,7 +157,24 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
           ) : result.verdict.name === 'APPROVED' || result.verdict.name === 'APPROVED_WITH_WARNINGS' ? (
             <>✓ Coverage {result.verdict.coveragePct.toFixed(1)}% — {result.verdict.name === 'APPROVED' ? 'clean' : 'with warnings'}, no action needed.</>
           ) : result.verdict.retryCount >= result.verdict.maxRetries ? (
-            <><strong>Self-heal cap reached.</strong> Coverage {result.verdict.coveragePct.toFixed(1)}% after {result.verdict.maxRetries} retries. Manual review required.</>
+            <div className="space-y-1.5">
+              <div><strong>Self-heal cap reached.</strong> Coverage {result.verdict.coveragePct.toFixed(1)}% after {result.verdict.maxRetries} retries.</div>
+              <div className="text-[10px] text-red-200/80 italic">Reason: {result.verdict.reason}</div>
+              <button
+                type="button"
+                onClick={resetRetries}
+                disabled={resetting}
+                data-testid="reset-coverage-retries-button"
+                className="text-[10px] px-2 py-1 mt-1 rounded transition-colors cursor-pointer disabled:opacity-40"
+                style={{
+                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                  color: '#fca5a5',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                }}
+              >
+                {resetting ? 'Resetting…' : '↻ Reset retry counter — try again'}
+              </button>
+            </div>
           ) : (
             <>{result.verdict.name}: {result.verdict.reason}</>
           )}
@@ -145,6 +190,7 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
           parentOnlyGaps={result.parentOnlyGaps}
           costUsd={result.costUsd}
           matchTablePath={result.matchTablePath}
+          verdict={result.verdict}
           onClose={() => setResult(null)}
         />
       )}

@@ -23,7 +23,23 @@ export interface CoverageReportProps {
   lastAuditMs?: number | null;
   /** Compact = no extra whitespace, smaller summary cards. Use for tab. */
   compact?: boolean;
+  /** Optional verdict from scoreCoverage(). When provided, shows a prominent
+   *  "why" block explaining the verdict (especially useful after self-heal
+   *  fails — surfaces lostFeatures or stillMissingDirectives reasoning). */
+  verdict?: {
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    reason: string;
+    selfHealTriggered?: boolean;
+    retryCount?: number;
+    maxRetries?: number;
+  };
 }
+
+// Coverage thresholds (mirrors src/lib/pipeline/coverage-scorer.ts).
+//   90% = PASS threshold (REJECT_INVENTORY) — below this triggers auto-retry
+//   99% = ASPIRATION goal — what we aim for; 95-99% is APPROVED_WITH_WARNINGS
+const PASS_THRESHOLD = 90;
+const ASPIRATION_GOAL = 99;
 
 function relTime(ms: number | null | undefined): string {
   if (!ms) return '';
@@ -45,20 +61,58 @@ export default function CoverageReport({
   matchTablePath,
   lastAuditMs,
   compact = false,
+  verdict,
 }: CoverageReportProps) {
   const coveragePct = summary.total > 0
     ? Math.round((summary.confirmed / summary.total) * 100)
     : 0;
-  const coverageColor = coveragePct >= 90 ? '#22c55e' : coveragePct >= 70 ? '#f59e0b' : '#ef4444';
+  const coverageColor = coveragePct >= PASS_THRESHOLD ? '#22c55e' : coveragePct >= 70 ? '#f59e0b' : '#ef4444';
   const last = relTime(lastAuditMs);
+  const fromGoal = ASPIRATION_GOAL - coveragePct;
+  const passedThreshold = coveragePct >= PASS_THRESHOLD;
+  const hitAspiration = coveragePct >= ASPIRATION_GOAL;
 
   return (
     <div data-testid="coverage-report" className={compact ? 'space-y-3' : 'space-y-4'}>
+      {/* Verdict reason block — prominent when verdict provided.
+          Especially valuable after self-heal exhausts retries: surfaces
+          lostFeatures / stillMissingDirectives so admin understands why. */}
+      {verdict && (
+        <div
+          data-testid="coverage-verdict-block"
+          className={`text-xs px-3 py-2 rounded border ${
+            verdict.name === 'APPROVED'
+              ? 'bg-emerald-900/20 border-emerald-700/40 text-emerald-200'
+              : verdict.name === 'APPROVED_WITH_WARNINGS'
+                ? 'bg-amber-900/20 border-amber-700/40 text-amber-200'
+                : 'bg-red-900/20 border-red-700/40 text-red-200'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-1">
+            <strong>Verdict: {verdict.name}</strong>
+            {verdict.retryCount != null && verdict.maxRetries != null && verdict.retryCount > 0 && (
+              <span className="text-[10px] opacity-70">Retry {verdict.retryCount}/{verdict.maxRetries}</span>
+            )}
+          </div>
+          <div className="text-[11px] opacity-90 leading-snug">{verdict.reason}</div>
+        </div>
+      )}
+
       {/* Summary cards */}
       <div className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-4'}`}>
         <div className="rounded p-3" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
           <div className="text-2xl font-semibold" style={{ color: coverageColor }}>{coveragePct}%</div>
-          <div className="text-xs text-gray-500 mt-1">Coverage</div>
+          <div className="text-xs text-gray-500 mt-0.5">Coverage</div>
+          {/* 90% pass / 99% goal markers */}
+          <div className="text-[9px] text-gray-600 mt-1 leading-tight">
+            {hitAspiration ? (
+              <span className="text-emerald-400">✓ Goal reached (99%)</span>
+            ) : passedThreshold ? (
+              <span className="text-emerald-400/70">✓ Pass · <span className="text-amber-400/80">{fromGoal}% from goal</span></span>
+            ) : (
+              <span className="text-red-400/80">Below 90% pass</span>
+            )}
+          </div>
         </div>
         <div className="rounded p-3" style={{ backgroundColor: 'rgba(34, 197, 94, 0.08)' }}>
           <div className="text-2xl font-semibold text-green-400">{summary.confirmed}</div>
