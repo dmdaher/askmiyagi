@@ -22,6 +22,20 @@ This agent runs AFTER the panel digital twin is complete and validated (all 5 QA
 
 If any pre-condition fails, HALT with `PRE-CONDITION FAILURE` and specify what's missing.
 
+### RETRY PASS — READ DIRECTIVES FIRST
+
+**Before reading the manual**, check whether `.pipeline/<deviceId>/extractor-directives.md` exists.
+
+If it does, **this is a retry pass.** The previous run's output failed the coverage gate; the auditor identified specific features you missed. You MUST:
+
+1. Read `extractor-directives.md` completely (it lists Critical Gaps + Moderate Gaps with cited manual pages).
+2. Treat every **Critical Gap** as a REQUIRED feature for this pass. Each must appear in your final `pass-3-curriculum.md` and `pass-4-batches.md` outputs with manual pages matching the directives.
+3. Treat every **Moderate Gap** as strongly-recommended for this pass.
+4. **Include ALL previously-extracted features PLUS the new directive items.** Removing previously CONFIRMED features = REGRESSION and will halt the pipeline (the coverage-scorer's strict convergence check catches it).
+5. If a directive feature genuinely doesn't exist in the manual (auditor hallucinated it), still cite the directive in your scratchpad with `RECLASS: directive-item-X is not in manual page N as claimed` — do NOT silently omit.
+
+The retry loop is capped at 2 attempts. Ignoring directives will cause escalation to the admin.
+
 ## Output Contract
 - Write ALL outputs to: `.pipeline/<deviceId>/agents/manual-extractor/`
 - Read manuals from: `.pipeline/<deviceId>/input/manuals/`
@@ -57,6 +71,35 @@ Read 10 pages. Output ONLY a raw structured table of every parameter, button, me
 - **Context:** which section/feature this belongs to
 
 Do NOT classify, group, or interpret. Just record what is on the page.
+
+**MANDATORY CATEGORIES — enumerate EVERY item in each** (do not rely on the
+generic "every parameter/button/menu-item" above to catch these — past extractions
+have silently skipped entire categories despite that general mandate):
+
+- **Every physical control** — button, knob, slider, lever, dial, encoder, LED
+  indicator, pad, port, slot, screen, jog wheel. Cross-reference against
+  `panel-constants.ts` (Step 3 already does this; ensure no control is omitted).
+- **Every UTILITY / preferences / config setting** — each named setting + its
+  value range. UTILITY pages tend to look like dense tables; do NOT collapse
+  multiple settings into a single "UTILITY menu" entry. One row per setting.
+- **Every SHORTCUT / hotkey** — multi-button combos, mode-modifier sequences
+  (e.g., SHIFT+button does X). One row per shortcut.
+- **Every display indicator** — status LEDs, screen widgets, badges, on-screen
+  status icons, BPM/key/sync visualizations. Each gets its own row.
+- **Every navigation pattern** — how to enter/exit menus, scroll/page, select,
+  confirm, cancel, jump-to-section. Rotary-encoder behaviors and BACK-button
+  paths must each be enumerated.
+- **Every combination/workflow** — multi-action sequences a user performs
+  (e.g., "to load a track from USB: insert USB → press SOURCE → ..."). Mode-
+  dependent behaviors get one row per mode.
+- **Front / rear / side panel layout overviews** — the "tour" pages near the
+  start of most manuals. Each control labeled in those overview diagrams is a
+  row, even if covered in detail later.
+
+If a category genuinely has zero items for this device (rare), write
+`<CATEGORY>: N/A — no <X> in this device` in your scratchpad so the auditor
+can see the explicit decision. **Silently skipping a category is the bug
+that produced CDJ-3000's 55% coverage (UTILITY -93%, SHORTCUT -100%).**
 
 #### Step 2 — Verify (Ground Truth Check)
 Immediately re-read those same 10 pages with a single focus: find omissions or errors in the table you just created. Check:

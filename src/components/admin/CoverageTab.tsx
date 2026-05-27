@@ -27,6 +27,14 @@ interface CachedResult {
   matchTablePath: string;
   lastAuditMs: number | null;
   costUsd?: number;
+  /** Phase 3a verdict — surfaces "why" reason block + retry counter */
+  verdict?: {
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    reason: string;
+    selfHealTriggered?: boolean;
+    retryCount?: number;
+    maxRetries?: number;
+  };
 }
 
 export default function CoverageTab({ deviceId }: CoverageTabProps) {
@@ -34,6 +42,92 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
   const [loadingCache, setLoadingCache] = useState(true);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetting, setResetting] = useState(false);
+  // Cross-surface running state: if Re-check was launched from /admin/<id>
+  // (overview), we must reflect that here too. Server-side audit-tracker is
+  // the source of truth; poll every 3s.
+  const [remoteRunning, setRemoteRunning] = useState(false);
+
+  // Poll preview to detect re-checks launched from other surfaces. Refreshes
+  // cached data when remoteRunning transitions true → false (re-check finished
+  // elsewhere, results are now on disk).
+  useEffect(() => {
+    let cancelled = false;
+    let prevRemote = false;
+    const tick = async () => {
+      try {
+        const res = await fetch(`/api/pipeline/${deviceId}/recheck-coverage`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        const nowRunning = data?.isRecheckRunning === true;
+        setRemoteRunning(nowRunning);
+        // Just finished elsewhere → pull fresh cached results
+        if (prevRemote && !nowRunning) {
+          const refresh = await fetch(`/api/pipeline/${deviceId}/recheck-coverage?action=cached`);
+          if (!cancelled && refresh.ok) {
+            const fresh = await refresh.json();
+            if (fresh?.summary) {
+              setCached({
+                summary: fresh.summary,
+                missing: fresh.missing,
+                parentOnlyGaps: fresh.parentOnlyGaps,
+                matchTablePath: fresh.matchTablePath,
+                costUsd: fresh.costUsd,
+                lastAuditMs: fresh.lastAuditMs ?? Date.now(),
+                verdict: fresh.verdict,
+              });
+            }
+          }
+        }
+        prevRemote = nowRunning;
+      } catch { /* ignore transient fetch errors */ }
+    };
+    tick();
+    const id = setInterval(tick, 3000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [deviceId]);
+
+  async function resetRetries() {
+    const confirmed = window.confirm(
+      `Reset the coverage self-heal retry counter?\n\n` +
+      `This clears strikeTracker['phase-4-audit'] so the next Re-check Coverage ` +
+      `can trigger another self-heal cycle (~$45-100, 30-45 min). Use this only ` +
+      `after you've reviewed the previous failure + understand why retries were ` +
+      `exhausted.`
+    );
+    if (!confirmed) return;
+    setResetting(true);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/recover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset-coverage-retries' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? 'Reset failed'); return; }
+      // Refresh cached state so the verdict block updates (retryCount = 0)
+      const refresh = await fetch(`/api/pipeline/${deviceId}/recheck-coverage?action=cached`);
+      if (refresh.ok) {
+        const fresh = await refresh.json();
+        if (fresh?.summary) {
+          setCached({
+            summary: fresh.summary,
+            missing: fresh.missing,
+            parentOnlyGaps: fresh.parentOnlyGaps,
+            matchTablePath: fresh.matchTablePath,
+            costUsd: fresh.costUsd,
+            lastAuditMs: fresh.lastAuditMs ?? Date.now(),
+            verdict: fresh.verdict,
+          });
+        }
+      }
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setResetting(false);
+    }
+  }
 
   // On mount: ask the recheck-coverage endpoint about cache state via GET
   useEffect(() => {
@@ -76,6 +170,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
           matchTablePath: data.matchTablePath,
           costUsd: data.costUsd,
           lastAuditMs: Date.now(),
+          verdict: data.verdict,
         });
       }
     } catch (err) {
@@ -97,17 +192,18 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
         <button
           type="button"
           onClick={runRecheck}
-          disabled={running}
+          disabled={running || remoteRunning}
           data-testid="coverage-tab-recheck-button"
+          title={remoteRunning ? 'A re-check is already running (started from another surface)' : undefined}
           className="text-[10px] px-2 py-1 rounded transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
           style={{
-            backgroundColor: running ? 'transparent' : 'rgba(6, 182, 212, 0.1)',
-            color: running ? '#60a5fa' : '#06b6d4',
+            backgroundColor: (running || remoteRunning) ? 'transparent' : 'rgba(6, 182, 212, 0.1)',
+            color: (running || remoteRunning) ? '#60a5fa' : '#06b6d4',
             border: '1px solid',
-            borderColor: running ? 'rgba(96, 165, 250, 0.4)' : 'rgba(6, 182, 212, 0.4)',
+            borderColor: (running || remoteRunning) ? 'rgba(96, 165, 250, 0.4)' : 'rgba(6, 182, 212, 0.4)',
           }}
         >
-          {running ? '⏳ Re-checking…' : '↻ Re-check now'}
+          {running || remoteRunning ? '⏳ Re-checking…' : '↻ Re-check now'}
         </button>
       </div>
 
@@ -120,7 +216,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
         </div>
       )}
 
-      {running && (
+      {(running || remoteRunning) && (
         <div
           className="text-[11px] px-3 py-3 rounded bg-cyan-500/8 border border-cyan-500/30 space-y-1.5"
           data-testid="coverage-tab-running"
@@ -129,7 +225,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
         >
           <div className="flex items-center gap-2 text-cyan-300 font-semibold">
             <span className="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span>Coverage agent running…</span>
+            <span>Coverage agent running{remoteRunning && !running ? ' (started from another page)' : '…'}</span>
           </div>
           <p className="text-white/60 text-[10px] leading-snug">
             The coverage-auditor agent is re-reading the manual + comparing against current tutorials. Typical runtime: 2–4 minutes, cost ~$3–5.
@@ -171,15 +267,50 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
       )}
 
       {cached && (
-        <CoverageReport
-          summary={cached.summary}
-          missing={cached.missing}
-          parentOnlyGaps={cached.parentOnlyGaps}
-          costUsd={cached.costUsd}
-          matchTablePath={cached.matchTablePath}
-          lastAuditMs={cached.lastAuditMs}
-          compact
-        />
+        <>
+          <CoverageReport
+            summary={cached.summary}
+            missing={cached.missing}
+            parentOnlyGaps={cached.parentOnlyGaps}
+            costUsd={cached.costUsd}
+            matchTablePath={cached.matchTablePath}
+            lastAuditMs={cached.lastAuditMs}
+            verdict={cached.verdict}
+            compact
+          />
+
+          {/* Reset retries button — only when self-heal cap has been hit.
+              Mirrors the same button in RecheckCoverageButton inline message
+              so admin can override the cap from canvas review without
+              navigating back to /admin/<id>. */}
+          {cached.verdict
+            && cached.verdict.retryCount != null
+            && cached.verdict.maxRetries != null
+            && cached.verdict.retryCount >= cached.verdict.maxRetries && (
+            <div
+              className="rounded p-2 border border-red-700/40 bg-red-900/15 space-y-1.5"
+              data-testid="coverage-tab-cap-hit"
+            >
+              <div className="text-[11px] text-red-200">
+                <strong>Self-heal cap reached.</strong> Reset to try again.
+              </div>
+              <button
+                type="button"
+                onClick={resetRetries}
+                disabled={resetting || running}
+                data-testid="coverage-tab-reset-button"
+                className="w-full text-[11px] px-2 py-1 rounded transition-colors cursor-pointer disabled:opacity-40"
+                style={{
+                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                  color: '#fca5a5',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                }}
+              >
+                {resetting ? 'Resetting…' : '↻ Reset retry counter — try again'}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

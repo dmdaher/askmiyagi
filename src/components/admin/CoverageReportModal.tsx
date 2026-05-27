@@ -12,10 +12,18 @@ interface CoverageReportModalProps {
   costUsd: number;
   matchTablePath: string;
   onClose: () => void;
+  /** Optional Phase 3a verdict — surfaces "why" reason block + retry counter. */
+  verdict?: {
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    reason: string;
+    selfHealTriggered?: boolean;
+    retryCount?: number;
+    maxRetries?: number;
+  };
 }
 
 export default function CoverageReportModal(props: CoverageReportModalProps) {
-  const { deviceName, summary, missing, parentOnlyGaps, costUsd, matchTablePath, onClose } = props;
+  const { deviceName, summary, missing, parentOnlyGaps, costUsd, matchTablePath, onClose, verdict } = props;
 
   return (
     <div
@@ -56,6 +64,7 @@ export default function CoverageReportModal(props: CoverageReportModalProps) {
             parentOnlyGaps={parentOnlyGaps}
             costUsd={costUsd}
             matchTablePath={matchTablePath}
+            verdict={verdict}
           />
         </div>
 

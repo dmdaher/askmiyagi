@@ -14,6 +14,7 @@ interface Preview {
   canRecheck: boolean;
   reason: string;
   hasIndependentChecklist: boolean;
+  isRecheckRunning: boolean;
 }
 
 interface RecheckResponse {
@@ -23,6 +24,16 @@ interface RecheckResponse {
   parentOnlyGaps: MatchRow[];
   matchTablePath: string;
   costUsd: number;
+  /** NEW Phase 3a — coverage scorer verdict + self-heal status */
+  verdict?: {
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    reason: string;
+    shouldAutoRetry: boolean;
+    coveragePct: number;
+    selfHealTriggered: boolean;
+    retryCount: number;
+    maxRetries: number;
+  };
 }
 
 export default function RecheckCoverageButton({ deviceId, deviceName, pipelineStatus }: RecheckCoverageButtonProps) {
@@ -30,17 +41,52 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<RecheckResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [resetting, setResetting] = useState(false);
+
+  async function resetRetries() {
+    const confirmed = window.confirm(
+      `Reset the coverage self-heal retry counter for ${deviceName}?\n\n` +
+      `This clears strikeTracker['phase-4-audit'] so the next Re-check Coverage ` +
+      `can trigger another self-heal cycle (~$45-100, 30-45 min). Use this only ` +
+      `after you've reviewed the previous failure + understand why retries were ` +
+      `exhausted.`
+    );
+    if (!confirmed) return;
+    setResetting(true);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/recover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset-coverage-retries' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? 'Reset failed'); return; }
+      // Clear the local verdict so the next recheck shows fresh state
+      setResult(null);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setResetting(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/pipeline/${deviceId}/recheck-coverage`)
-      .then((r) => r.json())
-      .then((data: Preview) => { if (!cancelled) setPreview(data); })
-      .catch(() => { if (!cancelled) setPreview({ canRecheck: false, reason: 'Failed to load preview', hasIndependentChecklist: false }); });
-    return () => { cancelled = true; };
+    const fetchPreview = () => {
+      fetch(`/api/pipeline/${deviceId}/recheck-coverage`)
+        .then((r) => r.json())
+        .then((data: Preview) => { if (!cancelled) setPreview(data); })
+        .catch(() => { if (!cancelled) setPreview({ canRecheck: false, reason: 'Failed to load preview', hasIndependentChecklist: false, isRecheckRunning: false }); });
+    };
+    fetchPreview();
+    // Poll every 3s while mounted so the button reflects cross-surface
+    // re-check state (admin may have clicked Re-check from canvas review).
+    const id = setInterval(fetchPreview, 3000);
+    return () => { cancelled = true; clearInterval(id); };
   }, [deviceId, pipelineStatus]); // re-fetch when pipeline status changes
 
-  const canClick = preview?.canRecheck === true && !running && pipelineStatus !== 'running';
+  const remoteRunning = preview?.isRecheckRunning === true;
+  const canClick = preview?.canRecheck === true && !running && !remoteRunning && pipelineStatus !== 'running';
 
   async function runRecheck() {
     setRunning(true);
@@ -65,7 +111,9 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
   }
 
   const tooltip = preview?.reason ?? 'Loading…';
-  const buttonLabel = running ? 'Checking…' : 'Re-check Coverage';
+  const buttonLabel = (running || remoteRunning)
+    ? (remoteRunning && !running ? 'Re-checking (started elsewhere)…' : 'Checking…')
+    : 'Re-check Coverage';
 
   return (
     <>
@@ -95,6 +143,54 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
         </div>
       )}
 
+      {/* Phase 3a — surface coverage verdict + self-heal status inline so the
+          admin sees the outcome at a glance before opening the full report. */}
+      {result?.verdict && (
+        <div
+          className={`text-[10px] mt-1 px-2 rounded ${
+            result.verdict.selfHealTriggered
+              ? 'text-amber-300 bg-amber-900/20'
+              : result.verdict.name === 'APPROVED' || result.verdict.name === 'APPROVED_WITH_WARNINGS'
+                ? 'text-emerald-300 bg-emerald-900/20'
+                : 'text-red-300 bg-red-900/20'
+          }`}
+          data-testid="recheck-coverage-verdict"
+        >
+          {result.verdict.selfHealTriggered ? (
+            <>
+              <strong>Auto-recovery running</strong> (retry {result.verdict.retryCount}/{result.verdict.maxRetries})
+              {' — '}
+              coverage {result.verdict.coveragePct.toFixed(1)}% &lt; 90%. Runner spawned in background;
+              re-extraction + tutorial regeneration in progress (~30-45 min).
+              Watch the logs panel for progress.
+            </>
+          ) : result.verdict.name === 'APPROVED' || result.verdict.name === 'APPROVED_WITH_WARNINGS' ? (
+            <>✓ Coverage {result.verdict.coveragePct.toFixed(1)}% — {result.verdict.name === 'APPROVED' ? 'clean' : 'with warnings'}, no action needed.</>
+          ) : result.verdict.retryCount >= result.verdict.maxRetries ? (
+            <div className="space-y-1.5">
+              <div><strong>Self-heal cap reached.</strong> Coverage {result.verdict.coveragePct.toFixed(1)}% after {result.verdict.maxRetries} retries.</div>
+              <div className="text-[10px] text-red-200/80 italic">Reason: {result.verdict.reason}</div>
+              <button
+                type="button"
+                onClick={resetRetries}
+                disabled={resetting}
+                data-testid="reset-coverage-retries-button"
+                className="text-[10px] px-2 py-1 mt-1 rounded transition-colors cursor-pointer disabled:opacity-40"
+                style={{
+                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                  color: '#fca5a5',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                }}
+              >
+                {resetting ? 'Resetting…' : '↻ Reset retry counter — try again'}
+              </button>
+            </div>
+          ) : (
+            <>{result.verdict.name}: {result.verdict.reason}</>
+          )}
+        </div>
+      )}
+
       {result && (
         <CoverageReportModal
           deviceId={deviceId}
@@ -104,6 +200,7 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
           parentOnlyGaps={result.parentOnlyGaps}
           costUsd={result.costUsd}
           matchTablePath={result.matchTablePath}
+          verdict={result.verdict}
           onClose={() => setResult(null)}
         />
       )}

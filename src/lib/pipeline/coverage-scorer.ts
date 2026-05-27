@@ -79,6 +79,22 @@ export interface ScoredVerdict {
   matchTableWarning?: string;
 }
 
+// ── Grandfather list ────────────────────────────────────────────────────────
+//
+// Devices in this list are NEVER subjected to coverage-gate auto-retry.
+// Their checkpoint stays informative (verdict + score still computed) but the
+// pipeline always advances with APPROVED_WITH_WARNINGS regardless of coverage.
+//
+// Why grandfather: these devices were built BEFORE the gate existed and have
+// hand-curated tutorials that already meet quality bars (Fantom-08 has 60
+// tutorials covering 100% of the manual per memory). Re-running the gate
+// against them now would trigger unnecessary auto-retries.
+//
+// Only `fantom-08` qualifies. All other devices (cdj-3000, deepmind-12, +
+// any future device) are subject to the full gate including auto-retry.
+
+const GRANDFATHERED_DEVICES = new Set(['fantom-08']);
+
 // ── Verdict thresholds — codified, not LLM-invented ─────────────────────────
 
 const THRESHOLDS = {
@@ -281,7 +297,18 @@ export function scoreCoverage(
      *  frontmatter `coverage_pct` (with a warning if they disagree).
      *  Pass null/empty string to skip — old-format checkpoints still work. */
     matchTableMarkdown?: string | null;
+    /** Set of feature_ids that were CONFIRMED in the previous run. Used by
+     *  the strict convergence check: if any of these features is now MISSING
+     *  (or absent from the current match-table), the extractor swapped
+     *  features instead of adding to them — regression, halt the loop.
+     *  Empty/undefined disables this check (first run). */
+    previousConfirmedFeatures?: string[];
   } = {},
+  /** Optional device ID. When provided AND in GRANDFATHERED_DEVICES, force
+   *  shouldAutoRetry=false and downgrade verdict to APPROVED_WITH_WARNINGS
+   *  regardless of coverage. Used for legacy devices (fantom-08) whose
+   *  hand-curated tutorials predate the gate. */
+  deviceId?: string,
 ): ScoredVerdict {
   const fm = parseFrontmatter(auditorMarkdown);
   const scores = parseScoreBreakdown(auditorMarkdown);
@@ -294,12 +321,37 @@ export function scoreCoverage(
   const matchRows = options.matchTableMarkdown ? parseMatchTable(options.matchTableMarkdown) : [];
   const matchTable = matchRows.length > 0 ? summarizeMatchTable(matchRows) : undefined;
 
-  // Convergence: did this retry introduce NEW critical gaps vs the previous run?
+  // Convergence check 1: did this retry introduce NEW critical gaps vs the
+  // previous run? (Existing check, kept for backward compat.)
   const previousCriticalSet = new Set(options.previousCriticalGapFeatures ?? []);
   const newCritical = critical
     .map((g) => g.feature)
     .filter((f) => previousCriticalSet.size > 0 && !previousCriticalSet.has(f));
-  const regressed = newCritical.length > 0;
+
+  // Convergence check 2 (STRICT, new): did the extractor REMOVE previously
+  // CONFIRMED features in this retry? Catches the "shuffle without filling"
+  // failure mode — total feature count could stay the same while critical
+  // items get swapped out for fluff. Requires match-table; otherwise skip.
+  const previousConfirmedSet = new Set(options.previousConfirmedFeatures ?? []);
+  const currentConfirmedSet = new Set(
+    matchRows.filter((r) => r.matchKind === 'CONFIRMED').map((r) => r.featureId),
+  );
+  const lostFeatures = previousConfirmedSet.size > 0
+    ? [...previousConfirmedSet].filter((f) => !currentConfirmedSet.has(f))
+    : [];
+
+  // Convergence check 3 (STRICT, new): if previous run had critical gaps
+  // (which became the directives), did the current run actually FILL them?
+  // A gap is "filled" when its feature_id appears as CONFIRMED in the
+  // current match-table. Unfilled gaps after a retry = extractor ignored
+  // the directives = regression.
+  const stillMissingDirectives = matchRows.length > 0 && previousCriticalSet.size > 0
+    ? [...previousCriticalSet].filter((f) => !currentConfirmedSet.has(f))
+    : [];
+
+  const regressed = newCritical.length > 0
+    || lostFeatures.length > 0
+    || stillMissingDirectives.length > 0;
 
   // Coverage source priority (NEW post-fix):
   //   1. If match-table is present → use its recomputed coverage_pct as
@@ -336,13 +388,50 @@ export function scoreCoverage(
     matchTableWarning,
   });
 
-  // CRITICAL: catastrophic — fundamentally incomplete extraction
+  // GRANDFATHER short-circuit: legacy devices bypass the gate entirely.
+  // Verdict downgrades to APPROVED_WITH_WARNINGS so the pipeline advances
+  // without auto-retry, regardless of coverage. Score + gaps still logged
+  // for admin visibility.
+  if (deviceId && GRANDFATHERED_DEVICES.has(deviceId)) {
+    return buildResult({
+      verdict: 'APPROVED_WITH_WARNINGS',
+      reason: `${deviceId} is grandfathered (legacy hand-curated tutorials predate the coverage gate). Coverage ${effectiveCoverage.toFixed(1)}/10 logged but auto-retry skipped.`,
+      shouldAutoRetry: false,
+      regressed: false,
+    });
+  }
+
+  // REGRESSION halt (NEW) — strict convergence: if extractor lost previously
+  // CONFIRMED features OR didn't fill directives, halt before retry-cap logic.
+  // This MUST come before the auto-retry verdicts below so regressions never
+  // sneak through with shouldAutoRetry=true.
+  if (lostFeatures.length > 0) {
+    return buildResult({
+      verdict: 'REJECTED',
+      reason: `Retry REMOVED ${lostFeatures.length} previously CONFIRMED feature${lostFeatures.length === 1 ? '' : 's'} (${lostFeatures.slice(0, 3).join(', ')}${lostFeatures.length > 3 ? '…' : ''}). Extractor is swapping features instead of adding — halting the loop for admin review.`,
+      shouldAutoRetry: false,
+      regressed: true,
+    });
+  }
+  if (stillMissingDirectives.length > 0) {
+    return buildResult({
+      verdict: 'REJECTED',
+      reason: `Retry did not fill ${stillMissingDirectives.length} directive${stillMissingDirectives.length === 1 ? '' : 's'} from previous run (${stillMissingDirectives.slice(0, 3).join(', ')}${stillMissingDirectives.length > 3 ? '…' : ''}). Extractor ignored or failed to address the gaps — halting for admin review.`,
+      shouldAutoRetry: false,
+      regressed: true,
+    });
+  }
+
+  // CRITICAL: catastrophic coverage. Per user decision (2026-05-26): allow
+  // auto-retry on inventory-coverage CRITICAL so devices like CDJ-3000 at
+  // 55% can self-heal. The MAX_AUDIT_RETRIES cap in the runner still bounds
+  // the loop. Regression check above prevents runaway loops.
   if (effectiveCoverage < THRESHOLDS.CRITICAL_INVENTORY) {
     return buildResult({
       verdict: 'CRITICAL',
-      reason: `Inventory coverage ${effectiveCoverage.toFixed(1)}/10 below CRITICAL threshold ${THRESHOLDS.CRITICAL_INVENTORY}. Extraction is fundamentally incomplete; re-extract from scratch with broader scope.`,
-      shouldAutoRetry: false, // CRITICAL escalates to admin, doesn't auto-retry
-      regressed,
+      reason: `Inventory coverage ${effectiveCoverage.toFixed(1)}/10 below CRITICAL threshold ${THRESHOLDS.CRITICAL_INVENTORY}. Auto-retry with directives covering missing features.`,
+      shouldAutoRetry: true, // CHANGED 2026-05-26: was false; allow self-heal at low coverage
+      regressed: false,
     });
   }
   if (critical.length > THRESHOLDS.CRITICAL_GAP_COUNT_CRITICAL) {

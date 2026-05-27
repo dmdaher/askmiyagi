@@ -2387,10 +2387,16 @@ Include a summary of your findings in the checkpoint body.`,
   const matchTableMarkdown = fs.existsSync(matchTablePath)
     ? fs.readFileSync(matchTablePath, 'utf-8')
     : null;
+  // Pull previously CONFIRMED feature set (NEW, for strict convergence check)
+  const prevConfirmedRaw = state.strikeTracker['phase-4-audit-prev-confirmed-features'];
+  const previousConfirmedFeatures = typeof prevConfirmedRaw === 'string'
+    ? prevConfirmedRaw.split('|').filter(Boolean)
+    : [];
   const verdict = coverageScorer.scoreCoverage(auditorMarkdown, {
     previousCriticalGapFeatures: previousGaps,
     matchTableMarkdown,
-  });
+    previousConfirmedFeatures,
+  }, deviceId);
   appendLog(deviceId, {
     level: 'info',
     message: `Coverage scorer verdict: ${verdict.verdict}. ${verdict.reason}`,
@@ -2411,6 +2417,23 @@ Include a summary of your findings in the checkpoint body.`,
   state.strikeTracker['phase-4-audit-prev-critical-gaps'] = verdict.criticalGaps
     .map(g => g.feature)
     .join('|') as unknown as number;
+  // Persist current CONFIRMED feature set so the next retry can detect
+  // "shuffle without filling" — extractor removed previously-confirmed
+  // features while adding new ones. Only useful when match-table present.
+  if (verdict.matchTable) {
+    const confirmedFeatures = (verdict.matchTable as unknown as {
+      confirmedFeatures?: string[];
+    }).confirmedFeatures;
+    // Fallback: re-parse from disk if matchTable summary doesn't expose the
+    // list directly (summarizeMatchTable returns counts but not the id set).
+    let confirmedIds: string[] = confirmedFeatures ?? [];
+    if (confirmedIds.length === 0 && matchTableMarkdown) {
+      const parsed = coverageScorer.parseMatchTable(matchTableMarkdown);
+      confirmedIds = parsed.filter(r => r.matchKind === 'CONFIRMED').map(r => r.featureId);
+    }
+    state.strikeTracker['phase-4-audit-prev-confirmed-features'] = confirmedIds
+      .join('|') as unknown as number;
+  }
 
   if (verdict.verdict === 'APPROVED' || verdict.verdict === 'APPROVED_WITH_WARNINGS') {
     if (verdict.verdict === 'APPROVED_WITH_WARNINGS') {

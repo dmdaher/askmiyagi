@@ -21,16 +21,20 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { readState } from '@/lib/pipeline/state-machine';
+import { readState, writeState, appendLog, ensurePipelineDir } from '@/lib/pipeline/state-machine';
 import { invokeAgent } from '@/lib/pipeline/runner';
-import { trackAudit, untrackAudit, killAudit } from '@/lib/pipeline/audit-tracker';
+import { trackAudit, untrackAudit, killAudit, getAuditPid } from '@/lib/pipeline/audit-tracker';
 import {
   parseMatchTable,
   summarizeMatchTable,
+  scoreCoverage,
+  buildDirectivesFromVerdict,
   type MatchRow,
   type MatchTableSummary,
+  type ScoredVerdict,
 } from '@/lib/pipeline/coverage-scorer';
 
 // Use the same on-demand audit-tracker key shape as audit-controls
@@ -42,23 +46,42 @@ interface PreviewResponse {
   canRecheck: boolean;
   reason: string;
   hasIndependentChecklist: boolean; // tells UI whether re-run will be fast (resume) or slow (full)
+  /** True when a recheck is currently in-flight (auditor agent spawned via
+   *  this route is registered in audit-tracker). UI uses this to disable
+   *  the Re-check button + show a "running elsewhere" indicator on every
+   *  surface that displays the button, not just the one that launched it. */
+  isRecheckRunning: boolean;
 }
 
 function computePreview(deviceId: string): PreviewResponse {
+  // Check audit-tracker FIRST so we surface "running elsewhere" even when
+  // the pipeline state itself is paused/completed (the recheck agent runs
+  // outside the pipeline runner).
+  const runningPid = getAuditPid(deviceId, TRACKER_ISSUE_ID);
+  const isRecheckRunning = runningPid !== undefined;
+
   const state = readState(deviceId);
   if (!state) {
-    return { canRecheck: false, reason: `No pipeline found for ${deviceId}.`, hasIndependentChecklist: false };
+    return { canRecheck: false, reason: `No pipeline found for ${deviceId}.`, hasIndependentChecklist: false, isRecheckRunning };
+  }
+  if (isRecheckRunning) {
+    return {
+      canRecheck: false,
+      reason: `Re-check already running (PID ${runningPid}). Wait for it to complete or cancel from the surface that launched it.`,
+      hasIndependentChecklist: false,
+      isRecheckRunning: true,
+    };
   }
   if (state.status === 'running') {
-    return { canRecheck: false, reason: 'Pipeline is currently running — pause or wait for completion.', hasIndependentChecklist: false };
+    return { canRecheck: false, reason: 'Pipeline is currently running — pause or wait for completion.', hasIndependentChecklist: false, isRecheckRunning };
   }
   const manualPaths = state.manualPaths ?? [];
   if (manualPaths.length === 0) {
-    return { canRecheck: false, reason: 'No manual PDFs registered for this device.', hasIndependentChecklist: false };
+    return { canRecheck: false, reason: 'No manual PDFs registered for this device.', hasIndependentChecklist: false, isRecheckRunning };
   }
   const resolvedManuals = manualPaths.map((p) => path.resolve(p)).filter((p) => fs.existsSync(p));
   if (resolvedManuals.length === 0) {
-    return { canRecheck: false, reason: 'Manual PDFs not found on disk.', hasIndependentChecklist: false };
+    return { canRecheck: false, reason: 'Manual PDFs not found on disk.', hasIndependentChecklist: false, isRecheckRunning };
   }
   const checklistPath = path.join(process.cwd(), '.pipeline', deviceId, 'agents', 'coverage-auditor', 'independent-checklist.md');
   const hasIndependentChecklist = fs.existsSync(checklistPath);
@@ -68,6 +91,7 @@ function computePreview(deviceId: string): PreviewResponse {
       ? 'Ready to re-check coverage (fast: reuses independent checklist).'
       : 'Ready to re-check coverage (full 3-phase audit: independent read + compare + verdict).',
     hasIndependentChecklist,
+    isRecheckRunning: false,
   };
 }
 
@@ -92,6 +116,22 @@ export async function GET(
       const missing = rows.filter((r) => r.matchKind === 'MISSING');
       const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY');
       const stat = fs.statSync(matchTablePath);
+
+      // Phase 3a — compute verdict for the cached data too so the CoverageTab
+      // sidebar shows verdict block on initial load (not just after re-running).
+      // Read-only: never triggers self-heal even if shouldAutoRetry=true.
+      const checkpointPath = path.join(process.cwd(), '.pipeline', deviceId, 'agents', 'coverage-auditor', 'checkpoint.md');
+      const auditorMarkdown = fs.existsSync(checkpointPath) ? fs.readFileSync(checkpointPath, 'utf-8') : '';
+      const cachedState = readState(deviceId);
+      const prevGapsRaw = cachedState?.strikeTracker?.['phase-4-audit-prev-critical-gaps'] as unknown as string | undefined;
+      const prevConfirmedRaw = cachedState?.strikeTracker?.['phase-4-audit-prev-confirmed-features'] as unknown as string | undefined;
+      const verdict = scoreCoverage(auditorMarkdown, {
+        matchTableMarkdown: markdown,
+        previousCriticalGapFeatures: typeof prevGapsRaw === 'string' ? prevGapsRaw.split('|').filter(Boolean) : [],
+        previousConfirmedFeatures: typeof prevConfirmedRaw === 'string' ? prevConfirmedRaw.split('|').filter(Boolean) : [],
+      }, deviceId);
+      const cachedRetryCount = (cachedState?.strikeTracker?.['phase-4-audit'] as number | undefined) ?? 0;
+
       return NextResponse.json({
         cached: true,
         summary,
@@ -99,6 +139,15 @@ export async function GET(
         parentOnlyGaps,
         matchTablePath: path.relative(process.cwd(), matchTablePath),
         lastAuditMs: stat.mtimeMs,
+        verdict: {
+          name: verdict.verdict,
+          reason: verdict.reason,
+          shouldAutoRetry: verdict.shouldAutoRetry,
+          coveragePct: verdict.matchTable?.coveragePct ?? 0,
+          selfHealTriggered: false, // GET never triggers self-heal
+          retryCount: cachedRetryCount,
+          maxRetries: 2,
+        },
       });
     } catch (err) {
       return NextResponse.json(
@@ -119,6 +168,17 @@ interface RecheckResponse {
   parentOnlyGaps: MatchRow[];
   matchTablePath: string;
   costUsd: number;
+  /** Coverage scorer verdict (NEW Phase 3a). Tells the UI whether the
+   *  re-check triggered self-heal and what to display to the admin. */
+  verdict?: {
+    name: ScoredVerdict['verdict'];
+    reason: string;
+    shouldAutoRetry: boolean;
+    coveragePct: number;
+    selfHealTriggered: boolean;
+    retryCount: number;
+    maxRetries: number;
+  };
 }
 
 export async function POST(
@@ -216,6 +276,78 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
     const missing = rows.filter((r) => r.matchKind === 'MISSING');
     const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY');
 
+    // ─── Phase 3a — Coverage gate + self-heal trigger ───────────────────
+    // Compute deterministic verdict from the match-table. If non-grandfathered
+    // and shouldAutoRetry: write extractor-directives.md + advance pipeline
+    // state to phase-4-extraction so the next runner pass auto-heals. The
+    // existing doPhase4Audit retry cap + convergence checks still apply.
+    const checkpointPath = path.join(process.cwd(), '.pipeline', deviceId, 'agents', 'coverage-auditor', 'checkpoint.md');
+    const auditorMarkdown = fs.existsSync(checkpointPath) ? fs.readFileSync(checkpointPath, 'utf-8') : '';
+
+    const currentState = readState(deviceId);
+    // strikeTracker is typed as Record<string, number> but the pipeline-runner
+    // stores stringly-typed values via `as unknown as number` for the previous-
+    // gaps + previous-confirmed slots. Read with the same cast back to string.
+    const prevGapsRaw = currentState?.strikeTracker?.['phase-4-audit-prev-critical-gaps'] as unknown as string | undefined;
+    const previousCriticalGapFeatures = typeof prevGapsRaw === 'string'
+      ? prevGapsRaw.split('|').filter(Boolean)
+      : [];
+    const prevConfirmedRaw = currentState?.strikeTracker?.['phase-4-audit-prev-confirmed-features'] as unknown as string | undefined;
+    const previousConfirmedFeatures = typeof prevConfirmedRaw === 'string'
+      ? prevConfirmedRaw.split('|').filter(Boolean)
+      : [];
+    const verdict = scoreCoverage(auditorMarkdown, {
+      matchTableMarkdown: markdown,
+      previousCriticalGapFeatures,
+      previousConfirmedFeatures,
+    }, deviceId);
+
+    const MAX_AUDIT_RETRIES = 2;
+    const auditKey = 'phase-4-audit';
+    const retryCount = (currentState?.strikeTracker?.[auditKey] as number | undefined) ?? 0;
+    let selfHealTriggered = false;
+    let runnerPid: number | null = null;
+
+    if (currentState && verdict.shouldAutoRetry && retryCount < MAX_AUDIT_RETRIES) {
+      try {
+        const directivesPath = path.join(process.cwd(), '.pipeline', deviceId, 'extractor-directives.md');
+        fs.writeFileSync(directivesPath, buildDirectivesFromVerdict(verdict));
+        appendLog(deviceId, {
+          level: 'info',
+          message: `[recheck-coverage] ${verdict.verdict}: triggering self-heal retry ${retryCount + 1}/${MAX_AUDIT_RETRIES}. ${verdict.criticalGaps.length} critical + ${verdict.moderateGaps.length} moderate gaps listed in directives.`,
+        });
+        currentState.strikeTracker[auditKey] = retryCount + 1;
+        currentState.strikeTracker['phase-4-audit-prev-critical-gaps'] = verdict.criticalGaps
+          .map(g => g.feature)
+          .join('|') as unknown as number;
+        const confirmedIds = rows.filter(r => r.matchKind === 'CONFIRMED').map(r => r.featureId);
+        currentState.strikeTracker['phase-4-audit-prev-confirmed-features'] = confirmedIds
+          .join('|') as unknown as number;
+        // Set phase back so the runner picks up at extraction.
+        currentState.currentPhase = 'phase-4-extraction';
+        // Spawn the pipeline runner immediately — 1-click UX. Admin doesn't
+        // have to navigate to a separate "Resume Pipeline" button. Pattern
+        // matches src/app/api/pipeline/[deviceId]/start/route.ts.
+        ensurePipelineDir(deviceId);
+        const proc = spawn('npx', ['tsx', 'scripts/pipeline-runner.ts', deviceId], {
+          detached: true,
+          stdio: 'ignore',
+        });
+        proc.unref();
+        runnerPid = proc.pid ?? null;
+        currentState.status = 'running';
+        currentState.runnerPid = runnerPid;
+        writeState(deviceId, currentState);
+        appendLog(deviceId, {
+          level: 'info',
+          message: `[recheck-coverage] runner spawned (PID ${runnerPid}) to apply directives + rebuild missing tutorials. PR #171 skip-existing protects the ${confirmedIds.length} already-built tutorials.`,
+        });
+        selfHealTriggered = true;
+      } catch (err) {
+        appendLog(deviceId, { level: 'warn', message: `[recheck-coverage] self-heal failed: ${(err as Error).message}` });
+      }
+    }
+
     const response: RecheckResponse = {
       ok: true,
       summary,
@@ -223,6 +355,15 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
       parentOnlyGaps,
       matchTablePath: path.relative(process.cwd(), matchTablePath),
       costUsd: result.costEntry?.costUsd ?? 0,
+      verdict: {
+        name: verdict.verdict,
+        reason: verdict.reason,
+        shouldAutoRetry: verdict.shouldAutoRetry,
+        coveragePct: verdict.matchTable?.coveragePct ?? 0,
+        selfHealTriggered,
+        retryCount: selfHealTriggered ? retryCount + 1 : retryCount,
+        maxRetries: MAX_AUDIT_RETRIES,
+      },
     };
     return NextResponse.json(response);
   } catch (err) {

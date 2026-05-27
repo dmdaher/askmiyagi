@@ -145,6 +145,32 @@ export async function POST(
       return NextResponse.json({ status: 'paused', action: 'reset-to-editor', message: 'Reset to editor. You can now send to contractor.' });
     }
 
+    case 'reset-coverage-retries': {
+      // Clear the coverage-gate retry counter so the admin can try self-heal
+      // again after they've reviewed the failure. Used when MAX_AUDIT_RETRIES
+      // hit (typically 2) and admin has fixed something the extractor needed
+      // (e.g., manual pages added, SOUL tightened) or just wants another pass.
+      // Does NOT touch state.status, currentPhase, or escalation — the admin
+      // separately clicks Re-check Coverage to actually trigger the next run.
+      delete state.strikeTracker['phase-4-audit'];
+      delete state.strikeTracker['phase-4-audit-prev-critical-gaps'];
+      delete state.strikeTracker['phase-4-audit-prev-confirmed-features'];
+      // Clear the coverage-related escalation if active so the banner goes away
+      if (state.activeEscalation) {
+        const esc = (state.escalations ?? []).find(e => e.id === state.activeEscalation);
+        if (esc && (esc.type === 'curriculum-review' || esc.message.toLowerCase().includes('coverage'))) {
+          state.activeEscalation = null;
+        }
+      }
+      appendLog(deviceId, { level: 'info', message: 'Coverage retry counter reset. Admin can click Re-check Coverage to trigger another self-heal cycle.' });
+      writeState(deviceId, state);
+      return NextResponse.json({
+        status: state.status,
+        action: 'reset-coverage-retries',
+        message: 'Retry counter reset. Click Re-check Coverage to try again.',
+      });
+    }
+
     default:
       return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
   }
