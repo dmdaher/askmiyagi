@@ -224,11 +224,20 @@ export default function EditorToolbar({
   return (
     <>
     <ScaleContentsModal open={showScaleModal} onClose={() => setShowScaleModal(false)} />
-    <div className="flex h-10 items-center gap-1 border-b border-gray-800 bg-[#0d0d1a] px-2">
 
-      {/* ── LEFT: Device + View ────────────────────────────────── */}
+    {/* ═══════════════════════════════════════════════════════════
+        TOOLBAR — 2 rows
+        Row 1 (command bar): device, mode, undo/redo, zoom | help, save, preview
+        Row 2 (tool palette): grid, labels, photo, etc. | history, more, scale, canvas
+        Wrapper z-30 keeps toolbar above canvas; dropdowns render at z-50+
+        so they overlay BOTH rows + the canvas reliably.
+        ═══════════════════════════════════════════════════════════ */}
+    <div className="relative z-30 border-b border-gray-800 bg-[#0d0d1a]">
 
-      {/* Device name */}
+    {/* ─── ROW 1 — command bar ─────────────────────────────────── */}
+    <div className="flex h-9 items-center gap-1 px-2 border-b border-gray-800/60">
+
+      {/* LEFT: Device name */}
       {deviceName && (
         <div className="flex items-center gap-1 border-r border-gray-700 pr-2 mr-0.5 flex-shrink-0">
           <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500">
@@ -279,9 +288,83 @@ export default function EditorToolbar({
         <button onClick={() => setZoom(zoom + ZOOM_STEP)} disabled={zoom >= 5} className={iconBtn} title="Zoom In">+</button>
       </div>
 
+      {/* Row 1 spacer — pushes save/preview cluster to the right */}
+      <div className="flex-1 min-w-2" />
+
+      {/* RIGHT: Help — always visible (contractors need this) */}
+      <button
+        onClick={onToggleHelp}
+        className={iconBtn}
+        title="Help (?)"
+        data-tutorial="help"
+      >?</button>
+
+      {/* Hosted save/submit cluster (contractor route only) */}
+      {!isSandbox && isContractorRoute && (
+        <div data-tutorial="submit" className="flex items-center gap-1.5 flex-shrink-0">
+          <span className={`text-[9px] whitespace-nowrap ${
+            saveStatus === 'conflict' ? 'text-red-400'
+            : !lastSavedAt ? 'text-red-400'
+            : (Date.now() - lastSavedAt.getTime()) < 60000 ? 'text-green-400/70'
+            : (Date.now() - lastSavedAt.getTime()) < 300000 ? 'text-gray-500'
+            : 'text-amber-400/70'
+          }`}>
+            {saveStatus === 'conflict' ? 'Conflict — reload page' : `Saved ${formatRelativeTime(lastSavedAt)}`}
+          </span>
+          {saveStatus === 'saving' && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded text-amber-400 bg-amber-900/30">Saving...</span>
+          )}
+          {saveStatus === 'error' && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded text-red-400 bg-red-900/30">Save failed</span>
+          )}
+          {saveStatus === 'conflict' && (
+            <button
+              onClick={() => window.location.reload()}
+              className="rounded border border-red-600 bg-red-900/30 px-2 py-0.5 text-[9px] text-red-300 hover:bg-red-900/50 transition-colors"
+            >
+              Reload
+            </button>
+          )}
+          {!previewMode && onSaveNow && saveStatus !== 'conflict' && (
+            <button
+              onClick={onSaveNow}
+              disabled={saveStatus === 'saving'}
+              className="rounded border border-gray-600 bg-gray-800 px-2.5 py-1 text-[10px] font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors disabled:opacity-50"
+              title="Save now (flushes to cloud)"
+            >
+              Save
+            </button>
+          )}
+          {!previewMode && (
+            <SubmitForReviewButton deviceId={deviceId} disabled={saveStatus === 'conflict'} />
+          )}
+        </div>
+      )}
+
+      {/* Practice Mode badge — sandbox replaces save/submit cluster */}
+      {isSandbox && (
+        <span className="flex h-7 items-center px-3 text-[10px] font-medium text-violet-400 border border-violet-500/30 bg-violet-600/15 rounded whitespace-nowrap flex-shrink-0">
+          Practice Mode
+        </span>
+      )}
+
       {divider}
 
-      {/* ── MIDDLE: Overlays ───────────────────────────────────── */}
+      {/* Preview toggle — most important mode switch */}
+      <button
+        onClick={onTogglePreview}
+        disabled={isContractorRoute && typeof window !== 'undefined' && !!(window as any).__submittedForReview}
+        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors disabled:opacity-30 flex-shrink-0 ${
+          previewMode
+            ? 'border border-amber-500 bg-amber-600/30 text-amber-300 hover:bg-amber-600/50'
+            : 'border border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700'
+        }`}
+        title="Preview — see panel as it appears in production"
+      >{previewMode ? 'Exit Preview' : 'Preview'}</button>
+    </div>
+
+    {/* ─── ROW 2 — tool palette ────────────────────────────────── */}
+    <div className="flex h-9 items-center gap-1 px-2">
 
       {/* Editing-only overlays — all hidden in preview mode */}
       {!previewMode && (
@@ -475,27 +558,23 @@ export default function EditorToolbar({
         </>
       )}
 
-      {/* ── SPACER ─────────────────────────────────────────────── */}
+      {/* Row 2 spacer — pushes history/more/scale/canvas cluster to the right */}
       <div className="flex-1 min-w-2" />
 
-      {/* ── RIGHT: Actions ─────────────────────────────────────── */}
+      {/* RIGHT cluster of row 2 — utilities & canvas geometry */}
 
-      {/* Help — always visible (contractors need this) */}
-      <button
-        onClick={onToggleHelp}
-        className={iconBtn}
-        title="Help (?)"
-        data-tutorial="help"
-      >?</button>
-
-      {/* History — local only, available in preview too (read-only browsing) */}
-      {!isContractorRoute && !isSandbox && (
+      {/* History — local only, available in preview too (read-only browsing).
+          Contractor history lives next to their Save/Submit cluster on row 1
+          since it pairs semantically with version restore on their workflow.
+          Wait — keeping it here for both routes for consistency. Contractor
+          route also renders this; the same dropdown reads hosted Blob backups
+          when isHosted=true under the hood. */}
+      {!isSandbox && (
         <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
       )}
 
       {/* More ▾ — overflow menu for less-frequent actions (Reset Sizes,
-          Report Issue). Keeps the toolbar single-line; items conditional
-          on environment + preview mode. */}
+          Report Issue). Items conditional on environment + preview mode. */}
       {(() => {
         const moreItems: MoreDropdownItem[] = [];
         if (!isSandbox && onReportIssue) {
@@ -519,25 +598,9 @@ export default function EditorToolbar({
 
       {divider}
 
-      {/* Preview */}
-      <button
-        onClick={onTogglePreview}
-        disabled={isContractorRoute && typeof window !== 'undefined' && !!(window as any).__submittedForReview}
-        className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors disabled:opacity-30 ${
-          previewMode
-            ? 'border border-amber-500 bg-amber-600/30 text-amber-300 hover:bg-amber-600/50'
-            : 'border border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700'
-        }`}
-        title="Preview — see panel as it appears in production"
-      >{previewMode ? 'Exit Preview' : 'Preview'}</button>
-
-      {divider}
-
       {/* Two distinct clusters — Scale stays visible in preview (useful to
           shrink/grow the whole panel while inspecting it); Canvas W/H inputs
-          stay too (resize the canvas without scaling contents).
-          1. "Scale" cluster — proportional scaling (-/+ shortcuts + ⤢ modal)
-          2. "Canvas" cluster — W/H inputs that resize without scaling contents */}
+          stay too (resize the canvas without scaling contents). */}
       <div className="flex items-center gap-1 flex-shrink-0">
         {/* Scale cluster — proportional */}
         <span className="text-[9px] text-gray-500">Scale:</span>
@@ -599,67 +662,9 @@ export default function EditorToolbar({
           />
         </div>
       </div>
+    </div>
 
-      {/* Hosted save/submit cluster + History — informational always visible;
-          Save and Submit buttons inside hide in preview mode. */}
-      <div className="flex items-center gap-1 flex-shrink-0">
-        {isSandbox ? (
-          <span className="flex h-7 items-center px-3 text-[10px] font-medium text-violet-400 border border-violet-500/30 bg-violet-600/15 rounded whitespace-nowrap">
-            Practice Mode
-          </span>
-        ) : isContractorRoute ? (
-          <div data-tutorial="submit" className="flex items-center gap-1.5">
-            {/* Persistent "Last saved" timestamp */}
-            <span className={`text-[9px] whitespace-nowrap ${
-              saveStatus === 'conflict' ? 'text-red-400'
-              : !lastSavedAt ? 'text-red-400'
-              : (Date.now() - lastSavedAt.getTime()) < 60000 ? 'text-green-400/70'
-              : (Date.now() - lastSavedAt.getTime()) < 300000 ? 'text-gray-500'
-              : 'text-amber-400/70'
-            }`}>
-              {saveStatus === 'conflict'
-                ? 'Conflict — reload page'
-                : `Saved ${formatRelativeTime(lastSavedAt)}`}
-            </span>
-            {/* Transient save status */}
-            {saveStatus === 'saving' && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded text-amber-400 bg-amber-900/30">Saving...</span>
-            )}
-            {saveStatus === 'error' && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded text-red-400 bg-red-900/30">Save failed</span>
-            )}
-            {saveStatus === 'conflict' && (
-              <button
-                onClick={() => window.location.reload()}
-                className="rounded border border-red-600 bg-red-900/30 px-2 py-0.5 text-[9px] text-red-300 hover:bg-red-900/50 transition-colors"
-              >
-                Reload
-              </button>
-            )}
-            {!previewMode && onSaveNow && saveStatus !== 'conflict' && (
-              <button
-                onClick={onSaveNow}
-                disabled={saveStatus === 'saving'}
-                className="rounded border border-gray-600 bg-gray-800 px-2.5 py-1 text-[10px] font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors disabled:opacity-50"
-                title="Save now (flushes to cloud)"
-              >
-                Save
-              </button>
-            )}
-            {!previewMode && (
-              <SubmitForReviewButton deviceId={deviceId} disabled={saveStatus === 'conflict'} />
-            )}
-            {/* History dropdown — same component as admin sees, now reads hosted Blob backups */}
-            <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
-          </div>
-        ) : (
-          // Local-mode "Export Panel" button removed — auto-export on save
-          // (since PR #146) keeps src/data/manifests/<deviceId>.json in
-          // sync automatically. The /api/pipeline/<id>/export-manifest
-          // route still exists as a manual diagnostic for admin if needed.
-          null
-        )}
-      </div>
+    {/* close toolbar wrapper */}
     </div>
     </>
   );
