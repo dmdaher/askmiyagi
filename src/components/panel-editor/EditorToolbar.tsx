@@ -8,7 +8,7 @@ import ScaleContentsModal from './ScaleContentsModal';
 import SelectDropdown from './SelectDropdown';
 import ScaleDropdown from './ScaleDropdown';
 import MoreDropdown, { type MoreDropdownItem } from './MoreDropdown';
-import { isHosted } from '@/lib/env';
+import { useIsContractorRoute } from '@/lib/contractor-route';
 import { buildSavePayload } from './hooks/useAutoSave';
 
 const SNAP_OPTIONS: SnapGrid[] = [1, 2, 4, 8, 16, 32];
@@ -154,6 +154,7 @@ export default function EditorToolbar({
   onToggleHelp,
   isSandbox,
 }: EditorToolbarProps) {
+  const isContractorRoute = useIsContractorRoute();
   const manufacturer = useEditorStore((s) => s.manufacturer);
   const deviceName = useEditorStore((s) => s.deviceName);
   const zoom = useEditorStore((s) => s.zoom);
@@ -488,7 +489,7 @@ export default function EditorToolbar({
       >?</button>
 
       {/* History — local only, available in preview too (read-only browsing) */}
-      {!isHosted && !isSandbox && (
+      {!isContractorRoute && !isSandbox && (
         <VersionHistoryDropdown deviceId={deviceId} onRestore={onRestoreVersion} />
       )}
 
@@ -505,7 +506,7 @@ export default function EditorToolbar({
             onClick: onReportIssue,
           });
         }
-        if (!isHosted && !isSandbox && !previewMode) {
+        if (!isContractorRoute && !isSandbox && !previewMode) {
           moreItems.push({
             label: 'Reset Sizes',
             icon: '↺',
@@ -521,7 +522,7 @@ export default function EditorToolbar({
       {/* Preview */}
       <button
         onClick={onTogglePreview}
-        disabled={isHosted && typeof window !== 'undefined' && !!(window as any).__submittedForReview}
+        disabled={isContractorRoute && typeof window !== 'undefined' && !!(window as any).__submittedForReview}
         className={`flex h-7 items-center rounded px-3 text-[10px] font-medium whitespace-nowrap transition-colors disabled:opacity-30 ${
           previewMode
             ? 'border border-amber-500 bg-amber-600/30 text-amber-300 hover:bg-amber-600/50'
@@ -606,7 +607,7 @@ export default function EditorToolbar({
           <span className="flex h-7 items-center px-3 text-[10px] font-medium text-violet-400 border border-violet-500/30 bg-violet-600/15 rounded whitespace-nowrap">
             Practice Mode
           </span>
-        ) : isHosted ? (
+        ) : isContractorRoute ? (
           <div data-tutorial="submit" className="flex items-center gap-1.5">
             {/* Persistent "Last saved" timestamp */}
             <span className={`text-[9px] whitespace-nowrap ${
