@@ -88,6 +88,20 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           />
         );
       }
+      if (control.ledVariant === 'triple-label') {
+        return (
+          <SharedLed
+            width={visW}
+            height={visH}
+            variant="triple-label"
+            label={control.label}
+            secondaryLabel={control.secondaryLabel}
+            tertiaryLabel={(control as { tertiaryLabel?: string }).tertiaryLabel}
+            ledColor={control.ledColor}
+            dataControlId={control.id}
+          />
+        );
+      }
       if (control.shape === 'circle') {
         // Editor is config-time: no `ledOn`/`active`/`onClick` — those are
         // tutorial-driven and only matter in the preview render path.
@@ -189,8 +203,9 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
       //     contractor's configured ledOn=true lights the dot, anything
       //     else (false/undefined) renders dim. Matches pre-PR-3 editor's
       //     `ledIsOn = control.ledOn === true` check.
-      const variant: 'dot' | 'dual-label' | 'bar' =
+      const variant: 'dot' | 'dual-label' | 'triple-label' | 'bar' =
         control.ledVariant === 'dual-label' ? 'dual-label'
+        : control.ledVariant === 'triple-label' ? 'triple-label'
         : control.ledVariant === 'bar' ? 'bar'
         : 'dot';
       // EP3b: Test LEDs toolbar toggle forces ledOn=true on every hasLed control
@@ -202,6 +217,7 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           variant={variant}
           label={control.label}
           secondaryLabel={control.secondaryLabel}
+          tertiaryLabel={(control as { tertiaryLabel?: string }).tertiaryLabel}
           ledColor={control.ledColor}
           ledOn={variant === 'dot' ? ledOnForDot : undefined}
           dataControlId={control.id}

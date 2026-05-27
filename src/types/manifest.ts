@@ -33,7 +33,7 @@ export type ButtonStyle = 'raised' | 'flat-key' | 'rubber' | 'transport';
 export type LabelDisplay = 'on-button' | 'above' | 'below' | 'left' | 'right' | 'icon-only' | 'hidden';
 export type LEDBehavior = 'steady' | 'blink-on-activity' | 'dynamic-color';
 export type LEDPosition = 'above' | 'below' | 'inside' | 'ring';
-export type LEDVariant = 'dot' | 'dual-label' | 'bar';
+export type LEDVariant = 'dot' | 'dual-label' | 'triple-label' | 'bar';
 /**
  * LED rendering styles. Renderer treats `integrated` and `face` as the same
  * (face is the preferred name; integrated kept for backwards-compat with

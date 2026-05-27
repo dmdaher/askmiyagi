@@ -493,6 +493,23 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                 </div>
                 Dual
               </button>
+              <button
+                onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledVariant', 'triple-label'); }}
+                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                  control.ledVariant === 'triple-label'
+                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                }`}
+                title="3-row LED indicator (e.g. CDJ-3000 DIRECTION lever position display)"
+                data-testid="led-variant-triple"
+              >
+                <div className="flex flex-col gap-px">
+                  <div className="w-4 h-1 rounded-sm bg-green-800 border border-green-600" />
+                  <div className="w-4 h-1 rounded-sm bg-gray-800 border border-gray-600" />
+                  <div className="w-4 h-1 rounded-sm bg-gray-800 border border-gray-600" />
+                </div>
+                Triple
+              </button>
             </div>
           </div>
           <div className="h-px bg-gray-800" />
@@ -778,6 +795,9 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
         secondaryLabel={control.secondaryLabel}
         labelFontSize={control.labelFontSize}
         isDualLabel={control.ledVariant === 'dual-label'}
+        isTripleLabel={control.ledVariant === 'triple-label'}
+        tertiaryLabel={(control as { tertiaryLabel?: string }).tertiaryLabel}
+        onTertiaryLabelChange={(val) => { pushSnapshot(); updateControlProp(ids, 'tertiaryLabel' as never, val as never); }}
         labelAlign={control.labelAlign}
         labelColor={
           control.labelPosition === 'on-button'
