@@ -27,7 +27,7 @@ export interface CoverageReportProps {
    *  "why" block explaining the verdict (especially useful after self-heal
    *  fails — surfaces lostFeatures or stillMissingDirectives reasoning). */
   verdict?: {
-    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED' | 'MATCH_TABLE_CONFLICT';
     reason: string;
     selfHealTriggered?: boolean;
     retryCount?: number;

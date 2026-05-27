@@ -18,7 +18,7 @@
  * Origin: 2026-05-10.
  */
 
-export type CoverageVerdict = 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+export type CoverageVerdict = 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED' | 'MATCH_TABLE_CONFLICT';
 
 /** match-table.md row kinds. See `.claude/agents/coverage-auditor.md` Phase 2 §1. */
 export type MatchKind = 'CONFIRMED' | 'CONFIRMED_BY_PARENT_ONLY' | 'MISSING' | 'RECLASSIFICATION';
@@ -361,16 +361,32 @@ export function scoreCoverage(
   //   4. Else 0 (worst case).
   let effectiveCoverage: number;
   let matchTableWarning: string | undefined;
+  // Defense B (PR #181): catastrophic disagreement detection
+  let matchTableConflict: { frontmatterPct: number; matchTablePct: number; deltaPp: number } | null = null;
   if (matchTable) {
     effectiveCoverage = matchTable.coveragePct / 10; // 90% → 9.0, matching the 0-10 score scale
     // Warn if the auditor's self-reported frontmatter disagrees significantly.
     const frontmatterScore = scores.inventoryCoverage ?? scores.composite;
-    if (frontmatterScore != null && Math.abs(frontmatterScore - effectiveCoverage) > 0.05) {
-      matchTableWarning =
-        `Auditor frontmatter coverage (${frontmatterScore.toFixed(1)}/10) disagrees with ` +
-        `match-table recomputed coverage (${effectiveCoverage.toFixed(1)}/10 = ` +
-        `${matchTable.confirmed}/${matchTable.total} CONFIRMED). ` +
-        `Using match-table as authoritative.`;
+    if (frontmatterScore != null) {
+      const deltaScore = Math.abs(frontmatterScore - effectiveCoverage);
+      if (deltaScore > 0.05) {
+        matchTableWarning =
+          `Auditor frontmatter coverage (${frontmatterScore.toFixed(1)}/10) disagrees with ` +
+          `match-table recomputed coverage (${effectiveCoverage.toFixed(1)}/10 = ` +
+          `${matchTable.confirmed}/${matchTable.total} CONFIRMED). ` +
+          `Using match-table as authoritative.`;
+      }
+      // CATASTROPHIC disagreement (>50pp = >5.0 on 0-10 scale) signals one
+      // of the two sources is corrupt or stale. Refuse to act — self-heal
+      // on corrupt data wastes $40-100 per cycle (the CDJ-3000 incident
+      // 2026-05-26: scorer said 0% while LLM said 90.8%, burned $80+).
+      if (deltaScore > 5.0) {
+        matchTableConflict = {
+          frontmatterPct: frontmatterScore * 10,
+          matchTablePct: matchTable.coveragePct,
+          deltaPp: deltaScore * 10,
+        };
+      }
     }
   } else {
     effectiveCoverage = scores.inventoryCoverage ?? scores.composite ?? 0;
@@ -387,6 +403,24 @@ export function scoreCoverage(
     matchTable,
     matchTableWarning,
   });
+
+  // Defense B (PR #181) — MATCH_TABLE_CONFLICT halt. MUST come BEFORE
+  // grandfather + every other verdict path so corrupt data never sneaks
+  // through to a CRITICAL/REJECTED with shouldAutoRetry=true.
+  if (matchTableConflict) {
+    return buildResult({
+      verdict: 'MATCH_TABLE_CONFLICT',
+      reason: `Auditor frontmatter coverage (${matchTableConflict.frontmatterPct.toFixed(1)}%) and match-table ` +
+        `recomputed coverage (${matchTableConflict.matchTablePct.toFixed(1)}%) disagree by ` +
+        `${matchTableConflict.deltaPp.toFixed(1)} percentage points — catastrophic. One source is ` +
+        `corrupt or stale. Refusing to act. Likely causes: tutorial directory on unmerged branch, ` +
+        `stale match-table reused from a previous run, or auditor agent crashed mid-write. ` +
+        `Manual review required: inspect .pipeline/<id>/agents/coverage-auditor/ + verify tutorial ` +
+        `directory exists with expected files.`,
+      shouldAutoRetry: false,
+      regressed: false,
+    });
+  }
 
   // GRANDFATHER short-circuit: legacy devices bypass the gate entirely.
   // Verdict downgrades to APPROVED_WITH_WARNINGS so the pipeline advances

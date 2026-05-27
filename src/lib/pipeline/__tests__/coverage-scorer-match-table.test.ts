@@ -179,7 +179,10 @@ describe('scoreCoverage — edge cases with match-table', () => {
     expect(result.matchTable).toBeUndefined();
   });
 
-  it('all-MISSING match-table → CRITICAL verdict (0% coverage)', () => {
+  it('all-MISSING match-table with high-LLM-score → MATCH_TABLE_CONFLICT (Defense B PR #181)', () => {
+    // Synthetic checkpoint says inventory=9.0 (90%). All-MISSING match-table
+    // says 0%. 90pp delta → catastrophic → halt instead of triggering
+    // self-heal on corrupt data. CDJ-3000 incident regression test.
     const allMissing = `
 | feature_id | feature_name | page | match_kind | tutorial_id | step_id | evidence_quote |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -188,6 +191,23 @@ describe('scoreCoverage — edge cases with match-table', () => {
 | f3 | Baz | 3 | MISSING |  |  |  |
 `;
     const result = scoreCoverage(syntheticCheckpoint, { matchTableMarkdown: allMissing });
+    expect(result.matchTable?.coveragePct).toBe(0);
+    expect(result.verdict).toBe('MATCH_TABLE_CONFLICT');
+    expect(result.shouldAutoRetry).toBe(false);
+  });
+
+  it('all-MISSING match-table WITHOUT LLM frontmatter → CRITICAL (no conflict possible)', () => {
+    // Empty checkpoint (no frontmatter inventory) → no source to disagree
+    // with match-table → falls through to standard CRITICAL verdict.
+    const allMissing = `
+| feature_id | feature_name | page | match_kind | tutorial_id | step_id | evidence_quote |
+| --- | --- | --- | --- | --- | --- | --- |
+| f1 | Foo | 1 | MISSING |  |  |  |
+| f2 | Bar | 2 | MISSING |  |  |  |
+| f3 | Baz | 3 | MISSING |  |  |  |
+`;
+    const emptyCheckpoint = '---\nagent: coverage-auditor\nphase: 4\n---\n# Empty';
+    const result = scoreCoverage(emptyCheckpoint, { matchTableMarkdown: allMissing });
     expect(result.matchTable?.coveragePct).toBe(0);
     expect(result.verdict).toBe('CRITICAL');
   });
