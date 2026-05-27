@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface HealthData {
   deviceId: string;
@@ -127,11 +128,51 @@ interface DiagnosticsPanelProps {
 }
 
 export default function DiagnosticsPanel({ deviceId }: DiagnosticsPanelProps) {
+  const router = useRouter();
   const [health, setHealth] = useState<HealthData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastFetch, setLastFetch] = useState<number>(0);
   const [recovering, setRecovering] = useState(false);
   const [recoverResult, setRecoverResult] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeletePipeline = useCallback(async () => {
+    const confirmed = window.confirm(
+      `Permanently delete pipeline for "${deviceId}"?\n\n` +
+      `This removes:\n` +
+      `  • .pipeline/${deviceId}/ (state, logs, photos, manifests, backups)\n` +
+      `  • .worktrees/${deviceId}/\n` +
+      `  • All Blob entries (status, manifest, photos, history)\n\n` +
+      `Contractor's manifest-editor will be PRESERVED in .pipeline/saved/${deviceId}/\n` +
+      `so re-running the pipeline auto-restores their layout.\n\n` +
+      `Production files (devices.ts, src/data/manifests/${deviceId}.json) are NOT touched — ` +
+      `those need a separate PR if you want to fully deprecate the device.\n\n` +
+      `Cannot be undone via the UI. Continue?`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setRecoverResult(null);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) {
+        setRecoverResult(`Delete failed: ${data.error ?? res.status}`);
+        setDeleting(false);
+        return;
+      }
+      // Brief inline confirmation before navigating away
+      const preservedMsg = data.preserved?.manifestEditor
+        ? ` (contractor positions preserved in saved/)`
+        : '';
+      setRecoverResult(`Pipeline deleted${preservedMsg}. Redirecting...`);
+      // Small delay so admin sees the confirmation
+      setTimeout(() => router.push('/admin'), 1200);
+    } catch (err) {
+      setRecoverResult(`Delete error: ${err instanceof Error ? err.message : 'unknown'}`);
+      setDeleting(false);
+    }
+  }, [deviceId, router]);
 
   const fetchHealth = useCallback(async () => {
     try {
@@ -361,6 +402,26 @@ export default function DiagnosticsPanel({ deviceId }: DiagnosticsPanelProps) {
             title={health.worktree}
           />
         )}
+      </div>
+
+      {/* Danger zone — fully delete this device's pipeline data.
+          Preserves contractor's manifest-editor positions in .pipeline/saved/
+          (auto-restored on next pipeline start). Production registry +
+          tracked manifests are NOT touched — those need a separate PR. */}
+      <div className="mt-4 pt-3 border-t border-red-900/40">
+        <div className="text-[10px] uppercase tracking-wider text-red-400/70 mb-1.5">Danger Zone</div>
+        <button
+          onClick={handleDeletePipeline}
+          disabled={deleting || recovering}
+          className="w-full rounded-md border border-red-700 bg-red-900/30 hover:bg-red-900/50 text-red-300 hover:text-red-100 text-[11px] font-medium px-3 py-1.5 transition-colors disabled:opacity-40"
+          title={`Delete .pipeline/${deviceId}/, worktree, and Blob entries. Preserves contractor positions in saved/.`}
+        >
+          {deleting ? 'Deleting...' : `Delete Pipeline (${deviceId})`}
+        </button>
+        <p className="mt-1 text-[9px] text-gray-600 leading-tight">
+          Removes pipeline state + Blob. Contractor positions preserved in saved/.
+          Re-running this device&apos;s pipeline auto-restores their layout.
+        </p>
       </div>
     </div>
   );
