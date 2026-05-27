@@ -379,3 +379,31 @@ export async function initDevice(
   });
   await putDeviceManifest(deviceId, manifest);
 }
+
+/**
+ * Delete ALL Blob entries for a device — status, manifest, history backups,
+ * photos, issues. Used by the admin "Delete Pipeline" action.
+ *
+ * Best-effort: failures are collected in `errors` so the caller can decide
+ * whether to surface them. Filesystem cleanup proceeds regardless.
+ */
+export async function deleteHostedDevice(deviceId: string): Promise<{ deleted: number; errors: string[] }> {
+  const errors: string[] = [];
+  let deleted = 0;
+
+  try {
+    const { blobs } = await list({ prefix: `${PREFIX}/${deviceId}/` });
+    for (const blob of blobs) {
+      try {
+        await del(blob.url);
+        deleted++;
+      } catch (err) {
+        errors.push(`${blob.pathname}: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    }
+  } catch (err) {
+    errors.push(`list() failed: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  return { deleted, errors };
+}
