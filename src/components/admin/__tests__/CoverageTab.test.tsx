@@ -10,6 +10,41 @@ function mockFetchOnce(response: unknown, ok = true, status = 200) {
   }) as unknown as typeof fetch;
 }
 
+/**
+ * Install a persistent fetch mock that routes by URL.
+ *
+ * CoverageTab fires TWO fetches on mount:
+ *   1. Cached-load useEffect → /recheck-coverage?action=cached
+ *   2. Preview-poll useEffect → /recheck-coverage (no query)
+ *
+ * Tests need both responses available. mockFetchOnce only handles ONE
+ * response and was racy. This helper returns the cached payload when the
+ * URL includes 'action=cached' and an idle preview otherwise.
+ */
+function mockFetchRouted(cachedResponse: unknown, cachedOk = true, cachedStatus = 200) {
+  globalThis.fetch = vi.fn().mockImplementation((url: string, init?: { method?: string }) => {
+    const method = init?.method ?? 'GET';
+    if (method === 'GET' && url.includes('action=cached')) {
+      return Promise.resolve({ ok: cachedOk, status: cachedStatus, json: async () => cachedResponse });
+    }
+    if (method === 'GET') {
+      // preview poll — idle, no remote running
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          canRecheck: true,
+          reason: 'Ready',
+          hasIndependentChecklist: true,
+          isRecheckRunning: false,
+        }),
+      });
+    }
+    // POST/DELETE — unhandled; tests should call mockFetchOnce after this if needed
+    return Promise.reject(new Error(`unmocked ${method} ${url}`));
+  }) as unknown as typeof fetch;
+}
+
 describe('CoverageTab', () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -20,7 +55,7 @@ describe('CoverageTab', () => {
   });
 
   it('shows empty state when no cached audit', async () => {
-    mockFetchOnce({ cached: false });
+    mockFetchRouted({ cached: false });
     render(<CoverageTab deviceId="empty-device" />);
     await waitFor(() => {
       expect(screen.getByTestId('coverage-tab-empty')).toBeTruthy();
@@ -29,7 +64,7 @@ describe('CoverageTab', () => {
   });
 
   it('renders CoverageReport when cached match-table fetched', async () => {
-    mockFetchOnce({
+    mockFetchRouted({
       cached: true,
       summary: { total: 10, confirmed: 8, parentOnlyGaps: 1, missingGaps: 1, coveragePct: 80 },
       missing: [{ featureId: 'f1', featureName: 'Missing One', page: '5', matchKind: 'MISSING', tutorialId: '', stepId: '', evidenceQuote: '' }],
@@ -46,7 +81,7 @@ describe('CoverageTab', () => {
   });
 
   it('shows "Re-check now" button and triggers POST on click', async () => {
-    mockFetchOnce({ cached: false });
+    mockFetchRouted({ cached: false });
     render(<CoverageTab deviceId="x" />);
     await waitFor(() => {
       expect(screen.getByTestId('coverage-tab-empty')).toBeTruthy();
@@ -74,7 +109,7 @@ describe('CoverageTab', () => {
   });
 
   it('renders error state when POST fails', async () => {
-    mockFetchOnce({ cached: false });
+    mockFetchRouted({ cached: false });
     render(<CoverageTab deviceId="y" />);
     await waitFor(() => {
       expect(screen.getByTestId('coverage-tab-empty')).toBeTruthy();
