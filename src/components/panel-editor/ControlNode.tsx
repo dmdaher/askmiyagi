@@ -319,6 +319,9 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           highlighted={isSelected}
           width={visW}
           height={visH}
+          hasLed={control.hasLed}
+          ledColor={control.ledColor ?? undefined}
+          ledOn={control.ledOn}
         />
       );
     case 'slot':
@@ -330,6 +333,9 @@ function renderControl(control: ControlDef, isSelected: boolean, allControls: Re
           highlighted={isSelected}
           width={visW}
           height={visH}
+          hasLed={control.hasLed}
+          ledColor={control.ledColor ?? undefined}
+          ledOn={control.ledOn}
         />
       );
     case 'screen':

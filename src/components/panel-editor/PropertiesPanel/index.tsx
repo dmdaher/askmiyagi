@@ -510,6 +510,19 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
                 </div>
                 Triple
               </button>
+              <button
+                onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledVariant', 'bar'); }}
+                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                  control.ledVariant === 'bar'
+                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                }`}
+                title="Horizontal bar LED (e.g. CDJ-3000 TEMPO RESET indicator, VU meter)"
+                data-testid="led-variant-bar"
+              >
+                <div className="w-5 h-1.5 rounded-sm bg-green-500 border border-green-400" />
+                Bar
+              </button>
             </div>
           </div>
           <div className="h-px bg-gray-800" />
@@ -760,6 +773,74 @@ function SingleControlProperties({ control }: { control: ControlDef }) {
             </div>
           </div>
           {/* LED Color — only when Dot or Glow is selected */}
+          {control.hasLed && (
+            <div className="space-y-1">
+              <label className="text-[10px] text-gray-500">LED Color</label>
+              <div className="flex items-center gap-1.5">
+                {['#22c55e', '#f59e0b', '#3b82f6', '#ef4444', '#ec4899', '#ffffff'].map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => { pushSnapshot(); updateControlProp(ids, 'ledColor', color); }}
+                    className={`w-4 h-4 rounded-full border transition-colors ${
+                      (control.ledColor ?? '#22c55e') === color ? 'border-blue-500 ring-1 ring-blue-500/30' : 'border-gray-600 hover:border-gray-400'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="h-px bg-gray-800" />
+        </>
+      )}
+
+      {/* LED — simple toggle for port/slot (border-glow only).
+          Ports/slots on real hardware (e.g. CDJ-3000 USB/SD media bays) have
+          a single access-LED rendered as a thin border-glow ring around the
+          connector. No need for the 5-style picker (only border-glow makes
+          sense for connectors). Toggle + color picker; Port.tsx handles
+          render via hasLed/ledColor/ledOn props. */}
+      {(control.type === 'port' || control.type === 'slot') && (
+        <>
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wide text-gray-500">LED (Border Glow)</label>
+            <div className="flex gap-1.5">
+              <button
+                onClick={() => {
+                  pushSnapshot();
+                  updateControlProp(ids, 'hasLed', false);
+                }}
+                data-testid="port-led-none"
+                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                  !control.hasLed
+                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                }`}
+                title="No LED indicator"
+              >
+                <div className="w-3.5 h-2.5 rounded-sm border border-gray-600" />
+                None
+              </button>
+              <button
+                onClick={() => {
+                  pushSnapshot();
+                  updateControlProp(ids, 'hasLed', true);
+                  if (!control.ledColor) updateControlProp(ids, 'ledColor', '#22c55e');
+                }}
+                data-testid="port-led-glow"
+                className={`flex-1 flex items-center justify-center gap-1 rounded border py-1.5 text-[10px] transition-colors ${
+                  control.hasLed
+                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                }`}
+                title="Border-glow LED ring around the connector (e.g. media access indicator)"
+              >
+                <div className="w-3.5 h-2.5 rounded-sm border-2 border-green-500" />
+                Glow
+              </button>
+            </div>
+          </div>
           {control.hasLed && (
             <div className="space-y-1">
               <label className="text-[10px] text-gray-500">LED Color</label>
