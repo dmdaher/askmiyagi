@@ -21,9 +21,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { readState, writeState, appendLog } from '@/lib/pipeline/state-machine';
+import { readState, writeState, appendLog, ensurePipelineDir } from '@/lib/pipeline/state-machine';
 import { invokeAgent } from '@/lib/pipeline/runner';
 import { trackAudit, untrackAudit, killAudit } from '@/lib/pipeline/audit-tracker';
 import {
@@ -260,6 +261,7 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
     const auditKey = 'phase-4-audit';
     const retryCount = (currentState?.strikeTracker?.[auditKey] as number | undefined) ?? 0;
     let selfHealTriggered = false;
+    let runnerPid: number | null = null;
 
     if (currentState && verdict.shouldAutoRetry && retryCount < MAX_AUDIT_RETRIES) {
       try {
@@ -276,14 +278,28 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
         const confirmedIds = rows.filter(r => r.matchKind === 'CONFIRMED').map(r => r.featureId);
         currentState.strikeTracker['phase-4-audit-prev-confirmed-features'] = confirmedIds
           .join('|') as unknown as number;
-        // Set phase back so the next pipeline run picks up at extraction.
-        // Note: this does NOT spawn the runner — admin must start/resume the
-        // pipeline (existing UI). Avoids surprise compute from a "check" click.
+        // Set phase back so the runner picks up at extraction.
         currentState.currentPhase = 'phase-4-extraction';
+        // Spawn the pipeline runner immediately — 1-click UX. Admin doesn't
+        // have to navigate to a separate "Resume Pipeline" button. Pattern
+        // matches src/app/api/pipeline/[deviceId]/start/route.ts.
+        ensurePipelineDir(deviceId);
+        const proc = spawn('npx', ['tsx', 'scripts/pipeline-runner.ts', deviceId], {
+          detached: true,
+          stdio: 'ignore',
+        });
+        proc.unref();
+        runnerPid = proc.pid ?? null;
+        currentState.status = 'running';
+        currentState.runnerPid = runnerPid;
         writeState(deviceId, currentState);
+        appendLog(deviceId, {
+          level: 'info',
+          message: `[recheck-coverage] runner spawned (PID ${runnerPid}) to apply directives + rebuild missing tutorials. PR #171 skip-existing protects the ${confirmedIds.length} already-built tutorials.`,
+        });
         selfHealTriggered = true;
       } catch (err) {
-        appendLog(deviceId, { level: 'warn', message: `[recheck-coverage] self-heal write failed: ${(err as Error).message}` });
+        appendLog(deviceId, { level: 'warn', message: `[recheck-coverage] self-heal failed: ${(err as Error).message}` });
       }
     }
 

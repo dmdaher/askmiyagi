@@ -120,9 +120,11 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
         >
           {result.verdict.selfHealTriggered ? (
             <>
-              <strong>Auto-recovery started</strong> (retry {result.verdict.retryCount}/{result.verdict.maxRetries})
+              <strong>Auto-recovery running</strong> (retry {result.verdict.retryCount}/{result.verdict.maxRetries})
               {' — '}
-              coverage {result.verdict.coveragePct.toFixed(1)}% &lt; 90%. Resume the pipeline to apply directives.
+              coverage {result.verdict.coveragePct.toFixed(1)}% &lt; 90%. Runner spawned in background;
+              re-extraction + tutorial regeneration in progress (~30-45 min).
+              Watch the logs panel for progress.
             </>
           ) : result.verdict.name === 'APPROVED' || result.verdict.name === 'APPROVED_WITH_WARNINGS' ? (
             <>✓ Coverage {result.verdict.coveragePct.toFixed(1)}% — {result.verdict.name === 'APPROVED' ? 'clean' : 'with warnings'}, no action needed.</>
