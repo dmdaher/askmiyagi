@@ -38,6 +38,22 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
   const [codegenError, setCodegenError] = useState<string | null>(null);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [noteExpanded, setNoteExpanded] = useState(false);
+  // Per-note dismissal: stores a hash of the dismissed adminNote in
+  // sessionStorage keyed by deviceId. When admin sends NEW feedback (different
+  // text → different hash) the banner reappears so contractor sees fresh
+  // notes. Clears on page reload/new session by design — feedback is rarely
+  // urgent enough to need permanent persistence.
+  const noteHash = adminNote ? `${adminNote.length}:${adminNote.slice(0, 32)}` : null;
+  const [dismissedNoteHash, setDismissedNoteHash] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return sessionStorage.getItem(`adminNote.dismissed.${deviceId}`);
+  });
+  const noteDismissed = noteHash !== null && noteHash === dismissedNoteHash;
+  const dismissNote = useCallback(() => {
+    if (!noteHash) return;
+    sessionStorage.setItem(`adminNote.dismissed.${deviceId}`, noteHash);
+    setDismissedNoteHash(noteHash);
+  }, [noteHash, deviceId]);
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
@@ -217,14 +233,18 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
         </div>
       )}
 
-      {/* Admin feedback banner — visible inside editor while contractor works */}
-      {isHosted && adminNote && !previewMode && (
-        <div
-          className="flex items-start gap-2 border-b border-blue-700/40 bg-blue-900/20 px-4 py-2 cursor-pointer"
-          onClick={() => setNoteExpanded(!noteExpanded)}
-        >
-          <span className="text-blue-400 text-sm mt-0.5">📋</span>
-          <div className="flex-1 min-w-0">
+      {/* Admin feedback banner — visible inside editor while contractor works.
+          Route-based (NOT env-based) so admin viewing /admin/<id>/editor doesn't
+          see their own notes echoed back — they already see them in the
+          ContractorSubmissions list. Body click → expand/collapse; × dismisses
+          for the session (keyed by note hash; new admin feedback re-shows). */}
+      {isContractorRoute && adminNote && !previewMode && !noteDismissed && (
+        <div className="flex items-start gap-2 border-b border-blue-700/40 bg-blue-900/20 px-4 py-2">
+          <span className="text-blue-400 text-sm mt-0.5 flex-shrink-0">📋</span>
+          <div
+            className="flex-1 min-w-0 cursor-pointer"
+            onClick={() => setNoteExpanded(!noteExpanded)}
+          >
             <p className="text-[10px] text-blue-400 font-medium">Reviewer feedback</p>
             <p className={`text-xs text-blue-300/80 whitespace-pre-wrap ${noteExpanded ? '' : 'line-clamp-1'}`}>
               {adminNote}
@@ -233,6 +253,14 @@ function EditorShell({ deviceId, onRestoreVersion, adminNote, isSandbox }: { dev
               <span className="text-[9px] text-blue-400/50">Click to expand</span>
             )}
           </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); dismissNote(); }}
+            className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded text-blue-400/60 hover:text-blue-200 hover:bg-blue-800/40 transition-colors"
+            title="Dismiss feedback (reappears if admin sends new feedback or you reload)"
+            aria-label="Dismiss reviewer feedback"
+          >
+            ×
+          </button>
         </div>
       )}
 
