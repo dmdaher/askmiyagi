@@ -323,10 +323,12 @@ function renderControl(
     }
     case 'port':
       return <Port id={control.id} label="" variant={inferPortVariant(control.label) as any}
-        highlighted={highlighted} width={w} height={h} />;
+        highlighted={highlighted} width={w} height={h}
+        hasLed={control.hasLed} ledColor={control.ledColor ?? undefined} ledOn={control.ledOn} />;
     case 'slot':
       return <Port id={control.id} label="" variant="sd-card"
-        highlighted={highlighted} width={w} height={h} />;
+        highlighted={highlighted} width={w} height={h}
+        hasLed={control.hasLed} ledColor={control.ledColor ?? undefined} ledOn={control.ledOn} />;
     case 'screen':
     case 'display': {
       const isJog = control.shape === 'circle'

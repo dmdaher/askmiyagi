@@ -9,6 +9,12 @@ interface PortProps {
   highlighted?: boolean;
   width?: number;
   height?: number;
+  /** Render a border-glow LED ring around the port (e.g. media access indicator). Default false. */
+  hasLed?: boolean;
+  /** LED color when hasLed=true. Defaults to green. */
+  ledColor?: string;
+  /** Whether LED is currently lit. Default false (dim ring visible to hint capability). */
+  ledOn?: boolean;
 }
 
 const highlightAnimation = {
@@ -40,11 +46,23 @@ export default function Port({
   highlighted = false,
   width,
   height,
+  hasLed = false,
+  ledColor = '#22c55e',
+  ledOn = false,
 }: PortProps) {
   const defaults = variantDefaults[variant];
   const w = width ?? defaults.w;
   const h = height ?? defaults.h;
   const isRound = variant === 'rca';
+
+  // Border-glow LED: thin ring just outside the port silhouette. Dim when off
+  // (hints the port HAS an LED), saturated + glow when on. Hardware reference:
+  // Pioneer CDJ-3000 access LEDs around USB/SD bays.
+  const ledRingShadow = hasLed
+    ? ledOn
+      ? `0 0 4px 1px ${ledColor}, inset 0 0 0 1px ${ledColor}`
+      : `inset 0 0 0 1px ${ledColor}40`  // 40 = ~25% alpha when dim
+    : null;
 
   return (
     <div className="flex flex-col items-center gap-1" data-control-id={id}>
@@ -55,8 +73,12 @@ export default function Port({
           height: h,
           borderRadius: isRound ? '50%' : 3,
           background: '#111',
-          boxShadow:
-            'inset 0 2px 6px rgba(0,0,0,0.8), inset 0 -1px 3px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05)',
+          boxShadow: [
+            'inset 0 2px 6px rgba(0,0,0,0.8)',
+            'inset 0 -1px 3px rgba(0,0,0,0.5)',
+            '0 1px 0 rgba(255,255,255,0.05)',
+            ledRingShadow,
+          ].filter(Boolean).join(', '),
           border: '1px solid #0a0a0a',
         }}
         {...(highlighted ? highlightAnimation : {})}

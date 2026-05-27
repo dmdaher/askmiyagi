@@ -239,45 +239,28 @@
       "hasLed": false
     },
     {
-      "id": "SD_INDICATOR",
-      "type": "led",
-      "label": "SD memory card indicator",
-      "editorPosition": {
-        "x": 835.7221980758223,
-        "y": 228.6666870136979,
-        "w": 76,
-        "h": 40
-      },
-      "shape": "circle",
-      "labelPosition": "hidden",
-      "labelDisplay": "hidden",
-      "ledVariant": "dot",
-      "ledColor": "#f59e0b",
-      "hasLed": true,
-      "labelFontSize": 7
-    },
-    {
       "id": "SD_SLOT",
       "type": "slot",
       "label": "SD memory card slot",
       "editorPosition": {
-        "x": 16.500168215747394,
-        "y": 179.22225923325607,
+        "x": 16.500167920493226,
+        "y": 179.2222594638387,
         "w": 100,
         "h": 49
       },
       "shape": "rectangle",
       "labelPosition": "hidden",
       "labelDisplay": "hidden",
-      "hasLed": false
+      "hasLed": true,
+      "ledColor": "#f59e0b"
     },
     {
       "id": "USB_STOP",
       "type": "button",
       "label": "USB STOP",
       "editorPosition": {
-        "x": 85.38888044058999,
-        "y": 135.222206911282,
+        "x": 85.38887990891878,
+        "y": 135.22220627483452,
         "w": 28,
         "h": 28
       },
@@ -293,33 +276,16 @@
       "type": "port",
       "label": "USB port",
       "editorPosition": {
-        "x": 17.555853654674294,
-        "y": 93.77779502406399,
+        "x": 17.555852280007123,
+        "y": 93.77780631926592,
         "w": 48,
         "h": 44
       },
       "shape": "rectangle",
       "labelPosition": "hidden",
       "labelDisplay": "hidden",
-      "hasLed": false
-    },
-    {
-      "id": "USB_INDICATOR",
-      "type": "led",
-      "label": "USB indicator",
-      "editorPosition": {
-        "x": 835.5000125796814,
-        "y": 155.88880594989692,
-        "w": 76,
-        "h": 28
-      },
-      "shape": "circle",
-      "labelPosition": "hidden",
-      "labelDisplay": "hidden",
-      "ledVariant": "dot",
-      "ledColor": "#22c55e",
       "hasLed": true,
-      "labelFontSize": 6
+      "ledColor": "#22c55e"
     },
     {
       "id": "TOUCH_DISPLAY",
@@ -393,8 +359,8 @@
       "type": "button",
       "label": "SLIP",
       "editorPosition": {
-        "x": 18.749917187500003,
-        "y": 327.0003402448415,
+        "x": 18.74991779174801,
+        "y": 327.0003659423782,
         "w": 42,
         "h": 20
       },
@@ -414,8 +380,8 @@
       "type": "button",
       "label": "QUANTIZE",
       "editorPosition": {
-        "x": 74.74984218750001,
-        "y": 327.0003402448415,
+        "x": 74.74984139160154,
+        "y": 327.00035737653263,
         "w": 42,
         "h": 20
       },
@@ -1225,8 +1191,8 @@
       "type": "button",
       "label": "TEMPO\n \nRESET",
       "editorPosition": {
-        "x": 619.6665065177949,
-        "y": 887.3331689419748,
+        "x": 619.6665267533854,
+        "y": 887.33325293169,
         "w": 28,
         "h": 28
       },
@@ -1242,15 +1208,15 @@
       "type": "led",
       "label": "TEMPO RESET indicator",
       "editorPosition": {
-        "x": 885.8885838650172,
-        "y": 769.8888422390407,
+        "x": 650.8886213563369,
+        "y": 889.8888341834852,
         "w": 20,
         "h": 24
       },
       "shape": "circle",
       "labelPosition": "hidden",
       "labelDisplay": "hidden",
-      "ledVariant": "dot",
+      "ledVariant": "bar",
       "ledColor": "#22c55e",
       "hasLed": true
     },
@@ -1295,8 +1261,8 @@
     {
       "id": "label-USB_STOP",
       "text": "USB \nSTOP",
-      "x": 71,
-      "y": 117,
+      "x": 72,
+      "y": 116,
       "w": 60,
       "fontSize": 6,
       "align": "center",
@@ -1404,7 +1370,7 @@
       "id": "label-TEMPO_RESET",
       "text": "TEMPO \nRESET",
       "x": 604,
-      "y": 918,
+      "y": 920,
       "w": 60,
       "fontSize": 6,
       "align": "center",
