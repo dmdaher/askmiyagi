@@ -42,6 +42,48 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
   const [loadingCache, setLoadingCache] = useState(true);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetting, setResetting] = useState(false);
+
+  async function resetRetries() {
+    const confirmed = window.confirm(
+      `Reset the coverage self-heal retry counter?\n\n` +
+      `This clears strikeTracker['phase-4-audit'] so the next Re-check Coverage ` +
+      `can trigger another self-heal cycle (~$45-100, 30-45 min). Use this only ` +
+      `after you've reviewed the previous failure + understand why retries were ` +
+      `exhausted.`
+    );
+    if (!confirmed) return;
+    setResetting(true);
+    try {
+      const res = await fetch(`/api/pipeline/${deviceId}/recover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset-coverage-retries' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? 'Reset failed'); return; }
+      // Refresh cached state so the verdict block updates (retryCount = 0)
+      const refresh = await fetch(`/api/pipeline/${deviceId}/recheck-coverage?action=cached`);
+      if (refresh.ok) {
+        const fresh = await refresh.json();
+        if (fresh?.summary) {
+          setCached({
+            summary: fresh.summary,
+            missing: fresh.missing,
+            parentOnlyGaps: fresh.parentOnlyGaps,
+            matchTablePath: fresh.matchTablePath,
+            costUsd: fresh.costUsd,
+            lastAuditMs: fresh.lastAuditMs ?? Date.now(),
+            verdict: fresh.verdict,
+          });
+        }
+      }
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setResetting(false);
+    }
+  }
 
   // On mount: ask the recheck-coverage endpoint about cache state via GET
   useEffect(() => {
@@ -180,16 +222,50 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
       )}
 
       {cached && (
-        <CoverageReport
-          summary={cached.summary}
-          missing={cached.missing}
-          parentOnlyGaps={cached.parentOnlyGaps}
-          costUsd={cached.costUsd}
-          matchTablePath={cached.matchTablePath}
-          lastAuditMs={cached.lastAuditMs}
-          verdict={cached.verdict}
-          compact
-        />
+        <>
+          <CoverageReport
+            summary={cached.summary}
+            missing={cached.missing}
+            parentOnlyGaps={cached.parentOnlyGaps}
+            costUsd={cached.costUsd}
+            matchTablePath={cached.matchTablePath}
+            lastAuditMs={cached.lastAuditMs}
+            verdict={cached.verdict}
+            compact
+          />
+
+          {/* Reset retries button — only when self-heal cap has been hit.
+              Mirrors the same button in RecheckCoverageButton inline message
+              so admin can override the cap from canvas review without
+              navigating back to /admin/<id>. */}
+          {cached.verdict
+            && cached.verdict.retryCount != null
+            && cached.verdict.maxRetries != null
+            && cached.verdict.retryCount >= cached.verdict.maxRetries && (
+            <div
+              className="rounded p-2 border border-red-700/40 bg-red-900/15 space-y-1.5"
+              data-testid="coverage-tab-cap-hit"
+            >
+              <div className="text-[11px] text-red-200">
+                <strong>Self-heal cap reached.</strong> Reset to try again.
+              </div>
+              <button
+                type="button"
+                onClick={resetRetries}
+                disabled={resetting || running}
+                data-testid="coverage-tab-reset-button"
+                className="w-full text-[11px] px-2 py-1 rounded transition-colors cursor-pointer disabled:opacity-40"
+                style={{
+                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                  color: '#fca5a5',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                }}
+              >
+                {resetting ? 'Resetting…' : '↻ Reset retry counter — try again'}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
