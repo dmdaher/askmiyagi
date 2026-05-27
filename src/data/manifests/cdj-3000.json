@@ -239,28 +239,45 @@
       "hasLed": false
     },
     {
+      "id": "SD_INDICATOR",
+      "type": "led",
+      "label": "SD memory card indicator",
+      "editorPosition": {
+        "x": 835.7221980758223,
+        "y": 228.6666870136979,
+        "w": 76,
+        "h": 40
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "ledVariant": "dot",
+      "ledColor": "#f59e0b",
+      "hasLed": true,
+      "labelFontSize": 7
+    },
+    {
       "id": "SD_SLOT",
       "type": "slot",
       "label": "SD memory card slot",
       "editorPosition": {
-        "x": 16.500167920493226,
-        "y": 179.2222594638387,
+        "x": 16.500168215747394,
+        "y": 179.22225923325607,
         "w": 100,
         "h": 49
       },
       "shape": "rectangle",
       "labelPosition": "hidden",
       "labelDisplay": "hidden",
-      "hasLed": true,
-      "ledColor": "#f59e0b"
+      "hasLed": false
     },
     {
       "id": "USB_STOP",
       "type": "button",
       "label": "USB STOP",
       "editorPosition": {
-        "x": 85.38887990891878,
-        "y": 135.22220627483452,
+        "x": 85.38888044058999,
+        "y": 135.222206911282,
         "w": 28,
         "h": 28
       },
@@ -276,16 +293,33 @@
       "type": "port",
       "label": "USB port",
       "editorPosition": {
-        "x": 17.555852280007123,
-        "y": 93.77780631926592,
+        "x": 17.555853654674294,
+        "y": 93.77779502406399,
         "w": 48,
         "h": 44
       },
       "shape": "rectangle",
       "labelPosition": "hidden",
       "labelDisplay": "hidden",
+      "hasLed": false
+    },
+    {
+      "id": "USB_INDICATOR",
+      "type": "led",
+      "label": "USB indicator",
+      "editorPosition": {
+        "x": 835.5000125796814,
+        "y": 155.88880594989692,
+        "w": 76,
+        "h": 28
+      },
+      "shape": "circle",
+      "labelPosition": "hidden",
+      "labelDisplay": "hidden",
+      "ledVariant": "dot",
+      "ledColor": "#22c55e",
       "hasLed": true,
-      "ledColor": "#22c55e"
+      "labelFontSize": 6
     },
     {
       "id": "TOUCH_DISPLAY",
@@ -359,8 +393,8 @@
       "type": "button",
       "label": "SLIP",
       "editorPosition": {
-        "x": 18.74991779174801,
-        "y": 327.0003659423782,
+        "x": 18.749917187500003,
+        "y": 327.0003402448415,
         "w": 42,
         "h": 20
       },
@@ -380,8 +414,8 @@
       "type": "button",
       "label": "QUANTIZE",
       "editorPosition": {
-        "x": 74.74984139160154,
-        "y": 327.00035737653263,
+        "x": 74.74984218750001,
+        "y": 327.0003402448415,
         "w": 42,
         "h": 20
       },
@@ -955,8 +989,8 @@
       "type": "button",
       "label": "►",
       "editorPosition": {
-        "x": 82.74992889404295,
-        "y": 566.4451625813052,
+        "x": 82.74992675781243,
+        "y": 566.4451732580887,
         "w": 36,
         "h": 32
       },
@@ -993,8 +1027,8 @@
       "type": "led",
       "label": "SLIP REV/FWD /REV",
       "editorPosition": {
-        "x": 69.999885563835,
-        "y": 633.8892364685554,
+        "x": 69.9998855828469,
+        "y": 633.8892365419957,
         "w": 48,
         "h": 52
       },
@@ -1119,8 +1153,8 @@
       "type": "wheel",
       "label": "Jog wheel (–REV/+FWD)",
       "editorPosition": {
-        "x": 142.3621367944636,
-        "y": 508.72283745299876,
+        "x": 142.36213660903672,
+        "y": 508.722829843119,
         "w": 491,
         "h": 488
       },
@@ -1191,8 +1225,8 @@
       "type": "button",
       "label": "TEMPO\n \nRESET",
       "editorPosition": {
-        "x": 619.6665267533854,
-        "y": 887.33325293169,
+        "x": 619.6665065177949,
+        "y": 887.3331689419748,
         "w": 28,
         "h": 28
       },
@@ -1208,15 +1242,15 @@
       "type": "led",
       "label": "TEMPO RESET indicator",
       "editorPosition": {
-        "x": 650.8886213563369,
-        "y": 889.8888341834852,
+        "x": 885.8885838650172,
+        "y": 769.8888422390407,
         "w": 20,
         "h": 24
       },
       "shape": "circle",
       "labelPosition": "hidden",
       "labelDisplay": "hidden",
-      "ledVariant": "bar",
+      "ledVariant": "dot",
       "ledColor": "#22c55e",
       "hasLed": true
     },
@@ -1225,8 +1259,8 @@
       "type": "slider",
       "label": "SLIP REV FWD REV",
       "editorPosition": {
-        "x": 14.249725167498928,
-        "y": 630.1392387389174,
+        "x": 14.249724470307141,
+        "y": 630.1392478938053,
         "w": 54,
         "h": 67
       },
@@ -1261,8 +1295,8 @@
     {
       "id": "label-USB_STOP",
       "text": "USB \nSTOP",
-      "x": 72,
-      "y": 116,
+      "x": 71,
+      "y": 117,
       "w": 60,
       "fontSize": 6,
       "align": "center",
@@ -1370,7 +1404,7 @@
       "id": "label-TEMPO_RESET",
       "text": "TEMPO \nRESET",
       "x": 604,
-      "y": 920,
+      "y": 918,
       "w": 60,
       "fontSize": 6,
       "align": "center",
@@ -1706,8 +1740,8 @@
       "id": "label-standalone-1779340176345-bmyh25",
       "text": "►",
       "icon": "arrow-right",
-      "x": 124,
-      "y": 572,
+      "x": 122,
+      "y": 573,
       "w": 60,
       "fontSize": 19,
       "align": "center",
