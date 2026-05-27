@@ -23,14 +23,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { readState } from '@/lib/pipeline/state-machine';
+import { readState, writeState, appendLog } from '@/lib/pipeline/state-machine';
 import { invokeAgent } from '@/lib/pipeline/runner';
 import { trackAudit, untrackAudit, killAudit } from '@/lib/pipeline/audit-tracker';
 import {
   parseMatchTable,
   summarizeMatchTable,
+  scoreCoverage,
+  buildDirectivesFromVerdict,
   type MatchRow,
   type MatchTableSummary,
+  type ScoredVerdict,
 } from '@/lib/pipeline/coverage-scorer';
 
 // Use the same on-demand audit-tracker key shape as audit-controls
@@ -119,6 +122,17 @@ interface RecheckResponse {
   parentOnlyGaps: MatchRow[];
   matchTablePath: string;
   costUsd: number;
+  /** Coverage scorer verdict (NEW Phase 3a). Tells the UI whether the
+   *  re-check triggered self-heal and what to display to the admin. */
+  verdict?: {
+    name: ScoredVerdict['verdict'];
+    reason: string;
+    shouldAutoRetry: boolean;
+    coveragePct: number;
+    selfHealTriggered: boolean;
+    retryCount: number;
+    maxRetries: number;
+  };
 }
 
 export async function POST(
@@ -216,6 +230,63 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
     const missing = rows.filter((r) => r.matchKind === 'MISSING');
     const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY');
 
+    // ─── Phase 3a — Coverage gate + self-heal trigger ───────────────────
+    // Compute deterministic verdict from the match-table. If non-grandfathered
+    // and shouldAutoRetry: write extractor-directives.md + advance pipeline
+    // state to phase-4-extraction so the next runner pass auto-heals. The
+    // existing doPhase4Audit retry cap + convergence checks still apply.
+    const checkpointPath = path.join(process.cwd(), '.pipeline', deviceId, 'agents', 'coverage-auditor', 'checkpoint.md');
+    const auditorMarkdown = fs.existsSync(checkpointPath) ? fs.readFileSync(checkpointPath, 'utf-8') : '';
+
+    const currentState = readState(deviceId);
+    // strikeTracker is typed as Record<string, number> but the pipeline-runner
+    // stores stringly-typed values via `as unknown as number` for the previous-
+    // gaps + previous-confirmed slots. Read with the same cast back to string.
+    const prevGapsRaw = currentState?.strikeTracker?.['phase-4-audit-prev-critical-gaps'] as unknown as string | undefined;
+    const previousCriticalGapFeatures = typeof prevGapsRaw === 'string'
+      ? prevGapsRaw.split('|').filter(Boolean)
+      : [];
+    const prevConfirmedRaw = currentState?.strikeTracker?.['phase-4-audit-prev-confirmed-features'] as unknown as string | undefined;
+    const previousConfirmedFeatures = typeof prevConfirmedRaw === 'string'
+      ? prevConfirmedRaw.split('|').filter(Boolean)
+      : [];
+    const verdict = scoreCoverage(auditorMarkdown, {
+      matchTableMarkdown: markdown,
+      previousCriticalGapFeatures,
+      previousConfirmedFeatures,
+    }, deviceId);
+
+    const MAX_AUDIT_RETRIES = 2;
+    const auditKey = 'phase-4-audit';
+    const retryCount = (currentState?.strikeTracker?.[auditKey] as number | undefined) ?? 0;
+    let selfHealTriggered = false;
+
+    if (currentState && verdict.shouldAutoRetry && retryCount < MAX_AUDIT_RETRIES) {
+      try {
+        const directivesPath = path.join(process.cwd(), '.pipeline', deviceId, 'extractor-directives.md');
+        fs.writeFileSync(directivesPath, buildDirectivesFromVerdict(verdict));
+        appendLog(deviceId, {
+          level: 'info',
+          message: `[recheck-coverage] ${verdict.verdict}: triggering self-heal retry ${retryCount + 1}/${MAX_AUDIT_RETRIES}. ${verdict.criticalGaps.length} critical + ${verdict.moderateGaps.length} moderate gaps listed in directives.`,
+        });
+        currentState.strikeTracker[auditKey] = retryCount + 1;
+        currentState.strikeTracker['phase-4-audit-prev-critical-gaps'] = verdict.criticalGaps
+          .map(g => g.feature)
+          .join('|') as unknown as number;
+        const confirmedIds = rows.filter(r => r.matchKind === 'CONFIRMED').map(r => r.featureId);
+        currentState.strikeTracker['phase-4-audit-prev-confirmed-features'] = confirmedIds
+          .join('|') as unknown as number;
+        // Set phase back so the next pipeline run picks up at extraction.
+        // Note: this does NOT spawn the runner — admin must start/resume the
+        // pipeline (existing UI). Avoids surprise compute from a "check" click.
+        currentState.currentPhase = 'phase-4-extraction';
+        writeState(deviceId, currentState);
+        selfHealTriggered = true;
+      } catch (err) {
+        appendLog(deviceId, { level: 'warn', message: `[recheck-coverage] self-heal write failed: ${(err as Error).message}` });
+      }
+    }
+
     const response: RecheckResponse = {
       ok: true,
       summary,
@@ -223,6 +294,15 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
       parentOnlyGaps,
       matchTablePath: path.relative(process.cwd(), matchTablePath),
       costUsd: result.costEntry?.costUsd ?? 0,
+      verdict: {
+        name: verdict.verdict,
+        reason: verdict.reason,
+        shouldAutoRetry: verdict.shouldAutoRetry,
+        coveragePct: verdict.matchTable?.coveragePct ?? 0,
+        selfHealTriggered,
+        retryCount: selfHealTriggered ? retryCount + 1 : retryCount,
+        maxRetries: MAX_AUDIT_RETRIES,
+      },
     };
     return NextResponse.json(response);
   } catch (err) {

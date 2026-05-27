@@ -23,6 +23,16 @@ interface RecheckResponse {
   parentOnlyGaps: MatchRow[];
   matchTablePath: string;
   costUsd: number;
+  /** NEW Phase 3a — coverage scorer verdict + self-heal status */
+  verdict?: {
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    reason: string;
+    shouldAutoRetry: boolean;
+    coveragePct: number;
+    selfHealTriggered: boolean;
+    retryCount: number;
+    maxRetries: number;
+  };
 }
 
 export default function RecheckCoverageButton({ deviceId, deviceName, pipelineStatus }: RecheckCoverageButtonProps) {
@@ -92,6 +102,35 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
           data-testid="recheck-coverage-error"
         >
           {error}
+        </div>
+      )}
+
+      {/* Phase 3a — surface coverage verdict + self-heal status inline so the
+          admin sees the outcome at a glance before opening the full report. */}
+      {result?.verdict && (
+        <div
+          className={`text-[10px] mt-1 px-2 rounded ${
+            result.verdict.selfHealTriggered
+              ? 'text-amber-300 bg-amber-900/20'
+              : result.verdict.name === 'APPROVED' || result.verdict.name === 'APPROVED_WITH_WARNINGS'
+                ? 'text-emerald-300 bg-emerald-900/20'
+                : 'text-red-300 bg-red-900/20'
+          }`}
+          data-testid="recheck-coverage-verdict"
+        >
+          {result.verdict.selfHealTriggered ? (
+            <>
+              <strong>Auto-recovery started</strong> (retry {result.verdict.retryCount}/{result.verdict.maxRetries})
+              {' — '}
+              coverage {result.verdict.coveragePct.toFixed(1)}% &lt; 90%. Resume the pipeline to apply directives.
+            </>
+          ) : result.verdict.name === 'APPROVED' || result.verdict.name === 'APPROVED_WITH_WARNINGS' ? (
+            <>✓ Coverage {result.verdict.coveragePct.toFixed(1)}% — {result.verdict.name === 'APPROVED' ? 'clean' : 'with warnings'}, no action needed.</>
+          ) : result.verdict.retryCount >= result.verdict.maxRetries ? (
+            <><strong>Self-heal cap reached.</strong> Coverage {result.verdict.coveragePct.toFixed(1)}% after {result.verdict.maxRetries} retries. Manual review required.</>
+          ) : (
+            <>{result.verdict.name}: {result.verdict.reason}</>
+          )}
         </div>
       )}
 
