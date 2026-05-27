@@ -96,6 +96,22 @@ export async function GET(
       const missing = rows.filter((r) => r.matchKind === 'MISSING');
       const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY');
       const stat = fs.statSync(matchTablePath);
+
+      // Phase 3a — compute verdict for the cached data too so the CoverageTab
+      // sidebar shows verdict block on initial load (not just after re-running).
+      // Read-only: never triggers self-heal even if shouldAutoRetry=true.
+      const checkpointPath = path.join(process.cwd(), '.pipeline', deviceId, 'agents', 'coverage-auditor', 'checkpoint.md');
+      const auditorMarkdown = fs.existsSync(checkpointPath) ? fs.readFileSync(checkpointPath, 'utf-8') : '';
+      const cachedState = readState(deviceId);
+      const prevGapsRaw = cachedState?.strikeTracker?.['phase-4-audit-prev-critical-gaps'] as unknown as string | undefined;
+      const prevConfirmedRaw = cachedState?.strikeTracker?.['phase-4-audit-prev-confirmed-features'] as unknown as string | undefined;
+      const verdict = scoreCoverage(auditorMarkdown, {
+        matchTableMarkdown: markdown,
+        previousCriticalGapFeatures: typeof prevGapsRaw === 'string' ? prevGapsRaw.split('|').filter(Boolean) : [],
+        previousConfirmedFeatures: typeof prevConfirmedRaw === 'string' ? prevConfirmedRaw.split('|').filter(Boolean) : [],
+      }, deviceId);
+      const cachedRetryCount = (cachedState?.strikeTracker?.['phase-4-audit'] as number | undefined) ?? 0;
+
       return NextResponse.json({
         cached: true,
         summary,
@@ -103,6 +119,15 @@ export async function GET(
         parentOnlyGaps,
         matchTablePath: path.relative(process.cwd(), matchTablePath),
         lastAuditMs: stat.mtimeMs,
+        verdict: {
+          name: verdict.verdict,
+          reason: verdict.reason,
+          shouldAutoRetry: verdict.shouldAutoRetry,
+          coveragePct: verdict.matchTable?.coveragePct ?? 0,
+          selfHealTriggered: false, // GET never triggers self-heal
+          retryCount: cachedRetryCount,
+          maxRetries: 2,
+        },
       });
     } catch (err) {
       return NextResponse.json(

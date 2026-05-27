@@ -27,6 +27,14 @@ interface CachedResult {
   matchTablePath: string;
   lastAuditMs: number | null;
   costUsd?: number;
+  /** Phase 3a verdict — surfaces "why" reason block + retry counter */
+  verdict?: {
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    reason: string;
+    selfHealTriggered?: boolean;
+    retryCount?: number;
+    maxRetries?: number;
+  };
 }
 
 export default function CoverageTab({ deviceId }: CoverageTabProps) {
@@ -76,6 +84,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
           matchTablePath: data.matchTablePath,
           costUsd: data.costUsd,
           lastAuditMs: Date.now(),
+          verdict: data.verdict,
         });
       }
     } catch (err) {
@@ -178,6 +187,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
           costUsd={cached.costUsd}
           matchTablePath={cached.matchTablePath}
           lastAuditMs={cached.lastAuditMs}
+          verdict={cached.verdict}
           compact
         />
       )}
