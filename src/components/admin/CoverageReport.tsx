@@ -135,8 +135,13 @@ export default function CoverageReport({
             Missing ({missing.length})
           </h3>
           <p className="text-xs text-gray-500 mb-3">
-            These features appear in the manual but have no tutorial coverage. To build them: add to the batch plan in
-            the auditor output, then click <strong>Regenerate Tutorials</strong>.
+            These features appear in the manual but have no tutorial coverage.
+            {' '}
+            {coveragePct < PASS_THRESHOLD ? (
+              <>Click <strong>Re-check Coverage</strong> above — if coverage is below 90% and retries are available, the pipeline will auto-rebuild missing tutorials.</>
+            ) : (
+              <>Coverage passes 90% so no auto-rebuild fires. To force a rebuild, add the missing features to the batch plan manually.</>
+            )}
           </p>
           <div className={`space-y-2 ${compact ? 'max-h-48' : 'max-h-64'} overflow-y-auto`}>
             {missing.map((row) => (
