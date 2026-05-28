@@ -701,6 +701,7 @@ export function validateDiagramParserOutput(content: string, blueprintJson?: str
  */
 export function validateGatekeeperManifest(manifestJson: string): ValidationResult & { score: number } {
   const errors: string[] = [];
+  const warnings: string[] = [];
   let score = 10.0;
 
   // 1. Parse JSON
@@ -723,22 +724,28 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
   const sections = (manifest.sections ?? []) as Array<Record<string, unknown>>;
   const controls = (manifest.controls ?? []) as Array<Record<string, unknown>>;
 
-  // 3. Sections must have archetypes from known library
+  // 3. Sections must have archetypes from known library.
+  // Archetype only drives the initial Layout Engine output that contractor
+  // overwrites by hand. Unknown archetype is logged as advisory, not a hard
+  // error — pipeline shouldn't halt for something contractor repositions anyway.
   const knownArchetypes = new Set([
     'grid-NxM', 'single-column', 'single-row', 'anchor-layout',
     'cluster-above-anchor', 'cluster-below-anchor', 'dual-column', 'stacked-rows',
+    'transport-pair',
   ]);
   for (const s of sections) {
     if (!s.archetype) {
       errors.push(`Section "${s.id}" missing archetype`);
       score -= 1.0;
     } else if (!knownArchetypes.has(s.archetype as string)) {
-      errors.push(`Section "${s.id}" has unknown archetype "${s.archetype}". Valid: ${[...knownArchetypes].join(', ')}`);
-      score -= 1.0;
+      warnings.push(`Section "${s.id}" has unknown archetype "${s.archetype}". Valid: ${[...knownArchetypes].join(', ')}`);
     }
   }
 
-  // 4. Multi-container archetypes must have containerAssignment
+  // 4. Multi-container archetypes typically need containerAssignment.
+  // Only matters for the Layout Engine's initial output (which contractor
+  // overrides). Logged as advisory so admin can spot a wrong archetype choice
+  // (e.g. anchor-layout on a single-control section) without halting pipeline.
   const needsContainers = new Set(['cluster-above-anchor', 'cluster-below-anchor', 'anchor-layout', 'dual-column']);
   const missingSections: string[] = [];
   for (const s of sections) {
@@ -747,16 +754,39 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
     }
   }
   if (missingSections.length > 0) {
-    errors.push(`Missing containerAssignment for: ${missingSections.join(', ')}. Gatekeeper must specify which controls go in each container.`);
-    score -= 2.0;
+    warnings.push(`Missing containerAssignment for: ${missingSections.join(', ')}. Either supply containerAssignment or pick a non-container archetype (single-row/single-column) for single-control sections.`);
   }
 
-  // 5. All controls must be assigned to a section
+  // 5. All controls must be assigned to a section — HARD error.
+  // The editor has no UI to add controls, so an orphaned control is unrecoverable
+  // by the contractor and would silently render outside any section frame.
   const assignedControls = new Set(sections.flatMap(s => (s.controls ?? []) as string[]));
   const orphans = controls.filter(c => !assignedControls.has(c.id as string));
   if (orphans.length > 0) {
     errors.push(`${orphans.length} orphaned controls not assigned to any section: ${orphans.slice(0, 5).map(c => c.id).join(', ')}`);
     score -= 1.0;
+  }
+
+  // 5b. LED-button check (advisory). When a button's notes/label/description
+  // evidence describes it as illuminated but hasLed !== true, surface this so
+  // contractor (or admin) knows to toggle LED Style in Properties before
+  // tutorials reference it via ledOn. Not a hard error — contractor can fix.
+  const litKeywords = /illuminat|backlit|lights up|lit when|LED.{0,12}button|button.{0,12}LED|light.{0,5}on/i;
+  const litButtonGaps: string[] = [];
+  for (const c of controls) {
+    if (c.type !== 'button' && c.type !== 'pad') continue;
+    if (c.hasLed === true) continue;
+    const evidence = [c.notes, c.description, c.label]
+      .filter((s) => typeof s === 'string')
+      .join(' ');
+    if (evidence && litKeywords.test(evidence)) {
+      litButtonGaps.push(c.id as string);
+    }
+  }
+  if (litButtonGaps.length > 0) {
+    warnings.push(
+      `${litButtonGaps.length} button/pad control(s) appear to have integrated LEDs per their notes but hasLed is not set: ${litButtonGaps.slice(0, 8).join(', ')}. Tutorials using ledOn:true on these will not light them up. Set hasLed:true + ledStyle:'integrated' in the manifest (or contractor toggles LED Style in Properties).`
+    );
   }
 
   // 6. Controls should have spatialNeighbors (enrichment — can be inferred from blueprint)
@@ -832,15 +862,20 @@ export function validateGatekeeperManifest(manifestJson: string): ValidationResu
       autoFixInfo.push(`${missingLabelDisplay}/${totalControls} controls missing labelDisplay (auto-fixed)`);
     }
 
-    // valid is based on real errors only — auto-fix info is appended after for logging
+    // valid is based on real errors only — auto-fix info + advisory warnings
+    // are appended after for logging, prefixed so they're distinguishable.
     const valid = errors.length === 0;
+    errors.push(...warnings.map((w) => `(advisory) ${w}`));
     errors.push(...autoFixInfo);
     score = Math.max(0, score);
     return { valid, errors, score };
   }
 
+  // valid is based on real errors only — warnings appended after for logging
+  const valid = errors.length === 0;
+  errors.push(...warnings.map((w) => `(advisory) ${w}`));
   score = Math.max(0, score);
-  return { valid: errors.length === 0, errors, score };
+  return { valid, errors, score };
 }
 
 /**

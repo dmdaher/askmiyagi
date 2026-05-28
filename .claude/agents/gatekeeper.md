@@ -70,6 +70,9 @@ For each section, select an archetype from the Layout Engine's defined library. 
 | `cluster-below-anchor` | Large element above a grid/row of controls |
 | `dual-column` | Controls split between two vertical columns |
 | `stacked-rows` | Multiple horizontal rows stacked vertically |
+| `transport-pair` | Exactly two transport buttons (play/cue, etc.) stacked vertically |
+
+**Single-control section rule:** When a section contains exactly one control, use `single-row` (or `single-column`). Never `anchor-layout` / `cluster-*` / `dual-column` — those require an anchor PLUS a secondary cluster and trigger a `containerAssignment` advisory if the cluster is absent.
 
 **Unknown layout = FLAG for manual review.** Do NOT hallucinate a new archetype name. If the Diagram Parser's topology classification is `irregular`, you must either:
 - Map it to the closest known archetype with a `MAPPING_NOTE` explaining why

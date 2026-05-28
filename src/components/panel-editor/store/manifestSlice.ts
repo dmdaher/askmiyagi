@@ -347,7 +347,6 @@ export interface ManifestSlice {
    */
   deleteSelection: () => void;
   setFocusedSection: (id: string | null) => void;
-  addControl: (sectionId: string, type: string, label: string) => void;
   setAllLabelFontSize: (size: number | undefined) => void;
   resetAllSizes: () => void;
   scaleCanvas: (factor: number) => void;
@@ -490,8 +489,6 @@ function defaultSize(type: string, sizeClass?: SizeClass): { w: number; h: numbe
   }
   return DEFAULT_SIZES[type] ?? { w: 48, h: 32 };
 }
-
-let addCounter = 0;
 
 /**
  * Find the section whose bounding box contains the given canvas point.
@@ -1921,40 +1918,6 @@ export const createManifestSlice: StateCreator<
   },
 
   setFocusedSection: (id) => set({ focusedSectionId: id }),
-
-  addControl: (sectionId, type, label) => {
-    get().clearScaleBase();
-    const section = get().sections[sectionId];
-    if (!section) return;
-
-    addCounter++;
-    const id = `${sectionId}-new-${addCounter}`;
-    const size = defaultSize(type);
-
-    const newControl: ControlDef = {
-      id,
-      label,
-      type,
-      x: section.x + section.w / 2 - size.w / 2,
-      y: section.y + section.h / 2 - size.h / 2,
-      w: size.w,
-      h: size.h,
-      sectionId,
-      labelPosition: defaultLabelPosition(type),
-      locked: false,
-    };
-
-    set((s) => ({
-      controls: { ...s.controls, [id]: newControl },
-      sections: {
-        ...s.sections,
-        [sectionId]: {
-          ...section,
-          childIds: [...section.childIds, id],
-        },
-      },
-    }));
-  },
 
   setAllLabelFontSize: (size) => {
     get().clearScaleBase();

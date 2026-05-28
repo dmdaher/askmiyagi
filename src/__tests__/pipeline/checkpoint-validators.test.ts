@@ -10,6 +10,7 @@ import {
   validateIndependentChecklist,
   validateLedGroupSplitting,
   validatePostEditorManifest,
+  validateGatekeeperManifest,
   detectBatchCycles,
 } from '../../lib/pipeline/checkpoint-validators';
 
@@ -975,6 +976,177 @@ More items.`;
       expect(codes).toContain('CONTROL_ORPHAN_SECTION');
       expect(codes).toContain('SECTION_CHILD_ORPHAN');
       expect(result.errorCount).toBeGreaterThanOrEqual(4);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // validateGatekeeperManifest — PR-X4 rebalance
+  //
+  // Architectural premise: contractor uses the editor to reposition every
+  // control by hand. Things contractor can fix in the UI (archetype choice,
+  // hasLed toggle, sectionId via drag) should NOT halt the pipeline. Things
+  // contractor CANNOT fix (missing controls — addControl removed in PR-X4)
+  // remain HARD errors so admin sees them immediately.
+  // ---------------------------------------------------------------------------
+  describe('validateGatekeeperManifest — PR-X4 rebalance', () => {
+    const baseManifest = (overrides: Record<string, unknown> = {}) => ({
+      deviceId: 'test-device',
+      deviceName: 'Test Device',
+      manufacturer: 'TestCo',
+      layoutType: 'flat',
+      sections: [
+        { id: 's1', archetype: 'single-row', controls: ['c1'] },
+      ],
+      controls: [
+        { id: 'c1', type: 'knob', label: 'Volume', sectionId: 's1' },
+      ],
+      ...overrides,
+    });
+
+    it('accepts transport-pair archetype (was previously rejected — bug fix)', () => {
+      const m = baseManifest({
+        sections: [
+          { id: 'transport-left', archetype: 'transport-pair', controls: ['c1', 'c2'] },
+        ],
+        controls: [
+          { id: 'c1', type: 'button', label: 'CUE', sectionId: 'transport-left' },
+          { id: 'c2', type: 'button', label: 'PLAY', sectionId: 'transport-left' },
+        ],
+      });
+      const result = validateGatekeeperManifest(JSON.stringify(m));
+      expect(result.valid).toBe(true);
+      expect(result.score).toBeGreaterThanOrEqual(9);
+      // Confirm transport-pair is not flagged as "unknown archetype"
+      expect(result.errors.some((e) => /unknown archetype "transport-pair"/.test(e))).toBe(false);
+    });
+
+    it('demotes unknown archetype to advisory — does not halt or deduct score', () => {
+      const m = baseManifest({
+        sections: [
+          { id: 's1', archetype: 'made-up-archetype', controls: ['c1'] },
+        ],
+      });
+      const result = validateGatekeeperManifest(JSON.stringify(m));
+      // Pipeline can still proceed (contractor will reposition anyway)
+      expect(result.valid).toBe(true);
+      expect(result.score).toBeGreaterThanOrEqual(9);
+      // But message surfaces in logs as advisory
+      expect(result.errors.some((e) => /\(advisory\).*unknown archetype/.test(e))).toBe(true);
+    });
+
+    it('demotes missing containerAssignment to advisory', () => {
+      // anchor-layout normally requires containerAssignment, but with PR-X4
+      // it's surfaced as advisory only (commonly indicates wrong archetype
+      // choice for a single-control section).
+      const m = baseManifest({
+        sections: [
+          { id: 'jog', archetype: 'anchor-layout', controls: ['c1'] },
+        ],
+      });
+      const result = validateGatekeeperManifest(JSON.stringify(m));
+      expect(result.valid).toBe(true);
+      expect(result.score).toBeGreaterThanOrEqual(9);
+      expect(result.errors.some((e) => /\(advisory\).*containerAssignment/.test(e))).toBe(true);
+    });
+
+    it('KEEPS orphaned controls as a hard error (contractor cannot addControl in editor)', () => {
+      const m = baseManifest({
+        sections: [
+          { id: 's1', archetype: 'single-row', controls: ['c1'] }, // c2 is orphan
+        ],
+        controls: [
+          { id: 'c1', type: 'knob', label: 'Vol', sectionId: 's1' },
+          { id: 'c2', type: 'knob', label: 'Orphan' }, // no sectionId, not in any section.controls[]
+        ],
+      });
+      const result = validateGatekeeperManifest(JSON.stringify(m));
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => /orphaned controls/.test(e))).toBe(true);
+      expect(result.score).toBeLessThan(10);
+    });
+
+    it('flags hasLed missing on illuminated button as advisory', () => {
+      const m = baseManifest({
+        sections: [
+          { id: 's1', archetype: 'single-row', controls: ['btn1'] },
+        ],
+        controls: [
+          {
+            id: 'btn1',
+            type: 'button',
+            label: 'PLAY',
+            sectionId: 's1',
+            notes: 'Illuminated transport button — lights up when track is playing',
+          },
+        ],
+      });
+      const result = validateGatekeeperManifest(JSON.stringify(m));
+      expect(result.valid).toBe(true); // advisory, not blocking
+      expect(result.errors.some((e) => /\(advisory\).*hasLed is not set/.test(e))).toBe(true);
+    });
+
+    it('does NOT flag hasLed gap when notes have no illumination keywords', () => {
+      const m = baseManifest({
+        sections: [
+          { id: 's1', archetype: 'single-row', controls: ['btn1'] },
+        ],
+        controls: [
+          {
+            id: 'btn1',
+            type: 'button',
+            label: 'SHIFT',
+            sectionId: 's1',
+            notes: 'Modifier button. Hold while pressing other controls to access secondary functions.',
+          },
+        ],
+      });
+      const result = validateGatekeeperManifest(JSON.stringify(m));
+      expect(result.errors.some((e) => /hasLed is not set/.test(e))).toBe(false);
+    });
+
+    it('does NOT flag hasLed gap when button already has hasLed:true', () => {
+      const m = baseManifest({
+        sections: [
+          { id: 's1', archetype: 'single-row', controls: ['btn1'] },
+        ],
+        controls: [
+          {
+            id: 'btn1',
+            type: 'button',
+            label: 'PLAY',
+            sectionId: 's1',
+            hasLed: true,
+            ledStyle: 'integrated',
+            notes: 'Illuminated transport button',
+          },
+        ],
+      });
+      const result = validateGatekeeperManifest(JSON.stringify(m));
+      expect(result.errors.some((e) => /hasLed is not set/.test(e))).toBe(false);
+    });
+
+    it('combined: unknown archetype + missing containerAssignment + hasLed gap all surface as advisories without halting', () => {
+      const m = baseManifest({
+        sections: [
+          { id: 'made-up', archetype: 'invented-archetype', controls: ['btn1'] },
+          { id: 'jog', archetype: 'anchor-layout', controls: ['jw'] },
+        ],
+        controls: [
+          {
+            id: 'btn1',
+            type: 'button',
+            label: 'CUE',
+            sectionId: 'made-up',
+            notes: 'Illuminated button',
+          },
+          { id: 'jw', type: 'wheel', label: 'Jog', sectionId: 'jog' },
+        ],
+      });
+      const result = validateGatekeeperManifest(JSON.stringify(m));
+      expect(result.valid).toBe(true);
+      expect(result.score).toBeGreaterThanOrEqual(9);
+      const advisoryCount = result.errors.filter((e) => /^\(advisory\)/.test(e)).length;
+      expect(advisoryCount).toBeGreaterThanOrEqual(3);
     });
   });
 });
