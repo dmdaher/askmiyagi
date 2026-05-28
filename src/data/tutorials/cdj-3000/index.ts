@@ -37,11 +37,18 @@ import { loopFundamentals } from './loop-fundamentals';
 import { hotCues } from './hot-cues';
 import { beatSyncAndInstantDoubles } from './beat-sync-and-instant-doubles';
 import { beatgridAdjustment } from './beatgrid-adjustment';
+// Batch E — Advanced Compound Techniques (PR #182)
 import { advancedLoopTechniques } from './advanced-loop-techniques';
 import { hotCueAdvanced } from './hot-cue-advanced';
 import { quantizeAndBeatJump } from './quantize-and-beat-jump';
 import { slipMode } from './slip-mode';
 import { keySyncAndKeyShift } from './key-sync-and-key-shift';
+// Integration — closing audit-identified workflow gaps (PR-X2)
+import { troubleshootingProDjLink } from './troubleshooting-pro-dj-link';
+import { liveSetWorkflow } from './live-set-workflow';
+import { phaseMeterAndVisualDiagnostics } from './phase-meter-and-visual-diagnostics';
+import { multiPlayerBoothSetup } from './multi-player-booth-setup';
+import { harmonicMixingStrategy } from './harmonic-mixing-strategy';
 
 export const cdj3000Tutorials: Tutorial[] = [
   mediaAndCompatibility,
@@ -62,11 +69,18 @@ export const cdj3000Tutorials: Tutorial[] = [
   hotCues,
   beatSyncAndInstantDoubles,
   beatgridAdjustment,
+  // Batch E
   advancedLoopTechniques,
   hotCueAdvanced,
   quantizeAndBeatJump,
   slipMode,
   keySyncAndKeyShift,
+  // Integration
+  troubleshootingProDjLink,
+  liveSetWorkflow,
+  phaseMeterAndVisualDiagnostics,
+  multiPlayerBoothSetup,
+  harmonicMixingStrategy,
 ];
 
 export {
@@ -93,4 +107,9 @@ export {
   quantizeAndBeatJump,
   slipMode,
   keySyncAndKeyShift,
+  troubleshootingProDjLink,
+  liveSetWorkflow,
+  phaseMeterAndVisualDiagnostics,
+  multiPlayerBoothSetup,
+  harmonicMixingStrategy,
 };
