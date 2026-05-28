@@ -29,6 +29,14 @@ export const devices: DeviceRegistry = {
     available: false,
     categories: ['basics', 'synthesis', 'modulation', 'effects', 'presets'],
   },
+  'cdj-3000': {
+    id: 'cdj-3000',
+    name: 'CDJ-3000',
+    manufacturer: 'Pioneer DJ',
+    description: 'Flagship professional multi-player with dual touch displays, 9 performance pads, beat sync, key sync, PRO DJ LINK, and rekordbox integration.',
+    available: true,
+    categories: ['getting-started', 'configuration', 'networking', 'playback', 'browsing', 'cueing', 'looping', 'sync', 'mixing', 'display', 'editing', 'integration', 'performance'],
+  },
   'dj-xdj-rx3': {
     id: 'dj-xdj-rx3',
     // Metadata-only fallback entry. `available: false` keeps this off the

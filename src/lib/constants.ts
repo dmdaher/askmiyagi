@@ -48,6 +48,17 @@ export const TUTORIAL_CATEGORIES: { id: string; label: string; icon: string }[] 
   { id: 'synthesis', label: 'Synthesis', icon: '🔊' },
   { id: 'modulation', label: 'Modulation', icon: '〰️' },
   { id: 'presets', label: 'Presets', icon: '💾' },
+  // DJ-instrument categories (CDJ-3000, XDJ-RX3, DDJ-REV1, etc.)
+  { id: 'getting-started', label: 'Getting Started', icon: '🚀' },
+  { id: 'configuration', label: 'Configuration', icon: '⚙️' },
+  { id: 'networking', label: 'Networking', icon: '🌐' },
+  { id: 'playback', label: 'Playback', icon: '▶️' },
+  { id: 'browsing', label: 'Browsing', icon: '📂' },
+  { id: 'cueing', label: 'Cueing', icon: '📍' },
+  { id: 'sync', label: 'Sync', icon: '🔄' },
+  { id: 'display', label: 'Display', icon: '📺' },
+  { id: 'editing', label: 'Editing', icon: '✏️' },
+  { id: 'integration', label: 'Integration', icon: '🔗' },
 ];
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -66,6 +77,17 @@ export const CATEGORY_LABELS: Record<string, string> = {
   synthesis: 'Synthesis',
   modulation: 'Modulation',
   presets: 'Presets',
+  // DJ-instrument categories
+  'getting-started': 'Getting Started',
+  configuration: 'Configuration',
+  networking: 'Networking',
+  playback: 'Playback',
+  browsing: 'Browsing',
+  cueing: 'Cueing',
+  sync: 'Sync',
+  display: 'Display',
+  editing: 'Editing',
+  integration: 'Integration',
 };
 
 export const CATEGORY_PROGRESSION = [

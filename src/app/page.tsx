@@ -11,6 +11,7 @@ import { getAvailableDevices } from '@/data/devices';
 import { fantom08Tutorials } from '@/data/tutorials/fantom-08';
 import { rc505mk2Tutorials } from '@/data/tutorials/rc505-mk2';
 import { deepmind12Tutorials } from '@/data/tutorials/deepmind-12';
+import { cdj3000Tutorials } from '@/data/tutorials/cdj-3000';
 import { TUTORIAL_CATEGORIES } from '@/lib/constants';
 import { getRecentlyAddedTutorials } from '@/lib/tutorial-metadata';
 import { searchTutorials } from '@/lib/assistant/search';
@@ -24,6 +25,7 @@ const allTutorials: Record<string, Tutorial[]> = {
   'fantom-08': fantom08Tutorials,
   'rc505-mk2': rc505mk2Tutorials,
   'deepmind-12': deepmind12Tutorials,
+  'cdj-3000': cdj3000Tutorials,
 };
 
 const containerVariants = {

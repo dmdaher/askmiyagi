@@ -5,6 +5,7 @@ import { Tutorial } from '@/types/tutorial';
 import { fantom08Tutorials } from '@/data/tutorials/fantom-08';
 import { rc505mk2Tutorials } from '@/data/tutorials/rc505-mk2';
 import { deepmind12Tutorials } from '@/data/tutorials/deepmind-12';
+import { cdj3000Tutorials } from '@/data/tutorials/cdj-3000';
 import FantomPanel from '@/components/devices/fantom-08/FantomPanel';
 import RC505Panel from '@/components/devices/rc505-mk2/RC505Panel';
 import CDJ3000Panel from '@/components/devices/cdj-3000/CDJ3000Panel';
@@ -40,7 +41,7 @@ export const DEVICE_REGISTRY: Record<string, DeviceRegistryEntry> = {
     dimensions: { width: deepmind12Manifest.panelWidth, height: deepmind12Manifest.panelHeight },
   },
   'cdj-3000': {
-    tutorials: [],
+    tutorials: cdj3000Tutorials,
     PanelComponent: CDJ3000Panel,
     dimensions: { width: 1200, height: 1650 },
   },
