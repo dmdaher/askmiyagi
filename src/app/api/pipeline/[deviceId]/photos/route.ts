@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { readState } from '@/lib/pipeline/state-machine';
+import { buildPhotoSearchDirs } from './dirs';
 
 export async function GET(
   request: NextRequest,
@@ -14,16 +15,7 @@ export async function GET(
     return NextResponse.json({ error: 'Pipeline not found' }, { status: 404 });
   }
 
-  // Check multiple possible photo locations
-  const photoDirs = [
-    path.join('docs', state.manufacturer, deviceId, 'photos'),
-    path.join('docs', state.manufacturer, state.deviceName, 'photos'),
-    path.join('.worktrees', deviceId, 'docs', state.manufacturer, deviceId, 'photos'),
-  ];
-
-  // Also check variations without spaces
-  const mfr = state.manufacturer.replace(/ /g, '');
-  photoDirs.push(path.join('docs', mfr, deviceId, 'photos'));
+  const photoDirs = buildPhotoSearchDirs(deviceId, state.manufacturer, state.deviceName);
 
   const photos: Array<{ name: string; path: string; size: number }> = [];
 
