@@ -29,7 +29,7 @@ interface CachedResult {
   costUsd?: number;
   /** Phase 3a verdict — surfaces "why" reason block + retry counter */
   verdict?: {
-    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED' | 'MATCH_TABLE_CONFLICT';
     reason: string;
     selfHealTriggered?: boolean;
     retryCount?: number;
