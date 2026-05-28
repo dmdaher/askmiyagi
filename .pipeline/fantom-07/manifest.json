@@ -4,593 +4,241 @@
   "manufacturer": "Roland",
   "layoutType": "asymmetric",
   "densityTargets": {
-    "vertical": "full-height sections (except Scene at 14% height), variable internal density",
-    "horizontal": "left-to-right section flow, widths 6.5%-33%, no dead space between sections",
-    "horizontalDeadSpaceMax": 0.02
+    "vertical": "tight",
+    "horizontal": "tight",
+    "horizontalDeadSpaceMax": 0.05
+  },
+  "deviceDimensions": {
+    "widthMm": 1283,
+    "depthMm": 340
+  },
+  "keyboard": {
+    "keys": 76,
+    "startNote": "E1",
+    "type": "standard",
+    "panelHeightPercent": 36,
+    "leftPercent": 5,
+    "widthPercent": 93
   },
   "sections": [
     {
       "id": "controller",
-      "headerLabel": "Controller",
-      "archetype": "dual-column",
-      "panelBoundingBox": {
-        "x": 0,
-        "y": 0,
-        "w": 6.5,
-        "h": 100
-      },
-      "controls": [
-        "s1",
-        "s2",
-        "wheel1",
-        "wheel2",
-        "pitch-bend-lever"
-      ],
-      "widthPercent": 6.5,
-      "complexity": "LOW"
+      "headerLabel": null,
+      "archetype": "single-column",
+      "panelBoundingBox": { "x": 0.00, "y": 0.00, "w": 7.00, "h": 100.00 },
+      "widthPercent": 7,
+      "controls": ["wheel-1", "wheel-2", "s1", "s2", "pitch-bend-lever"],
+      "complexity": "low"
     },
     {
       "id": "zone",
-      "headerLabel": "Zone",
+      "headerLabel": null,
       "archetype": "stacked-rows",
-      "panelBoundingBox": {
-        "x": 6.5,
-        "y": 0,
-        "w": 33,
-        "h": 100
-      },
+      "panelBoundingBox": { "x": 7.00, "y": 0.00, "w": 31.00, "h": 100.00 },
+      "widthPercent": 31,
       "controls": [
-        "master-volume",
-        "pan-level",
-        "ctrl",
-        "assign",
-        "zone-9-16",
-        "zone-select",
-        "knob-1",
-        "knob-2",
-        "knob-3",
-        "knob-4",
-        "knob-5",
-        "knob-6",
-        "knob-7",
-        "knob-8",
-        "zone-int-ext-1",
-        "zone-int-ext-2",
-        "zone-int-ext-3",
-        "zone-int-ext-4",
-        "zone-int-ext-5",
-        "zone-int-ext-6",
-        "zone-int-ext-7",
-        "zone-int-ext-8",
-        "slider-1",
-        "slider-2",
-        "slider-3",
-        "slider-4",
-        "slider-5",
-        "slider-6",
-        "slider-7",
-        "slider-8",
-        "split",
-        "chord-memory",
-        "arpeggio",
-        "transpose",
-        "octave-down",
-        "octave-up"
+        "master-volume", "pan-level", "ctrl", "assign",
+        "zone-9-16", "zone-select",
+        "knob-1", "knob-2", "knob-3", "knob-4", "knob-5", "knob-6", "knob-7", "knob-8",
+        "slider-1", "slider-2", "slider-3", "slider-4", "slider-5", "slider-6", "slider-7", "slider-8",
+        "zone-int-ext-1", "zone-int-ext-2", "zone-int-ext-3", "zone-int-ext-4", "zone-int-ext-5", "zone-int-ext-6", "zone-int-ext-7", "zone-int-ext-8",
+        "split", "chord-memory", "arpeggio", "transpose", "octave-down", "octave-up"
       ],
       "containerAssignment": {
-        "row-1-function-select": {
-          "items": {
-            "controls": [
-              "master-volume",
-              "pan-level",
-              "ctrl",
-              "assign",
-              "zone-9-16",
-              "zone-select"
-            ],
-            "direction": "row"
-          }
+        "left-column": {
+          "master-controls": { "controls": ["master-volume", "pan-level", "ctrl", "assign"], "direction": "column" }
         },
-        "row-2-knobs": {
-          "items": {
-            "controls": [
-              "knob-1",
-              "knob-2",
-              "knob-3",
-              "knob-4",
-              "knob-5",
-              "knob-6",
-              "knob-7",
-              "knob-8"
-            ],
-            "direction": "row"
-          }
-        },
-        "row-3-zone-buttons": {
-          "items": {
-            "controls": [
-              "zone-int-ext-1",
-              "zone-int-ext-2",
-              "zone-int-ext-3",
-              "zone-int-ext-4",
-              "zone-int-ext-5",
-              "zone-int-ext-6",
-              "zone-int-ext-7",
-              "zone-int-ext-8"
-            ],
-            "direction": "row"
-          }
-        },
-        "row-4-sliders": {
-          "items": {
-            "controls": [
-              "slider-1",
-              "slider-2",
-              "slider-3",
-              "slider-4",
-              "slider-5",
-              "slider-6",
-              "slider-7",
-              "slider-8"
-            ],
-            "direction": "row"
-          }
-        },
-        "row-5-bottom-buttons": {
-          "items": {
-            "controls": [
-              "split",
-              "chord-memory",
-              "arpeggio",
-              "transpose",
-              "octave-down",
-              "octave-up"
-            ],
-            "direction": "row"
-          }
+        "rows": {
+          "top-buttons": { "controls": ["zone-9-16", "zone-select"], "direction": "row" },
+          "knobs": { "controls": ["knob-1", "knob-2", "knob-3", "knob-4", "knob-5", "knob-6", "knob-7", "knob-8"], "direction": "row" },
+          "sliders": { "controls": ["slider-1", "slider-2", "slider-3", "slider-4", "slider-5", "slider-6", "slider-7", "slider-8"], "direction": "row" },
+          "zone-buttons": { "controls": ["zone-int-ext-1", "zone-int-ext-2", "zone-int-ext-3", "zone-int-ext-4", "zone-int-ext-5", "zone-int-ext-6", "zone-int-ext-7", "zone-int-ext-8"], "direction": "row" },
+          "bottom-buttons": { "controls": ["split", "chord-memory", "arpeggio", "transpose", "octave-down", "octave-up"], "direction": "row" }
         }
       },
-      "widthPercent": 33,
-      "complexity": "HIGH"
+      "complexity": "high"
     },
     {
       "id": "common",
       "headerLabel": null,
-      "archetype": "anchor-layout",
-      "panelBoundingBox": {
-        "x": 39.5,
-        "y": 0,
-        "w": 26,
-        "h": 100
-      },
+      "archetype": "stacked-rows",
+      "panelBoundingBox": { "x": 38.00, "y": 0.00, "w": 26.00, "h": 100.00 },
+      "widthPercent": 26,
       "controls": [
-        "write",
-        "master-fx",
-        "motional-pad",
-        "daw-ctrl",
-        "menu",
+        "write", "master-fx", "motional-pad", "daw-ctrl", "menu",
+        "function-e1", "function-e2", "function-e3", "function-e4", "function-e5", "function-e6",
         "display",
-        "e1",
-        "e2",
-        "e3",
-        "e4",
-        "e5",
-        "e6",
-        "tempo",
-        "value-dial",
-        "dec",
-        "inc",
-        "cursor-up",
-        "cursor-down",
-        "cursor-left",
-        "cursor-right",
-        "shift",
-        "exit",
-        "enter"
+        "tempo", "value-dial", "dec", "inc",
+        "cursor-up", "cursor-down", "cursor-left", "cursor-right",
+        "shift", "exit", "enter"
       ],
       "containerAssignment": {
-        "left-column": [
-          "write",
-          "master-fx",
-          "motional-pad",
-          "daw-ctrl",
-          "menu"
-        ],
-        "anchor": [
-          "display"
-        ],
-        "below-anchor": {
-          "function-knobs": {
-            "controls": [
-              "e1",
-              "e2",
-              "e3",
-              "e4",
-              "e5",
-              "e6"
-            ],
-            "direction": "row"
-          }
+        "left-column": {
+          "utility": { "controls": ["write", "master-fx", "motional-pad", "daw-ctrl", "menu"], "direction": "column" }
         },
-        "right-nav": {
-          "tempo-row": [
-            "tempo"
-          ],
-          "value-dial": [
-            "value-dial"
-          ],
-          "dec-inc-row": {
-            "controls": [
-              "dec",
-              "inc"
-            ],
-            "direction": "row"
-          },
-          "cursor-pad": [
-            "cursor-up",
-            "cursor-left",
-            "cursor-right",
-            "cursor-down"
-          ],
-          "bottom-row": {
-            "controls": [
-              "shift",
-              "exit",
-              "enter"
-            ],
-            "direction": "row"
-          }
+        "center": {
+          "function-knobs": { "controls": ["function-e1", "function-e2", "function-e3", "function-e4", "function-e5", "function-e6"], "direction": "row" },
+          "display": { "controls": ["display"], "direction": "column" }
+        },
+        "right-column": {
+          "nav-top": { "controls": ["tempo", "value-dial", "dec", "inc"], "direction": "column" },
+          "nav-cursor": { "controls": ["cursor-up", "cursor-left", "cursor-right", "cursor-down"], "direction": "column" },
+          "nav-bottom": { "controls": ["shift", "exit", "enter"], "direction": "row" }
         }
       },
-      "heightSplits": {
-        "cluster": 0.2,
-        "anchor": 0.55,
-        "gap": 0.1
-      },
-      "widthPercent": 26,
-      "complexity": "HIGH"
+      "complexity": "high"
     },
     {
       "id": "scene",
-      "headerLabel": "Scene",
-      "archetype": "single-row",
-      "panelBoundingBox": {
-        "x": 39.5,
-        "y": 0,
-        "w": 10,
-        "h": 14
-      },
-      "controls": [
-        "scene-select",
-        "chain",
-        "zone-view",
-        "single-tone"
-      ],
-      "widthPercent": 10,
-      "complexity": "LOW"
+      "headerLabel": "SCENE",
+      "archetype": "grid-NxM",
+      "panelBoundingBox": { "x": 62.00, "y": 0.00, "w": 7.00, "h": 30.00 },
+      "gridRows": 2,
+      "gridCols": 2,
+      "widthPercent": 7,
+      "controls": ["scene-select", "chain", "zone-view", "single-tone"],
+      "complexity": "low"
     },
     {
-      "id": "synth-control",
+      "id": "synth",
       "headerLabel": "SYNTH CTRL",
       "archetype": "stacked-rows",
-      "panelBoundingBox": {
-        "x": 65.5,
-        "y": 0,
-        "w": 10,
-        "h": 100
-      },
+      "panelBoundingBox": { "x": 67.00, "y": 0.00, "w": 14.00, "h": 50.00 },
+      "widthPercent": 14,
       "controls": [
-        "osc",
-        "cutoff",
-        "resonance",
-        "filter-type",
-        "param",
-        "amp",
-        "fx",
-        "lfo"
+        "osc", "cutoff", "resonance",
+        "filter-type", "param", "amp", "fx", "lfo"
       ],
       "containerAssignment": {
-        "row-1-osc": {
-          "items": {
-            "controls": [
-              "osc"
-            ],
-            "direction": "row"
-          }
+        "top-row": {
+          "knobs-cluster": { "controls": ["osc", "cutoff", "resonance"], "direction": "row" }
         },
-        "row-2-knobs": {
-          "items": {
-            "controls": [
-              "cutoff",
-              "resonance"
-            ],
-            "direction": "row"
-          }
-        },
-        "row-3-filter-param": {
-          "items": {
-            "controls": [
-              "filter-type",
-              "param"
-            ],
-            "direction": "row"
-          }
-        },
-        "row-4-amp-fx-lfo": {
-          "items": {
-            "controls": [
-              "amp",
-              "fx",
-              "lfo"
-            ],
-            "direction": "row"
-          }
+        "bottom-row": {
+          "buttons": { "controls": ["filter-type", "param", "amp", "fx", "lfo"], "direction": "row" }
         }
       },
-      "widthPercent": 10,
-      "complexity": "MEDIUM"
+      "complexity": "medium"
     },
     {
       "id": "sequencer",
-      "headerLabel": "Sequencer",
+      "headerLabel": "SEQUENCER",
       "archetype": "stacked-rows",
-      "panelBoundingBox": {
-        "x": 75.5,
-        "y": 0,
-        "w": 10.5,
-        "h": 100
-      },
+      "panelBoundingBox": { "x": 63.00, "y": 45.00, "w": 19.00, "h": 55.00 },
+      "widthPercent": 19,
       "controls": [
-        "pattern",
-        "group",
-        "song",
-        "tr-rec",
-        "rhythm-ptn",
-        "stop",
-        "play",
-        "rec",
-        "tone-cat-1",
-        "tone-cat-2",
-        "tone-cat-3",
-        "tone-cat-4",
-        "tone-cat-5",
-        "tone-cat-6",
-        "tone-cat-7",
-        "tone-cat-8",
-        "tone-cat-9",
-        "tone-cat-10",
-        "tone-cat-11",
-        "tone-cat-12",
-        "tone-cat-13",
-        "tone-cat-14",
-        "tone-cat-15",
-        "tone-cat-16"
+        "pattern", "group", "song",
+        "tr-rec", "rhythm-ptn", "stop", "play", "rec",
+        "tc-1", "tc-2", "tc-3", "tc-4", "tc-5", "tc-6", "tc-7", "tc-8",
+        "tc-9", "tc-10", "tc-11", "tc-12", "tc-13", "tc-14", "tc-15", "tc-16"
       ],
       "containerAssignment": {
-        "row-1-mode": {
-          "items": {
-            "controls": [
-              "pattern",
-              "group",
-              "song"
-            ],
-            "direction": "row"
-          }
+        "mode-row": {
+          "mode-buttons": { "controls": ["pattern", "group", "song"], "direction": "row" }
         },
-        "row-2-rec-rhythm": {
-          "items": {
-            "controls": [
-              "tr-rec",
-              "rhythm-ptn"
-            ],
-            "direction": "row"
-          }
+        "rec-transport-row": {
+          "rec-buttons": { "controls": ["tr-rec", "rhythm-ptn"], "direction": "row" },
+          "transport": { "controls": ["stop", "play", "rec"], "direction": "row" }
         },
-        "row-3-transport": {
-          "items": {
-            "controls": [
-              "stop",
-              "play",
-              "rec"
-            ],
-            "direction": "row"
-          }
-        },
-        "row-4-tone-1-8": {
-          "items": {
-            "controls": [
-              "tone-cat-1",
-              "tone-cat-2",
-              "tone-cat-3",
-              "tone-cat-4",
-              "tone-cat-5",
-              "tone-cat-6",
-              "tone-cat-7",
-              "tone-cat-8"
-            ],
-            "direction": "row"
-          }
-        },
-        "row-5-tone-9-16": {
-          "items": {
-            "controls": [
-              "tone-cat-9",
-              "tone-cat-10",
-              "tone-cat-11",
-              "tone-cat-12",
-              "tone-cat-13",
-              "tone-cat-14",
-              "tone-cat-15",
-              "tone-cat-16"
-            ],
-            "direction": "row"
-          }
+        "tone-categories": {
+          "row-1": { "controls": ["tc-1", "tc-2", "tc-3", "tc-4", "tc-5", "tc-6", "tc-7", "tc-8"], "direction": "row" },
+          "row-2": { "controls": ["tc-9", "tc-10", "tc-11", "tc-12", "tc-13", "tc-14", "tc-15", "tc-16"], "direction": "row" }
         }
       },
-      "widthPercent": 10.5,
-      "complexity": "HIGH"
+      "complexity": "high"
     },
     {
       "id": "pad",
-      "headerLabel": "Pad",
-      "archetype": "cluster-above-anchor",
-      "panelBoundingBox": {
-        "x": 86,
-        "y": 0,
-        "w": 14,
-        "h": 100
-      },
-      "gridRows": 4,
-      "gridCols": 4,
+      "headerLabel": null,
+      "archetype": "stacked-rows",
+      "panelBoundingBox": { "x": 82.00, "y": 0.00, "w": 18.00, "h": 100.00 },
+      "widthPercent": 18,
       "controls": [
-        "sampling",
-        "pad-mode",
-        "clip-board",
-        "bank",
-        "hold",
-        "pad-13",
-        "pad-14",
-        "pad-15",
-        "pad-16",
-        "pad-9",
-        "pad-10",
-        "pad-11",
-        "pad-12",
-        "pad-5",
-        "pad-6",
-        "pad-7",
-        "pad-8",
-        "pad-1",
-        "pad-2",
-        "pad-3",
-        "pad-4"
+        "sampling", "pad-mode", "clip-board", "bank", "hold",
+        "pad-13", "pad-14", "pad-15", "pad-16",
+        "pad-9", "pad-10", "pad-11", "pad-12",
+        "pad-5", "pad-6", "pad-7", "pad-8",
+        "pad-1", "pad-2", "pad-3", "pad-4"
       ],
       "containerAssignment": {
-        "cluster": {
-          "items": {
-            "controls": [
-              "sampling",
-              "pad-mode",
-              "clip-board",
-              "bank",
-              "hold"
-            ],
-            "direction": "row"
-          }
+        "utility-row": {
+          "utility-buttons": { "controls": ["sampling", "pad-mode", "clip-board", "bank", "hold"], "direction": "row" }
         },
-        "anchor": {
-          "row-1": {
-            "controls": [
-              "pad-13",
-              "pad-14",
-              "pad-15",
-              "pad-16"
-            ],
-            "direction": "row"
-          },
-          "row-2": {
-            "controls": [
-              "pad-9",
-              "pad-10",
-              "pad-11",
-              "pad-12"
-            ],
-            "direction": "row"
-          },
-          "row-3": {
-            "controls": [
-              "pad-5",
-              "pad-6",
-              "pad-7",
-              "pad-8"
-            ],
-            "direction": "row"
-          },
-          "row-4": {
-            "controls": [
-              "pad-1",
-              "pad-2",
-              "pad-3",
-              "pad-4"
-            ],
-            "direction": "row"
-          }
+        "pad-grid": {
+          "row-4": { "controls": ["pad-13", "pad-14", "pad-15", "pad-16"], "direction": "row" },
+          "row-3": { "controls": ["pad-9", "pad-10", "pad-11", "pad-12"], "direction": "row" },
+          "row-2": { "controls": ["pad-5", "pad-6", "pad-7", "pad-8"], "direction": "row" },
+          "row-1": { "controls": ["pad-1", "pad-2", "pad-3", "pad-4"], "direction": "row" }
         }
       },
-      "heightSplits": {
-        "cluster": 0.12,
-        "anchor": 0.82,
-        "gap": 0.06
-      },
-      "widthPercent": 14,
-      "complexity": "HIGH"
+      "complexity": "high"
     }
   ],
   "controls": [
+    {
+      "id": "wheel-1",
+      "verbatimLabel": "WHEEL1",
+      "type": "wheel",
+      "section": "controller",
+      "functionalGroup": "performance",
+      "spatialNeighbors": { "above": null, "below": "wheel-2", "left": null, "right": "master-volume" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "WHEEL1",
+      "interactionType": "slide",
+      "orientation": "vertical"
+    },
+    {
+      "id": "wheel-2",
+      "verbatimLabel": "WHEEL2",
+      "type": "wheel",
+      "section": "controller",
+      "functionalGroup": "performance",
+      "spatialNeighbors": { "above": "wheel-1", "below": "s1", "left": null, "right": "pan-level" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "WHEEL2",
+      "interactionType": "slide",
+      "orientation": "vertical"
+    },
     {
       "id": "s1",
       "verbatimLabel": "S1",
       "type": "button",
       "section": "controller",
-      "functionalGroup": "performance-controllers",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "wheel1",
-        "left": null,
-        "right": "s2"
-      }
+      "functionalGroup": "performance",
+      "spatialNeighbors": { "above": "wheel-2", "below": "pitch-bend-lever", "left": null, "right": "s2" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "S1",
+      "interactionType": "momentary",
+      "hasLed": false
     },
     {
       "id": "s2",
       "verbatimLabel": "S2",
       "type": "button",
       "section": "controller",
-      "functionalGroup": "performance-controllers",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "wheel2",
-        "left": "s1",
-        "right": null
-      }
-    },
-    {
-      "id": "wheel1",
-      "verbatimLabel": "WHEEL1",
-      "type": "wheel",
-      "section": "controller",
-      "functionalGroup": "performance-controllers",
-      "spatialNeighbors": {
-        "above": "s1",
-        "below": "pitch-bend-lever",
-        "left": null,
-        "right": "wheel2"
-      }
-    },
-    {
-      "id": "wheel2",
-      "verbatimLabel": "WHEEL2",
-      "type": "wheel",
-      "section": "controller",
-      "functionalGroup": "performance-controllers",
-      "spatialNeighbors": {
-        "above": "s2",
-        "below": "pitch-bend-lever",
-        "left": "wheel1",
-        "right": null
-      }
+      "functionalGroup": "performance",
+      "spatialNeighbors": { "above": "wheel-2", "below": "pitch-bend-lever", "left": "s1", "right": "assign" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "S2",
+      "interactionType": "momentary",
+      "hasLed": false
     },
     {
       "id": "pitch-bend-lever",
-      "verbatimLabel": "Pitch bend/modulation lever",
-      "type": "wheel",
+      "verbatimLabel": "PITCH BEND/MODULATION",
+      "type": "lever",
       "section": "controller",
-      "functionalGroup": "performance-controllers",
-      "spatialNeighbors": {
-        "above": "wheel1",
-        "below": null,
-        "left": null,
-        "right": null
-      }
+      "functionalGroup": "performance",
+      "spatialNeighbors": { "above": "s1", "below": null, "left": null, "right": null },
+      "sizeClass": "lg",
+      "labelDisplay": "hidden",
+      "primaryLabel": "PITCH BEND/MODULATION",
+      "interactionType": "slide"
     },
     {
       "id": "master-volume",
@@ -598,181 +246,307 @@
       "type": "knob",
       "section": "zone",
       "functionalGroup": "zone-master",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "knob-1",
-        "left": null,
-        "right": "pan-level"
-      }
+      "spatialNeighbors": { "above": null, "below": "pan-level", "left": "wheel-1", "right": "knob-1" },
+      "sizeClass": "md",
+      "labelDisplay": "above",
+      "primaryLabel": "MASTER VOLUME",
+      "interactionType": "rotary"
     },
     {
       "id": "pan-level",
       "verbatimLabel": "PAN/LEVEL",
       "type": "button",
       "section": "zone",
-      "functionalGroup": "zone-function-select",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "knob-2",
-        "left": "master-volume",
-        "right": "ctrl"
-      }
+      "functionalGroup": "zone-master",
+      "spatialNeighbors": { "above": "master-volume", "below": "ctrl", "left": "wheel-2", "right": "slider-1" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "PAN/LEVEL",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "ctrl",
       "verbatimLabel": "CTRL",
       "type": "button",
       "section": "zone",
-      "functionalGroup": "zone-function-select",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "knob-2",
-        "left": "pan-level",
-        "right": "assign"
-      }
+      "functionalGroup": "zone-master",
+      "spatialNeighbors": { "above": "pan-level", "below": "assign", "left": "wheel-2", "right": "slider-1" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "CTRL",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "assign",
       "verbatimLabel": "ASSIGN",
       "type": "button",
       "section": "zone",
-      "functionalGroup": "zone-function-select",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "knob-3",
-        "left": "ctrl",
-        "right": null
-      }
+      "functionalGroup": "zone-master",
+      "spatialNeighbors": { "above": "ctrl", "below": "zone-int-ext-1", "left": "s2", "right": "slider-1" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "ASSIGN",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "zone-9-16",
       "verbatimLabel": "ZONE 9-16",
       "type": "button",
       "section": "zone",
-      "functionalGroup": "zone-navigation",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "knob-7",
-        "left": null,
-        "right": "zone-select"
-      }
+      "functionalGroup": "zone-select",
+      "spatialNeighbors": { "above": null, "below": "knob-1", "left": "master-volume", "right": "zone-select" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "ZONE 9-16",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "zone-select",
       "verbatimLabel": "ZONE SELECT",
       "type": "button",
       "section": "zone",
-      "functionalGroup": "zone-navigation",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "knob-8",
-        "left": "zone-9-16",
-        "right": null
-      }
+      "functionalGroup": "zone-select",
+      "spatialNeighbors": { "above": null, "below": "knob-2", "left": "zone-9-16", "right": null },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "ZONE SELECT",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "knob-1",
-      "verbatimLabel": "Control knob 1",
+      "verbatimLabel": "1",
       "type": "knob",
       "section": "zone",
-      "functionalGroup": "zone-control-knobs",
-      "spatialNeighbors": {
-        "above": "master-volume",
-        "below": "zone-int-ext-1",
-        "left": null,
-        "right": "knob-2"
-      }
+      "functionalGroup": "zone-knobs",
+      "spatialNeighbors": { "above": "zone-9-16", "below": "slider-1", "left": "master-volume", "right": "knob-2" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "1",
+      "interactionType": "rotary",
+      "groupId": "control-knobs"
     },
     {
       "id": "knob-2",
-      "verbatimLabel": "Control knob 2",
+      "verbatimLabel": "2",
       "type": "knob",
       "section": "zone",
-      "functionalGroup": "zone-control-knobs",
-      "spatialNeighbors": {
-        "above": "pan-level",
-        "below": "zone-int-ext-2",
-        "left": "knob-1",
-        "right": "knob-3"
-      }
+      "functionalGroup": "zone-knobs",
+      "spatialNeighbors": { "above": "zone-select", "below": "slider-2", "left": "knob-1", "right": "knob-3" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "2",
+      "interactionType": "rotary",
+      "groupId": "control-knobs"
     },
     {
       "id": "knob-3",
-      "verbatimLabel": "Control knob 3",
+      "verbatimLabel": "3",
       "type": "knob",
       "section": "zone",
-      "functionalGroup": "zone-control-knobs",
-      "spatialNeighbors": {
-        "above": "assign",
-        "below": "zone-int-ext-3",
-        "left": "knob-2",
-        "right": "knob-4"
-      }
+      "functionalGroup": "zone-knobs",
+      "spatialNeighbors": { "above": null, "below": "slider-3", "left": "knob-2", "right": "knob-4" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "3",
+      "interactionType": "rotary",
+      "groupId": "control-knobs"
     },
     {
       "id": "knob-4",
-      "verbatimLabel": "Control knob 4",
+      "verbatimLabel": "4",
       "type": "knob",
       "section": "zone",
-      "functionalGroup": "zone-control-knobs",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "zone-int-ext-4",
-        "left": "knob-3",
-        "right": "knob-5"
-      }
+      "functionalGroup": "zone-knobs",
+      "spatialNeighbors": { "above": null, "below": "slider-4", "left": "knob-3", "right": "knob-5" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "4",
+      "interactionType": "rotary",
+      "groupId": "control-knobs"
     },
     {
       "id": "knob-5",
-      "verbatimLabel": "Control knob 5",
+      "verbatimLabel": "5",
       "type": "knob",
       "section": "zone",
-      "functionalGroup": "zone-control-knobs",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "zone-int-ext-5",
-        "left": "knob-4",
-        "right": "knob-6"
-      }
+      "functionalGroup": "zone-knobs",
+      "spatialNeighbors": { "above": null, "below": "slider-5", "left": "knob-4", "right": "knob-6" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "5",
+      "interactionType": "rotary",
+      "groupId": "control-knobs"
     },
     {
       "id": "knob-6",
-      "verbatimLabel": "Control knob 6",
+      "verbatimLabel": "6",
       "type": "knob",
       "section": "zone",
-      "functionalGroup": "zone-control-knobs",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "zone-int-ext-6",
-        "left": "knob-5",
-        "right": "knob-7"
-      }
+      "functionalGroup": "zone-knobs",
+      "spatialNeighbors": { "above": null, "below": "slider-6", "left": "knob-5", "right": "knob-7" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "6",
+      "interactionType": "rotary",
+      "groupId": "control-knobs"
     },
     {
       "id": "knob-7",
-      "verbatimLabel": "Control knob 7",
+      "verbatimLabel": "7",
       "type": "knob",
       "section": "zone",
-      "functionalGroup": "zone-control-knobs",
-      "spatialNeighbors": {
-        "above": "zone-9-16",
-        "below": "zone-int-ext-7",
-        "left": "knob-6",
-        "right": "knob-8"
-      }
+      "functionalGroup": "zone-knobs",
+      "spatialNeighbors": { "above": null, "below": "slider-7", "left": "knob-6", "right": "knob-8" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "7",
+      "interactionType": "rotary",
+      "groupId": "control-knobs"
     },
     {
       "id": "knob-8",
-      "verbatimLabel": "Control knob 8",
+      "verbatimLabel": "8",
       "type": "knob",
       "section": "zone",
-      "functionalGroup": "zone-control-knobs",
-      "spatialNeighbors": {
-        "above": "zone-select",
-        "below": "zone-int-ext-8",
-        "left": "knob-7",
-        "right": null
-      }
+      "functionalGroup": "zone-knobs",
+      "spatialNeighbors": { "above": null, "below": "slider-8", "left": "knob-7", "right": "write" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "8",
+      "interactionType": "rotary",
+      "groupId": "control-knobs"
+    },
+    {
+      "id": "slider-1",
+      "verbatimLabel": "1",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": { "above": "knob-1", "below": "zone-int-ext-1", "left": "pan-level", "right": "slider-2" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "1",
+      "interactionType": "slide",
+      "orientation": "vertical",
+      "groupId": "sliders"
+    },
+    {
+      "id": "slider-2",
+      "verbatimLabel": "2",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": { "above": "knob-2", "below": "zone-int-ext-2", "left": "slider-1", "right": "slider-3" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "2",
+      "interactionType": "slide",
+      "orientation": "vertical",
+      "groupId": "sliders"
+    },
+    {
+      "id": "slider-3",
+      "verbatimLabel": "3",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": { "above": "knob-3", "below": "zone-int-ext-3", "left": "slider-2", "right": "slider-4" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "3",
+      "interactionType": "slide",
+      "orientation": "vertical",
+      "groupId": "sliders"
+    },
+    {
+      "id": "slider-4",
+      "verbatimLabel": "4",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": { "above": "knob-4", "below": "zone-int-ext-4", "left": "slider-3", "right": "slider-5" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "4",
+      "interactionType": "slide",
+      "orientation": "vertical",
+      "groupId": "sliders"
+    },
+    {
+      "id": "slider-5",
+      "verbatimLabel": "5",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": { "above": "knob-5", "below": "zone-int-ext-5", "left": "slider-4", "right": "slider-6" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "5",
+      "interactionType": "slide",
+      "orientation": "vertical",
+      "groupId": "sliders"
+    },
+    {
+      "id": "slider-6",
+      "verbatimLabel": "6",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": { "above": "knob-6", "below": "zone-int-ext-6", "left": "slider-5", "right": "slider-7" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "6",
+      "interactionType": "slide",
+      "orientation": "vertical",
+      "groupId": "sliders"
+    },
+    {
+      "id": "slider-7",
+      "verbatimLabel": "7",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": { "above": "knob-7", "below": "zone-int-ext-7", "left": "slider-6", "right": "slider-8" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "7",
+      "interactionType": "slide",
+      "orientation": "vertical",
+      "groupId": "sliders"
+    },
+    {
+      "id": "slider-8",
+      "verbatimLabel": "8",
+      "type": "slider",
+      "section": "zone",
+      "functionalGroup": "zone-sliders",
+      "spatialNeighbors": { "above": "knob-8", "below": "zone-int-ext-8", "left": "slider-7", "right": "display" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "8",
+      "interactionType": "slide",
+      "orientation": "vertical",
+      "groupId": "sliders"
     },
     {
       "id": "zone-int-ext-1",
@@ -780,12 +554,16 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-int-ext",
-      "spatialNeighbors": {
-        "above": "knob-1",
-        "below": "slider-1",
-        "left": null,
-        "right": "zone-int-ext-2"
-      }
+      "spatialNeighbors": { "above": "slider-1", "below": "split", "left": "assign", "right": "zone-int-ext-2" },
+      "shape": "square",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "1",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "zone-int-ext"
     },
     {
       "id": "zone-int-ext-2",
@@ -793,12 +571,16 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-int-ext",
-      "spatialNeighbors": {
-        "above": "knob-2",
-        "below": "slider-2",
-        "left": "zone-int-ext-1",
-        "right": "zone-int-ext-3"
-      }
+      "spatialNeighbors": { "above": "slider-2", "below": "split", "left": "zone-int-ext-1", "right": "zone-int-ext-3" },
+      "shape": "square",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "2",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "zone-int-ext"
     },
     {
       "id": "zone-int-ext-3",
@@ -806,12 +588,16 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-int-ext",
-      "spatialNeighbors": {
-        "above": "knob-3",
-        "below": "slider-3",
-        "left": "zone-int-ext-2",
-        "right": "zone-int-ext-4"
-      }
+      "spatialNeighbors": { "above": "slider-3", "below": "chord-memory", "left": "zone-int-ext-2", "right": "zone-int-ext-4" },
+      "shape": "square",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "3",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "zone-int-ext"
     },
     {
       "id": "zone-int-ext-4",
@@ -819,12 +605,16 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-int-ext",
-      "spatialNeighbors": {
-        "above": "knob-4",
-        "below": "slider-4",
-        "left": "zone-int-ext-3",
-        "right": "zone-int-ext-5"
-      }
+      "spatialNeighbors": { "above": "slider-4", "below": "arpeggio", "left": "zone-int-ext-3", "right": "zone-int-ext-5" },
+      "shape": "square",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "4",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "zone-int-ext"
     },
     {
       "id": "zone-int-ext-5",
@@ -832,12 +622,16 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-int-ext",
-      "spatialNeighbors": {
-        "above": "knob-5",
-        "below": "slider-5",
-        "left": "zone-int-ext-4",
-        "right": "zone-int-ext-6"
-      }
+      "spatialNeighbors": { "above": "slider-5", "below": "transpose", "left": "zone-int-ext-4", "right": "zone-int-ext-6" },
+      "shape": "square",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "5",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "zone-int-ext"
     },
     {
       "id": "zone-int-ext-6",
@@ -845,12 +639,16 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-int-ext",
-      "spatialNeighbors": {
-        "above": "knob-6",
-        "below": "slider-6",
-        "left": "zone-int-ext-5",
-        "right": "zone-int-ext-7"
-      }
+      "spatialNeighbors": { "above": "slider-6", "below": "transpose", "left": "zone-int-ext-5", "right": "zone-int-ext-7" },
+      "shape": "square",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "6",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "zone-int-ext"
     },
     {
       "id": "zone-int-ext-7",
@@ -858,12 +656,16 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-int-ext",
-      "spatialNeighbors": {
-        "above": "knob-7",
-        "below": "slider-7",
-        "left": "zone-int-ext-6",
-        "right": "zone-int-ext-8"
-      }
+      "spatialNeighbors": { "above": "slider-7", "below": "octave-down", "left": "zone-int-ext-6", "right": "zone-int-ext-8" },
+      "shape": "square",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "7",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "zone-int-ext"
     },
     {
       "id": "zone-int-ext-8",
@@ -871,116 +673,16 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-int-ext",
-      "spatialNeighbors": {
-        "above": "knob-8",
-        "below": "slider-8",
-        "left": "zone-int-ext-7",
-        "right": null
-      }
-    },
-    {
-      "id": "slider-1",
-      "verbatimLabel": "Slider 1",
-      "type": "slider",
-      "section": "zone",
-      "functionalGroup": "zone-sliders",
-      "spatialNeighbors": {
-        "above": "zone-int-ext-1",
-        "below": "split",
-        "left": null,
-        "right": "slider-2"
-      }
-    },
-    {
-      "id": "slider-2",
-      "verbatimLabel": "Slider 2",
-      "type": "slider",
-      "section": "zone",
-      "functionalGroup": "zone-sliders",
-      "spatialNeighbors": {
-        "above": "zone-int-ext-2",
-        "below": "chord-memory",
-        "left": "slider-1",
-        "right": "slider-3"
-      }
-    },
-    {
-      "id": "slider-3",
-      "verbatimLabel": "Slider 3",
-      "type": "slider",
-      "section": "zone",
-      "functionalGroup": "zone-sliders",
-      "spatialNeighbors": {
-        "above": "zone-int-ext-3",
-        "below": "arpeggio",
-        "left": "slider-2",
-        "right": "slider-4"
-      }
-    },
-    {
-      "id": "slider-4",
-      "verbatimLabel": "Slider 4",
-      "type": "slider",
-      "section": "zone",
-      "functionalGroup": "zone-sliders",
-      "spatialNeighbors": {
-        "above": "zone-int-ext-4",
-        "below": "transpose",
-        "left": "slider-3",
-        "right": "slider-5"
-      }
-    },
-    {
-      "id": "slider-5",
-      "verbatimLabel": "Slider 5",
-      "type": "slider",
-      "section": "zone",
-      "functionalGroup": "zone-sliders",
-      "spatialNeighbors": {
-        "above": "zone-int-ext-5",
-        "below": "transpose",
-        "left": "slider-4",
-        "right": "slider-6"
-      }
-    },
-    {
-      "id": "slider-6",
-      "verbatimLabel": "Slider 6",
-      "type": "slider",
-      "section": "zone",
-      "functionalGroup": "zone-sliders",
-      "spatialNeighbors": {
-        "above": "zone-int-ext-6",
-        "below": "octave-down",
-        "left": "slider-5",
-        "right": "slider-7"
-      }
-    },
-    {
-      "id": "slider-7",
-      "verbatimLabel": "Slider 7",
-      "type": "slider",
-      "section": "zone",
-      "functionalGroup": "zone-sliders",
-      "spatialNeighbors": {
-        "above": "zone-int-ext-7",
-        "below": "octave-up",
-        "left": "slider-6",
-        "right": "slider-8"
-      }
-    },
-    {
-      "id": "slider-8",
-      "verbatimLabel": "Slider 8",
-      "type": "slider",
-      "section": "zone",
-      "functionalGroup": "zone-sliders",
-      "spatialNeighbors": {
-        "above": "zone-int-ext-8",
-        "below": null,
-        "left": "slider-7",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "slider-8", "below": "octave-up", "left": "zone-int-ext-7", "right": null },
+      "shape": "square",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "8",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "zone-int-ext"
     },
     {
       "id": "split",
@@ -988,12 +690,15 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-performance",
-      "spatialNeighbors": {
-        "above": "slider-1",
-        "below": null,
-        "left": null,
-        "right": "chord-memory"
-      }
+      "spatialNeighbors": { "above": "zone-int-ext-1", "below": null, "left": "assign", "right": "chord-memory" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "SPLIT",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "chord-memory",
@@ -1001,12 +706,15 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-performance",
-      "spatialNeighbors": {
-        "above": "slider-2",
-        "below": null,
-        "left": "split",
-        "right": "arpeggio"
-      }
+      "spatialNeighbors": { "above": "zone-int-ext-2", "below": null, "left": "split", "right": "arpeggio" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "CHORD MEMORY",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "arpeggio",
@@ -1014,12 +722,15 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-performance",
-      "spatialNeighbors": {
-        "above": "slider-3",
-        "below": null,
-        "left": "chord-memory",
-        "right": "transpose"
-      }
+      "spatialNeighbors": { "above": "zone-int-ext-4", "below": null, "left": "chord-memory", "right": "transpose" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "ARPEGGIO",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "transpose",
@@ -1027,12 +738,15 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-performance",
-      "spatialNeighbors": {
-        "above": "slider-5",
-        "below": null,
-        "left": "arpeggio",
-        "right": "octave-down"
-      }
+      "spatialNeighbors": { "above": "zone-int-ext-5", "below": null, "left": "arpeggio", "right": "octave-down" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "TRANSPOSE",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "octave-down",
@@ -1040,12 +754,15 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-performance",
-      "spatialNeighbors": {
-        "above": "slider-6",
-        "below": null,
-        "left": "transpose",
-        "right": "octave-up"
-      }
+      "spatialNeighbors": { "above": "zone-int-ext-7", "below": null, "left": "transpose", "right": "octave-up" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "OCTAVE DOWN",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "octave-up",
@@ -1053,168 +770,191 @@
       "type": "button",
       "section": "zone",
       "functionalGroup": "zone-performance",
-      "spatialNeighbors": {
-        "above": "slider-7",
-        "below": null,
-        "left": "octave-down",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "zone-int-ext-8", "below": null, "left": "octave-down", "right": null },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "OCTAVE UP",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "write",
       "verbatimLabel": "WRITE",
       "type": "button",
       "section": "common",
-      "functionalGroup": "common-mode-select",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "master-fx",
-        "left": null,
-        "right": "display"
-      }
+      "functionalGroup": "common-utility",
+      "spatialNeighbors": { "above": null, "below": "master-fx", "left": "knob-8", "right": "function-e1" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "WRITE",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "master-fx",
       "verbatimLabel": "MASTER FX",
       "type": "button",
       "section": "common",
-      "functionalGroup": "common-mode-select",
-      "spatialNeighbors": {
-        "above": "write",
-        "below": "motional-pad",
-        "left": null,
-        "right": "display"
-      }
+      "functionalGroup": "common-utility",
+      "spatialNeighbors": { "above": "write", "below": "motional-pad", "left": "slider-8", "right": "display" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "MASTER FX",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "motional-pad",
       "verbatimLabel": "MOTIONAL PAD",
       "type": "button",
       "section": "common",
-      "functionalGroup": "common-mode-select",
-      "spatialNeighbors": {
-        "above": "master-fx",
-        "below": "daw-ctrl",
-        "left": null,
-        "right": "display"
-      }
+      "functionalGroup": "common-utility",
+      "spatialNeighbors": { "above": "master-fx", "below": "daw-ctrl", "left": "slider-8", "right": "display" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "MOTIONAL PAD",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "daw-ctrl",
       "verbatimLabel": "DAW CTRL",
       "type": "button",
       "section": "common",
-      "functionalGroup": "common-mode-select",
-      "spatialNeighbors": {
-        "above": "motional-pad",
-        "below": "menu",
-        "left": null,
-        "right": "display"
-      }
+      "functionalGroup": "common-utility",
+      "spatialNeighbors": { "above": "motional-pad", "below": "menu", "left": null, "right": "display" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "DAW CTRL",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "menu",
       "verbatimLabel": "MENU",
       "type": "button",
       "section": "common",
-      "functionalGroup": "common-mode-select",
-      "spatialNeighbors": {
-        "above": "daw-ctrl",
-        "below": "e1",
-        "left": null,
-        "right": "display"
-      }
+      "functionalGroup": "common-utility",
+      "spatialNeighbors": { "above": "daw-ctrl", "below": null, "left": null, "right": null },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "MENU",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
+    },
+    {
+      "id": "function-e1",
+      "verbatimLabel": "E1",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": { "above": null, "below": "display", "left": "write", "right": "function-e2" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "E1",
+      "interactionType": "rotary",
+      "encoderHasPush": true,
+      "groupId": "function-knobs"
+    },
+    {
+      "id": "function-e2",
+      "verbatimLabel": "E2",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": { "above": null, "below": "display", "left": "function-e1", "right": "function-e3" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "E2",
+      "interactionType": "rotary",
+      "encoderHasPush": true,
+      "groupId": "function-knobs"
+    },
+    {
+      "id": "function-e3",
+      "verbatimLabel": "E3",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": { "above": null, "below": "display", "left": "function-e2", "right": "function-e4" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "E3",
+      "interactionType": "rotary",
+      "encoderHasPush": true,
+      "groupId": "function-knobs"
+    },
+    {
+      "id": "function-e4",
+      "verbatimLabel": "E4",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": { "above": null, "below": "display", "left": "function-e3", "right": "function-e5" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "E4",
+      "interactionType": "rotary",
+      "encoderHasPush": true,
+      "groupId": "function-knobs"
+    },
+    {
+      "id": "function-e5",
+      "verbatimLabel": "E5",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": { "above": null, "below": "display", "left": "function-e4", "right": "function-e6" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "E5",
+      "interactionType": "rotary",
+      "encoderHasPush": true,
+      "groupId": "function-knobs"
+    },
+    {
+      "id": "function-e6",
+      "verbatimLabel": "E6",
+      "type": "knob",
+      "section": "common",
+      "functionalGroup": "common-function-knobs",
+      "spatialNeighbors": { "above": null, "below": "display", "left": "function-e5", "right": "tempo" },
+      "sizeClass": "sm",
+      "labelDisplay": "below",
+      "primaryLabel": "E6",
+      "interactionType": "rotary",
+      "encoderHasPush": true,
+      "groupId": "function-knobs"
     },
     {
       "id": "display",
       "verbatimLabel": "Display",
       "type": "screen",
       "section": "common",
-      "functionalGroup": "display",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "e3",
-        "left": "master-fx",
-        "right": "value-dial"
-      }
-    },
-    {
-      "id": "e1",
-      "verbatimLabel": "FUNCTION knob E1",
-      "type": "knob",
-      "section": "common",
-      "functionalGroup": "common-function-knobs",
-      "spatialNeighbors": {
-        "above": "display",
-        "below": null,
-        "left": "menu",
-        "right": "e2"
-      }
-    },
-    {
-      "id": "e2",
-      "verbatimLabel": "FUNCTION knob E2",
-      "type": "knob",
-      "section": "common",
-      "functionalGroup": "common-function-knobs",
-      "spatialNeighbors": {
-        "above": "display",
-        "below": null,
-        "left": "e1",
-        "right": "e3"
-      }
-    },
-    {
-      "id": "e3",
-      "verbatimLabel": "FUNCTION knob E3",
-      "type": "knob",
-      "section": "common",
-      "functionalGroup": "common-function-knobs",
-      "spatialNeighbors": {
-        "above": "display",
-        "below": null,
-        "left": "e2",
-        "right": "e4"
-      }
-    },
-    {
-      "id": "e4",
-      "verbatimLabel": "FUNCTION knob E4",
-      "type": "knob",
-      "section": "common",
-      "functionalGroup": "common-function-knobs",
-      "spatialNeighbors": {
-        "above": "display",
-        "below": null,
-        "left": "e3",
-        "right": "e5"
-      }
-    },
-    {
-      "id": "e5",
-      "verbatimLabel": "FUNCTION knob E5",
-      "type": "knob",
-      "section": "common",
-      "functionalGroup": "common-function-knobs",
-      "spatialNeighbors": {
-        "above": "display",
-        "below": null,
-        "left": "e4",
-        "right": "e6"
-      }
-    },
-    {
-      "id": "e6",
-      "verbatimLabel": "FUNCTION knob E6",
-      "type": "knob",
-      "section": "common",
-      "functionalGroup": "common-function-knobs",
-      "spatialNeighbors": {
-        "above": "display",
-        "below": null,
-        "left": "e5",
-        "right": "shift"
-      }
+      "functionalGroup": "common-display",
+      "spatialNeighbors": { "above": "function-e3", "below": null, "left": "motional-pad", "right": "value-dial" },
+      "sizeClass": "xl",
+      "labelDisplay": "hidden",
+      "primaryLabel": "Display",
+      "interactionType": "touch"
     },
     {
       "id": "tempo",
@@ -1222,12 +962,15 @@
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "value-dial",
-        "left": "display",
-        "right": null
-      }
+      "spatialNeighbors": { "above": null, "below": "value-dial", "left": "function-e6", "right": "scene-select" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "TEMPO",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "value-dial",
@@ -1235,12 +978,12 @@
       "type": "encoder",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "tempo",
-        "below": "dec",
-        "left": "display",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "tempo", "below": "dec", "left": "display", "right": "scene-select" },
+      "sizeClass": "lg",
+      "labelDisplay": "above",
+      "primaryLabel": "VALUE",
+      "interactionType": "rotary",
+      "encoderHasPush": false
     },
     {
       "id": "dec",
@@ -1248,12 +991,13 @@
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "value-dial",
-        "below": "cursor-left",
-        "left": "display",
-        "right": "inc"
-      }
+      "spatialNeighbors": { "above": "value-dial", "below": "cursor-left", "left": "display", "right": "inc" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "DEC",
+      "interactionType": "momentary",
+      "pairedWith": "inc"
     },
     {
       "id": "inc",
@@ -1261,64 +1005,69 @@
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "value-dial",
-        "below": "cursor-right",
-        "left": "dec",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "value-dial", "below": "cursor-right", "left": "dec", "right": "zone-view" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "INC",
+      "interactionType": "momentary",
+      "pairedWith": "dec"
     },
     {
       "id": "cursor-up",
-      "verbatimLabel": "Cursor UP",
+      "verbatimLabel": "CURSOR UP",
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "dec",
-        "below": "cursor-down",
-        "left": null,
-        "right": null
-      }
+      "spatialNeighbors": { "above": "dec", "below": "cursor-down", "left": null, "right": null },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "icon-only",
+      "primaryLabel": "\u25b2",
+      "interactionType": "momentary",
+      "groupId": "cursor-buttons"
     },
     {
       "id": "cursor-down",
-      "verbatimLabel": "Cursor DOWN",
+      "verbatimLabel": "CURSOR DOWN",
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "cursor-up",
-        "below": "exit",
-        "left": null,
-        "right": null
-      }
+      "spatialNeighbors": { "above": "cursor-up", "below": "exit", "left": null, "right": null },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "icon-only",
+      "primaryLabel": "\u25bc",
+      "interactionType": "momentary",
+      "groupId": "cursor-buttons"
     },
     {
       "id": "cursor-left",
-      "verbatimLabel": "Cursor LEFT",
+      "verbatimLabel": "CURSOR LEFT",
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "dec",
-        "below": "shift",
-        "left": null,
-        "right": "cursor-right"
-      }
+      "spatialNeighbors": { "above": "dec", "below": "shift", "left": "display", "right": "cursor-up" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "icon-only",
+      "primaryLabel": "\u25c0",
+      "interactionType": "momentary",
+      "groupId": "cursor-buttons"
     },
     {
       "id": "cursor-right",
-      "verbatimLabel": "Cursor RIGHT",
+      "verbatimLabel": "CURSOR RIGHT",
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "inc",
-        "below": "enter",
-        "left": "cursor-left",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "inc", "below": "enter", "left": "cursor-up", "right": "single-tone" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "icon-only",
+      "primaryLabel": "\u25b6",
+      "interactionType": "momentary",
+      "groupId": "cursor-buttons"
     },
     {
       "id": "shift",
@@ -1326,12 +1075,12 @@
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "cursor-left",
-        "below": null,
-        "left": "e6",
-        "right": "exit"
-      }
+      "spatialNeighbors": { "above": "cursor-left", "below": null, "left": null, "right": "exit" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "SHIFT",
+      "interactionType": "hold"
     },
     {
       "id": "exit",
@@ -1339,12 +1088,12 @@
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "cursor-down",
-        "below": null,
-        "left": "shift",
-        "right": "enter"
-      }
+      "spatialNeighbors": { "above": "cursor-down", "below": null, "left": "shift", "right": "enter" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "EXIT",
+      "interactionType": "momentary"
     },
     {
       "id": "enter",
@@ -1352,168 +1101,196 @@
       "type": "button",
       "section": "common",
       "functionalGroup": "common-navigation",
-      "spatialNeighbors": {
-        "above": "cursor-right",
-        "below": null,
-        "left": "exit",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "cursor-right", "below": null, "left": "exit", "right": "filter-type" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "ENTER",
+      "interactionType": "momentary"
     },
     {
       "id": "scene-select",
       "verbatimLabel": "SCENE SELECT",
       "type": "button",
       "section": "scene",
-      "functionalGroup": "scene-select",
-      "spatialNeighbors": {
-        "above": null,
-        "below": null,
-        "left": null,
-        "right": "chain"
-      }
+      "functionalGroup": "scene",
+      "spatialNeighbors": { "above": null, "below": "zone-view", "left": "tempo", "right": "chain" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "SCENE SELECT",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "chain",
       "verbatimLabel": "CHAIN",
       "type": "button",
       "section": "scene",
-      "functionalGroup": "scene-select",
-      "spatialNeighbors": {
-        "above": null,
-        "below": null,
-        "left": "scene-select",
-        "right": "zone-view"
-      }
+      "functionalGroup": "scene",
+      "spatialNeighbors": { "above": null, "below": "single-tone", "left": "scene-select", "right": "osc" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "CHAIN",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "zone-view",
       "verbatimLabel": "ZONE VIEW",
       "type": "button",
       "section": "scene",
-      "functionalGroup": "scene-select",
-      "spatialNeighbors": {
-        "above": null,
-        "below": null,
-        "left": "chain",
-        "right": "single-tone"
-      }
+      "functionalGroup": "scene",
+      "spatialNeighbors": { "above": "scene-select", "below": "value-dial", "left": "tempo", "right": "single-tone" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "ZONE VIEW",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "single-tone",
       "verbatimLabel": "SINGLE TONE",
       "type": "button",
       "section": "scene",
-      "functionalGroup": "scene-select",
-      "spatialNeighbors": {
-        "above": null,
-        "below": null,
-        "left": "zone-view",
-        "right": null
-      }
+      "functionalGroup": "scene",
+      "spatialNeighbors": { "above": "chain", "below": "cutoff", "left": "zone-view", "right": "osc" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "SINGLE TONE",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "osc",
       "verbatimLabel": "OSC",
       "type": "button",
-      "section": "synth-control",
+      "section": "synth",
       "functionalGroup": "synth-control",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "cutoff",
-        "left": null,
-        "right": null
-      }
+      "spatialNeighbors": { "above": null, "below": "cutoff", "left": "chain", "right": "cutoff" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "OSC",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "cutoff",
       "verbatimLabel": "CUTOFF",
       "type": "knob",
-      "section": "synth-control",
+      "section": "synth",
       "functionalGroup": "synth-control",
-      "spatialNeighbors": {
-        "above": "osc",
-        "below": "filter-type",
-        "left": null,
-        "right": "resonance"
-      }
+      "spatialNeighbors": { "above": "osc", "below": "filter-type", "left": "single-tone", "right": "resonance" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "CUTOFF",
+      "interactionType": "rotary"
     },
     {
       "id": "resonance",
       "verbatimLabel": "RESONANCE",
       "type": "knob",
-      "section": "synth-control",
+      "section": "synth",
       "functionalGroup": "synth-control",
-      "spatialNeighbors": {
-        "above": "osc",
-        "below": "filter-type",
-        "left": "cutoff",
-        "right": null
-      }
+      "spatialNeighbors": { "above": null, "below": "amp", "left": "cutoff", "right": "sampling" },
+      "sizeClass": "lg",
+      "labelDisplay": "below",
+      "primaryLabel": "RESONANCE",
+      "interactionType": "rotary"
     },
     {
       "id": "filter-type",
       "verbatimLabel": "FILTER TYPE",
       "type": "button",
-      "section": "synth-control",
+      "section": "synth",
       "functionalGroup": "synth-control",
-      "spatialNeighbors": {
-        "above": "cutoff",
-        "below": "param",
-        "left": null,
-        "right": null
-      }
+      "spatialNeighbors": { "above": "osc", "below": "pattern", "left": "enter", "right": "param" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "FILTER TYPE",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "param",
       "verbatimLabel": "PARAM",
       "type": "button",
-      "section": "synth-control",
+      "section": "synth",
       "functionalGroup": "synth-control",
-      "spatialNeighbors": {
-        "above": "filter-type",
-        "below": "fx",
-        "left": null,
-        "right": null
-      }
+      "spatialNeighbors": { "above": "cutoff", "below": "pattern", "left": "filter-type", "right": "amp" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "PARAM",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "amp",
       "verbatimLabel": "AMP",
       "type": "button",
-      "section": "synth-control",
+      "section": "synth",
       "functionalGroup": "synth-control",
-      "spatialNeighbors": {
-        "above": "param",
-        "below": null,
-        "left": null,
-        "right": "fx"
-      }
+      "spatialNeighbors": { "above": "resonance", "below": "group", "left": "param", "right": "fx" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "AMP",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "fx",
       "verbatimLabel": "FX",
       "type": "button",
-      "section": "synth-control",
+      "section": "synth",
       "functionalGroup": "synth-control",
-      "spatialNeighbors": {
-        "above": "param",
-        "below": null,
-        "left": "amp",
-        "right": "lfo"
-      }
+      "spatialNeighbors": { "above": "resonance", "below": "song", "left": "amp", "right": "lfo" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "FX",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "lfo",
       "verbatimLabel": "LFO",
       "type": "button",
-      "section": "synth-control",
+      "section": "synth",
       "functionalGroup": "synth-control",
-      "spatialNeighbors": {
-        "above": "param",
-        "below": null,
-        "left": "fx",
-        "right": null
-      }
+      "spatialNeighbors": { "above": null, "below": "song", "left": "fx", "right": "pad-mode" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "LFO",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "pattern",
@@ -1521,12 +1298,15 @@
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "sequencer-mode",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "tr-rec",
-        "left": null,
-        "right": "group"
-      }
+      "spatialNeighbors": { "above": "filter-type", "below": "tr-rec", "left": "exit", "right": "group" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "PATTERN",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "group",
@@ -1534,12 +1314,15 @@
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "sequencer-mode",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "tr-rec",
-        "left": "pattern",
-        "right": "song"
-      }
+      "spatialNeighbors": { "above": "param", "below": "rhythm-ptn", "left": "pattern", "right": "song" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "GROUP",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "song",
@@ -1547,38 +1330,47 @@
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "sequencer-mode",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "rhythm-ptn",
-        "left": "group",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "amp", "below": "stop", "left": "group", "right": null },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "SONG",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "tr-rec",
       "verbatimLabel": "TR-REC",
       "type": "button",
       "section": "sequencer",
-      "functionalGroup": "sequencer-mode",
-      "spatialNeighbors": {
-        "above": "pattern",
-        "below": "stop",
-        "left": null,
-        "right": "rhythm-ptn"
-      }
+      "functionalGroup": "sequencer-rec",
+      "spatialNeighbors": { "above": "pattern", "below": "tc-1", "left": "cursor-down", "right": "rhythm-ptn" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "TR-REC",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "rhythm-ptn",
       "verbatimLabel": "RHYTHM PTN",
       "type": "button",
       "section": "sequencer",
-      "functionalGroup": "sequencer-mode",
-      "spatialNeighbors": {
-        "above": "song",
-        "below": "play",
-        "left": "tr-rec",
-        "right": null
-      }
+      "functionalGroup": "sequencer-rec",
+      "spatialNeighbors": { "above": "group", "below": "tc-3", "left": "tr-rec", "right": "stop" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "RHYTHM PTN",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "stop",
@@ -1586,12 +1378,13 @@
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "sequencer-transport",
-      "spatialNeighbors": {
-        "above": "tr-rec",
-        "below": "tone-cat-1",
-        "left": null,
-        "right": "play"
-      }
+      "spatialNeighbors": { "above": "song", "below": "tc-5", "left": "rhythm-ptn", "right": "play" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "\u25a0 STOP",
+      "secondaryLabel": "STOP",
+      "interactionType": "momentary"
     },
     {
       "id": "play",
@@ -1599,12 +1392,16 @@
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "sequencer-transport",
-      "spatialNeighbors": {
-        "above": "tr-rec",
-        "below": "tone-cat-4",
-        "left": "stop",
-        "right": "rec"
-      }
+      "spatialNeighbors": { "above": "fx", "below": "tc-7", "left": "stop", "right": "rec" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "\u25b6 PLAY",
+      "secondaryLabel": "PLAY",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "green",
+      "ledPosition": "inside"
     },
     {
       "id": "rec",
@@ -1612,604 +1409,664 @@
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "sequencer-transport",
-      "spatialNeighbors": {
-        "above": "rhythm-ptn",
-        "below": "tone-cat-7",
-        "left": "play",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "lfo", "below": "tc-8", "left": "play", "right": "pad-mode" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "\u25cf REC",
+      "secondaryLabel": "REC",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
-      "id": "tone-cat-1",
-      "verbatimLabel": "Tone category 1",
+      "id": "tc-1",
+      "verbatimLabel": "A.PIANO",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "stop",
-        "below": "tone-cat-9",
-        "left": null,
-        "right": "tone-cat-2"
-      }
+      "spatialNeighbors": { "above": "tr-rec", "below": "tc-9", "left": "shift", "right": "tc-2" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "A.PIANO",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-2",
-      "verbatimLabel": "Tone category 2",
+      "id": "tc-2",
+      "verbatimLabel": "E.PIANO",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "stop",
-        "below": "tone-cat-10",
-        "left": "tone-cat-1",
-        "right": "tone-cat-3"
-      }
+      "spatialNeighbors": { "above": "tr-rec", "below": "tc-10", "left": "tc-1", "right": "tc-3" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "E.PIANO",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-3",
-      "verbatimLabel": "Tone category 3",
+      "id": "tc-3",
+      "verbatimLabel": "ORGAN",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "stop",
-        "below": "tone-cat-11",
-        "left": "tone-cat-2",
-        "right": "tone-cat-4"
-      }
+      "spatialNeighbors": { "above": "rhythm-ptn", "below": "tc-11", "left": "tc-2", "right": "tc-4" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "ORGAN",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-4",
-      "verbatimLabel": "Tone category 4",
+      "id": "tc-4",
+      "verbatimLabel": "NOTE",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "play",
-        "below": "tone-cat-12",
-        "left": "tone-cat-3",
-        "right": "tone-cat-5"
-      }
+      "spatialNeighbors": { "above": "rhythm-ptn", "below": "tc-12", "left": "tc-3", "right": "tc-5" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "NOTE",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-5",
-      "verbatimLabel": "Tone category 5",
+      "id": "tc-5",
+      "verbatimLabel": "STRINGS",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "play",
-        "below": "tone-cat-13",
-        "left": "tone-cat-4",
-        "right": "tone-cat-6"
-      }
+      "spatialNeighbors": { "above": "stop", "below": "tc-13", "left": "tc-4", "right": "tc-6" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "STRINGS",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-6",
-      "verbatimLabel": "Tone category 6",
+      "id": "tc-6",
+      "verbatimLabel": "BRASS",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "rec",
-        "below": "tone-cat-14",
-        "left": "tone-cat-5",
-        "right": "tone-cat-7"
-      }
+      "spatialNeighbors": { "above": "play", "below": "tc-14", "left": "tc-5", "right": "tc-7" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "BRASS",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-7",
-      "verbatimLabel": "Tone category 7",
+      "id": "tc-7",
+      "verbatimLabel": "CHOIR",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "rec",
-        "below": "tone-cat-15",
-        "left": "tone-cat-6",
-        "right": "tone-cat-8"
-      }
+      "spatialNeighbors": { "above": "play", "below": "tc-15", "left": "tc-6", "right": "tc-8" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "CHOIR",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-8",
-      "verbatimLabel": "Tone category 8",
+      "id": "tc-8",
+      "verbatimLabel": "SYN",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "rec",
-        "below": "tone-cat-16",
-        "left": "tone-cat-7",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "rec", "below": "tc-16", "left": "tc-7", "right": "pad-1" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "SYN",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-9",
-      "verbatimLabel": "Tone category 9",
+      "id": "tc-9",
+      "verbatimLabel": "GUITAR",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "tone-cat-1",
-        "below": null,
-        "left": null,
-        "right": "tone-cat-10"
-      }
+      "spatialNeighbors": { "above": "tc-1", "below": null, "left": null, "right": "tc-10" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "GUITAR",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-10",
-      "verbatimLabel": "Tone category 10",
+      "id": "tc-10",
+      "verbatimLabel": "BASS",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "tone-cat-2",
-        "below": null,
-        "left": "tone-cat-9",
-        "right": "tone-cat-11"
-      }
+      "spatialNeighbors": { "above": "tc-2", "below": null, "left": "tc-9", "right": "tc-11" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "BASS",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-11",
-      "verbatimLabel": "Tone category 11",
+      "id": "tc-11",
+      "verbatimLabel": "SYNTH",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "tone-cat-3",
-        "below": null,
-        "left": "tone-cat-10",
-        "right": "tone-cat-12"
-      }
+      "spatialNeighbors": { "above": "tc-3", "below": null, "left": "tc-10", "right": "tc-12" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "SYNTH",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-12",
-      "verbatimLabel": "Tone category 12",
+      "id": "tc-12",
+      "verbatimLabel": "PAD",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "tone-cat-4",
-        "below": null,
-        "left": "tone-cat-11",
-        "right": "tone-cat-13"
-      }
+      "spatialNeighbors": { "above": "tc-4", "below": null, "left": "tc-11", "right": "tc-13" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "PAD",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-13",
-      "verbatimLabel": "Tone category 13",
+      "id": "tc-13",
+      "verbatimLabel": "FX",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "tone-cat-5",
-        "below": null,
-        "left": "tone-cat-12",
-        "right": "tone-cat-14"
-      }
+      "spatialNeighbors": { "above": "tc-5", "below": null, "left": "tc-12", "right": "tc-14" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "FX",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-14",
-      "verbatimLabel": "Tone category 14",
+      "id": "tc-14",
+      "verbatimLabel": "DRUM",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "tone-cat-6",
-        "below": null,
-        "left": "tone-cat-13",
-        "right": "tone-cat-15"
-      }
+      "spatialNeighbors": { "above": "tc-6", "below": null, "left": "tc-13", "right": "tc-15" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "DRUM",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-15",
-      "verbatimLabel": "Tone category 15",
+      "id": "tc-15",
+      "verbatimLabel": "RHYTHM",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "tone-cat-7",
-        "below": null,
-        "left": "tone-cat-14",
-        "right": "tone-cat-16"
-      }
+      "spatialNeighbors": { "above": "tc-7", "below": null, "left": "tc-14", "right": "tc-16" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "RHYTHM",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
-      "id": "tone-cat-16",
-      "verbatimLabel": "Tone category 16",
+      "id": "tc-16",
+      "verbatimLabel": "USER",
       "type": "button",
       "section": "sequencer",
       "functionalGroup": "tone-category",
-      "spatialNeighbors": {
-        "above": "tone-cat-8",
-        "below": null,
-        "left": "tone-cat-15",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "tc-8", "below": null, "left": "tc-15", "right": "pad-4" },
+      "shape": "rectangle",
+      "sizeClass": "xs",
+      "labelDisplay": "below",
+      "primaryLabel": "USER",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside",
+      "groupId": "tone-categories"
     },
     {
       "id": "sampling",
       "verbatimLabel": "SAMPLING",
       "type": "button",
       "section": "pad",
-      "functionalGroup": "pad-function",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "pad-13",
-        "left": null,
-        "right": "pad-mode"
-      }
+      "functionalGroup": "pad-utility",
+      "spatialNeighbors": { "above": null, "below": "pad-13", "left": "resonance", "right": "pad-mode" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "SAMPLING",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "pad-mode",
       "verbatimLabel": "PAD MODE",
       "type": "button",
       "section": "pad",
-      "functionalGroup": "pad-function",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "pad-13",
-        "left": "sampling",
-        "right": "clip-board"
-      }
+      "functionalGroup": "pad-utility",
+      "spatialNeighbors": { "above": null, "below": "pad-14", "left": "sampling", "right": "clip-board" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "PAD MODE",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "clip-board",
       "verbatimLabel": "CLIP BOARD",
       "type": "button",
       "section": "pad",
-      "functionalGroup": "pad-function",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "pad-14",
-        "left": "pad-mode",
-        "right": "bank"
-      }
+      "functionalGroup": "pad-utility",
+      "spatialNeighbors": { "above": null, "below": "pad-15", "left": "pad-mode", "right": "bank" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "CLIP BOARD",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "bank",
       "verbatimLabel": "BANK",
       "type": "button",
       "section": "pad",
-      "functionalGroup": "pad-function",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "pad-15",
-        "left": "clip-board",
-        "right": "hold"
-      }
+      "functionalGroup": "pad-utility",
+      "spatialNeighbors": { "above": null, "below": "pad-16", "left": "clip-board", "right": "hold" },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "BANK",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "hold",
       "verbatimLabel": "HOLD",
       "type": "button",
       "section": "pad",
-      "functionalGroup": "pad-function",
-      "spatialNeighbors": {
-        "above": null,
-        "below": "pad-16",
-        "left": "bank",
-        "right": null
-      }
+      "functionalGroup": "pad-utility",
+      "spatialNeighbors": { "above": null, "below": "pad-16", "left": "bank", "right": null },
+      "shape": "rectangle",
+      "sizeClass": "sm",
+      "labelDisplay": "on-button",
+      "primaryLabel": "HOLD",
+      "interactionType": "toggle",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledPosition": "inside"
     },
     {
       "id": "pad-13",
-      "verbatimLabel": "Pad 13",
+      "verbatimLabel": "13",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "sampling",
-        "below": "pad-9",
-        "left": null,
-        "right": "pad-14"
-      }
+      "spatialNeighbors": { "above": "sampling", "below": "pad-9", "left": null, "right": "pad-14" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "13",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-14",
-      "verbatimLabel": "Pad 14",
+      "verbatimLabel": "14",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "clip-board",
-        "below": "pad-10",
-        "left": "pad-13",
-        "right": "pad-15"
-      }
+      "spatialNeighbors": { "above": "pad-mode", "below": "pad-10", "left": "pad-13", "right": "pad-15" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "14",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-15",
-      "verbatimLabel": "Pad 15",
+      "verbatimLabel": "15",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "bank",
-        "below": "pad-11",
-        "left": "pad-14",
-        "right": "pad-16"
-      }
+      "spatialNeighbors": { "above": "clip-board", "below": "pad-11", "left": "pad-14", "right": "pad-16" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "15",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-16",
-      "verbatimLabel": "Pad 16",
+      "verbatimLabel": "16",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "hold",
-        "below": "pad-12",
-        "left": "pad-15",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "hold", "below": "pad-12", "left": "pad-15", "right": null },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "16",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-9",
-      "verbatimLabel": "Pad 9",
+      "verbatimLabel": "9",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-13",
-        "below": "pad-5",
-        "left": null,
-        "right": "pad-10"
-      }
+      "spatialNeighbors": { "above": "pad-13", "below": "pad-5", "left": null, "right": "pad-10" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "9",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-10",
-      "verbatimLabel": "Pad 10",
+      "verbatimLabel": "10",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-14",
-        "below": "pad-6",
-        "left": "pad-9",
-        "right": "pad-11"
-      }
+      "spatialNeighbors": { "above": "pad-14", "below": "pad-6", "left": "pad-9", "right": "pad-11" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "10",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-11",
-      "verbatimLabel": "Pad 11",
+      "verbatimLabel": "11",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-15",
-        "below": "pad-7",
-        "left": "pad-10",
-        "right": "pad-12"
-      }
+      "spatialNeighbors": { "above": "pad-15", "below": "pad-7", "left": "pad-10", "right": "pad-12" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "11",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-12",
-      "verbatimLabel": "Pad 12",
+      "verbatimLabel": "12",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-16",
-        "below": "pad-8",
-        "left": "pad-11",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "pad-16", "below": "pad-8", "left": "pad-11", "right": null },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "12",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-5",
-      "verbatimLabel": "Pad 5",
+      "verbatimLabel": "5",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-9",
-        "below": "pad-1",
-        "left": null,
-        "right": "pad-6"
-      }
+      "spatialNeighbors": { "above": "pad-9", "below": "pad-1", "left": null, "right": "pad-6" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "5",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-6",
-      "verbatimLabel": "Pad 6",
+      "verbatimLabel": "6",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-10",
-        "below": "pad-2",
-        "left": "pad-5",
-        "right": "pad-7"
-      }
+      "spatialNeighbors": { "above": "pad-10", "below": "pad-2", "left": "pad-5", "right": "pad-7" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "6",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-7",
-      "verbatimLabel": "Pad 7",
+      "verbatimLabel": "7",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-11",
-        "below": "pad-3",
-        "left": "pad-6",
-        "right": "pad-8"
-      }
+      "spatialNeighbors": { "above": "pad-11", "below": "pad-3", "left": "pad-6", "right": "pad-8" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "7",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-8",
-      "verbatimLabel": "Pad 8",
+      "verbatimLabel": "8",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-12",
-        "below": "pad-4",
-        "left": "pad-7",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "pad-12", "below": "pad-4", "left": "pad-7", "right": null },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "8",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-1",
-      "verbatimLabel": "Pad 1",
+      "verbatimLabel": "1",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-5",
-        "below": null,
-        "left": null,
-        "right": "pad-2"
-      }
+      "spatialNeighbors": { "above": "pad-5", "below": null, "left": "tc-8", "right": "pad-2" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "1",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-2",
-      "verbatimLabel": "Pad 2",
+      "verbatimLabel": "2",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-6",
-        "below": null,
-        "left": "pad-1",
-        "right": "pad-3"
-      }
+      "spatialNeighbors": { "above": "pad-6", "below": null, "left": "pad-1", "right": "pad-3" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "2",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-3",
-      "verbatimLabel": "Pad 3",
+      "verbatimLabel": "3",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-7",
-        "below": null,
-        "left": "pad-2",
-        "right": "pad-4"
-      }
+      "spatialNeighbors": { "above": "pad-7", "below": null, "left": "pad-2", "right": "pad-4" },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "3",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     },
     {
       "id": "pad-4",
-      "verbatimLabel": "Pad 4",
+      "verbatimLabel": "4",
       "type": "pad",
       "section": "pad",
       "functionalGroup": "pad-grid",
-      "spatialNeighbors": {
-        "above": "pad-8",
-        "below": null,
-        "left": "pad-3",
-        "right": null
-      }
+      "spatialNeighbors": { "above": "pad-8", "below": null, "left": "pad-3", "right": null },
+      "shape": "square",
+      "sizeClass": "lg",
+      "labelDisplay": "on-button",
+      "primaryLabel": "4",
+      "interactionType": "momentary",
+      "hasLed": true,
+      "ledColor": "red",
+      "ledBehavior": "dynamic-color",
+      "ledPosition": "inside",
+      "groupId": "pads"
     }
   ],
-  "sharedElements": [],
-  "alignmentAnchors": [
-    {
-      "sourceId": "knob-1",
-      "targetId": "zone-int-ext-1",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "zone-int-ext-1",
-      "targetId": "slider-1",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "knob-2",
-      "targetId": "zone-int-ext-2",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "zone-int-ext-2",
-      "targetId": "slider-2",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "knob-3",
-      "targetId": "zone-int-ext-3",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "zone-int-ext-3",
-      "targetId": "slider-3",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "knob-4",
-      "targetId": "zone-int-ext-4",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "zone-int-ext-4",
-      "targetId": "slider-4",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "knob-5",
-      "targetId": "zone-int-ext-5",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "zone-int-ext-5",
-      "targetId": "slider-5",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "knob-6",
-      "targetId": "zone-int-ext-6",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "zone-int-ext-6",
-      "targetId": "slider-6",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "knob-7",
-      "targetId": "zone-int-ext-7",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "zone-int-ext-7",
-      "targetId": "slider-7",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "knob-8",
-      "targetId": "zone-int-ext-8",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "zone-int-ext-8",
-      "targetId": "slider-8",
-      "axis": "x",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "e1",
-      "targetId": "e6",
-      "axis": "y",
-      "tolerancePx": 4
-    },
-    {
-      "sourceId": "cutoff",
-      "targetId": "resonance",
-      "axis": "y",
-      "tolerancePx": 4
-    }
+  "groupLabels": [
+    { "id": "gl-control-knobs", "text": "Control knobs [1]-[8]", "controlIds": ["knob-1","knob-2","knob-3","knob-4","knob-5","knob-6","knob-7","knob-8"], "position": "above" },
+    { "id": "gl-sliders", "text": "Sliders [1]-[8]", "controlIds": ["slider-1","slider-2","slider-3","slider-4","slider-5","slider-6","slider-7","slider-8"], "position": "above" },
+    { "id": "gl-zone-int-ext", "text": "ZONE INT/EXT [1]-[8]", "controlIds": ["zone-int-ext-1","zone-int-ext-2","zone-int-ext-3","zone-int-ext-4","zone-int-ext-5","zone-int-ext-6","zone-int-ext-7","zone-int-ext-8"], "position": "above" },
+    { "id": "gl-function-knobs", "text": "FUNCTION knobs [E1]-[E6]", "controlIds": ["function-e1","function-e2","function-e3","function-e4","function-e5","function-e6"], "position": "above" },
+    { "id": "gl-tone-categories", "text": "Tone category [1]-[16]", "controlIds": ["tc-1","tc-2","tc-3","tc-4","tc-5","tc-6","tc-7","tc-8","tc-9","tc-10","tc-11","tc-12","tc-13","tc-14","tc-15","tc-16"], "position": "above" },
+    { "id": "gl-pads", "text": "Pads [1]-[16]", "controlIds": ["pad-1","pad-2","pad-3","pad-4","pad-5","pad-6","pad-7","pad-8","pad-9","pad-10","pad-11","pad-12","pad-13","pad-14","pad-15","pad-16"], "position": "above" }
   ]
 }
