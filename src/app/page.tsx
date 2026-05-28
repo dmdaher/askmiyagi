@@ -12,6 +12,7 @@ import { fantom08Tutorials } from '@/data/tutorials/fantom-08';
 import { rc505mk2Tutorials } from '@/data/tutorials/rc505-mk2';
 import { deepmind12Tutorials } from '@/data/tutorials/deepmind-12';
 import { TUTORIAL_CATEGORIES } from '@/lib/constants';
+import { getRecentlyAddedTutorials } from '@/lib/tutorial-metadata';
 import { searchTutorials } from '@/lib/assistant/search';
 import { buildResponse } from '@/lib/assistant/responseBuilder';
 import { resolveFollowUp } from '@/lib/assistant/followUpResolver';
@@ -94,6 +95,13 @@ function HomePageContent() {
     }
     return result;
   }, [tutorials, selectedCategory, searchMatchIds]);
+
+  // Recently added (last 14 days). Only shown when a category isn't filtered
+  // AND no search is active — the badge is for browsing, not narrow lookups.
+  const recentlyAdded = useMemo(() => {
+    if (!selectedDevice || selectedCategory || searchMatchIds) return [];
+    return getRecentlyAddedTutorials(tutorials).slice(0, 5);
+  }, [tutorials, selectedDevice, selectedCategory, searchMatchIds]);
 
   // After initial tutorial grid animation completes, skip re-animation on category changes
   useEffect(() => {
@@ -299,6 +307,32 @@ function HomePageContent() {
                         selected={selectedCategory}
                         onSelect={setSelectedCategory}
                       />
+                    </div>
+                  )}
+
+                  {/* Recently added — tutorials authored in the last 14 days.
+                      Surfaces work that closed coverage-audit gaps so users
+                      can see fresh content without hunting through the full grid.
+                      Only shown when no category filter / search is active. */}
+                  {recentlyAdded.length > 0 && (
+                    <div className="mb-10" data-testid="recently-added-section">
+                      <div className="mb-3 flex items-center gap-2">
+                        <h3 className="text-sm font-semibold uppercase tracking-wide text-amber-300">
+                          ✨ Recently added
+                        </h3>
+                        <span className="text-xs text-gray-500">
+                          {recentlyAdded.length} {recentlyAdded.length === 1 ? 'tutorial' : 'tutorials'} added in the last 14 days
+                        </span>
+                      </div>
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {recentlyAdded.map((tutorial) => (
+                          <TutorialCard
+                            key={`recent-${tutorial.id}`}
+                            tutorial={tutorial}
+                            onClick={() => handleTutorialSelect(tutorial)}
+                          />
+                        ))}
+                      </div>
                     </div>
                   )}
 

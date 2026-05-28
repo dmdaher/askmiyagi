@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Tutorial } from '@/types/tutorial';
 import { CATEGORY_LABELS } from '@/lib/constants';
+import { isRecentlyAdded } from '@/lib/tutorial-metadata';
 
 interface TutorialCardProps {
   tutorial: Tutorial;
@@ -18,6 +19,7 @@ const DIFFICULTY_COLORS: Record<string, { bg: string; text: string; border: stri
 export default function TutorialCard({ tutorial, onClick }: TutorialCardProps) {
   const difficultyStyle = DIFFICULTY_COLORS[tutorial.difficulty] ?? DIFFICULTY_COLORS.beginner;
   const categoryLabel = CATEGORY_LABELS[tutorial.category] ?? tutorial.category;
+  const isNew = isRecentlyAdded(tutorial);
 
   return (
     <motion.button
@@ -27,6 +29,24 @@ export default function TutorialCard({ tutorial, onClick }: TutorialCardProps) {
       whileTap={{ scale: 0.99 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
     >
+      {/* "New" corner badge — shown when tutorial was added in the last 14 days.
+          Surfaces tutorials authored in response to coverage audits so users
+          can see the audit→author feedback loop closing. */}
+      {isNew && (
+        <span
+          className="absolute right-3 top-3 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+          style={{
+            background: 'rgba(245, 158, 11, 0.15)',
+            color: '#fbbf24',
+            border: '1px solid rgba(245, 158, 11, 0.4)',
+          }}
+          data-testid="tutorial-card-new-badge"
+          title={`Added ${tutorial.addedDate}`}
+        >
+          ✨ New
+        </span>
+      )}
+
       {/* Title */}
       <h4 className="mb-2 text-lg font-semibold text-gray-100 transition-colors group-hover:text-[var(--accent)]">
         {tutorial.title}
