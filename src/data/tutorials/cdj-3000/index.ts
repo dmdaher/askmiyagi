@@ -5,7 +5,7 @@
  * Batch B — Core Navigation & Configuration (T03, T19, T22, T23).
  * Batch C — Playing Techniques & Organization (T04, T05, T06, T07, T20).
  * Batch D — Intermediate Techniques (T08, T09, T11, T16, T18).
- * Subsequent batches (E) live alongside as additional files; add their imports here.
+ * Batch E — Advanced Compound Techniques (T10, T12, T13, T14, T17).
  *
  * Tutorials author against the handcrafted `CDJ3000Panel.tsx` and the committed
  * manifest at `src/data/manifests/cdj-3000.json`. Control IDs are validated by
@@ -37,6 +37,11 @@ import { loopFundamentals } from './loop-fundamentals';
 import { hotCues } from './hot-cues';
 import { beatSyncAndInstantDoubles } from './beat-sync-and-instant-doubles';
 import { beatgridAdjustment } from './beatgrid-adjustment';
+import { advancedLoopTechniques } from './advanced-loop-techniques';
+import { hotCueAdvanced } from './hot-cue-advanced';
+import { quantizeAndBeatJump } from './quantize-and-beat-jump';
+import { slipMode } from './slip-mode';
+import { keySyncAndKeyShift } from './key-sync-and-key-shift';
 
 export const cdj3000Tutorials: Tutorial[] = [
   mediaAndCompatibility,
@@ -57,6 +62,11 @@ export const cdj3000Tutorials: Tutorial[] = [
   hotCues,
   beatSyncAndInstantDoubles,
   beatgridAdjustment,
+  advancedLoopTechniques,
+  hotCueAdvanced,
+  quantizeAndBeatJump,
+  slipMode,
+  keySyncAndKeyShift,
 ];
 
 export {
@@ -78,4 +88,9 @@ export {
   hotCues,
   beatSyncAndInstantDoubles,
   beatgridAdjustment,
+  advancedLoopTechniques,
+  hotCueAdvanced,
+  quantizeAndBeatJump,
+  slipMode,
+  keySyncAndKeyShift,
 };
