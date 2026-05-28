@@ -26,4 +26,8 @@ export interface Tutorial {
   estimatedTime: string;
   steps: TutorialStep[];
   tags: string[];
+  /** ISO date (YYYY-MM-DD) marking when this tutorial was first authored.
+   *  Optional — older tutorials don't set it. Used to surface "Recently added"
+   *  in the UI so users can see which tutorials closed coverage gaps. */
+  addedDate?: string;
 }
