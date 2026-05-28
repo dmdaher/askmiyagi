@@ -37,6 +37,14 @@ import { loopFundamentals } from './loop-fundamentals';
 import { hotCues } from './hot-cues';
 import { beatSyncAndInstantDoubles } from './beat-sync-and-instant-doubles';
 import { beatgridAdjustment } from './beatgrid-adjustment';
+// PR-X2 — integration tutorials closing the workflow gaps identified by
+// the coverage audit (troubleshooting, live-set capstone, visual diagnostics,
+// multi-deck booth setup, harmonic mixing strategy).
+import { troubleshootingProDjLink } from './troubleshooting-pro-dj-link';
+import { liveSetWorkflow } from './live-set-workflow';
+import { phaseMeterAndVisualDiagnostics } from './phase-meter-and-visual-diagnostics';
+import { multiPlayerBoothSetup } from './multi-player-booth-setup';
+import { harmonicMixingStrategy } from './harmonic-mixing-strategy';
 
 export const cdj3000Tutorials: Tutorial[] = [
   mediaAndCompatibility,
@@ -57,6 +65,12 @@ export const cdj3000Tutorials: Tutorial[] = [
   hotCues,
   beatSyncAndInstantDoubles,
   beatgridAdjustment,
+  // PR-X2 integration tutorials
+  troubleshootingProDjLink,
+  liveSetWorkflow,
+  phaseMeterAndVisualDiagnostics,
+  multiPlayerBoothSetup,
+  harmonicMixingStrategy,
 ];
 
 export {
@@ -78,4 +92,9 @@ export {
   hotCues,
   beatSyncAndInstantDoubles,
   beatgridAdjustment,
+  troubleshootingProDjLink,
+  liveSetWorkflow,
+  phaseMeterAndVisualDiagnostics,
+  multiPlayerBoothSetup,
+  harmonicMixingStrategy,
 };
