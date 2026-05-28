@@ -228,3 +228,77 @@ describe('scoreCoverage — edge cases with match-table', () => {
     expect(['APPROVED', 'APPROVED_WITH_WARNINGS']).toContain(result.verdict);
   });
 });
+
+// ─── PR-X1: MENTIONED_NOT_TAUGHT bar ──────────────────────────────────────────
+//
+// New match_kind for features that appear in tutorial prose but fail the
+// 4-rule TAUGHT bar (dedicated step + highlights/panelStateChanges +
+// consequence + WHY). Treated as a gap (not confirmed). Existing CONFIRMED /
+// CONFIRMED_BY_PARENT_ONLY / MISSING / RECLASSIFICATION behavior unchanged.
+// ──────────────────────────────────────────────────────────────────────────────
+describe('PR-X1 — MENTIONED_NOT_TAUGHT match_kind', () => {
+  it('parseMatchTable accepts MENTIONED_NOT_TAUGHT rows', () => {
+    const md = `
+| feature_id | feature_name | page | match_kind | tutorial_id | step_id | evidence_quote |
+| --- | --- | --- | --- | --- | --- | --- |
+| f1 | Emergency Loop | 56 | MENTIONED_NOT_TAUGHT | advanced-loops | step-8 | mentioned in details — no dedicated step |
+| f2 | Phase Meter | 80 | MENTIONED_NOT_TAUGHT | shortcuts | step-2 | named but no highlights/panelStateChanges |
+`;
+    const rows = parseMatchTable(md);
+    expect(rows).toHaveLength(2);
+    expect(rows[0].matchKind).toBe('MENTIONED_NOT_TAUGHT');
+    expect(rows[1].matchKind).toBe('MENTIONED_NOT_TAUGHT');
+  });
+
+  it('summarizeMatchTable counts MENTIONED_NOT_TAUGHT as gap (not confirmed)', () => {
+    const md = `
+| feature_id | feature_name | page | match_kind | tutorial_id | step_id | evidence_quote |
+| --- | --- | --- | --- | --- | --- | --- |
+| f1 | Taught | 1 | CONFIRMED | t | s | hands-on |
+| f2 | Mentioned | 2 | MENTIONED_NOT_TAUGHT | t | s | named only |
+| f3 | Section | 3 | CONFIRMED_BY_PARENT_ONLY |  |  |  |
+| f4 | Gone | 4 | MISSING |  |  |  |
+`;
+    const summary = summarizeMatchTable(parseMatchTable(md));
+    expect(summary.total).toBe(4);
+    expect(summary.confirmed).toBe(1); // only the CONFIRMED row
+    expect(summary.mentionedNotTaughtGaps).toBe(1);
+    expect(summary.parentOnlyGaps).toBe(1);
+    expect(summary.missingGaps).toBe(1);
+    expect(summary.coveragePct).toBe(25); // 1/4
+  });
+
+  it('mixed match-table: coveragePct only counts CONFIRMED + RECLASSIFICATION', () => {
+    const md = `
+| feature_id | feature_name | page | match_kind | tutorial_id | step_id | evidence_quote |
+| --- | --- | --- | --- | --- | --- | --- |
+| a | A | 1 | CONFIRMED | t | s | x |
+| b | B | 2 | CONFIRMED | t | s | x |
+| c | C | 3 | RECLASSIFICATION | t | s | x |
+| d | D | 4 | MENTIONED_NOT_TAUGHT | t | s | x |
+| e | E | 5 | MENTIONED_NOT_TAUGHT | t | s | x |
+`;
+    const summary = summarizeMatchTable(parseMatchTable(md));
+    expect(summary.confirmed).toBe(3); // 2 CONFIRMED + 1 RECLASSIFICATION
+    expect(summary.mentionedNotTaughtGaps).toBe(2);
+    expect(summary.coveragePct).toBe(60); // 3/5
+  });
+
+  it('backward compat: match-tables without MENTIONED_NOT_TAUGHT still summarize with 0 count', () => {
+    const md = `
+| feature_id | feature_name | page | match_kind | tutorial_id | step_id | evidence_quote |
+| --- | --- | --- | --- | --- | --- | --- |
+| f1 | Foo | 1 | CONFIRMED | t | s | x |
+| f2 | Bar | 2 | MISSING |  |  |  |
+`;
+    const summary = summarizeMatchTable(parseMatchTable(md));
+    expect(summary.mentionedNotTaughtGaps).toBe(0);
+    expect(summary.confirmed).toBe(1);
+    expect(summary.missingGaps).toBe(1);
+  });
+
+  it('unknown match_kind still dropped (validKinds gate)', () => {
+    const md = `| f1 | name | page | INVENTED_KIND | tut | step | quote |`;
+    expect(parseMatchTable(md)).toEqual([]);
+  });
+});

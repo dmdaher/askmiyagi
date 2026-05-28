@@ -22,6 +22,7 @@ interface RecheckResponse {
   summary: MatchTableSummary;
   missing: MatchRow[];
   parentOnlyGaps: MatchRow[];
+  mentionedNotTaught?: MatchRow[];
   matchTablePath: string;
   costUsd: number;
   /** NEW Phase 3a — coverage scorer verdict + self-heal status */
@@ -214,6 +215,7 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
           summary={result.summary}
           missing={result.missing}
           parentOnlyGaps={result.parentOnlyGaps}
+          mentionedNotTaught={result.mentionedNotTaught}
           costUsd={result.costUsd}
           matchTablePath={result.matchTablePath}
           verdict={result.verdict}

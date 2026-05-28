@@ -9,6 +9,7 @@ interface CoverageReportModalProps {
   summary: MatchTableSummary;
   missing: MatchRow[];
   parentOnlyGaps: MatchRow[];
+  mentionedNotTaught?: MatchRow[];
   costUsd: number;
   matchTablePath: string;
   onClose: () => void;
@@ -23,7 +24,7 @@ interface CoverageReportModalProps {
 }
 
 export default function CoverageReportModal(props: CoverageReportModalProps) {
-  const { deviceName, summary, missing, parentOnlyGaps, costUsd, matchTablePath, onClose, verdict } = props;
+  const { deviceName, summary, missing, parentOnlyGaps, mentionedNotTaught, costUsd, matchTablePath, onClose, verdict } = props;
 
   return (
     <div
@@ -62,6 +63,7 @@ export default function CoverageReportModal(props: CoverageReportModalProps) {
             summary={summary}
             missing={missing}
             parentOnlyGaps={parentOnlyGaps}
+            mentionedNotTaught={mentionedNotTaught}
             costUsd={costUsd}
             matchTablePath={matchTablePath}
             verdict={verdict}
