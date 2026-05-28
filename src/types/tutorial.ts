@@ -26,9 +26,8 @@ export interface Tutorial {
   estimatedTime: string;
   steps: TutorialStep[];
   tags: string[];
-  /** ISO date (YYYY-MM-DD) marking when this tutorial was authored.
-   *  Optional — older tutorials don't set it. Used by PR-X3's "Recently
-   *  added" UI. Added here on PR-X2 for the 5 integration tutorials so
-   *  this PR can ship independently of PR-X3 merge order. */
+  /** ISO date (YYYY-MM-DD) marking when this tutorial was first authored.
+   *  Optional — older tutorials don't set it. Used to surface "Recently added"
+   *  in the UI so users can see which tutorials closed coverage gaps. */
   addedDate?: string;
 }

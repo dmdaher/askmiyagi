@@ -25,6 +25,8 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { readState, writeState, appendLog, ensurePipelineDir } from '@/lib/pipeline/state-machine';
+import { getPhaseIndex, PIPELINE_PHASES } from '@/lib/pipeline/phase-order';
+import type { PipelinePhase } from '@/lib/pipeline/types';
 import { invokeAgent } from '@/lib/pipeline/runner';
 import { trackAudit, untrackAudit, killAudit, getAuditPid } from '@/lib/pipeline/audit-tracker';
 import {
@@ -115,6 +117,7 @@ export async function GET(
       const summary = summarizeMatchTable(rows);
       const missing = rows.filter((r) => r.matchKind === 'MISSING');
       const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY');
+      const mentionedNotTaught = rows.filter((r) => r.matchKind === 'MENTIONED_NOT_TAUGHT');
       const stat = fs.statSync(matchTablePath);
 
       // Phase 3a — compute verdict for the cached data too so the CoverageTab
@@ -137,6 +140,7 @@ export async function GET(
         summary,
         missing,
         parentOnlyGaps,
+        mentionedNotTaught,
         matchTablePath: path.relative(process.cwd(), matchTablePath),
         lastAuditMs: stat.mtimeMs,
         verdict: {
@@ -166,6 +170,7 @@ interface RecheckResponse {
   summary: MatchTableSummary;
   missing: MatchRow[];
   parentOnlyGaps: MatchRow[];
+  mentionedNotTaught: MatchRow[];
   matchTablePath: string;
   costUsd: number;
   /** Coverage scorer verdict (NEW Phase 3a). Tells the UI whether the
@@ -213,6 +218,31 @@ export async function POST(
   const existingTutorialIds = fs.existsSync(tutorialsDir)
     ? fs.readdirSync(tutorialsDir).filter((f) => f.endsWith('.ts') && f !== 'index.ts').map((f) => f.replace(/\.ts$/, ''))
     : [];
+
+  // ─── Defense A (PR #181) — STATE_INCONSISTENT pre-flight check ──────────
+  // If pipeline state says tutorials should exist by now (phase >= phase-5-
+  // tutorial-build) BUT the tutorials directory is empty/missing, halt with
+  // an explicit 409 before spawning the agent. Prevents wasted compute on
+  // doomed audits caused by unmerged feature branches, accidental deletion,
+  // iCloud sync races, or worktree on the wrong branch.
+  const TUTORIAL_BUILD_PHASE_INDEX = getPhaseIndex('phase-5-tutorial-build' as PipelinePhase);
+  const currentPhaseIndex = getPhaseIndex(state.currentPhase);
+  if (currentPhaseIndex >= TUTORIAL_BUILD_PHASE_INDEX && existingTutorialIds.length === 0) {
+    return NextResponse.json({
+      error: 'STATE_INCONSISTENT',
+      message: `Pipeline state says tutorials should exist (currentPhase='${state.currentPhase}') but the tutorials directory is empty or missing.`,
+      phase: state.currentPhase,
+      expectedTutorials: true,
+      actualTutorialCount: 0,
+      tutorialsDirChecked: path.relative(process.cwd(), tutorialsDir),
+      suggestions: [
+        `Tutorials may be on an unmerged feature branch — check git: git log --oneline test..feature/${deviceId} 2>/dev/null | head -5`,
+        `If branch is stale, copy tutorial files onto a fresh branch from test (see PR #180 pattern) and merge`,
+        `If accidentally deleted, restore from git: git checkout test -- src/data/tutorials/${deviceId}/`,
+        `If state is wrong (tutorials never actually built), reset via DiagnosticsPanel → "Reset to layout-engine" so pipeline reruns from a sensible point`,
+      ],
+    }, { status: 409 });
+  }
 
   const checklistResumeHint = fs.existsSync(checklistPath)
     ? `\nAn existing independent-checklist.md is at ${checklistPath}. SKIP Phase 1 and read this checklist as-is — it represents your prior independent reading of the manual.`
@@ -275,6 +305,7 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
     const summary = summarizeMatchTable(rows);
     const missing = rows.filter((r) => r.matchKind === 'MISSING');
     const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY');
+    const mentionedNotTaught = rows.filter((r) => r.matchKind === 'MENTIONED_NOT_TAUGHT');
 
     // ─── Phase 3a — Coverage gate + self-heal trigger ───────────────────
     // Compute deterministic verdict from the match-table. If non-grandfathered
@@ -353,6 +384,7 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
       summary,
       missing,
       parentOnlyGaps,
+      mentionedNotTaught,
       matchTablePath: path.relative(process.cwd(), matchTablePath),
       costUsd: result.costEntry?.costUsd ?? 0,
       verdict: {

@@ -9,12 +9,13 @@ interface CoverageReportModalProps {
   summary: MatchTableSummary;
   missing: MatchRow[];
   parentOnlyGaps: MatchRow[];
+  mentionedNotTaught?: MatchRow[];
   costUsd: number;
   matchTablePath: string;
   onClose: () => void;
   /** Optional Phase 3a verdict — surfaces "why" reason block + retry counter. */
   verdict?: {
-    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED' | 'MATCH_TABLE_CONFLICT';
     reason: string;
     selfHealTriggered?: boolean;
     retryCount?: number;
@@ -23,7 +24,7 @@ interface CoverageReportModalProps {
 }
 
 export default function CoverageReportModal(props: CoverageReportModalProps) {
-  const { deviceName, summary, missing, parentOnlyGaps, costUsd, matchTablePath, onClose, verdict } = props;
+  const { deviceName, summary, missing, parentOnlyGaps, mentionedNotTaught, costUsd, matchTablePath, onClose, verdict } = props;
 
   return (
     <div
@@ -62,6 +63,7 @@ export default function CoverageReportModal(props: CoverageReportModalProps) {
             summary={summary}
             missing={missing}
             parentOnlyGaps={parentOnlyGaps}
+            mentionedNotTaught={mentionedNotTaught}
             costUsd={costUsd}
             matchTablePath={matchTablePath}
             verdict={verdict}

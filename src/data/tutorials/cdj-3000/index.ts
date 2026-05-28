@@ -5,7 +5,7 @@
  * Batch B — Core Navigation & Configuration (T03, T19, T22, T23).
  * Batch C — Playing Techniques & Organization (T04, T05, T06, T07, T20).
  * Batch D — Intermediate Techniques (T08, T09, T11, T16, T18).
- * Subsequent batches (E) live alongside as additional files; add their imports here.
+ * Batch E — Advanced Compound Techniques (T10, T12, T13, T14, T17).
  *
  * Tutorials author against the handcrafted `CDJ3000Panel.tsx` and the committed
  * manifest at `src/data/manifests/cdj-3000.json`. Control IDs are validated by
@@ -37,9 +37,13 @@ import { loopFundamentals } from './loop-fundamentals';
 import { hotCues } from './hot-cues';
 import { beatSyncAndInstantDoubles } from './beat-sync-and-instant-doubles';
 import { beatgridAdjustment } from './beatgrid-adjustment';
-// PR-X2 — integration tutorials closing the workflow gaps identified by
-// the coverage audit (troubleshooting, live-set capstone, visual diagnostics,
-// multi-deck booth setup, harmonic mixing strategy).
+// Batch E — Advanced Compound Techniques (PR #182)
+import { advancedLoopTechniques } from './advanced-loop-techniques';
+import { hotCueAdvanced } from './hot-cue-advanced';
+import { quantizeAndBeatJump } from './quantize-and-beat-jump';
+import { slipMode } from './slip-mode';
+import { keySyncAndKeyShift } from './key-sync-and-key-shift';
+// Integration — closing audit-identified workflow gaps (PR-X2)
 import { troubleshootingProDjLink } from './troubleshooting-pro-dj-link';
 import { liveSetWorkflow } from './live-set-workflow';
 import { phaseMeterAndVisualDiagnostics } from './phase-meter-and-visual-diagnostics';
@@ -65,7 +69,13 @@ export const cdj3000Tutorials: Tutorial[] = [
   hotCues,
   beatSyncAndInstantDoubles,
   beatgridAdjustment,
-  // PR-X2 integration tutorials
+  // Batch E
+  advancedLoopTechniques,
+  hotCueAdvanced,
+  quantizeAndBeatJump,
+  slipMode,
+  keySyncAndKeyShift,
+  // Integration
   troubleshootingProDjLink,
   liveSetWorkflow,
   phaseMeterAndVisualDiagnostics,
@@ -92,6 +102,11 @@ export {
   hotCues,
   beatSyncAndInstantDoubles,
   beatgridAdjustment,
+  advancedLoopTechniques,
+  hotCueAdvanced,
+  quantizeAndBeatJump,
+  slipMode,
+  keySyncAndKeyShift,
   troubleshootingProDjLink,
   liveSetWorkflow,
   phaseMeterAndVisualDiagnostics,

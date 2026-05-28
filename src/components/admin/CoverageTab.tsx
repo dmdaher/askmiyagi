@@ -24,12 +24,13 @@ interface CachedResult {
   summary: MatchTableSummary;
   missing: MatchRow[];
   parentOnlyGaps: MatchRow[];
+  mentionedNotTaught?: MatchRow[];
   matchTablePath: string;
   lastAuditMs: number | null;
   costUsd?: number;
   /** Phase 3a verdict — surfaces "why" reason block + retry counter */
   verdict?: {
-    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED' | 'MATCH_TABLE_CONFLICT';
     reason: string;
     selfHealTriggered?: boolean;
     retryCount?: number;
@@ -72,6 +73,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
                 summary: fresh.summary,
                 missing: fresh.missing,
                 parentOnlyGaps: fresh.parentOnlyGaps,
+                mentionedNotTaught: fresh.mentionedNotTaught,
                 matchTablePath: fresh.matchTablePath,
                 costUsd: fresh.costUsd,
                 lastAuditMs: fresh.lastAuditMs ?? Date.now(),
@@ -115,6 +117,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
             summary: fresh.summary,
             missing: fresh.missing,
             parentOnlyGaps: fresh.parentOnlyGaps,
+            mentionedNotTaught: fresh.mentionedNotTaught,
             matchTablePath: fresh.matchTablePath,
             costUsd: fresh.costUsd,
             lastAuditMs: fresh.lastAuditMs ?? Date.now(),
@@ -167,6 +170,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
           summary: data.summary,
           missing: data.missing,
           parentOnlyGaps: data.parentOnlyGaps,
+          mentionedNotTaught: data.mentionedNotTaught,
           matchTablePath: data.matchTablePath,
           costUsd: data.costUsd,
           lastAuditMs: Date.now(),
@@ -272,6 +276,7 @@ export default function CoverageTab({ deviceId }: CoverageTabProps) {
             summary={cached.summary}
             missing={cached.missing}
             parentOnlyGaps={cached.parentOnlyGaps}
+            mentionedNotTaught={cached.mentionedNotTaught}
             costUsd={cached.costUsd}
             matchTablePath={cached.matchTablePath}
             lastAuditMs={cached.lastAuditMs}

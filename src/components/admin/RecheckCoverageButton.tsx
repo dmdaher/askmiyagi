@@ -22,11 +22,12 @@ interface RecheckResponse {
   summary: MatchTableSummary;
   missing: MatchRow[];
   parentOnlyGaps: MatchRow[];
+  mentionedNotTaught?: MatchRow[];
   matchTablePath: string;
   costUsd: number;
   /** NEW Phase 3a — coverage scorer verdict + self-heal status */
   verdict?: {
-    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED' | 'MATCH_TABLE_CONFLICT';
     reason: string;
     shouldAutoRetry: boolean;
     coveragePct: number;
@@ -136,10 +137,16 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
 
       {error && (
         <div
-          className="text-xs text-red-400 mt-1 px-2"
+          className="text-xs text-red-400 mt-1 px-2 space-y-1"
           data-testid="recheck-coverage-error"
         >
-          {error}
+          <div>{error}</div>
+          {/* Defense A — STATE_INCONSISTENT 409 surfaces structured suggestions */}
+          {typeof error === 'object' && 'suggestions' in (error as object) && Array.isArray((error as { suggestions: string[] }).suggestions) && (
+            <ul className="list-disc pl-4 text-[10px] text-red-300/80">
+              {(error as { suggestions: string[] }).suggestions.map((s, i) => <li key={i}>{s}</li>)}
+            </ul>
+          )}
         </div>
       )}
 
@@ -156,7 +163,17 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
           }`}
           data-testid="recheck-coverage-verdict"
         >
-          {result.verdict.selfHealTriggered ? (
+          {result.verdict.name === 'MATCH_TABLE_CONFLICT' ? (
+            <div className="space-y-1.5">
+              <div><strong>⚠ Match-table conflict detected.</strong> Refusing to act on corrupt data.</div>
+              <div className="text-[10px] text-red-200/80 italic">{result.verdict.reason}</div>
+              <div className="text-[9px] text-red-200/60 mt-1">
+                Likely fix: check if tutorial files are on an unmerged branch, OR
+                <code className="font-mono mx-1">rm -rf .pipeline/&lt;id&gt;/agents/coverage-auditor/</code>
+                + click Re-check Coverage again.
+              </div>
+            </div>
+          ) : result.verdict.selfHealTriggered ? (
             <>
               <strong>Auto-recovery running</strong> (retry {result.verdict.retryCount}/{result.verdict.maxRetries})
               {' — '}
@@ -198,6 +215,7 @@ export default function RecheckCoverageButton({ deviceId, deviceName, pipelineSt
           summary={result.summary}
           missing={result.missing}
           parentOnlyGaps={result.parentOnlyGaps}
+          mentionedNotTaught={result.mentionedNotTaught}
           costUsd={result.costUsd}
           matchTablePath={result.matchTablePath}
           verdict={result.verdict}

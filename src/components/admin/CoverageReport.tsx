@@ -15,6 +15,10 @@ export interface CoverageReportProps {
   summary: MatchTableSummary;
   missing: MatchRow[];
   parentOnlyGaps: MatchRow[];
+  /** Features that appear in tutorial prose but fail the TAUGHT bar
+   *  (no dedicated step / no highlights+panelStateChanges / no consequence / no WHY).
+   *  Optional for backward compat — older callers may not pass this. */
+  mentionedNotTaught?: MatchRow[];
   /** Show cost line in footer. Tab variant may hide if irrelevant. */
   costUsd?: number;
   /** Show source path line in footer. */
@@ -27,7 +31,7 @@ export interface CoverageReportProps {
    *  "why" block explaining the verdict (especially useful after self-heal
    *  fails — surfaces lostFeatures or stillMissingDirectives reasoning). */
   verdict?: {
-    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
+    name: 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED' | 'MATCH_TABLE_CONFLICT';
     reason: string;
     selfHealTriggered?: boolean;
     retryCount?: number;
@@ -57,6 +61,7 @@ export default function CoverageReport({
   summary,
   missing,
   parentOnlyGaps,
+  mentionedNotTaught = [],
   costUsd,
   matchTablePath,
   lastAuditMs,
@@ -98,8 +103,8 @@ export default function CoverageReport({
         </div>
       )}
 
-      {/* Summary cards */}
-      <div className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-4'}`}>
+      {/* Summary cards — show 5 cards when MENTIONED_NOT_TAUGHT data is present */}
+      <div className={`grid gap-2 ${compact ? 'grid-cols-2' : mentionedNotTaught.length > 0 ? 'grid-cols-5' : 'grid-cols-4'}`}>
         <div className="rounded p-3" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
           <div className="text-2xl font-semibold" style={{ color: coverageColor }}>{coveragePct}%</div>
           <div className="text-xs text-gray-500 mt-0.5">Coverage</div>
@@ -116,8 +121,14 @@ export default function CoverageReport({
         </div>
         <div className="rounded p-3" style={{ backgroundColor: 'rgba(34, 197, 94, 0.08)' }}>
           <div className="text-2xl font-semibold text-green-400">{summary.confirmed}</div>
-          <div className="text-xs text-gray-500 mt-1">Confirmed</div>
+          <div className="text-xs text-gray-500 mt-1">Confirmed (taught)</div>
         </div>
+        {mentionedNotTaught.length > 0 && (
+          <div className="rounded p-3" style={{ backgroundColor: 'rgba(245, 158, 11, 0.08)' }}>
+            <div className="text-2xl font-semibold text-amber-300">{mentionedNotTaught.length}</div>
+            <div className="text-xs text-gray-500 mt-1">Mentioned-only</div>
+          </div>
+        )}
         <div className="rounded p-3" style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)' }}>
           <div className="text-2xl font-semibold text-red-400">{missing.length}</div>
           <div className="text-xs text-gray-500 mt-1">Missing</div>
@@ -159,6 +170,40 @@ export default function CoverageReport({
         </div>
       )}
 
+      {/* Mentioned-not-taught list — feature is in tutorial prose but step
+          lacks hands-on practice (no highlights / panelStateChanges / consequence) */}
+      {mentionedNotTaught.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-amber-300 mb-2 uppercase tracking-wide">
+            Mentioned but not taught ({mentionedNotTaught.length})
+          </h3>
+          <p className="text-xs text-gray-500 mb-3">
+            These features appear in a tutorial's prose but don't meet the TAUGHT bar — no dedicated step with
+            highlights + panelStateChanges + visible consequence + WHY explanation. The user sees the name but
+            never gets hands-on practice.
+          </p>
+          <div className={`space-y-2 ${compact ? 'max-h-32' : 'max-h-48'} overflow-y-auto`}>
+            {mentionedNotTaught.map((row) => (
+              <div
+                key={row.featureId}
+                className="rounded p-2 text-xs"
+                style={{ backgroundColor: 'rgba(245, 158, 11, 0.06)', border: '1px solid rgba(245, 158, 11, 0.25)' }}
+              >
+                <div className="font-mono text-amber-300">{row.featureId}</div>
+                <div className="text-gray-200 mt-0.5">{row.featureName}</div>
+                {row.tutorialId && (
+                  <div className="text-gray-500 mt-0.5 text-[10px]">
+                    in <code className="font-mono">{row.tutorialId}</code>
+                    {row.stepId && <> · <code className="font-mono">{row.stepId}</code></>}
+                    {row.page && <> · manual page {row.page}</>}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Parent-only gaps list */}
       {parentOnlyGaps.length > 0 && (
         <div>
@@ -186,7 +231,7 @@ export default function CoverageReport({
       )}
 
       {/* Empty state */}
-      {missing.length === 0 && parentOnlyGaps.length === 0 && (
+      {missing.length === 0 && parentOnlyGaps.length === 0 && mentionedNotTaught.length === 0 && (
         <div className="text-center py-8">
           <div className="text-3xl mb-2">✓</div>
           <p className="text-sm text-green-400 font-medium">No gaps found</p>

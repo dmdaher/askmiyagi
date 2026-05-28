@@ -295,6 +295,58 @@ describe('scoreCoverage', () => {
     });
   });
 
+  describe('Defense B (PR #181) — MATCH_TABLE_CONFLICT', () => {
+    it('halts with MATCH_TABLE_CONFLICT when LLM and match-table disagree by >50pp', () => {
+      // CDJ-3000 incident reproduced: LLM frontmatter said 9.1/10 (91%),
+      // match-table said 0/3 = 0%. 91pp delta = catastrophic.
+      const md = makeCheckpoint({ inventory: 9.1, composite: 9.1 });
+      const matchTable = makeMatchTable([
+        { id: 'a', kind: 'MISSING' },
+        { id: 'b', kind: 'MISSING' },
+        { id: 'c', kind: 'MISSING' },
+      ]);
+      const v = scoreCoverage(md, { matchTableMarkdown: matchTable });
+      expect(v.verdict).toBe('MATCH_TABLE_CONFLICT');
+      expect(v.shouldAutoRetry).toBe(false);
+      expect(v.reason).toContain('catastrophic');
+      // Should mention both percentages so admin can see the conflict
+      expect(v.reason).toMatch(/91|0\.0/);
+    });
+
+    it('does NOT trigger MATCH_TABLE_CONFLICT on small (<50pp) drift', () => {
+      // 92% vs 90% = 2pp = noise tolerance, not catastrophic
+      const md = makeCheckpoint({ inventory: 9.2, composite: 9.2 });
+      const matchTable = makeMatchTable([
+        { id: 'a', kind: 'CONFIRMED' }, { id: 'b', kind: 'CONFIRMED' },
+        { id: 'c', kind: 'CONFIRMED' }, { id: 'd', kind: 'CONFIRMED' },
+        { id: 'e', kind: 'CONFIRMED' }, { id: 'f', kind: 'CONFIRMED' },
+        { id: 'g', kind: 'CONFIRMED' }, { id: 'h', kind: 'CONFIRMED' },
+        { id: 'i', kind: 'CONFIRMED' }, { id: 'j', kind: 'MISSING' },
+      ]);
+      const v = scoreCoverage(md, { matchTableMarkdown: matchTable });
+      expect(v.verdict).not.toBe('MATCH_TABLE_CONFLICT');
+      // matchTableWarning still surfaces the small drift (existing behavior)
+      expect(v.matchTableWarning).toBeDefined();
+    });
+
+    it('does NOT trigger MATCH_TABLE_CONFLICT when no LLM frontmatter present', () => {
+      // Empty checkpoint scores (no inventory:, no composite:) → no comparison
+      const md = makeCheckpoint({});
+      const matchTable = makeMatchTable([{ id: 'a', kind: 'MISSING' }]);
+      const v = scoreCoverage(md, { matchTableMarkdown: matchTable });
+      expect(v.verdict).not.toBe('MATCH_TABLE_CONFLICT');
+    });
+
+    it('MATCH_TABLE_CONFLICT trumps grandfather (still halts even for fantom-08)', () => {
+      // Defense B is universal — corrupt data should never trigger self-heal
+      // OR be silently approved as grandfathered. Surface the conflict.
+      const md = makeCheckpoint({ inventory: 9.5, composite: 9.5 });
+      const matchTable = makeMatchTable([{ id: 'a', kind: 'MISSING' }]);
+      const v = scoreCoverage(md, { matchTableMarkdown: matchTable }, 'fantom-08');
+      expect(v.verdict).toBe('MATCH_TABLE_CONFLICT');
+    });
+  });
+
   describe('Phase 3a — strict convergence checks', () => {
     it('halts when retry REMOVES previously CONFIRMED features (shuffle without filling)', () => {
       const md = makeCheckpoint({ inventory: 8.0, composite: 8.0 });

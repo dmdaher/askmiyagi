@@ -92,8 +92,14 @@ NOW read the Manual Extractor's checkpoint and tutorial plan. Compare systematic
 1. **Feature Gap Analysis (FEATURE-LEVEL MATCHING — MANDATORY):** For every feature in YOUR checklist, **search the Extractor's curriculum (`pass-3-curriculum.md` AND `tutorials.json` if present) for any step or tutorial description that explicitly teaches this feature by name or canonical keyword.** Section-level matching alone is FORBIDDEN — a tutorial covering "the Cue section" does NOT mean "Cue Point Sampler is covered". Open the tutorial's steps and search for the exact feature keyword.
 
    For each checklist feature, produce ONE of these classifications:
-   - **CONFIRMED:** A specific tutorial step mentions the feature by name (case-insensitive) OR uses a documented synonym. Cite the tutorial id + step id + a short evidence quote.
-   - **CONFIRMED_BY_PARENT_ONLY:** Feature falls within a section the Extractor's curriculum nominally covers, but NO specific step teaches the feature itself → log as **GAP** with `parent-coverage-only: true` so admin/scorer can decide. This catches the most common silent failure (section-credit-as-feature-credit).
+   - **CONFIRMED:** The feature is TAUGHT by a specific tutorial step. To qualify, ALL FOUR must be true (this is the "TAUGHT bar" — mere mention is not enough):
+     1. **Dedicated step** — the feature has its own `steps[]` entry, not just a sentence buried in another step's `details:` block.
+     2. **Hands-on interaction** — the step has BOTH `highlights:` (the control is highlighted for the user) AND `panelStateChanges:` (panel state changes when the user acts).
+     3. **Visible consequence** — the step demonstrates the result (e.g., `ledOn: true`, display state change, button activation) so the user sees what their action did.
+     4. **WHY explained** — the step's `details:` answers WHEN/WHY to use the feature, not just WHAT it is.
+     Cite tutorial id + step id + the highlights array entry that proves the hands-on interaction + a short evidence quote.
+   - **MENTIONED_NOT_TAUGHT:** The feature appears in a tutorial's prose (a `details:` sentence, a tutorial description, or a step title) but FAILS one or more of the four TAUGHT criteria above — e.g., named in passing without a dedicated step, or has a dedicated step but no `highlights:`/`panelStateChanges:`. Log as **GAP**. Cite the tutorial id + step id + the quote + which criterion failed (e.g. `"no dedicated step"`, `"no highlights"`, `"no panelStateChanges"`, `"no WHY"`).
+   - **CONFIRMED_BY_PARENT_ONLY:** Feature falls within a section the Extractor's curriculum nominally covers, but NO specific step teaches OR mentions the feature itself → log as **GAP** with `parent-coverage-only: true`. This catches section-credit-as-feature-credit when the feature isn't even named in prose.
    - **MISSING:** Feature is in your checklist AND no tutorial nominally covers its section either → log as **GAP**.
    - **RECLASSIFICATION:** Feature exists with a different classification than yours (e.g., you say `workflow`, Extractor says `parameter`) → note both views and which is correct.
 
@@ -105,7 +111,7 @@ NOW read the Manual Extractor's checkpoint and tutorial plan. Compare systematic
    - `feature_id`: from your independent checklist (e.g., `3.5`)
    - `feature_name`: human-readable name (e.g., "Cue Point Sampler")
    - `page`: source page number from the manual
-   - `match_kind`: one of `CONFIRMED`, `CONFIRMED_BY_PARENT_ONLY`, `MISSING`, `RECLASSIFICATION`
+   - `match_kind`: one of `CONFIRMED`, `MENTIONED_NOT_TAUGHT`, `CONFIRMED_BY_PARENT_ONLY`, `MISSING`, `RECLASSIFICATION`
    - `tutorial_id`: id of the tutorial that teaches it (e.g., `cue-points`) or empty if MISSING
    - `step_id`: id of the specific step (e.g., `step-3`) or empty if no specific step
    - `evidence_quote`: short verbatim excerpt from the step that proves the match — REQUIRED for CONFIRMED; empty otherwise
@@ -116,10 +122,11 @@ NOW read the Manual Extractor's checkpoint and tutorial plan. Compare systematic
    ```
    FEATURE GAP ANALYSIS:
    Your checklist: 87 features (total_features)
-   Confirmed matches: 79 (CONFIRMED + RECLASSIFICATION)
-   Parent-only gaps: 3 (CONFIRMED_BY_PARENT_ONLY) — section covered but feature not specifically taught
+   Confirmed matches: 79 (CONFIRMED + RECLASSIFICATION) — TAUGHT bar met
+   Mentioned-not-taught: 4 (MENTIONED_NOT_TAUGHT) — feature appears in prose but step lacks hands-on practice
+   Parent-only gaps: 3 (CONFIRMED_BY_PARENT_ONLY) — section covered but feature not even named in prose
    Missing gaps: 5 (MISSING) — neither feature nor section covered
-   Coverage: 79/87 = 90.8% confirmed (parent-only counted as gap per spec)
+   Coverage: 79/87 = 90.8% confirmed (mentioned-only + parent-only + missing all counted as gaps per spec)
      - GAP (parent-only): cue-point-sampler (§3.5 p.52) — cue-points tutorial exists but no step teaches the sampler
      - GAP (missing): global-tuning (§7.3 p.29) — system parameter for master tuning, not in any tutorial
      - GAP (missing): wifi-midi (§7.4 p.33) — only USB/DIN covered in Extractor's midi-setup
@@ -255,11 +262,12 @@ status: PASS | FAIL
 verdict: APPROVED | REVISIONS_NEEDED
 score: X.X
 # NEW (since the section-vs-feature granularity fix):
-total_features: <int>          # row count of independent-checklist.md
-confirmed_features: <int>      # rows in match-table.md where match_kind = CONFIRMED
-parent_only_gaps: <int>        # rows where match_kind = CONFIRMED_BY_PARENT_ONLY
-missing_gaps: <int>            # rows where match_kind = MISSING
-coverage_pct: <float>          # confirmed_features / total_features * 100
+total_features: <int>             # row count of independent-checklist.md
+confirmed_features: <int>         # rows in match-table.md where match_kind = CONFIRMED (TAUGHT bar met)
+mentioned_not_taught_gaps: <int>  # rows where match_kind = MENTIONED_NOT_TAUGHT
+parent_only_gaps: <int>           # rows where match_kind = CONFIRMED_BY_PARENT_ONLY
+missing_gaps: <int>               # rows where match_kind = MISSING
+coverage_pct: <float>             # confirmed_features / total_features * 100 (gaps excluded from numerator)
 ---
 ```
 
