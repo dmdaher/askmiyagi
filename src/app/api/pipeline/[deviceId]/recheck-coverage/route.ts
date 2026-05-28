@@ -115,6 +115,7 @@ export async function GET(
       const summary = summarizeMatchTable(rows);
       const missing = rows.filter((r) => r.matchKind === 'MISSING');
       const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY');
+      const mentionedNotTaught = rows.filter((r) => r.matchKind === 'MENTIONED_NOT_TAUGHT');
       const stat = fs.statSync(matchTablePath);
 
       // Phase 3a — compute verdict for the cached data too so the CoverageTab
@@ -137,6 +138,7 @@ export async function GET(
         summary,
         missing,
         parentOnlyGaps,
+        mentionedNotTaught,
         matchTablePath: path.relative(process.cwd(), matchTablePath),
         lastAuditMs: stat.mtimeMs,
         verdict: {
@@ -166,6 +168,7 @@ interface RecheckResponse {
   summary: MatchTableSummary;
   missing: MatchRow[];
   parentOnlyGaps: MatchRow[];
+  mentionedNotTaught: MatchRow[];
   matchTablePath: string;
   costUsd: number;
   /** Coverage scorer verdict (NEW Phase 3a). Tells the UI whether the
@@ -275,6 +278,7 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
     const summary = summarizeMatchTable(rows);
     const missing = rows.filter((r) => r.matchKind === 'MISSING');
     const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY');
+    const mentionedNotTaught = rows.filter((r) => r.matchKind === 'MENTIONED_NOT_TAUGHT');
 
     // ─── Phase 3a — Coverage gate + self-heal trigger ───────────────────
     // Compute deterministic verdict from the match-table. If non-grandfathered
@@ -353,6 +357,7 @@ Respond with: "RE-CHECK COMPLETE — see match-table.md" when done.`;
       summary,
       missing,
       parentOnlyGaps,
+      mentionedNotTaught,
       matchTablePath: path.relative(process.cwd(), matchTablePath),
       costUsd: result.costEntry?.costUsd ?? 0,
       verdict: {

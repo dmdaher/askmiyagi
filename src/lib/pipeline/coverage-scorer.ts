@@ -20,8 +20,16 @@
 
 export type CoverageVerdict = 'CRITICAL' | 'REJECTED' | 'APPROVED_WITH_WARNINGS' | 'APPROVED';
 
-/** match-table.md row kinds. See `.claude/agents/coverage-auditor.md` Phase 2 §1. */
-export type MatchKind = 'CONFIRMED' | 'CONFIRMED_BY_PARENT_ONLY' | 'MISSING' | 'RECLASSIFICATION';
+/** match-table.md row kinds. See `.claude/agents/coverage-auditor.md` Phase 2 §1.
+ *  MENTIONED_NOT_TAUGHT: feature appears in a tutorial's prose but the step
+ *  lacks the 4 TAUGHT criteria (dedicated step, highlights+panelStateChanges,
+ *  visible consequence, WHY explanation). Counts as a gap. */
+export type MatchKind =
+  | 'CONFIRMED'
+  | 'CONFIRMED_BY_PARENT_ONLY'
+  | 'MENTIONED_NOT_TAUGHT'
+  | 'MISSING'
+  | 'RECLASSIFICATION';
 
 export interface MatchRow {
   featureId: string;
@@ -35,9 +43,10 @@ export interface MatchRow {
 
 export interface MatchTableSummary {
   total: number;
-  confirmed: number;      // CONFIRMED + RECLASSIFICATION (both indicate a tutorial teaches it)
-  parentOnlyGaps: number; // CONFIRMED_BY_PARENT_ONLY (section covered, feature not specifically taught)
-  missingGaps: number;    // MISSING (neither section nor feature covered)
+  confirmed: number;            // CONFIRMED + RECLASSIFICATION (both indicate a tutorial teaches it)
+  parentOnlyGaps: number;       // CONFIRMED_BY_PARENT_ONLY (section covered, feature not specifically taught)
+  mentionedNotTaughtGaps: number; // MENTIONED_NOT_TAUGHT (feature appears in prose but step lacks hands-on practice)
+  missingGaps: number;          // MISSING (neither section nor feature covered)
   /** Recomputed `confirmed / total * 100`. NaN-guarded: returns 0 when total = 0. */
   coveragePct: number;
 }
@@ -170,7 +179,7 @@ function parseScoreBreakdown(markdown: string): ScoreBreakdown {
 export function parseMatchTable(markdown: string): MatchRow[] {
   if (!markdown) return [];
   const rows: MatchRow[] = [];
-  const validKinds = new Set(['CONFIRMED', 'CONFIRMED_BY_PARENT_ONLY', 'MISSING', 'RECLASSIFICATION']);
+  const validKinds = new Set(['CONFIRMED', 'CONFIRMED_BY_PARENT_ONLY', 'MENTIONED_NOT_TAUGHT', 'MISSING', 'RECLASSIFICATION']);
   for (const line of markdown.split('\n')) {
     // A table row starts and ends with |. Skip non-rows.
     if (!line.trim().startsWith('|') || !line.trim().endsWith('|')) continue;
@@ -202,9 +211,10 @@ export function summarizeMatchTable(rows: MatchRow[]): MatchTableSummary {
   const total = rows.length;
   const confirmed = rows.filter((r) => r.matchKind === 'CONFIRMED' || r.matchKind === 'RECLASSIFICATION').length;
   const parentOnlyGaps = rows.filter((r) => r.matchKind === 'CONFIRMED_BY_PARENT_ONLY').length;
+  const mentionedNotTaughtGaps = rows.filter((r) => r.matchKind === 'MENTIONED_NOT_TAUGHT').length;
   const missingGaps = rows.filter((r) => r.matchKind === 'MISSING').length;
   const coveragePct = total > 0 ? (confirmed / total) * 100 : 0;
-  return { total, confirmed, parentOnlyGaps, missingGaps, coveragePct };
+  return { total, confirmed, parentOnlyGaps, mentionedNotTaughtGaps, missingGaps, coveragePct };
 }
 
 /**
