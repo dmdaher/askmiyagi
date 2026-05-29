@@ -9,6 +9,7 @@ import {
   selectedLabelIdFromSelection,
   selectedControlIds,
 } from './store/selection-types';
+import { rotateAABB } from './geometry';
 
 /** Truncate a string to maxLen characters, adding ellipsis if needed */
 function truncate(str: string, maxLen: number): string {
@@ -19,34 +20,55 @@ function truncate(str: string, maxLen: number): string {
 /**
  * Is a control rendered outside the visible canvas bounds?
  *
- * Uses VISIBLE footprint (w/h \u00d7 controlScale), matching how `ControlNode`
- * renders controls. Without this scale, devices with `controlScale < 1`
- * would false-positive: their STORED w/h is larger than what's actually
- * visible, so the raw bounding-box check would flag controls the user can
- * clearly see inside the canvas.
+ * Two transforms must be applied to match how `ControlNode` actually renders:
+ *   1. **controlScale**: w/h \u00d7 controlScale (devices like XDJ-RR use 0.65)
+ *   2. **rotation**: CSS `transform: rotate(angle)` around the control's
+ *      center \u2014 the visible AABB after rotation can extend past the
+ *      unrotated bbox (e.g., a 246\u00d7123 rectangle rotated 90\u00b0 becomes
+ *      effectively 123\u00d7246).
+ *
+ * Without these, devices hit false positives: their STORED bbox is larger
+ * than what's actually visible (controlScale<1), OR a rotated rectangle's
+ * unrotated bbox claims more space than what's rendered (and vice versa).
  *
  * Exported as a pure helper so unit tests can verify the math without
  * mocking the editor store. Used by both ControlItem (per-control badge)
  * and SectionItem (bubbled section badge from child overflow).
  *
- * Origin: XDJ-RR investigation 2026-05-29. controlScale=0.65 made jog-dial
- * bbox 1832 > canvasWidth 1800 even though visible right edge was 1654.
+ * Origin: XDJ-RR investigation 2026-05-29.
+ *   - First false positive: jog-dial bbox 1832 > canvasWidth 1800 even
+ *     though visible right edge was 1654 (controlScale=0.65 fix).
+ *   - Second false positive (crossfader): bbox y+h = 1154 > canvasHeight
+ *     1150 even though crossfader has rotation=90 making the visible bbox
+ *     narrow + tall (rotateAABB fix).
  *
- * @returns true if control's visible footprint extends past any canvas edge
+ * @returns true if control's visible (scaled + rotated) AABB extends past any canvas edge
  */
 export function isControlOutOfBounds(
-  control: { x: number; y: number; w: number; h: number },
+  control: { x: number; y: number; w: number; h: number; rotation?: number },
   canvasWidth: number,
   canvasHeight: number,
   controlScale: number,
 ): boolean {
+  // 1. Scale the stored size to its rendered size
   const visW = control.w * controlScale;
   const visH = control.h * controlScale;
+  // The scaled bbox before rotation (positioned at control.x, control.y).
+  // Note: position is NOT scaled \u2014 only size is (per ControlNode renderer).
+  const scaledBbox = { x: control.x, y: control.y, w: visW, h: visH };
+
+  // 2. If rotated, compute the AABB of the rotated rectangle. CSS rotates
+  // around the control's center (`transformOrigin: 'center'`), and so does
+  // rotateAABB by default.
+  const finalBbox = control.rotation
+    ? rotateAABB(scaledBbox, control.rotation)
+    : scaledBbox;
+
   return (
-    control.x < 0 ||
-    control.y < 0 ||
-    control.x + visW > canvasWidth ||
-    control.y + visH > canvasHeight
+    finalBbox.x < 0 ||
+    finalBbox.y < 0 ||
+    finalBbox.x + finalBbox.w > canvasWidth ||
+    finalBbox.y + finalBbox.h > canvasHeight
   );
 }
 
