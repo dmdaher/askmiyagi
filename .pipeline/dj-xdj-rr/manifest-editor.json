@@ -103,11 +103,7 @@
         "l-pad-1",
         "l-pad-2",
         "l-pad-3",
-        "l-pad-4",
-        "l-pad-5",
-        "l-pad-6",
-        "l-pad-7",
-        "l-pad-8"
+        "l-pad-4"
       ],
       "frameMode": "body-only"
     },
@@ -152,8 +148,7 @@
         "cue-ch2",
         "channel-fader-ch1",
         "channel-fader-ch2",
-        "crossfader",
-        "crossfader-curve"
+        "crossfader"
       ],
       "frameMode": "body-only"
     },
@@ -194,11 +189,7 @@
         "r-pad-1",
         "r-pad-2",
         "r-pad-3",
-        "r-pad-4",
-        "r-pad-5",
-        "r-pad-6",
-        "r-pad-7",
-        "r-pad-8"
+        "r-pad-4"
       ],
       "frameMode": "body-only"
     }
@@ -954,7 +945,7 @@
       "id": "l-pad-1",
       "label": "Performance pad 1",
       "type": "pad",
-      "x": 172,
+      "x": 171.99996948242188,
       "y": 980.0006103515625,
       "w": 110,
       "h": 90,
@@ -967,7 +958,7 @@
       "id": "l-pad-2",
       "label": "Performance pad 2",
       "type": "pad",
-      "x": 256.99998474121094,
+      "x": 256.99993896484375,
       "y": 980.0006103515625,
       "w": 110,
       "h": 90,
@@ -980,7 +971,7 @@
       "id": "l-pad-3",
       "label": "Performance pad 3",
       "type": "pad",
-      "x": 341.99998474121094,
+      "x": 341.9999542236328,
       "y": 980.0006103515625,
       "w": 110,
       "h": 90,
@@ -993,7 +984,7 @@
       "id": "l-pad-4",
       "label": "Performance pad 4",
       "type": "pad",
-      "x": 426.9999694824219,
+      "x": 426.99993896484375,
       "y": 980.0006103515625,
       "w": 110,
       "h": 90,
@@ -1001,54 +992,6 @@
       "labelPosition": "hidden",
       "locked": false,
       "resizeLocked": false
-    },
-    "l-pad-5": {
-      "id": "l-pad-5",
-      "label": "Performance pad 5",
-      "type": "pad",
-      "x": 439.0001907348633,
-      "y": 1182.000259399414,
-      "w": 62,
-      "h": 76,
-      "sectionId": "left-deck",
-      "labelPosition": "on-button",
-      "locked": false
-    },
-    "l-pad-6": {
-      "id": "l-pad-6",
-      "label": "Performance pad 6",
-      "type": "pad",
-      "x": 164,
-      "y": 1177.0003662109375,
-      "w": 62,
-      "h": 76,
-      "sectionId": "left-deck",
-      "labelPosition": "on-button",
-      "locked": false
-    },
-    "l-pad-7": {
-      "id": "l-pad-7",
-      "label": "Performance pad 7",
-      "type": "pad",
-      "x": 233,
-      "y": 1177.0003356933594,
-      "w": 62,
-      "h": 76,
-      "sectionId": "left-deck",
-      "labelPosition": "on-button",
-      "locked": false
-    },
-    "l-pad-8": {
-      "id": "l-pad-8",
-      "label": "Performance pad 8",
-      "type": "pad",
-      "x": 335.0000457763672,
-      "y": 1177.0002975463867,
-      "w": 62,
-      "h": 76,
-      "sectionId": "left-deck",
-      "labelPosition": "on-button",
-      "locked": false
     },
     "aux-selector": {
       "id": "aux-selector",
@@ -1459,25 +1402,13 @@
       "label": "Crossfader",
       "type": "fader",
       "x": 825.999755859375,
-      "y": 1031.0006103515625,
+      "y": 1029,
       "w": 246,
       "h": 123,
       "sectionId": "mixer-section",
       "labelPosition": "hidden",
       "locked": false,
       "rotation": 90
-    },
-    "crossfader-curve": {
-      "id": "crossfader-curve",
-      "label": "CROSS FADER CURVE (THRU) selector switch",
-      "type": "switch",
-      "x": 854.0004348754883,
-      "y": 1161.0005569458008,
-      "w": 64,
-      "h": 76,
-      "sectionId": "mixer-section",
-      "labelPosition": "above",
-      "locked": false
     },
     "r-memory": {
       "id": "r-memory",
@@ -1860,54 +1791,6 @@
       "labelPosition": "hidden",
       "locked": false
     },
-    "r-pad-5": {
-      "id": "r-pad-5",
-      "label": "Performance pad 5",
-      "type": "pad",
-      "x": 1414.0003280639648,
-      "y": 1165.0002059936523,
-      "w": 62,
-      "h": 76,
-      "sectionId": "right-deck",
-      "labelPosition": "on-button",
-      "locked": false
-    },
-    "r-pad-6": {
-      "id": "r-pad-6",
-      "label": "Performance pad 6",
-      "type": "pad",
-      "x": 1474.0000839233398,
-      "y": 1172.0000839233398,
-      "w": 62,
-      "h": 76,
-      "sectionId": "right-deck",
-      "labelPosition": "on-button",
-      "locked": false
-    },
-    "r-pad-7": {
-      "id": "r-pad-7",
-      "label": "Performance pad 7",
-      "type": "pad",
-      "x": 1551.0000839233398,
-      "y": 1164.0000839233398,
-      "w": 62,
-      "h": 76,
-      "sectionId": "right-deck",
-      "labelPosition": "on-button",
-      "locked": false
-    },
-    "r-pad-8": {
-      "id": "r-pad-8",
-      "label": "Performance pad 8",
-      "type": "pad",
-      "x": 1617.0000839233398,
-      "y": 1160.0000839233398,
-      "w": 62,
-      "h": 76,
-      "sectionId": "right-deck",
-      "labelPosition": "on-button",
-      "locked": false
-    },
     "load-1-button": {
       "id": "load-1-button",
       "label": "1",
@@ -1924,7 +1807,7 @@
       "id": "load-2-button",
       "label": "2",
       "type": "button",
-      "x": 1229,
+      "x": 1225,
       "y": 330,
       "w": 62,
       "h": 35,
@@ -4174,16 +4057,6 @@
       "hidden": true
     },
     {
-      "id": "label-beat-effects-selector",
-      "controlId": "beat-effects-selector",
-      "text": "BEAT EFFECTS selector switch",
-      "x": 2220,
-      "y": 802,
-      "w": 93,
-      "fontSize": 7,
-      "align": "center"
-    },
-    {
       "id": "label-effect-ch-select",
       "controlId": "effect-ch-select",
       "text": "Effect channel selector switch",
@@ -4290,16 +4163,6 @@
       "fontSize": 8,
       "align": "center",
       "hidden": true
-    },
-    {
-      "id": "label-crossfader-curve",
-      "controlId": "crossfader-curve",
-      "text": "CROSS FADER CURVE (THRU) selector switch",
-      "x": 838,
-      "y": 1193,
-      "w": 60,
-      "fontSize": 8,
-      "align": "center"
     },
     {
       "id": "label-r-memory",
@@ -4646,7 +4509,7 @@
       "controlId": null,
       "sectionId": "browse-section",
       "text": "LOAD",
-      "x": 1172,
+      "x": 1184,
       "y": 316,
       "w": 60,
       "fontSize": 7,
@@ -5356,16 +5219,6 @@
       ]
     },
     {
-      "id": "group-1779938371561-qbot8i",
-      "name": "Group 12",
-      "controlIds": [
-        "l-pad-5",
-        "l-pad-8",
-        "l-pad-7",
-        "l-pad-6"
-      ]
-    },
-    {
       "id": "group-1779999101521-hwjb2v",
       "name": "Group 15",
       "controlIds": [
@@ -5468,7 +5321,7 @@
     "depthMm": 411
   },
   "_manifestVersion": "fca4c0da",
-  "_loadedAt": "2026-05-29T20:44:20.018Z",
+  "_loadedAt": "2026-05-29T22:35:04.100Z",
   "controlScale": 0.65,
   "zoom": 1,
   "cleanupGap": 8,
