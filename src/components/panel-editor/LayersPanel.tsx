@@ -17,6 +17,40 @@ function truncate(str: string, maxLen: number): string {
 }
 
 /**
+ * Is a control rendered outside the visible canvas bounds?
+ *
+ * Uses VISIBLE footprint (w/h \u00d7 controlScale), matching how `ControlNode`
+ * renders controls. Without this scale, devices with `controlScale < 1`
+ * would false-positive: their STORED w/h is larger than what's actually
+ * visible, so the raw bounding-box check would flag controls the user can
+ * clearly see inside the canvas.
+ *
+ * Exported as a pure helper so unit tests can verify the math without
+ * mocking the editor store. Used by both ControlItem (per-control badge)
+ * and SectionItem (bubbled section badge from child overflow).
+ *
+ * Origin: XDJ-RR investigation 2026-05-29. controlScale=0.65 made jog-dial
+ * bbox 1832 > canvasWidth 1800 even though visible right edge was 1654.
+ *
+ * @returns true if control's visible footprint extends past any canvas edge
+ */
+export function isControlOutOfBounds(
+  control: { x: number; y: number; w: number; h: number },
+  canvasWidth: number,
+  canvasHeight: number,
+  controlScale: number,
+): boolean {
+  const visW = control.w * controlScale;
+  const visH = control.h * controlScale;
+  return (
+    control.x < 0 ||
+    control.y < 0 ||
+    control.x + visW > canvasWidth ||
+    control.y + visH > canvasHeight
+  );
+}
+
+/**
  * Scroll the canvas viewport so a control's DOM element is centered.
  * Works for any control \u2014 even those outside `canvasWidth \u00d7 canvasHeight`,
  * because the editor's outer container is `overflow-auto` and the control
@@ -86,6 +120,7 @@ function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; link
   const toggleSelected = useEditorStore((s) => s.toggleSelected);
   const canvasWidth = useEditorStore((s) => s.canvasWidth);
   const canvasHeight = useEditorStore((s) => s.canvasHeight);
+  const controlScale = useEditorStore((s) => s.controlScale);
 
   const isSelected = isControlSelected(selection, controlId);
   const itemRef = useRef<HTMLButtonElement>(null);
@@ -116,11 +151,7 @@ function ControlItem({ controlId, linkedLabels = [] }: { controlId: string; link
 
   const isLocked = control.locked;
   const isResizeLocked = control.resizeLocked;
-  const isOutOfBounds =
-    control.x < 0 ||
-    control.y < 0 ||
-    control.x + control.w > canvasWidth ||
-    control.y + control.h > canvasHeight;
+  const isOutOfBounds = isControlOutOfBounds(control, canvasWidth, canvasHeight, controlScale);
 
   return (
     <div>
@@ -312,6 +343,7 @@ function SectionItem({
   const controls = useEditorStore((s) => s.controls);
   const canvasWidth = useEditorStore((s) => s.canvasWidth);
   const canvasHeight = useEditorStore((s) => s.canvasHeight);
+  const controlScale = useEditorStore((s) => s.controlScale);
   const selection = useEditorStore((s) => s.selection);
   const focusedSectionId = useEditorStore((s) => s.focusedSectionId);
   const setSelectedIds = useEditorStore((s) => s.setSelectedIds);
@@ -330,7 +362,7 @@ function SectionItem({
   const hasOutOfBoundsChild = section?.childIds.some((id) => {
     const c = controls[id];
     if (!c) return false;
-    return c.x < 0 || c.y < 0 || c.x + c.w > canvasWidth || c.y + c.h > canvasHeight;
+    return isControlOutOfBounds(c, canvasWidth, canvasHeight, controlScale);
   }) ?? false;
   const itemRef = useRef<HTMLDivElement>(null);
 
