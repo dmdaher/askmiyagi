@@ -27,40 +27,53 @@ function truncate(str: string, maxLen: number): string {
  *      unrotated bbox (e.g., a 246\u00d7123 rectangle rotated 90\u00b0 becomes
  *      effectively 123\u00d7246).
  *
- * Without these, devices hit false positives: their STORED bbox is larger
- * than what's actually visible (controlScale<1), OR a rotated rectangle's
- * unrotated bbox claims more space than what's rendered (and vice versa).
+ * **EXCEPTION \u2014 fader/slider at cardinal rotations**: ControlNode SKIPS CSS
+ * rotation for `type === 'fader' || 'slider'` at 90\u00b0 / 270\u00b0 because the
+ * Fader component re-lays-out natively to vertical (so applying CSS rotate
+ * AND native re-layout would double-rotate). The validator must mirror this
+ * skip: the visible bbox for those controls is the UNROTATED scaled bbox,
+ * even though `control.rotation` is non-zero. See `ControlNode.tsx:793-803`.
+ *
+ * Without these matches, devices hit false positives: their STORED bbox is
+ * larger than what's visible (controlScale<1), OR a rotated bbox extends
+ * past canvas while the rendered control sits inside (rotation skip), etc.
  *
  * Exported as a pure helper so unit tests can verify the math without
  * mocking the editor store. Used by both ControlItem (per-control badge)
  * and SectionItem (bubbled section badge from child overflow).
  *
  * Origin: XDJ-RR investigation 2026-05-29.
- *   - First false positive: jog-dial bbox 1832 > canvasWidth 1800 even
- *     though visible right edge was 1654 (controlScale=0.65 fix).
- *   - Second false positive (crossfader): bbox y+h = 1154 > canvasHeight
- *     1150 even though crossfader has rotation=90 making the visible bbox
- *     narrow + tall (rotateAABB fix).
+ *   - v1: jog-dial bbox 1832 > canvasWidth 1800 but visible right=1654
+ *     (controlScale=0.65 fix).
+ *   - v2: rotated controls extended past canvas after scale-only fix
+ *     (rotateAABB added).
+ *   - v3 (this version): crossfader (fader + rotation=90) was STILL
+ *     false-positive after v2 because ControlNode skips CSS rotation for
+ *     faders at cardinal angles \u2014 the validator must skip too.
  *
- * @returns true if control's visible (scaled + rotated) AABB extends past any canvas edge
+ * @returns true if control's visible AABB extends past any canvas edge
  */
 export function isControlOutOfBounds(
-  control: { x: number; y: number; w: number; h: number; rotation?: number },
+  control: { x: number; y: number; w: number; h: number; rotation?: number; type?: string },
   canvasWidth: number,
   canvasHeight: number,
   controlScale: number,
 ): boolean {
-  // 1. Scale the stored size to its rendered size
+  // 1. Scale the stored size to its rendered size.
+  // Position is NOT scaled \u2014 only size is (per ControlNode renderer).
   const visW = control.w * controlScale;
   const visH = control.h * controlScale;
-  // The scaled bbox before rotation (positioned at control.x, control.y).
-  // Note: position is NOT scaled \u2014 only size is (per ControlNode renderer).
   const scaledBbox = { x: control.x, y: control.y, w: visW, h: visH };
 
-  // 2. If rotated, compute the AABB of the rotated rectangle. CSS rotates
-  // around the control's center (`transformOrigin: 'center'`), and so does
-  // rotateAABB by default.
-  const finalBbox = control.rotation
+  // 2. Decide whether to apply rotation. ControlNode skips CSS rotation
+  // for faders/sliders at cardinal angles (the component re-lays-out
+  // natively). Match that here \u2014 otherwise the validator would compute a
+  // rotated bbox that doesn't reflect what's rendered.
+  const isFader = control.type === 'fader' || control.type === 'slider';
+  const isCardinal = control.rotation === 90 || control.rotation === 270;
+  const skipRotation = isFader && isCardinal;
+
+  const finalBbox = (control.rotation && !skipRotation)
     ? rotateAABB(scaledBbox, control.rotation)
     : scaledBbox;
 
