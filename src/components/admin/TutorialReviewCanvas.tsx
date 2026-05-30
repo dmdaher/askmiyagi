@@ -500,8 +500,13 @@ function TutorialReviewCanvasInner({ data, onRefreshData }: TutorialReviewCanvas
   }, [feedbackText, submitResolution]);
 
   // ──────────── Issues for the currently-selected tutorial ────────────────
+  // Defensive `?? []` because the pipeline summary.json on disk can omit the
+  // `issues` array entirely when regenerated from source with zero issues
+  // (observed on cdj-3000 2026-05-30 — schema written `regeneratedFromSource`
+  // variant drops the empty array). The TypeScript type marks `issues` as
+  // required, but reality is looser.
   const issuesForCurrent: TutorialIssue[] = useMemo(
-    () => summary.issues.filter(i => i.tutorialId === currentTutorialId),
+    () => (summary.issues ?? []).filter(i => i.tutorialId === currentTutorialId),
     [summary.issues, currentTutorialId],
   );
 
