@@ -64,6 +64,32 @@ export default function TutorialRunner({
     }
   }, [store.currentStepIndex, store.autoplay]);
 
+  // Mobile fit-to-screen — scale the panel wrapper down when viewport is narrower
+  // than the intrinsic panel width. Never scales up. Mirrors the proven pattern
+  // in TutorialReviewCanvas.tsx:1128-1146.
+  const panelSlotRef = useRef<HTMLDivElement | null>(null);
+  const [panelScale, setPanelScale] = useState(1);
+  useEffect(() => {
+    const el = panelSlotRef.current;
+    if (!el || !panelWidth || panelWidth <= 0) return;
+    const compute = () => {
+      const available = el.clientWidth;
+      if (available === 0) return;
+      // Divisor is panelWidth + 200 because the inner box is sized panelWidth + 200
+      // (legacy breathing room). 4px subtraction prevents sub-pixel overflow.
+      const target = Math.min(1, (available - 4) / (panelWidth + 200));
+      setPanelScale(target);
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(el);
+    window.addEventListener('orientationchange', compute);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('orientationchange', compute);
+    };
+  }, [panelWidth]);
+
   const step = store.currentStep();
   const totalSteps = store.totalSteps();
   const isFirst = store.isFirstStep();
@@ -164,16 +190,47 @@ export default function TutorialRunner({
 
       {/* Full-page scrollable area */}
       <div className="flex-1 overflow-y-auto" ref={scrollRef}>
-        {/* Panel area */}
+        {/* Panel area — fits to viewport on narrow screens via transform scale */}
         <div className="p-3 pb-0">
-          <div className="rounded-lg" style={{ overflowX: 'scroll', overflowY: 'hidden' }}>
-            <div style={{ width: panelWidth + 200, padding: '0 100px 20px 20px' }}>
-              <DevicePanel
-                panelState={store.panelState}
-                displayState={store.displayState}
-                highlightedControls={store.highlightedControls}
-                zones={store.zones}
-              />
+          <div
+            ref={panelSlotRef}
+            className="rounded-lg"
+            style={{
+              overflowX: panelScale < 1 ? 'hidden' : 'scroll',
+              overflowY: 'hidden',
+              WebkitOverflowScrolling: 'touch',
+            }}
+          >
+            {/* Outer wrapper reserves layout space for the SCALED panel so
+                neighboring elements (zone overlay, controls bar) flow correctly. */}
+            <div
+              data-testid="panel-scale-reservation"
+              style={{
+                width: (panelWidth + 200) * panelScale,
+                height: (panelHeight + 20) * panelScale,
+                position: 'relative',
+              }}
+            >
+              {/* Inner wrapper holds the unscaled panel, absolutely positioned
+                  and visually scaled. Mirrors TutorialReviewCanvas.tsx:1128-1146. */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: panelWidth + 200,
+                  padding: '0 100px 20px 20px',
+                  transform: `scale(${panelScale})`,
+                  transformOrigin: 'top left',
+                }}
+              >
+                <DevicePanel
+                  panelState={store.panelState}
+                  displayState={store.displayState}
+                  highlightedControls={store.highlightedControls}
+                  zones={store.zones}
+                />
+              </div>
             </div>
           </div>
           {store.zones.length > 0 && (
