@@ -67,28 +67,29 @@ export default function TutorialRunner({
   // Mobile fit-to-screen — scale the panel wrapper down when viewport is narrower
   // than the intrinsic panel width. Never scales up. Mirrors the proven pattern
   // in TutorialReviewCanvas.tsx:1128-1146.
-  const panelSlotRef = useRef<HTMLDivElement | null>(null);
+  // NOTE: callback ref (useState) instead of useRef — the component has an early
+  // `return null` above this point (line ~78), so on first render the div doesn't
+  // exist and a useRef-based effect would early-return forever. Callback ref via
+  // useState makes React re-run the effect when the element actually attaches.
+  const [panelSlotEl, setPanelSlotEl] = useState<HTMLDivElement | null>(null);
   const [panelScale, setPanelScale] = useState(1);
   useEffect(() => {
-    const el = panelSlotRef.current;
-    if (!el || !panelWidth || panelWidth <= 0) return;
+    if (!panelSlotEl || !panelWidth || panelWidth <= 0) return;
     const compute = () => {
-      const available = el.clientWidth;
+      const available = panelSlotEl.clientWidth;
       if (available === 0) return;
-      // Divisor is panelWidth + 200 because the inner box is sized panelWidth + 200
-      // (legacy breathing room). 4px subtraction prevents sub-pixel overflow.
       const target = Math.min(1, (available - 4) / (panelWidth + 200));
       setPanelScale(target);
     };
     compute();
     const ro = new ResizeObserver(compute);
-    ro.observe(el);
+    ro.observe(panelSlotEl);
     window.addEventListener('orientationchange', compute);
     return () => {
       ro.disconnect();
       window.removeEventListener('orientationchange', compute);
     };
-  }, [panelWidth]);
+  }, [panelSlotEl, panelWidth]);
 
   const step = store.currentStep();
   const totalSteps = store.totalSteps();
@@ -193,7 +194,7 @@ export default function TutorialRunner({
         {/* Panel area — fits to viewport on narrow screens via transform scale */}
         <div className="p-3 pb-0">
           <div
-            ref={panelSlotRef}
+            ref={setPanelSlotEl}
             className="rounded-lg"
             style={{
               overflowX: panelScale < 1 ? 'hidden' : 'scroll',

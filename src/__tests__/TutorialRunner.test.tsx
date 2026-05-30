@@ -12,11 +12,13 @@ vi.mock('next/navigation', () => ({
 beforeEach(() => {
   mockPush.mockClear();
   useTutorialStore.getState().reset();
-  global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-  }));
+  // ResizeObserver is invoked via `new` in TutorialRunner — mock as a proper
+  // constructor (class), not a plain function (TypeError: ... is not a constructor).
+  global.ResizeObserver = class {
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+  } as unknown as typeof ResizeObserver;
 });
 
 const testTutorial: Tutorial = {
