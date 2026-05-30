@@ -24,7 +24,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`dark ${inter.variable}`}>
-      <body className="min-h-screen bg-[#0a0a0f] text-gray-100 antialiased">
+      {/* suppressHydrationWarning is scoped to <body>'s OWN attributes only.
+          Silences false-positive hydration warnings from browser extensions
+          (Grammarly, LastPass, 1Password, Notion Web Clipper) that inject
+          body attributes like `data-gr-ext-installed` before React hydrates.
+          Real hydration mismatches in descendants still warn normally.
+          Next.js pattern: https://nextjs.org/docs/messages/react-hydration-error */}
+      <body suppressHydrationWarning className="min-h-screen bg-[#0a0a0f] text-gray-100 antialiased">
         <PostHogRouteGuard />
         {children}
         <Analytics />
