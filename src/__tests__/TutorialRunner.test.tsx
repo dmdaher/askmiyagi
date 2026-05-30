@@ -12,11 +12,13 @@ vi.mock('next/navigation', () => ({
 beforeEach(() => {
   mockPush.mockClear();
   useTutorialStore.getState().reset();
-  global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-  }));
+  // ResizeObserver is invoked via `new` in TutorialRunner — mock as a proper
+  // constructor (class), not a plain function (TypeError: ... is not a constructor).
+  global.ResizeObserver = class {
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+  } as unknown as typeof ResizeObserver;
 });
 
 const testTutorial: Tutorial = {
@@ -90,5 +92,26 @@ describe('TutorialRunner', () => {
   it('step counter shows "N / total"', () => {
     render(<TutorialRunner tutorial={testTutorial} DevicePanel={MockDevicePanel} panelWidth={2700} panelHeight={900} />);
     expect(screen.getByText('1 / 2')).toBeInTheDocument();
+  });
+
+  // Mobile fit-to-screen scale wrapper (2026-05-30) — ensures the panel slot uses
+  // the proven scaled-wrapper pattern from TutorialReviewCanvas.tsx:1128-1146 so
+  // narrow viewports get a fit-to-width panel instead of horizontal scroll.
+  it('panel slot has scaled-wrapper structure (layout reservation + position: relative)', () => {
+    const { container } = render(
+      <TutorialRunner tutorial={testTutorial} DevicePanel={MockDevicePanel} panelWidth={2700} panelHeight={900} />,
+    );
+    const reservation = container.querySelector('[data-testid="panel-scale-reservation"]') as HTMLElement | null;
+    expect(reservation).not.toBeNull();
+    expect(reservation!.style.position).toBe('relative');
+  });
+
+  it('device panel still renders inside the scaled wrapper (initial scale = 1, SSR-safe)', () => {
+    const { container } = render(
+      <TutorialRunner tutorial={testTutorial} DevicePanel={MockDevicePanel} panelWidth={2700} panelHeight={900} />,
+    );
+    const reservation = container.querySelector('[data-testid="panel-scale-reservation"]');
+    const panel = reservation?.querySelector('[data-testid="device-panel"]');
+    expect(panel).not.toBeNull();
   });
 });
